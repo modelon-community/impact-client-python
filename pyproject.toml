@@ -1,0 +1,30 @@
+[tool.poetry]
+name = "modelon-impact-client"
+packages = [
+    { include = "modelon" },
+]
+version = "0.0.1"
+description = "Modelon Impact Service Client"
+readme = "README.md"
+license = "Propriatary"
+authors = [
+    "WEP <impact@modelon.com>"
+]
+classifiers = [
+    "Programming Language :: Python :: 3.7"
+]
+include = [
+]
+
+[tool.poetry.dependencies]
+python = "^3.6"
+requests = "^2.23"
+
+[tool.poetry.dev-dependencies]
+pytest = "^5.2"
+flake8 = "*"
+mypy = "*"
+pytest-watch = "^4.2.0"
+black = "^19.10b0"
+click = "^7.0"
+requests_mock = "^1.8"
