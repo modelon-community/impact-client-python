@@ -1,3 +1,10 @@
+# [1.0.0-beta.4](https://github.com/modelon-community/impact-client-python/compare/v1.0.0-beta.3...v1.0.0-beta.4) (2020-06-26)
+
+
+### Bug Fixes
+
+* correct artifactory URL ([4b4195d](https://github.com/modelon-community/impact-client-python/commit/4b4195d6645db9ebfca740e70d144c379efa5d60))
+
 # [1.0.0-beta.3](https://github.com/modelon-community/impact-client-python/compare/v1.0.0-beta.2...v1.0.0-beta.3) (2020-06-26)
 
 
