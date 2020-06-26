@@ -4,7 +4,7 @@ import pytest
 import requests
 import requests_mock
 
-import modelon.impact.client.sal.service
+import modelon.impact.client
 import modelon.impact.client.sal.exceptions
 
 
@@ -24,6 +24,46 @@ def mock_server_base():
     mock_url = 'http://mock-impact.com'
 
     return MockedServer(mock_url, MockContex(session), adapter)
+
+
+@pytest.fixture
+def single_workspace(mock_server_base):
+    json = {'data': {'items': [{'id': 'AwesomeWorkspace'}]}}
+    json_header = {'content-type': 'application/json'}
+    mock_server_base.adapter.register_uri(
+        'GET', f'{mock_server_base.url}/api/workspaces', json=json, headers=json_header,
+    )
+
+    return mock_server_base
+
+
+@pytest.fixture
+def create_workspace(mock_server_base):
+    json = {'workspaceId': 'newWorkspace'}
+    json_header = {'content-type': 'application/json'}
+    mock_server_base.adapter.register_uri(
+        'POST',
+        f'{mock_server_base.url}/api/workspaces',
+        json=json,
+        headers=json_header,
+    )
+
+    return mock_server_base
+
+
+@pytest.fixture
+def workspaces_error(mock_server_base):
+    json = {'error': {'message': 'no authroization', 'code': 123}}
+    json_header = {'content-type': 'application/json'}
+    mock_server_base.adapter.register_uri(
+        'GET',
+        f'{mock_server_base.url}/api/workspaces',
+        json=json,
+        headers=json_header,
+        status_code=401,
+    )
+
+    return mock_server_base
 
 
 @pytest.fixture
@@ -48,28 +88,45 @@ def get_with_error(mock_server_base):
     return mock_server_base
 
 
-def test_get(get_ok_empty_json):
-    service = modelon.impact.client.sal.service.Service(
-        uri=get_ok_empty_json.url, context=get_ok_empty_json.context
-    )
-    resp = service.get('/')
-    assert resp.data == {}
+class TestService:
+    def test_get_workspaces(self, single_workspace):
+        uri = modelon.impact.client.sal.service.URI(single_workspace.url)
+        service = modelon.impact.client.sal.service.Service(
+            uri=uri, context=single_workspace.context
+        )
+        data = service.workspaces_get_all()
+        assert data == {'data': {'items': [{'id': 'AwesomeWorkspace'}]}}
+
+    def test_get_workspace(self, single_workspace):
+        client = modelon.impact.client.Client(
+            url=single_workspace.url, context=single_workspace.context
+        )
+        workspace = client.get_workspace('AwesomeWorkspace')
+        assert workspace == modelon.impact.client.entities.Workspace('AwesomeWorkspace')
+
+    def test_create_workspace(self, create_workspace):
+        uri = modelon.impact.client.sal.service.URI(create_workspace.url)
+        client = modelon.impact.client.sal.service.Service(
+            uri=uri, context=create_workspace.context
+        )
+        data = client.workspaces_create('AwesomeWorkspace')
+        assert data == {'workspaceId': 'newWorkspace'}
 
 
-def test_get_error(get_with_error):
-    service = modelon.impact.client.sal.service.Service(
-        uri=get_with_error.url, context=get_with_error.context
-    )
-    pytest.raises(modelon.impact.client.sal.exceptions.HTTPError, service.get, '/')
+class TestHTTPClient:
+    def test_get_json_error(self, get_with_error):
+        client = modelon.impact.client.sal.service.HTTPClient(
+            context=get_with_error.context
+        )
+        pytest.raises(
+            modelon.impact.client.sal.exceptions.HTTPError,
+            client.get_json,
+            get_with_error.url,
+        )
 
-
-def test_get_error_no_check(get_with_error):
-    service = modelon.impact.client.sal.service.Service(
-        uri=get_with_error.url, context=get_with_error.context
-    )
-    resp = service.get('/', check_return=False)
-    with pytest.raises(modelon.impact.client.sal.exceptions.HTTPError):
-        resp.data
-
-    assert resp.error.code == 123
-    assert resp.error.message == 'no authroization'
+    def test_get_json_ok(self, get_ok_empty_json):
+        client = modelon.impact.client.sal.service.HTTPClient(
+            context=get_ok_empty_json.context
+        )
+        data = client.get_json(get_ok_empty_json.url)
+        assert data == {}
