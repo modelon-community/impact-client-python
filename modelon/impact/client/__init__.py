@@ -12,7 +12,8 @@ class Client:
             url = "http://localhost:8080/"
             logger.warning("No URL for client was specified, will use: {}".format(url))
 
-        self._sal = modelon.impact.client.sal.service.Service(url, context)
+        uri = modelon.impact.client.sal.service.URI(url)
+        self._sal = modelon.impact.client.sal.service.Service(uri, context)
         # TODO: check that the API is of a version that client can use!
 
     def get_workspace(self, workspace_id):
@@ -20,12 +21,12 @@ class Client:
         return modelon.impact.client.entities.Workspace(workspace_id)
 
     def get_workspaces(self):
-        resp = self._sal.get("api/workspaces")
+        resp = self._sal.workspaces_get_all()
         return [
             modelon.impact.client.entities.Workspace(item['id'])
-            for item in resp.data['data']['items']
+            for item in resp['data']['items']
         ]
 
     def create_workspace(self, name):
-        resp = self._sal.post("api/workspaces", {"new": {"name": name}})
-        return modelon.impact.client.entities.Workspace(resp.data['workspaceId'])
+        resp = self._sal.workspaces_create(name)
+        return modelon.impact.client.entities.Workspace(resp['workspaceId'])

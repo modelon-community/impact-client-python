@@ -1,14 +1,26 @@
-class CommunicationError(Exception):
+class ServiceAccessError(Exception):
     pass
 
 
-class InvalidContentTypeError(Exception):
+class CommunicationError(ServiceAccessError):
     pass
 
 
-class UnauthorizedError(Exception):
+class InvalidContentTypeError(ServiceAccessError):
     pass
 
 
-class HTTPError(Exception):
+class UnauthorizedError(ServiceAccessError):
+    pass
+
+
+class HTTPError(ServiceAccessError):
+    pass
+
+
+class ErrorBodyIsNotJSONError(ServiceAccessError):
+    pass
+
+
+class ErrorJSONInvalidFormatError(ServiceAccessError):
     pass
