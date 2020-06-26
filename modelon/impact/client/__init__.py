@@ -23,10 +23,10 @@ class Client:
     def get_workspaces(self):
         resp = self._sal.workspaces_get_all()
         return [
-            modelon.impact.client.entities.Workspace(item['id'])
-            for item in resp['data']['items']
+            modelon.impact.client.entities.Workspace(item["id"])
+            for item in resp["data"]["items"]
         ]
 
     def create_workspace(self, name):
         resp = self._sal.workspaces_create(name)
-        return modelon.impact.client.entities.Workspace(resp['workspaceId'])
+        return modelon.impact.client.entities.Workspace(resp["workspaceId"])
