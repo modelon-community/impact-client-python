@@ -1,3 +1,4 @@
+import sys
 import logging
 import requests
 import urllib.parse
@@ -37,6 +38,10 @@ class HTTPClient:
 
 class URI:
     def __init__(self, content):
+        # If running on Windows you can get a lot of overhead using 'localhost'
+        if sys.platform.startswith('win32') and content.startswith('http://localhost:'):
+            content = content.replace('http://localhost:', 'http://127.0.0.1:')
+
         self.content = content
 
     def resolve(self, **kwargs):
