@@ -11,7 +11,6 @@ logger = logging.getLogger(__name__)
 class Service:
     def __init__(self, uri, context=None, check_return=True):
         self._base_uri = uri
-        self._context = context if context else Context()
         self._http_client = HTTPClient(context)
 
     def workspaces_create(self, name):
