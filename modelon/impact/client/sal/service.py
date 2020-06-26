@@ -15,11 +15,11 @@ class Service:
         self._http_client = HTTPClient(context)
 
     def workspaces_create(self, name):
-        url = (self._base_uri / 'api/workspaces').resolve()
+        url = (self._base_uri / "api/workspaces").resolve()
         return self._http_client.post_json(url, {"new": {"name": name}})
 
     def workspaces_get_all(self):
-        url = (self._base_uri / 'api/workspaces').resolve()
+        url = (self._base_uri / "api/workspaces").resolve()
         return self._http_client.get_json(url)
 
 
@@ -39,8 +39,8 @@ class HTTPClient:
 class URI:
     def __init__(self, content):
         # If running on Windows you can get a lot of overhead using 'localhost'
-        if sys.platform.startswith('win32') and content.startswith('http://localhost:'):
-            content = content.replace('http://localhost:', 'http://127.0.0.1:')
+        if sys.platform.startswith("win32") and content.startswith("http://localhost:"):
+            content = content.replace("http://localhost:", "http://127.0.0.1:")
 
         self.content = content
 
@@ -95,7 +95,7 @@ class JSONResponse:
         self._resp_obj = resp_obj
 
     def _is_json(self):
-        return 'application/json' in self._resp_obj.headers.get('content-type')
+        return "application/json" in self._resp_obj.headers.get("content-type")
 
     @property
     def data(self):
@@ -104,7 +104,7 @@ class JSONResponse:
 
         if not self._is_json():
             raise modelon.impact.client.sal.exceptions.InvalidContentTypeError(
-                f'Incorrect content type on response, expected JSON'
+                "Incorrect content type on response, expected JSON"
             )
 
         return self._resp_obj.json()
@@ -120,21 +120,21 @@ class JSONResponse:
     @property
     def error(self):
         if self._resp_obj.ok:
-            raise ValueError('This request was successfull!')
+            raise ValueError("This request was successfull!")
 
         if not self._is_json():
             raise modelon.impact.client.sal.exceptions.ErrorBodyIsNotJSONError(
-                f'Error response was not JSON: {self._resp_obj.content}'
+                f"Error response was not JSON: {self._resp_obj.content}"
             )
 
         json = self._resp_obj.json()
-        if 'error' not in json:
+        if "error" not in json:
             raise modelon.impact.client.sal.exceptions.ErrorJSONInvalidFormatError(
-                f'Error response JSON format unknown: {self._resp_obj.content}'
+                f"Error response JSON format unknown: {self._resp_obj.content}"
             )
 
-        error = json['error']
-        return ResponseError(error['message'], error['code'])
+        error = json["error"]
+        return ResponseError(error["message"], error["code"])
 
 
 class ResponseError:
