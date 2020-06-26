@@ -6,7 +6,7 @@ Modelon Impact Services Client
 Install from internal PYPI repo.
 
 ```
-pip install -i https://artifactory01.modelon.com/api/pypi/pypi-release-local modelon-impact-client
+pip install --extra-index-url https://artifactory.modelon.com/artifactory/api/pypi/pypi-release-local/simple modelon-impact-client
 ```
 
 ## Usage
