@@ -3,7 +3,7 @@ class Workspace:
         self._workspace_id = workspace_id
 
     def __repr__(self):
-        return self._workspace_id.__repr__()
+        return f"Workspace with id '{self._workspace_id}'"
 
     def __eq__(self, obj):
         return isinstance(obj, Workspace) and obj._workspace_id == self._workspace_id
