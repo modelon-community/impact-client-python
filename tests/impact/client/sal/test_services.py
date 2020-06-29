@@ -4,7 +4,7 @@ import pytest
 import requests
 import requests_mock
 
-import modelon.impact.client
+import modelon.impact.client.sal.service
 import modelon.impact.client.sal.exceptions
 
 
@@ -97,19 +97,12 @@ class TestService:
         data = service.workspaces_get_all()
         assert data == {'data': {'items': [{'id': 'AwesomeWorkspace'}]}}
 
-    def test_get_workspace(self, single_workspace):
-        client = modelon.impact.client.Client(
-            url=single_workspace.url, context=single_workspace.context
-        )
-        workspace = client.get_workspace('AwesomeWorkspace')
-        assert workspace == modelon.impact.client.entities.Workspace('AwesomeWorkspace')
-
     def test_create_workspace(self, create_workspace):
         uri = modelon.impact.client.sal.service.URI(create_workspace.url)
-        client = modelon.impact.client.sal.service.Service(
+        service = modelon.impact.client.sal.service.Service(
             uri=uri, context=create_workspace.context
         )
-        data = client.workspaces_create('AwesomeWorkspace')
+        data = service.workspaces_create('AwesomeWorkspace')
         assert data == {'workspaceId': 'newWorkspace'}
 
 
