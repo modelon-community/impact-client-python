@@ -1,3 +1,12 @@
+# [1.0.0-beta.5](https://github.com/modelon-community/impact-client-python/compare/v1.0.0-beta.4...v1.0.0-beta.5) (2020-06-29)
+
+
+### Bug Fixes
+
+* less confusing __repr__ for workspace ([fb42587](https://github.com/modelon-community/impact-client-python/commit/fb4258797df9f0b25dac8c420b1abc320f49fd9a))
+* removing test not running on module ([472a917](https://github.com/modelon-community/impact-client-python/commit/472a917a34a59275093de6c7bb60b05f33aa75d2))
+* workaround for performance issues on Windows ([ae3eb5b](https://github.com/modelon-community/impact-client-python/commit/ae3eb5bc4609240420e2450452c64e13b070325d))
+
 # [1.0.0-beta.4](https://github.com/modelon-community/impact-client-python/compare/v1.0.0-beta.3...v1.0.0-beta.4) (2020-06-26)
 
 
