@@ -39,7 +39,7 @@ def single_workspace(mock_server_base):
 
 @pytest.fixture
 def create_workspace(mock_server_base):
-    json = {'workspaceId': 'newWorkspace'}
+    json = {'id': 'newWorkspace'}
     json_header = {'content-type': 'application/json'}
     mock_server_base.adapter.register_uri(
         'POST',
