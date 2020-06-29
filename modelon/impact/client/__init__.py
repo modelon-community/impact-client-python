@@ -29,4 +29,4 @@ class Client:
 
     def create_workspace(self, name):
         resp = self._sal.workspaces_create(name)
-        return modelon.impact.client.entities.Workspace(resp["workspaceId"])
+        return modelon.impact.client.entities.Workspace(resp["id"])
