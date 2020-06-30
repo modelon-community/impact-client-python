@@ -1,3 +1,10 @@
+# [1.0.0-beta.6](https://github.com/modelon-community/impact-client-python/compare/v1.0.0-beta.5...v1.0.0-beta.6) (2020-06-30)
+
+
+### Bug Fixes
+
+* Corrected the response json property name returned for endpoint '/workspaces' ([f1f881b](https://github.com/modelon-community/impact-client-python/commit/f1f881bf9a710e8a4e28d9e513e5f5d16e83f542))
+
 # [1.0.0-beta.5](https://github.com/modelon-community/impact-client-python/compare/v1.0.0-beta.4...v1.0.0-beta.5) (2020-06-29)
 
 
