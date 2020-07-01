@@ -27,7 +27,18 @@ def mock_server_base():
 
 
 @pytest.fixture
-def single_workspace(mock_server_base):
+def sem_ver_check(mock_server_base):
+    json = {"version": "1.1.0"}
+    json_header = {'content-type': 'application/json'}
+    mock_server_base.adapter.register_uri(
+        'GET', f'{mock_server_base.url}/api/', json=json, headers=json_header,
+    )
+
+    return mock_server_base
+
+
+@pytest.fixture
+def single_workspace(sem_ver_check, mock_server_base):
     json = {'data': {'items': [{'id': 'AwesomeWorkspace'}]}}
     json_header = {'content-type': 'application/json'}
     mock_server_base.adapter.register_uri(
@@ -38,7 +49,7 @@ def single_workspace(mock_server_base):
 
 
 @pytest.fixture
-def create_workspace(mock_server_base):
+def create_workspace(sem_ver_check, mock_server_base):
     json = {'id': 'newWorkspace'}
     json_header = {'content-type': 'application/json'}
     mock_server_base.adapter.register_uri(
@@ -52,7 +63,7 @@ def create_workspace(mock_server_base):
 
 
 @pytest.fixture
-def workspaces_error(mock_server_base):
+def workspaces_error(sem_ver_check, mock_server_base):
     json = {'error': {'message': 'no authroization', 'code': 123}}
     json_header = {'content-type': 'application/json'}
     mock_server_base.adapter.register_uri(
@@ -67,7 +78,7 @@ def workspaces_error(mock_server_base):
 
 
 @pytest.fixture
-def create_workspace_error(mock_server_base):
+def create_workspace_error(sem_ver_check, mock_server_base):
     json = {'error': {'message': 'name not ok', 'code': 123}}
     json_header = {'content-type': 'application/json'}
     mock_server_base.adapter.register_uri(
@@ -76,6 +87,17 @@ def create_workspace_error(mock_server_base):
         json=json,
         headers=json_header,
         status_code=400,
+    )
+
+    return mock_server_base
+
+
+@pytest.fixture
+def semantic_version_error(sem_ver_check, mock_server_base):
+    json = {"version": "3.1.0"}
+    json_header = {'content-type': 'application/json'}
+    mock_server_base.adapter.register_uri(
+        'GET', f'{mock_server_base.url}/api/', json=json, headers=json_header,
     )
 
     return mock_server_base
@@ -118,4 +140,18 @@ def test_create_workspace_error(create_workspace_error):
     )
     pytest.raises(
         modelon.impact.client.sal.exceptions.HTTPError, client.create_workspace, ':^-'
+    )
+
+
+def test_semantic_version_error(semantic_version_error):
+    with pytest.raises(
+        modelon.impact.client.exceptions.UnsupportedSemanticVersionError
+    ) as excinfo:
+        modelon.impact.client.Client(
+            url=semantic_version_error.url, context=semantic_version_error.context
+        )
+    assert (
+        "Version '3.1.0' of the HTTP REST API is not supported, must be in the "
+        "range '>=1.1.0,<2.0.0'! Updgrade or downgrade this package to a version"
+        " that supports version '3.1.0' of the HTTP REST API." in str(excinfo.value)
     )

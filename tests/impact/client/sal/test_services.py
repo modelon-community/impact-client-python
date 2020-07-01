@@ -38,6 +38,17 @@ def single_workspace(mock_server_base):
 
 
 @pytest.fixture
+def api_get_metadata(mock_server_base):
+    json = {"version": "1.1.0"}
+    json_header = {'content-type': 'application/json'}
+    mock_server_base.adapter.register_uri(
+        'GET', f'{mock_server_base.url}/api/', json=json, headers=json_header,
+    )
+
+    return mock_server_base
+
+
+@pytest.fixture
 def create_workspace(mock_server_base):
     json = {'id': 'newWorkspace'}
     json_header = {'content-type': 'application/json'}
@@ -89,6 +100,14 @@ def get_with_error(mock_server_base):
 
 
 class TestService:
+    def test_api_get_meta_data(self, api_get_metadata):
+        uri = modelon.impact.client.sal.service.URI(api_get_metadata.url)
+        service = modelon.impact.client.sal.service.Service(
+            uri=uri, context=api_get_metadata.context
+        )
+        data = service.api_get_metadata()
+        assert data == {'version': '1.1.0'}
+
     def test_get_workspaces(self, single_workspace):
         uri = modelon.impact.client.sal.service.URI(single_workspace.url)
         service = modelon.impact.client.sal.service.Service(
