@@ -24,3 +24,7 @@ class ErrorBodyIsNotJSONError(ServiceAccessError):
 
 class ErrorJSONInvalidFormatError(ServiceAccessError):
     pass
+
+
+class NoResponseFetchVersionError(ServiceAccessError):
+    pass
