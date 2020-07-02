@@ -1,13 +1,13 @@
 import logging
 import modelon.impact.client.entities
 import modelon.impact.client.sal.service
-from semantic_version import SimpleSpec, Version
+from semantic_version import SimpleSpec, Version  # type: ignore
 import modelon.impact.client.exceptions as exceptions
 import modelon.impact.client.sal.exceptions
 
 logger = logging.getLogger(__name__)
 
-_SUPPORTED_VERSION_RANGE = '>=1.1.0,<2.0.0'
+_SUPPORTED_VERSION_RANGE = ">=1.1.0,<2.0.0"
 
 
 def _sem_ver_check(version, supported_version_range):
@@ -32,7 +32,7 @@ class Client:
             version = self._sal.api_get_metadata()["version"]
         except modelon.impact.client.sal.exceptions.CommunicationError as exce:
             raise modelon.impact.client.sal.exceptions.NoResponseFetchVersionError(
-                f'No response from url {url}, please verify that the URL is correct'
+                f"No response from url {url}, please verify that the URL is correct"
             ) from exce
         _sem_ver_check(version, _SUPPORTED_VERSION_RANGE)
 
