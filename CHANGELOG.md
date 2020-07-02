@@ -1,3 +1,15 @@
+# [1.0.0-beta.7](https://github.com/modelon-community/impact-client-python/compare/v1.0.0-beta.6...v1.0.0-beta.7) (2020-07-02)
+
+
+### Bug Fixes
+
+* mypy and formatting corrections ([478b06b](https://github.com/modelon-community/impact-client-python/commit/478b06b2b36ec7e9c38347a24cdda1dc23e0a28f))
+
+
+### Features
+
+* Added semantic version checks for API ([94fed15](https://github.com/modelon-community/impact-client-python/commit/94fed15d84313d1471c038ae91d411da5d3d9271))
+
 # [1.0.0-beta.6](https://github.com/modelon-community/impact-client-python/compare/v1.0.0-beta.5...v1.0.0-beta.6) (2020-06-30)
 
 
