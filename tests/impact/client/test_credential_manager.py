@@ -24,10 +24,17 @@ def mock_home_dir_api_key(monkeypatch, tmp_path):
     api_key_file = home / ".impact" / "api.key"
     api_key_file.write_text("api_key_from_file")
 
-    def mockreturn(path):
-        return str(home)
+    monkeypatch.setattr(os.path, 'expanduser', lambda path: str(home))
 
-    monkeypatch.setattr(os.path, 'expanduser', mockreturn)
+
+@pytest.fixture
+def mock_home_dir_with_empty_impact_dir(monkeypatch, tmp_path):
+    home = tmp_path / "home"
+    home.mkdir()
+    impact = home / ".impact"
+    impact.mkdir()
+
+    monkeypatch.setattr(os.path, 'expanduser', lambda path: str(home))
 
 
 @pytest.fixture
@@ -35,10 +42,7 @@ def mock_home_dir_no_api_key(monkeypatch, tmp_path):
     home = tmp_path / "home"
     home.mkdir()
 
-    def mockreturn(path):
-        return str(home)
-
-    monkeypatch.setattr(os.path, 'expanduser', mockreturn)
+    monkeypatch.setattr(os.path, 'expanduser', lambda path: str(home))
 
 
 def test_credential_manager_from_env_defined(mock_env_api_key):
@@ -124,3 +128,11 @@ def test_credentail_manager_both_env_and_file_interactive(
 ):
     cred_manager = CredentialManager()
     assert "api_key_from_env" == cred_manager.get_key(interactive=True)
+
+
+def test_credentail_manager_write_to_file_empty_impact_dir_exists(
+    mock_home_dir_with_empty_impact_dir,
+):
+    cred_manager = CredentialManager()
+    cred_manager.write_key_to_file("a_new_api_key_2")
+    assert "a_new_api_key_2" == cred_manager.get_key_from_file()
