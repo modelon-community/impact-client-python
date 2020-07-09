@@ -3,6 +3,7 @@ import collections
 import pytest
 import requests
 import requests_mock
+import unittest.mock
 
 import modelon.impact.client
 import modelon.impact.client.sal.exceptions
@@ -22,7 +23,28 @@ def mock_server_base():
     session.mount('http://', adapter)
     mock_url = 'http://mock-impact.com'
 
-    return MockedServer(mock_url, MockContex(session), adapter)
+    mock_server_base = MockedServer(mock_url, MockContex(session), adapter)
+    json_header = {'content-type': 'application/json'}
+    mock_server_base.adapter.register_uri(
+        'POST', f'{mock_server_base.url}/api/login', headers=json_header, json={}
+    )
+
+    return mock_server_base
+
+
+@pytest.fixture
+def login_fails(mock_server_base):
+    json = {'error': {'message': 'no authroization', 'code': 123}}
+    json_header = {'content-type': 'application/json'}
+    mock_server_base.adapter.register_uri(
+        'GET',
+        f'{mock_server_base.url}/api/',
+        json=json,
+        headers=json_header,
+        status_code=401,
+    )
+
+    return mock_server_base
 
 
 @pytest.fixture
@@ -175,3 +197,84 @@ def test_semantic_version_error(semantic_version_error):
         "range '>=1.2.1,<2.0.0'! Updgrade or downgrade this package to a version"
         " that supports version '3.1.0' of the HTTP REST API." in str(excinfo.value)
     )
+
+
+def assert_login_called(*, adapter, body):
+    login_call = adapter.request_history[1]
+    assert 'http://mock-impact.com/api/login' == login_call.url
+    assert 'POST' == login_call.method
+    assert body == login_call.json()
+
+
+def test_client_login_given_api_key(sem_ver_check):
+    cred_manager = unittest.mock.MagicMock()
+    modelon.impact.client.Client(
+        url=sem_ver_check.url,
+        context=sem_ver_check.context,
+        api_key='test_client_login_given_api_key_key',
+        credentail_manager=cred_manager,
+    )
+
+    assert_login_called(
+        adapter=sem_ver_check.adapter,
+        body={"secret_key": "test_client_login_given_api_key_key"},
+    )
+
+
+def test_client_login_api_key_from_credential_manager(sem_ver_check):
+    cred_manager = unittest.mock.MagicMock()
+    cred_manager.get_key.return_value = 'test_from_credential_manager_key'
+    modelon.impact.client.Client(
+        url=sem_ver_check.url,
+        context=sem_ver_check.context,
+        credentail_manager=cred_manager,
+    )
+
+    assert_login_called(
+        adapter=sem_ver_check.adapter,
+        body={"secret_key": "test_from_credential_manager_key"},
+    )
+
+
+def test_client_login_api_key_missing(sem_ver_check):
+    cred_manager = unittest.mock.MagicMock()
+    cred_manager.get_key.return_value = None
+    modelon.impact.client.Client(
+        url=sem_ver_check.url,
+        context=sem_ver_check.context,
+        credentail_manager=cred_manager,
+    )
+
+    assert_login_called(
+        adapter=sem_ver_check.adapter, body={},
+    )
+
+
+def test_client_login_interactive_saves_key(sem_ver_check):
+    cred_manager = unittest.mock.MagicMock()
+    modelon.impact.client.Client(
+        url=sem_ver_check.url,
+        context=sem_ver_check.context,
+        credentail_manager=cred_manager,
+        api_key='test_client_login_interactive_saves_key',
+        interactive=True,
+    )
+
+    cred_manager.write_key_to_file.assert_called_with(
+        'test_client_login_interactive_saves_key'
+    )
+
+
+def test_client_login_fail_interactive_dont_save_key(login_fails):
+    cred_manager = unittest.mock.MagicMock()
+    pytest.raises(
+        modelon.impact.client.sal.exceptions.HTTPError,
+        modelon.impact.client.Client,
+        url=login_fails.url,
+        context=login_fails.context,
+        credentail_manager=cred_manager,
+        api_key='test_client_login_fail_interactive_dont_save_key',
+        interactive=True,
+    )
+
+    cred_manager.write_key_to_file.assert_not_called()
