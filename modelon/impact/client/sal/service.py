@@ -279,6 +279,9 @@ class URI:
     def __truediv__(self, other):
         return self._with_path(other)
 
+    def __repr__(self):
+        return self.content
+
 
 class Request:
     def __init__(self, context, method, url, request_type, body=None, files=None):
