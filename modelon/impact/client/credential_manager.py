@@ -24,7 +24,7 @@ class CredentialManager:
 
     def write_key_to_file(self, api_key):
         credentials_file = self._cred_file()
-        os.makedirs(os.path.dirname(credentials_file))
+        os.makedirs(os.path.dirname(credentials_file), exist_ok=True)
         with open(credentials_file, "w") as credentials:
             credentials.write(str(api_key))
 
