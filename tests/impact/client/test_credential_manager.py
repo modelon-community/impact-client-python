@@ -86,7 +86,6 @@ def test_credentail_manager_get_key_interactive(
     getpass.return_value = "api_key_from_getpass"
     cred_manager = CredentialManager()
     assert "api_key_from_getpass" == cred_manager.get_key(interactive=True)
-    assert "api_key_from_getpass" == cred_manager.get_key_from_file()
 
 
 def test_credentail_manager_get_key_only_env(

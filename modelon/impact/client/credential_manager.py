@@ -33,6 +33,4 @@ class CredentialManager:
         if api_key or not interactive:
             return api_key
 
-        api_key = self.get_key_from_prompt()
-        self.write_key_to_file(api_key)
-        return api_key
+        return self.get_key_from_prompt()
