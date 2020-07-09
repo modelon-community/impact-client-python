@@ -7,34 +7,40 @@ import modelon.impact.client.sal.exceptions
 
 logger = logging.getLogger(__name__)
 
-_SUPPORTED_VERSION_RANGE = ">=1.2.1,<2.0.0"
-
-
-def _sem_ver_check(version, supported_version_range):
-    supported_versions = SimpleSpec(supported_version_range)
-    if Version(version) not in supported_versions:
-        raise exceptions.UnsupportedSemanticVersionError(
-            f"Version '{version}' of the HTTP REST API is not supported, must be in the"
-            f" range '{supported_version_range}'! Updgrade or downgrade this package to"
-            f" a version that supports version '{version}' of the HTTP REST API."
-        )
-
 
 class Client:
+    _SUPPORTED_VERSION_RANGE = ">=1.2.1,<2.0.0"
+
     def __init__(self, url=None, context=None):
         if url is None:
             url = "http://localhost:8080/"
             logger.warning("No URL for client was specified, will use: {}".format(url))
 
-        uri = modelon.impact.client.sal.service.URI(url)
-        self._sal = modelon.impact.client.sal.service.Service(uri, context)
+        self.uri = modelon.impact.client.sal.service.URI(url)
+        self._sal = modelon.impact.client.sal.service.Service(self.uri, context)
+
+        self._validate_compatible_api_version()
+        self._authenticate_against_api()
+
+    def _validate_compatible_api_version(self):
         try:
             version = self._sal.api_get_metadata()["version"]
         except modelon.impact.client.sal.exceptions.CommunicationError as exce:
             raise modelon.impact.client.sal.exceptions.NoResponseFetchVersionError(
-                f"No response from url {url}, please verify that the URL is correct"
+                f"No response from url {self.uri}, "
+                "please verify that the URL is correct"
             ) from exce
-        _sem_ver_check(version, _SUPPORTED_VERSION_RANGE)
+
+        if Version(version) not in SimpleSpec(self._SUPPORTED_VERSION_RANGE):
+            raise exceptions.UnsupportedSemanticVersionError(
+                f"Version '{version}' of the HTTP REST API is not supported, "
+                f"must be in the range '{self._SUPPORTED_VERSION_RANGE}'! "
+                "Updgrade or downgrade this package to a version "
+                f"that supports version '{version}' of the HTTP REST API."
+            )
+
+    def _authenticate_against_api(self):
+        pass
 
     def get_workspace(self, workspace_id):
         resp = self._sal.workspace.workspaces_get(workspace_id)
