@@ -23,6 +23,10 @@ class Service:
         url = (self._base_uri / "api/").resolve()
         return self._http_client.get_json(url)
 
+    def api_login(self, login_data):
+        url = (self._base_uri / "api/login").resolve()
+        return self._http_client.post_json(url, login_data)
+
 
 class WorkspaceService:
     def __init__(self, uri, HTTPClient):
