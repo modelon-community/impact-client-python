@@ -1,3 +1,10 @@
+# [1.0.0-beta.10](https://github.com/modelon-community/impact-client-python/compare/v1.0.0-beta.9...v1.0.0-beta.10) (2020-07-10)
+
+
+### Features
+
+* integrating custom function entity ([97951b7](https://github.com/modelon-community/impact-client-python/commit/97951b7aace16eaa3deb419f232b9264410cf976))
+
 # [1.0.0-beta.9](https://github.com/modelon-community/impact-client-python/compare/v1.0.0-beta.8...v1.0.0-beta.9) (2020-07-10)
 
 
