@@ -1,6 +1,8 @@
+import pytest
+
 import modelon.impact.client.experiment_definition as experiment_definition
 import modelon.impact.client
-import pytest
+from modelon.impact.client.entities import CustomFunction
 
 
 @pytest.fixture
@@ -8,9 +10,14 @@ def fmu():
     return modelon.impact.client.entities.ModelExecutable("Workspace", "Test")
 
 
-def test_validate_workspaces(fmu):
+@pytest.fixture
+def custom_function():
+    return CustomFunction('dynamic', [])
+
+
+def test_validate_workspaces(fmu, custom_function):
     spec = experiment_definition.SimpleExperimentDefinition(
-        fmu, "dynamic", parameters={}
+        fmu, custom_function=custom_function
     )
     config = spec.to_dict
     assert config == {

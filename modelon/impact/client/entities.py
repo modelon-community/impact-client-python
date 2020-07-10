@@ -32,6 +32,16 @@ class Workspace:
     def id(self):
         return self._workspace_id
 
+    def get_custom_function(self, name):
+        # TODO: Change to end-point that returns single custom function in future
+        custom_functions = self._custom_func_sal.get_all(self._workspace_id)["data"][
+            "items"
+        ]
+        custom_function = next((c for c in custom_functions if c["name"] == name), None)
+        if not custom_function:
+            raise ValueError(f"Could not find any custom function named '{name}'")
+        return CustomFunction(custom_function["name"], custom_function["parameters"])
+
     def get_options(self, custom_function):
         options = self._custom_func_sal.execution_options_get(
             self._workspace_id, custom_function
