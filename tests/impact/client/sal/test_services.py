@@ -240,6 +240,20 @@ def model_compile(_get_fmu_id, mock_server_base):
 
 
 @pytest.fixture
+def get_custom_functions(mock_server_base):
+    json = {"data": {"items": []}}
+    json_header = {'content-type': 'application/json'}
+    mock_server_base.adapter.register_uri(
+        'GET',
+        f'{mock_server_base.url}/api/workspaces/WS/custom-functions',
+        json=json,
+        headers=json_header,
+    )
+
+    return mock_server_base
+
+
+@pytest.fixture
 def api_get_metadata(mock_server_base):
     json = {"version": "1.1.0"}
     json_header = {'content-type': 'application/json'}
@@ -454,6 +468,20 @@ class TestModelExecutbleService:
         }
         service.model_executable.compile_model("WS", options)
         assert model_compile.adapter.called
+
+
+class TestCustomFunctionService:
+    def test_get_all(self, get_custom_functions):
+        http_client = modelon.impact.client.sal.service.HTTPClient(
+            context=get_custom_functions.context
+        )
+
+        uri = modelon.impact.client.sal.service.URI(get_custom_functions.url)
+        service = modelon.impact.client.sal.service.CustomFunctionService(
+            uri, http_client
+        )
+        custom_functions = service.get_all('WS')
+        assert {"data": {"items": []}} == custom_functions
 
 
 class TestHTTPClient:

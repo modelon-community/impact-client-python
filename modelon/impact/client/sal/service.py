@@ -215,6 +215,12 @@ class CustomFunctionService:
         self._base_uri = uri
         self._http_client = HTTPClient
 
+    def get_all(self, workspace_id):
+        url = (
+            self._base_uri / f"api/workspaces/{workspace_id}/custom-functions"
+        ).resolve()
+        return self._http_client.get_json(url)
+
     def execution_options_get(self, workspace_id, custom_function):
         url = (
             self._base_uri
