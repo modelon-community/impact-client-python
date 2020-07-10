@@ -24,6 +24,12 @@ def mock_server_base():
     session.mount('http://', adapter)
     mock_url = 'http://mock-impact.com'
 
+    mock_server_base = MockedServer(mock_url, MockContex(session), adapter)
+    json_header = {'content-type': 'application/json'}
+    mock_server_base.adapter.register_uri(
+        'POST', f'{mock_server_base.url}/api/login', headers=json_header, json={}
+    )
+
     return MockedServer(mock_url, MockContex(session), adapter)
 
 
