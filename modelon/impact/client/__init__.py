@@ -7,7 +7,7 @@ import modelon.impact.client.sal.exceptions
 
 logger = logging.getLogger(__name__)
 
-_SUPPORTED_VERSION_RANGE = ">=1.1.0,<2.0.0"
+_SUPPORTED_VERSION_RANGE = ">=1.2.1,<2.0.0"
 
 
 def _sem_ver_check(version, supported_version_range):
@@ -37,16 +37,44 @@ class Client:
         _sem_ver_check(version, _SUPPORTED_VERSION_RANGE)
 
     def get_workspace(self, workspace_id):
-        # TODO: should have an endpoint for getting a single workspace
-        return modelon.impact.client.entities.Workspace(workspace_id)
+        resp = self._sal.workspace.workspaces_get(workspace_id)
+        return modelon.impact.client.entities.Workspace(
+            resp["id"],
+            self._sal.workspace,
+            self._sal.model_executable,
+            self._sal.experiment,
+            self._sal.custom_function,
+        )
 
     def get_workspaces(self):
-        resp = self._sal.workspaces_get_all()
+        resp = self._sal.workspace.workspaces_get_all()
         return [
-            modelon.impact.client.entities.Workspace(item["id"])
+            modelon.impact.client.entities.Workspace(
+                item["id"],
+                self._sal.workspace,
+                self._sal.model_executable,
+                self._sal.experiment,
+                self._sal.custom_function,
+            )
             for item in resp["data"]["items"]
         ]
 
-    def create_workspace(self, name):
-        resp = self._sal.workspaces_create(name)
-        return modelon.impact.client.entities.Workspace(resp["id"])
+    def create_workspace(self, workspace_id):
+        resp = self._sal.workspace.workspaces_create(workspace_id)
+        return modelon.impact.client.entities.Workspace(
+            resp["id"],
+            self._sal.workspace,
+            self._sal.model_executable,
+            self._sal.experiment,
+            self._sal.custom_function,
+        )
+
+    def upload_workspace(self, workspace_id, path_to_workspace):
+        resp = self._sal.workspace.workspaces_upload(workspace_id, path_to_workspace)
+        return modelon.impact.client.entities.Workspace(
+            resp["id"],
+            self._sal.workspace,
+            self._sal.model_executable,
+            self._sal.experiment,
+            self._sal.custom_function,
+        )

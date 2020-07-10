@@ -4,3 +4,7 @@ class Error(Exception):
 
 class UnsupportedSemanticVersionError(Error):
     pass
+
+
+class OperationTimeOutError(Error):
+    pass
