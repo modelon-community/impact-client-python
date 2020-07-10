@@ -1,3 +1,12 @@
+# [1.0.0-beta.9](https://github.com/modelon-community/impact-client-python/compare/v1.0.0-beta.8...v1.0.0-beta.9) (2020-07-10)
+
+
+### Bug Fixes
+
+* do not save key if asking for it interactively, it might be invalid ([b8cef20](https://github.com/modelon-community/impact-client-python/commit/b8cef20c5e45308a24f795925453809c67ec1eea))
+* save api key even if .impact already exists ([a3fe58e](https://github.com/modelon-community/impact-client-python/commit/a3fe58e53c41f22788be4d8eabe6e43c0fd4545b))
+* update tests ([0f6901b](https://github.com/modelon-community/impact-client-python/commit/0f6901bfa3b7b327a6ce88e7713222aedaa556c6))
+
 # [1.0.0-beta.8](https://github.com/modelon-community/impact-client-python/compare/v1.0.0-beta.7...v1.0.0-beta.8) (2020-07-10)
 
 
