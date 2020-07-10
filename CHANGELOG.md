@@ -1,3 +1,10 @@
+# [1.0.0-beta.8](https://github.com/modelon-community/impact-client-python/compare/v1.0.0-beta.7...v1.0.0-beta.8) (2020-07-10)
+
+
+### Features
+
+* Adding functions for the workspace and model class entities ([63cb71b](https://github.com/modelon-community/impact-client-python/commit/63cb71b56e28d171f245ac01d95ecb7add48cf9f))
+
 # [1.0.0-beta.7](https://github.com/modelon-community/impact-client-python/compare/v1.0.0-beta.6...v1.0.0-beta.7) (2020-07-02)
 
 
