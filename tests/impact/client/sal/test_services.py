@@ -339,7 +339,7 @@ class TestWorkspaceService:
         service = modelon.impact.client.sal.service.Service(
             uri=uri, context=multiple_workspace.context
         )
-        data = service.workspace.workspaces_get_all()
+        data = service.workspace.workspaces_get()
         assert data == {
             'data': {'items': [{'id': 'AwesomeWorkspace'}, {'id': 'BoringWorkspace'}]}
         }
@@ -349,7 +349,7 @@ class TestWorkspaceService:
         service = modelon.impact.client.sal.service.Service(
             uri=uri, context=single_workspace.context
         )
-        data = service.workspace.workspaces_get('AwesomeWorkspace')
+        data = service.workspace.workspace_get('AwesomeWorkspace')
         assert data == {'data': {'items': [{'id': 'AwesomeWorkspace'}]}}
 
     def test_create_workspace(self, create_workspace):
@@ -357,7 +357,7 @@ class TestWorkspaceService:
         service = modelon.impact.client.sal.service.Service(
             uri=uri, context=create_workspace.context
         )
-        data = service.workspace.workspaces_create('AwesomeWorkspace')
+        data = service.workspace.workspace_create('AwesomeWorkspace')
         assert data == {'id': 'newWorkspace'}
 
     def test_delete_workspace(self, delete_workspace):
@@ -365,7 +365,7 @@ class TestWorkspaceService:
         service = modelon.impact.client.sal.service.Service(
             uri=uri, context=delete_workspace.context
         )
-        service.workspace.workspaces_delete('AwesomeWorkspace')
+        service.workspace.workspace_delete('AwesomeWorkspace')
         assert delete_workspace.adapter.called
 
     def test_library_import(self, import_lib):
@@ -376,12 +376,12 @@ class TestWorkspaceService:
         service.workspace.library_import('AwesomeWorkspace', SINGLE_FILE_LIBRARY_PATH)
         assert import_lib.adapter.called
 
-    def test_workspaces_upload(self, upload_workspace):
+    def test_workspace_upload(self, upload_workspace):
         uri = modelon.impact.client.sal.service.URI(upload_workspace.url)
         service = modelon.impact.client.sal.service.Service(
             uri=uri, context=upload_workspace.context
         )
-        data = service.workspace.workspaces_upload(TEST_WORKSPACE_PATH)
+        data = service.workspace.workspace_upload(TEST_WORKSPACE_PATH)
         assert data == {'id': 'newWorkspace'}
 
     def test_lock_ws(self, lock_workspace):
@@ -416,12 +416,12 @@ class TestWorkspaceService:
         data = service.workspace.fmu_get("WS", "pid_20090615_134")
         assert data == {'id': 'pid_20090615_134'}
 
-    def test_fmu_get_all(self, get_all_fmu):
+    def test_fmus_get(self, get_all_fmu):
         uri = modelon.impact.client.sal.service.URI(get_all_fmu.url)
         service = modelon.impact.client.sal.service.Service(
             uri=uri, context=get_all_fmu.context
         )
-        data = service.workspace.fmu_get_all("WS")
+        data = service.workspace.fmus_get("WS")
         assert data == {'data': {'items': [{'id': 'as9f-3df5'}, {'id': 'as9f-3df5'}]}}
 
     def test_model_execute(self, experiment_execute):
@@ -429,7 +429,7 @@ class TestWorkspaceService:
         service = modelon.impact.client.sal.service.Service(
             uri=uri, context=experiment_execute.context
         )
-        service.workspace.execute_experiment("WS", "pid_2009")
+        service.workspace.experiment_execute("WS", "pid_2009")
         assert experiment_execute.adapter.called
 
     def test_get_experiment(self, get_experiment):
@@ -445,7 +445,7 @@ class TestWorkspaceService:
         service = modelon.impact.client.sal.service.Service(
             uri=uri, context=get_all_experiments.context
         )
-        data = service.workspace.experiment_get_all("WS")
+        data = service.workspace.experiments_get("WS")
         assert data == {'data': {'items': [{'id': 'as9f-3df5'}, {'id': 'as9f-3df5'}]}}
 
 
@@ -480,7 +480,7 @@ class TestCustomFunctionService:
         service = modelon.impact.client.sal.service.CustomFunctionService(
             uri, http_client
         )
-        custom_functions = service.get_all('WS')
+        custom_functions = service.custom_functions_get('WS')
         assert {"data": {"items": []}} == custom_functions
 
 

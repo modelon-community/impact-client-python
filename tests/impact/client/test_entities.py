@@ -171,7 +171,7 @@ def custom_function(custom_function_parameter_list):
 
 def test_workspace_get_custom_function_non_exists():
     custom_function_service = unittest.mock.MagicMock()
-    custom_function_service.get_all.return_value = {'data': {'items': []}}
+    custom_function_service.custom_functions_get.return_value = {'data': {'items': []}}
     ws = modelon.impact.client.entities.Workspace(
         'AwesomeWorkspace', custom_function_service=custom_function_service
     )
@@ -180,7 +180,7 @@ def test_workspace_get_custom_function_non_exists():
 
 def test_workspace_get_custom_function(custom_function_parameter_list):
     custom_function_service = unittest.mock.MagicMock()
-    custom_function_service.get_all.return_value = {
+    custom_function_service.custom_functions_get.return_value = {
         'data': {
             'items': [{'name': 'dynamic', 'parameters': custom_function_parameter_list}]
         }

@@ -33,19 +33,19 @@ class WorkspaceService:
         self._base_uri = uri
         self._http_client = HTTPClient
 
-    def workspaces_create(self, name):
+    def workspace_create(self, name):
         url = (self._base_uri / "api/workspaces").resolve()
         return self._http_client.post_json(url, body={"new": {"name": name}})
 
-    def workspaces_delete(self, workspace_id):
+    def workspace_delete(self, workspace_id):
         url = (self._base_uri / f"api/workspaces/{workspace_id}").resolve()
         self._http_client.delete_json(url)
 
-    def workspaces_get_all(self):
+    def workspaces_get(self):
         url = (self._base_uri / "api/workspaces").resolve()
         return self._http_client.get_json(url)
 
-    def workspaces_get(self, workspace_id):
+    def workspace_get(self, workspace_id):
         url = (self._base_uri / f"api/workspaces/{workspace_id}").resolve()
         return self._http_client.get_json(url)
 
@@ -54,17 +54,17 @@ class WorkspaceService:
         with open(path_to_lib, "rb") as f:
             return self._http_client.post_json(url, files={"file": f})
 
-    def workspaces_upload(self, path_to_workspace):
+    def workspace_upload(self, path_to_workspace):
         url = (self._base_uri / "api/workspaces").resolve()
         with open(path_to_workspace, "rb") as f:
             return self._http_client.post_json(url, files={"file": f})
 
-    def workspaces_get_export_id(self, workspace_id, options):
+    def _workspace_get_export_id(self, workspace_id, options):
         url = (self._base_uri / f"api/workspaces/{workspace_id}/exports").resolve()
         return self._http_client.post_json(url, body=options)["export_id"]
 
-    def workspaces_download(self, workspace_id, options):
-        export_id = self.workspaces_get_export_id(workspace_id, options)
+    def workspace_download(self, workspace_id, options):
+        export_id = self._workspace_get_export_id(workspace_id, options)
         url = (
             self._base_uri / f"api/workspaces/{workspace_id}/exports/{export_id}"
         ).resolve()
@@ -82,7 +82,7 @@ class WorkspaceService:
         url = (self._base_uri / f"api/workspaces/{workspace_id}/clone").resolve()
         return self._http_client.post_json(url)
 
-    def fmu_get_all(self, workspace_id):
+    def fmus_get(self, workspace_id):
         url = (
             self._base_uri / f"api/workspaces/{workspace_id}/model-executables"
         ).resolve()
@@ -94,14 +94,14 @@ class WorkspaceService:
         ).resolve()
         return self._http_client.get_json(url)
 
-    def ss_fmu_meta_get(self, workspace_id, fmu_id):
+    def ss_fmu_metadata_get(self, workspace_id, fmu_id):
         url = (
             self._base_uri / f"api/workspaces/{workspace_id}/model-executables/{fmu_id}"
             "/steady-state-metadata"
         ).resolve()
         return self._http_client.get_json(url)
 
-    def experiment_get_all(self, workspace_id):
+    def experiments_get(self, workspace_id):
         url = (self._base_uri / f"api/workspaces/{workspace_id}/experiments").resolve()
         return self._http_client.get_json(url)
 
@@ -112,11 +112,11 @@ class WorkspaceService:
         ).resolve()
         return self._http_client.get_json(url)
 
-    def setup_experiment(self, workspace_id, spec):
+    def experiment_create(self, workspace_id, spec):
         url = (self._base_uri / f"api/workspaces/{workspace_id}/experiments").resolve()
         return self._http_client.post_json(url, body=spec)["experiment_id"]
 
-    def execute_experiment(self, workspace_id, exp_id):
+    def experiment_execute(self, workspace_id, exp_id):
         url = (
             self._base_uri
             / f"api/workspaces/{workspace_id}/experiments/{exp_id}/execution"
@@ -130,14 +130,14 @@ class ModelExecutableService:
         self._base_uri = uri
         self._http_client = HTTPClient
 
-    def setup_fmu(self, workspace_id, options):
+    def _fmu_setup(self, workspace_id, options):
         url = (
             self._base_uri / f"api/workspaces/{workspace_id}/model-executables"
         ).resolve()
         return self._http_client.post_json(url, body=options)["id"]
 
     def compile_model(self, workspace_id, options):
-        fmuId = self.setup_fmu(workspace_id, options)
+        fmuId = self._fmu_setup(workspace_id, options)
         url = (
             self._base_uri
             / f"api/workspaces/{workspace_id}/model-executables/{fmuId}/compilation"
@@ -215,13 +215,13 @@ class CustomFunctionService:
         self._base_uri = uri
         self._http_client = HTTPClient
 
-    def get_all(self, workspace_id):
+    def custom_functions_get(self, workspace_id):
         url = (
             self._base_uri / f"api/workspaces/{workspace_id}/custom-functions"
         ).resolve()
         return self._http_client.get_json(url)
 
-    def execution_options_get(self, workspace_id, custom_function):
+    def custom_function_options_get(self, workspace_id, custom_function):
         url = (
             self._base_uri
             / f"api/workspaces/{workspace_id}/custom-functions/{custom_function}"
@@ -229,7 +229,7 @@ class CustomFunctionService:
         ).resolve()
         return self._http_client.get_json(url)
 
-    def execution_options_set(self, workspace_id, custom_function, options):
+    def custom_function_options_set(self, workspace_id, custom_function, options):
         url = (
             self._base_uri
             / f"api/workspaces/{workspace_id}/custom-functions/{custom_function}"
@@ -237,7 +237,7 @@ class CustomFunctionService:
         ).resolve()
         self._http_client.post_json_no_response_body(url, body=options)
 
-    def execution_options_delete(self, workspace_id, custom_function, options):
+    def custom_function_options_delete(self, workspace_id, custom_function, options):
         url = (
             self._base_uri
             / f"api/workspaces/{workspace_id}/custom-functions/{custom_function}"

@@ -34,34 +34,34 @@ class Workspace:
 
     def get_custom_function(self, name):
         # TODO: Change to end-point that returns single custom function in future
-        custom_functions = self._custom_func_sal.get_all(self._workspace_id)["data"][
-            "items"
-        ]
+        custom_functions = self._custom_func_sal.custom_functions_get(
+            self._workspace_id
+        )["data"]["items"]
         custom_function = next((c for c in custom_functions if c["name"] == name), None)
         if not custom_function:
             raise ValueError(f"Could not find any custom function named '{name}'")
         return CustomFunction(custom_function["name"], custom_function["parameters"])
 
     def get_options(self, custom_function):
-        options = self._custom_func_sal.execution_options_get(
+        options = self._custom_func_sal.custom_function_options_get(
             self._workspace_id, custom_function
         )
         return ExecutionOption(self._workspace_id, options)
 
     def set_options(self, custom_function, options):
         opts = options.to_dict if isinstance(options, ExecutionOption) else options
-        self._custom_func_sal.execution_options_set(
+        self._custom_func_sal.custom_function_options_set(
             self._workspace_id, custom_function, opts
         )
 
     def delete_options(self, custom_function, options):
         opts = options.to_dict if isinstance(options, ExecutionOption) else options
-        self._custom_func_sal.execution_options_delete(
+        self._custom_func_sal.custom_function_options_delete(
             self._workspace_id, custom_function, opts
         )
 
     def delete(self):
-        self._workspace_sal.workspaces_delete(self._workspace_id)
+        self._workspace_sal.workspace_delete(self._workspace_id)
 
     def get_model(self, class_name):
         return Model(
@@ -79,9 +79,7 @@ class Workspace:
 
     def download(self, options, path):
         # TO DO: Needs to be tested
-        data = self._workspace_sal.workspaces_download(
-            self._workspace_id, options, path
-        )
+        data = self._workspace_sal.workspace_download(self._workspace_id, options, path)
 
         os.makedirs(os.path.dirname(path), exist_ok=True)
         with open(path, "w") as f:
@@ -98,7 +96,7 @@ class Workspace:
         )
 
     def get_fmus(self):
-        resp = self._workspace_sal.fmu_get_all(self._workspace_id)
+        resp = self._workspace_sal.fmus_get(self._workspace_id)
         return [
             ModelExecutable(
                 self._workspace_id, item["id"], self._workspace_sal, self._model_exe_sal
@@ -113,7 +111,7 @@ class Workspace:
         )
 
     def get_experiments(self):
-        resp = self._workspace_sal.experiment_get_all(self._workspace_id)
+        resp = self._workspace_sal.experiments_get(self._workspace_id)
         return [
             Experiment(
                 self._workspace_id, item["id"], self._workspace_sal, self._exp_sal
@@ -132,7 +130,7 @@ class Workspace:
             options = spec.to_dict
         else:
             options = spec
-        resp = self._workspace_sal.setup_experiment(self._workspace_id, options)
+        resp = self._workspace_sal.experiment_create(self._workspace_id, options)
         return Experiment(self._workspace_id, resp, self._workspace_sal, self._exp_sal)
 
 
@@ -199,7 +197,7 @@ class ModelExecutable:
 
     @property
     def metadata(self):
-        return self._workspace_sal.ss_fmu_meta_get(self._workspace_id, self._fmu_id)
+        return self._workspace_sal.ss_fmu_metadata_get(self._workspace_id, self._fmu_id)
 
 
 class Experiment:
@@ -237,7 +235,7 @@ class Experiment:
     def execute(self):
         return ExperimentOperation(
             self._workspace_id,
-            self._workspace_sal.execute_experiment(self._workspace_id, self._exp_id),
+            self._workspace_sal.experiment_execute(self._workspace_id, self._exp_id),
             self._workspace_sal,
             self._exp_sal,
         )
