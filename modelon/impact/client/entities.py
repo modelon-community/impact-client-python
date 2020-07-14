@@ -1,5 +1,6 @@
 import os
 from modelon.impact.client.experiment_definition import SimpleExperimentDefinition
+from modelon.impact.client.compilation_definition import SimpleCompilationDefinition
 
 from modelon.impact.client.operations import (
     ModelExecutbleOperation,
@@ -143,18 +144,22 @@ class Model:
     def __init__(
         self, class_name, workspace_id, workspace_service=None, model_exe_service=None
     ):
+        self.class_name = class_name
         self._workspace_id = workspace_id
-        self._class_name = class_name
         self._workspace_sal = workspace_service
         self._model_exe_sal = model_exe_service
 
     def __repr__(self):
-        return f"Class name'{self._class_name}'"
+        return f"Class name'{self.class_name}'"
 
     def __eq__(self, obj):
-        return isinstance(obj, Model) and obj._class_name == self._class_name
+        return isinstance(obj, Model) and obj.class_name == self.class_name
 
     def compile(self, options):
+        if isinstance(options, SimpleCompilationDefinition):
+            options = options.to_dict
+        else:
+            options = options
         return ModelExecutbleOperation(
             self._workspace_id,
             self._model_exe_sal.compile_model(self._workspace_id, options),
