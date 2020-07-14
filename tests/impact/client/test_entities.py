@@ -169,16 +169,20 @@ def custom_function(custom_function_parameter_list):
     return CustomFunction('test', custom_function_parameter_list)
 
 
-def test_workspace_get_custom_function_non_exists():
+def test_workspace_get_custom_function(custom_function_parameter_list):
     custom_function_service = unittest.mock.MagicMock()
-    custom_function_service.custom_functions_get.return_value = {'data': {'items': []}}
+    custom_function_service.custom_function_get.return_value = {
+        'name': 'dynamic',
+        'parameters': custom_function_parameter_list,
+    }
     ws = modelon.impact.client.entities.Workspace(
         'AwesomeWorkspace', custom_function_service=custom_function_service
     )
-    pytest.raises(ValueError, ws.get_custom_function, 'does_not_exist')
+    custom_function = ws.get_custom_function('dynamic')
+    assert 'dynamic' == custom_function.name
 
 
-def test_workspace_get_custom_function(custom_function_parameter_list):
+def test_workspace_get_custom_functions(custom_function_parameter_list):
     custom_function_service = unittest.mock.MagicMock()
     custom_function_service.custom_functions_get.return_value = {
         'data': {
@@ -188,8 +192,10 @@ def test_workspace_get_custom_function(custom_function_parameter_list):
     ws = modelon.impact.client.entities.Workspace(
         'AwesomeWorkspace', custom_function_service=custom_function_service
     )
-    custom_function = ws.get_custom_function('dynamic')
-    assert 'dynamic' == custom_function.name
+    custom_function_list = [
+        custom_function.name for custom_function in ws.get_custom_functions()
+    ]
+    assert ['dynamic'] == custom_function_list
 
 
 def test_custom_function_with_parameters_ok(custom_function):
