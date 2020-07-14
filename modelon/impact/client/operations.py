@@ -1,7 +1,16 @@
 import time
 from abc import ABC, abstractmethod
+from enum import Enum
 import modelon.impact.client.entities as entities
 import modelon.impact.client.exceptions as exceptions
+
+
+class Status(Enum):
+    CANCELLED = 'cancelled'
+    RUNNING = 'running'
+    PENDING = 'pending'
+    STOPPING = 'stopping'
+    DONE = 'done'
 
 
 class Operation(ABC):
@@ -17,11 +26,11 @@ class Operation(ABC):
     def cancel(self):
         pass
 
-    def wait(self, timeout=None, status="done"):
+    def wait(self, timeout=None, status=Status.DONE):
         start_t = time.time()
         while True:
             time.sleep(0.5)
-            if self.status() == status:
+            if self.status() == status.value:
                 return self.data()
             current_t = time.time()
             if timeout and current_t - start_t > timeout:
