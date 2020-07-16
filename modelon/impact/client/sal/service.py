@@ -228,6 +228,14 @@ class CustomFunctionService:
         ).resolve()
         return self._http_client.get_json(url)
 
+    def custom_function_default_options_get(self, workspace_id, custom_function):
+        url = (
+            self._base_uri
+            / f"api/workspaces/{workspace_id}/custom-functions/{custom_function}"
+            "/default-options"
+        ).resolve()
+        return self._http_client.get_json(url)
+
     def custom_function_options_get(self, workspace_id, custom_function):
         url = (
             self._base_uri

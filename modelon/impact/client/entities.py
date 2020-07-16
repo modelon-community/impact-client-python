@@ -1,11 +1,11 @@
 import os
 from modelon.impact.client.experiment_definition import SimpleExperimentDefinition
 from modelon.impact.client.compilation_definition import SimpleCompilationDefinition
-
 from modelon.impact.client.operations import (
     ModelExecutbleOperation,
     ExperimentOperation,
 )
+from modelon.impact.client.options import ExecutionOption
 
 
 class Workspace:
@@ -37,34 +37,26 @@ class Workspace:
         custom_function = self._custom_func_sal.custom_function_get(
             self._workspace_id, name
         )
-        return CustomFunction(custom_function["name"], custom_function["parameters"])
+        return CustomFunction(
+            self._workspace_id,
+            custom_function["name"],
+            custom_function["parameters"],
+            self._custom_func_sal,
+        )
 
     def get_custom_functions(self):
         custom_functions = self._custom_func_sal.custom_functions_get(
             self._workspace_id
         )
         return [
-            CustomFunction(custom_function["name"], custom_function["parameters"])
+            CustomFunction(
+                self._workspace_id,
+                custom_function["name"],
+                custom_function["parameters"],
+                self._custom_func_sal,
+            )
             for custom_function in custom_functions["data"]["items"]
         ]
-
-    def get_options(self, custom_function):
-        options = self._custom_func_sal.custom_function_options_get(
-            self._workspace_id, custom_function
-        )
-        return ExecutionOption(self._workspace_id, options)
-
-    def set_options(self, custom_function, options):
-        opts = options.to_dict if isinstance(options, ExecutionOption) else options
-        self._custom_func_sal.custom_function_options_set(
-            self._workspace_id, custom_function, opts
-        )
-
-    def delete_options(self, custom_function, options):
-        opts = options.to_dict if isinstance(options, ExecutionOption) else options
-        self._custom_func_sal.custom_function_options_delete(
-            self._workspace_id, custom_function, opts
-        )
 
     def delete(self):
         self._workspace_sal.workspace_delete(self._workspace_id)
@@ -256,21 +248,6 @@ class Experiment:
         )
 
 
-class ExecutionOption:
-    def __init__(
-        self, workspace_id, options,
-    ):
-        self._workspace_id = workspace_id
-        self._options = options
-
-    def __repr__(self):
-        return f"Execution option for '{self._custom_function}'"
-
-    @property
-    def to_dict(self):
-        return self._options
-
-
 class _Parameter:
     _JSON_2_PY_TYPE = {
         "Number": float,
@@ -306,8 +283,9 @@ class _Parameter:
 
 
 class CustomFunction:
-    def __init__(self, name, parameter_data):
+    def __init__(self, workspace_id, name, parameter_data, custom_function_service):
         self.name = name
+        self._workspace_id = workspace_id
         self._parameter_data = parameter_data
         self._param_by_name = {
             p["name"]: _Parameter(
@@ -315,9 +293,12 @@ class CustomFunction:
             )
             for p in parameter_data
         }
+        self._custom_func_sal = custom_function_service
 
     def with_parameters(self, **modified):
-        new = CustomFunction(self.name, self._parameter_data)
+        new = CustomFunction(
+            self._workspace_id, self.name, self._parameter_data, self._custom_func_sal
+        )
         for name, value in modified.items():
             if name not in new._param_by_name:
                 raise ValueError(
@@ -333,3 +314,18 @@ class CustomFunction:
     @property
     def parameter_values(self):
         return {p.name: p.value for p in self._param_by_name.values()}
+
+    def options(self):
+        options = self._custom_func_sal.custom_function_options_get(
+            self._workspace_id, self.name
+        )
+        opts_del = {"options": {option: list(options[option]) for option in options}}
+        self._custom_func_sal.custom_function_options_delete(
+            self._workspace_id, self.name, opts_del
+        )
+        options = self._custom_func_sal.custom_function_options_get(
+            self._workspace_id, self.name
+        )
+        return ExecutionOption(
+            self._workspace_id, options, self.name, self._custom_func_sal
+        )

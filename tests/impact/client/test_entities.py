@@ -166,7 +166,10 @@ def custom_function_parameter_list():
 
 @pytest.fixture
 def custom_function(custom_function_parameter_list):
-    return CustomFunction('test', custom_function_parameter_list)
+    custom_function_service = unittest.mock.MagicMock()
+    return CustomFunction(
+        'ws', 'test', custom_function_parameter_list, custom_function_service
+    )
 
 
 def test_workspace_get_custom_function(custom_function_parameter_list):
