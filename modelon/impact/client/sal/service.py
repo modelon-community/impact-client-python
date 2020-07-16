@@ -150,7 +150,7 @@ class ModelExecutableService:
             self._base_uri
             / f"api/workspaces/{workspace_id}/model-executables/{fmuId}/compilation/log"
         ).resolve()
-        return self._http_client.get_json(url)
+        return self._http_client.get_text(url)
 
     def compile_status(self, workspace_id, fmu_id):
         url = (
@@ -208,6 +208,13 @@ class ExperimentService:
             / f"api/workspaces/{workspace_id}/experiments/{experiment_id}/trajectories"
         ).resolve()
         return self._http_client.post_json(url, body=body)
+
+    def execute_log(self, workspace_id, fmuId):
+        url = (
+            self._base_uri
+            / f"api/workspaces/{workspace_id}/model-executables/{fmuId}/compilation/log"
+        ).resolve()
+        return self._http_client.get_text(url)
 
 
 class CustomFunctionService:
@@ -267,6 +274,10 @@ class HTTPClient:
 
     def get_json(self, url):
         request = RequestJSON(self._context, "GET", url)
+        return request.execute().data
+
+    def get_text(self, url):
+        request = RequestText(self._context, "GET", url)
         return request.execute().data
 
     def get_zip(self, url):
@@ -352,6 +363,11 @@ class RequestZip(Request):
         super().__init__(context, method, url, ZIPResponse, body, files)
 
 
+class RequestText(Request):
+    def __init__(self, context, method, url, body=None, files=None):
+        super().__init__(context, method, url, TextResponse, body, files)
+
+
 class Context:
     def __init__(self):
         self.session = requests.Session()
@@ -407,6 +423,26 @@ class JSONResponse(Response):
             )
 
         return self._resp_obj.json()
+
+
+class TextResponse(Response):
+    def __init__(self, resp_obj):
+        super().__init__(resp_obj)
+
+    def _is_txt(self):
+        return "text/plain" in self._resp_obj.headers.get("content-type")
+
+    @property
+    def data(self):
+        if not self._resp_obj.ok:
+            raise exceptions.HTTPError(self.error.message)
+
+        if not self._is_txt():
+            raise exceptions.InvalidContentTypeError(
+                "Incorrect content type on response, expected text"
+            )
+
+        return self._resp_obj.text
 
 
 class ZIPResponse(Response):
