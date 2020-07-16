@@ -201,6 +201,9 @@ class ModelExecutable:
     def metadata(self):
         return self._workspace_sal.ss_fmu_metadata_get(self._workspace_id, self._fmu_id)
 
+    def is_successful(self):
+        return True if self.info["run_info"]['status'] == 'successful' else False
+
 
 class Experiment:
     def __init__(
@@ -233,7 +236,6 @@ class Experiment:
     def info(self):
         return self._workspace_sal.experiment_get(self._workspace_id, self._exp_id)
 
-    @property
     def execute(self):
         return ExperimentOperation(
             self._workspace_id,
@@ -246,6 +248,16 @@ class Experiment:
         return self._exp_sal.trajectories_get(
             self._workspace_id, self._exp_id, variables
         )
+
+    def is_successful(self):
+        if (
+            self.info["run_info"]['status'] == 'done'
+            and self.info["run_info"]["cancelled"] == 0
+            and self.info["run_info"]["failed"] == 0
+        ):
+            return True
+        else:
+            return False
 
 
 class _Parameter:
