@@ -27,8 +27,8 @@ class SimpleCompilationDefinition(BaseCompilationDefinition):
         return {
             "input": {
                 "class_name": self.model.class_name,
-                "compiler_options": self.options.compiler.values,
-                "runtime_options": self.options.runtime.values,
+                "compiler_options": self.options.compiler().values,
+                "runtime_options": self.options.runtime().values,
                 "compiler_log_level": self.compiler_log_level,
                 "fmi_target": self.fmi_target,
                 "fmi_version": self.fmi_version,
