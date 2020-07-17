@@ -2,8 +2,8 @@ import os
 from modelon.impact.client.experiment_definition import SimpleExperimentDefinition
 from modelon.impact.client.compilation_definition import SimpleCompilationDefinition
 from modelon.impact.client.operations import (
-    ModelExecutbleOperation,
-    ExperimentOperation,
+    ModelExecutable,
+    Experiment,
 )
 from modelon.impact.client.options import ExecutionOption
 
@@ -152,112 +152,12 @@ class Model:
             options = options.to_dict
         else:
             options = options
-        return ModelExecutbleOperation(
+        return ModelExecutable(
             self._workspace_id,
             self._model_exe_sal.compile_model(self._workspace_id, options),
             self._workspace_sal,
             self._model_exe_sal,
         )
-
-
-class ModelExecutable:
-    def __init__(
-        self,
-        workspace_id,
-        fmu_id,
-        workspace_service=None,
-        model_executable_service=None,
-    ):
-        self._workspace_id = workspace_id
-        self._fmu_id = fmu_id
-        self._workspace_sal = workspace_service
-        self._model_exe_sal = model_executable_service
-
-    def __repr__(self):
-        return f"FMU with id '{self._fmu_id}'"
-
-    def __eq__(self, obj):
-        return isinstance(obj, ModelExecutable) and obj._fmu_id == self._fmu_id
-
-    @property
-    def id(self):
-        return self._fmu_id
-
-    @property
-    def log(self):
-        return self._model_exe_sal.compile_log(self._workspace_id, self._fmu_id)
-
-    @property
-    def settable_parameters(self):
-        return self._model_exe_sal.settable_parameters_get(
-            self._workspace_id, self._fmu_id
-        )
-
-    @property
-    def info(self):
-        return self._workspace_sal.fmu_get(self._workspace_id, self._fmu_id)
-
-    @property
-    def metadata(self):
-        return self._workspace_sal.ss_fmu_metadata_get(self._workspace_id, self._fmu_id)
-
-    def is_successful(self):
-        return True if self.info["run_info"]['status'] == 'successful' else False
-
-
-class Experiment:
-    def __init__(
-        self,
-        workspace_id,
-        experiment_id,
-        workspace_service=None,
-        experiment_service=None,
-    ):
-        self._workspace_id = workspace_id
-        self._exp_id = experiment_id
-        self._exp_sal = experiment_service
-        self._workspace_sal = workspace_service
-
-    def __repr__(self):
-        return f"Experiment with id '{self._exp_id}'"
-
-    def __eq__(self, obj):
-        return isinstance(obj, Experiment) and obj._exp_id == self._exp_id
-
-    @property
-    def id(self):
-        return self._exp_id
-
-    @property
-    def variables(self):
-        return self._exp_sal.result_variables_get(self._workspace_id, self._exp_id)
-
-    @property
-    def info(self):
-        return self._workspace_sal.experiment_get(self._workspace_id, self._exp_id)
-
-    def execute(self):
-        return ExperimentOperation(
-            self._workspace_id,
-            self._workspace_sal.experiment_execute(self._workspace_id, self._exp_id),
-            self._workspace_sal,
-            self._exp_sal,
-        )
-
-    def get_trajectories(self, variables):
-        return self._exp_sal.trajectories_get(
-            self._workspace_id, self._exp_id, variables
-        )
-
-    def is_successful(self):
-        if (
-            self.info["run_info"]['status'] == 'done'
-            and self.info["run_info"]["cancelled"] == 0
-            and self.info["run_info"]["failed"] == 0
-        ):
-            return True
-        else:
-            return False
 
 
 class _Parameter:
