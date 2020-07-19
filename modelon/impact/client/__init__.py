@@ -74,7 +74,7 @@ class Client:
             self._credentials.write_key_to_file(self.api_key)
 
     def get_workspace(self, workspace_id):
-        resp = self._sal.workspace.workspaces_get(workspace_id)
+        resp = self._sal.workspace.workspace_get(workspace_id)
         return modelon.impact.client.entities.Workspace(
             resp["id"],
             self._sal.workspace,
@@ -84,7 +84,7 @@ class Client:
         )
 
     def get_workspaces(self):
-        resp = self._sal.workspace.workspaces_get_all()
+        resp = self._sal.workspace.workspaces_get()
         return [
             modelon.impact.client.entities.Workspace(
                 item["id"],
@@ -97,7 +97,7 @@ class Client:
         ]
 
     def create_workspace(self, workspace_id):
-        resp = self._sal.workspace.workspaces_create(workspace_id)
+        resp = self._sal.workspace.workspace_create(workspace_id)
         return modelon.impact.client.entities.Workspace(
             resp["id"],
             self._sal.workspace,
@@ -107,7 +107,7 @@ class Client:
         )
 
     def upload_workspace(self, workspace_id, path_to_workspace):
-        resp = self._sal.workspace.workspaces_upload(workspace_id, path_to_workspace)
+        resp = self._sal.workspace.workspace_upload(workspace_id, path_to_workspace)
         return modelon.impact.client.entities.Workspace(
             resp["id"],
             self._sal.workspace,
