@@ -1,4 +1,13 @@
 from abc import ABC
+import modelon.impact.client.entities as entities
+from modelon.impact.client.options import ExecutionOption
+
+
+def _assert_valid_args(model, options):
+    if not isinstance(model, entities.Model):
+        raise TypeError("Model must be an instance of Model class")
+    if not isinstance(options, ExecutionOption):
+        raise TypeError("Options must be an instance of ExecutionOption class")
 
 
 class BaseCompilationDefinition(ABC):
@@ -15,6 +24,7 @@ class SimpleCompilationDefinition(BaseCompilationDefinition):
         fmi_version="2.0",
         platform="auto",
     ):
+        _assert_valid_args(model, options)
         self.model = model
         self.options = options
         self.compiler_log_level = compiler_log_level

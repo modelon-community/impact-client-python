@@ -1,9 +1,24 @@
 from abc import ABC
 import collections as col
+from modelon.impact.client.operations import (
+    ModelExecutable,
+    _assert_successful_operation,
+)
+import modelon.impact.client.entities as entities
+from modelon.impact.client.options import ExecutionOption
 
 BatchSim = col.namedtuple(
     'Variable', ['variable_name', 'start_value', 'end_value', 'no_of_steps']
 )
+
+
+def _assert_valid_args(fmu, custom_function, options):
+    if not isinstance(fmu, ModelExecutable):
+        raise TypeError("Fmu must be an instance of ModelExecutable class")
+    if not isinstance(custom_function, entities.CustomFunction):
+        raise TypeError("Custom_function must be an instance of CustomFunction class")
+    if not isinstance(options, ExecutionOption):
+        raise TypeError("Options must be an instance of ExecutionOption class")
 
 
 class BaseExperimentDefinition(ABC):
@@ -14,6 +29,8 @@ class SimpleExperimentDefinition(BaseExperimentDefinition):
     def __init__(
         self, fmu, custom_function, options, *batch, simulation_log_level="WARNING",
     ):
+        _assert_valid_args(fmu, custom_function, options)
+        _assert_successful_operation(fmu, "Compilation")
         self.fmu = fmu
         self.custom_function = custom_function
         self.options = options
