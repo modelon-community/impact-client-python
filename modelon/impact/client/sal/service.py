@@ -209,7 +209,7 @@ class ExperimentService:
         ).resolve()
         return self._http_client.post_json(url, body=body)
 
-    def cases_get(self, workspace_id, experiment_id, variables):
+    def cases_get(self, workspace_id, experiment_id):
         url = (
             self._base_uri
             / f"api/workspaces/{workspace_id}/experiments/{experiment_id}/cases"
@@ -224,7 +224,7 @@ class ExperimentService:
         ).resolve()
         return self._http_client.get_json(url)
 
-    def execute_log(self, workspace_id, experiment_id, case_id):
+    def case_get_log(self, workspace_id, experiment_id, case_id):
         url = (
             self._base_uri
             / f"api/workspaces/{workspace_id}/experiments/{experiment_id}/cases/"
@@ -232,7 +232,7 @@ class ExperimentService:
         ).resolve()
         return self._http_client.get_text(url)
 
-    def result_get(self, workspace_id, experiment_id, case_id):
+    def case_result_get(self, workspace_id, experiment_id, case_id):
         url = (
             self._base_uri
             / f"api/workspaces/{workspace_id}/experiments/{experiment_id}/cases/"

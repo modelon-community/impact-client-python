@@ -245,13 +245,15 @@ class Experiment(Operation):
             return False
 
     def log(self, case_id="case_1"):
+        # TO DO - Update to use the compound log api from legacy routes to generate
+        # combined log for batch simulations
         _wait_to_complete(
             Experiment(
                 self._workspace_id, self._exp_id, self._workspace_sal, self._exp_sal
             ),
             "Simulation",
         )
-        log = self._exp_sal.execute_log(self._workspace_id, self._exp_id, case_id)
+        log = self._exp_sal.case_get_log(self._workspace_id, self._exp_id, case_id)
         if log:
             return log
         else:
@@ -297,10 +299,75 @@ class Experiment(Operation):
         )
 
     def result(self, case_id="case_1"):
+        # TO DO - Update to get the results from legacy routes in the future!
         _assert_successful_operation(
             Experiment(
                 self._workspace_id, self._exp_id, self._workspace_sal, self._exp_sal,
             ),
             "Simulation",
         )
-        return self._exp_sal.result_get(self._workspace_id, self._exp_id, case_id)
+        return self._exp_sal.case_result_get(self._workspace_id, self._exp_id, case_id)
+
+    def cases(self):
+        resp = self._exp_sal.cases_get(self._workspace_id, self._exp_id)
+        return [
+            Case(case["id"], self._workspace_id, self._exp_id, self._exp_sal)
+            for case in resp["data"]["items"]
+        ]
+
+    def case(self, case_id):
+        resp = self._exp_sal.case_get(self._workspace_id, self._exp_id, case_id)
+        return Case(resp["id"], self._workspace_id, self._exp_id, self._exp_sal)
+
+
+class Case:
+    def __init__(
+        self, case_id, workspace_id, exp_id, exp_service=None,
+    ):
+        self._case_id = case_id
+        self._workspace_id = workspace_id
+        self._exp_id = exp_id
+        self._exp_sal = exp_service
+
+    def __repr__(self):
+        return f"Case with id '{self._case_id}'"
+
+    def __eq__(self, obj):
+        return isinstance(obj, Case) and obj._case_id == self._case_id
+
+    @property
+    def id(self):
+        return self._case_id
+
+    @property
+    def info(self):
+        return self._exp_sal.case_get(self._workspace_id, self._exp_id, self._case_id)
+
+    @property
+    def log(self):
+        _wait_to_complete(
+            Experiment(
+                self._workspace_id, self._exp_id, self._workspace_sal, self._exp_sal
+            ),
+            "Simulation",
+        )
+        log = self._exp_sal.case_get_log(
+            self._workspace_id, self._exp_id, self._case_id
+        )
+        if log:
+            return log
+        else:
+            raise exceptions.EmptyLogError(
+                "Empty log file! Try to increase the log level for more logging!"
+            )
+
+    def result(self):
+        _assert_successful_operation(
+            Experiment(
+                self._workspace_id, self._exp_id, self._workspace_sal, self._exp_sal,
+            ),
+            "Simulation",
+        )
+        return self._exp_sal.case_result_get(
+            self._workspace_id, self._exp_id, self._case_id
+        )
