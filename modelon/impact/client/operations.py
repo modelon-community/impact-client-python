@@ -1,5 +1,6 @@
 import time
 import logging
+import pandas as pd
 from abc import ABC, abstractmethod
 from enum import Enum
 import modelon.impact.client.exceptions as exceptions
@@ -287,16 +288,32 @@ class Experiment(Operation):
             self._exp_sal,
         )
 
-    def get_trajectories(self, variables):
+    def get_trajectories(self, *variables, with_time=True, pretty_print=True):
         _assert_successful_operation(
             Experiment(
                 self._workspace_id, self._exp_id, self._workspace_sal, self._exp_sal,
             ),
             "Simulation",
         )
-        return self._exp_sal.trajectories_get(
+        variables = [variable for variable in variables]
+        if with_time and 'time' not in self.variables:
+            raise ValueError("'time' variable is not present in the result variables!")
+
+        if with_time:
+            variables.insert(0, "time")
+
+        response = self._exp_sal.trajectories_get(
             self._workspace_id, self._exp_id, variables
         )
+        cases = self.cases()
+        data = {
+            variable: [response[i][j] for j in range(len(cases))]
+            for i, variable in enumerate(variables)
+        }
+        if pretty_print:
+            df = pd.DataFrame(data).to_string(index=False)
+            print(df)
+        return data
 
     def result(self, case_id="case_1"):
         # TO DO - Update to get the results from legacy routes in the future!
