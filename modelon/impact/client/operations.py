@@ -1,6 +1,6 @@
 import time
 import logging
-import pandas as pd
+import pandas as pd  # type: ignore
 from abc import ABC, abstractmethod
 from enum import Enum
 import modelon.impact.client.exceptions as exceptions
@@ -20,7 +20,7 @@ def _assert_successful_operation(ops, operation_name="Operation"):
 
 
 def _assert_is_running(status, operation_name="Operation"):
-    if status == "running" or status == 'pending' or status == 'not_started':
+    if status == "running" or status == "pending" or status == "not_started":
         return
     else:
         raise exceptions.OperationFailureError(
@@ -30,9 +30,9 @@ def _assert_is_running(status, operation_name="Operation"):
 
 def _wait_to_complete(ops, operation_name="Operation"):
     while (
-        ops.info["run_info"]['status'] == "running"
-        or ops.info["run_info"]['status'] == 'pending'
-        or ops.info["run_info"]['status'] == 'not_started'
+        ops.info["run_info"]["status"] == "running"
+        or ops.info["run_info"]["status"] == "pending"
+        or ops.info["run_info"]["status"] == "not_started"
     ):
         time.sleep(0.5)
         logging.info(f"{operation_name} in progress! Status : {ops.status()}")
@@ -142,7 +142,7 @@ class ModelExecutable(Operation):
         )
         return (
             True
-            if self.info["run_info"]['status'] == 'successful' and self.is_complete()
+            if self.info["run_info"]["status"] == "successful" and self.is_complete()
             else False
         )
 
@@ -237,7 +237,7 @@ class Experiment(Operation):
             "Simulation",
         )
         if (
-            self.info["run_info"]['status'] == 'done'
+            self.info["run_info"]["status"] == "done"
             and self.info["run_info"]["cancelled"] == 0
             and self.info["run_info"]["failed"] == 0
         ) and self.is_complete():
@@ -296,7 +296,7 @@ class Experiment(Operation):
             "Simulation",
         )
         variables = [variable for variable in variables]
-        if with_time and 'time' not in self.variables:
+        if with_time and "time" not in self.variables:
             raise ValueError("'time' variable is not present in the result variables!")
 
         if with_time:

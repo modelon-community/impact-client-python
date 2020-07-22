@@ -8,7 +8,7 @@ import modelon.impact.client.entities as entities
 from modelon.impact.client.options import ExecutionOption
 
 BatchSim = col.namedtuple(
-    'Variable', ['variable_name', 'start_value', 'end_value', 'no_of_steps']
+    "Variable", ["variable_name", "start_value", "end_value", "no_of_steps"]
 )
 
 
