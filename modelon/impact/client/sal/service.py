@@ -209,12 +209,36 @@ class ExperimentService:
         ).resolve()
         return self._http_client.post_json(url, body=body)
 
-    def execute_log(self, workspace_id, fmuId):
+    def cases_get(self, workspace_id, experiment_id):
         url = (
             self._base_uri
-            / f"api/workspaces/{workspace_id}/model-executables/{fmuId}/compilation/log"
+            / f"api/workspaces/{workspace_id}/experiments/{experiment_id}/cases"
+        ).resolve()
+        return self._http_client.get_json(url)
+
+    def case_get(self, workspace_id, experiment_id, case_id):
+        url = (
+            self._base_uri
+            / f"api/workspaces/{workspace_id}/experiments/{experiment_id}/cases/"
+            f"{case_id}"
+        ).resolve()
+        return self._http_client.get_json(url)
+
+    def case_get_log(self, workspace_id, experiment_id, case_id):
+        url = (
+            self._base_uri
+            / f"api/workspaces/{workspace_id}/experiments/{experiment_id}/cases/"
+            f"{case_id}/log"
         ).resolve()
         return self._http_client.get_text(url)
+
+    def case_result_get(self, workspace_id, experiment_id, case_id):
+        url = (
+            self._base_uri
+            / f"api/workspaces/{workspace_id}/experiments/{experiment_id}/cases/"
+            f"{case_id}/result"
+        ).resolve()
+        return self._http_client.get_octet_stream(url)
 
 
 class CustomFunctionService:
@@ -278,6 +302,10 @@ class HTTPClient:
 
     def get_text(self, url):
         request = RequestText(self._context, "GET", url)
+        return request.execute().data
+
+    def get_octet_stream(self, url):
+        request = RequestOctetStream(self._context, "GET", url)
         return request.execute().data
 
     def get_zip(self, url):
@@ -368,6 +396,11 @@ class RequestText(Request):
         super().__init__(context, method, url, TextResponse, body, files)
 
 
+class RequestOctetStream(Request):
+    def __init__(self, context, method, url, body=None, files=None):
+        super().__init__(context, method, url, OctetStreamResponse, body, files)
+
+
 class Context:
     def __init__(self):
         self.session = requests.Session()
@@ -440,6 +473,26 @@ class TextResponse(Response):
         if not self._is_txt():
             raise exceptions.InvalidContentTypeError(
                 "Incorrect content type on response, expected text"
+            )
+
+        return self._resp_obj.text
+
+
+class OctetStreamResponse(Response):
+    def __init__(self, resp_obj):
+        super().__init__(resp_obj)
+
+    def _is_octet_stream(self):
+        return "application/octet-stream" in self._resp_obj.headers.get("content-type")
+
+    @property
+    def data(self):
+        if not self._resp_obj.ok:
+            raise exceptions.HTTPError(self.error.message)
+
+        if not self._is_octet_stream():
+            raise exceptions.InvalidContentTypeError(
+                "Incorrect content type on response, expected octet-stream"
             )
 
         return self._resp_obj.text

@@ -142,7 +142,7 @@ class Model:
         self._model_exe_sal = model_exe_service
 
     def __repr__(self):
-        return f"Class name'{self.class_name}'"
+        return f"Class name '{self.class_name}'"
 
     def __eq__(self, obj):
         return isinstance(obj, Model) and obj.class_name == self.class_name
@@ -206,6 +206,12 @@ class CustomFunction:
             for p in parameter_data
         }
         self._custom_func_sal = custom_function_service
+
+    def __repr__(self):
+        return f"Custom function '{self.name}'"
+
+    def __eq__(self, obj):
+        return isinstance(obj, CustomFunction) and obj.name == self.name
 
     def with_parameters(self, **modified):
         new = CustomFunction(
