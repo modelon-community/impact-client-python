@@ -1,37 +1,12 @@
-import pytest
-import unittest.mock
-
 import modelon.impact.client.experiment_definition as experiment_definition
-import modelon.impact.client
-from modelon.impact.client.entities import CustomFunction, ExecutionOption
+import pytest
+import modelon.impact.client.exceptions as exceptions
+from tests.impact.client.fixtures import *
 
 
-@pytest.fixture
-def fmu():
-    return modelon.impact.client.entities.ModelExecutable("Workspace", "Test")
-
-
-@pytest.fixture
-def custom_function():
-    custom_function_service = unittest.mock.MagicMock()
-    return CustomFunction("test_ws", 'dynamic', [], custom_function_service)
-
-
-@pytest.fixture
-def options():
-    custom_function_service = unittest.mock.MagicMock()
-    opts = {
-        "compiler": {},
-        "runtime": {},
-        "simulation": {"ncp": 2000},
-        "solver": {"rtol": 0.0001},
-    }
-    return ExecutionOption("test_ws", opts, "dynamic", custom_function_service)
-
-
-def test_validate_workspaces(fmu, custom_function, options):
+def test_experiment_definition(fmu, custom_function_no_param, options):
     spec = experiment_definition.SimpleExperimentDefinition(
-        fmu, custom_function=custom_function, options=options
+        fmu, custom_function=custom_function_no_param, options=options
     )
     config = spec.to_dict
     assert config == {
@@ -47,3 +22,45 @@ def test_validate_workspaces(fmu, custom_function, options):
             "modifiers": {"variables": {}},
         }
     }
+
+
+def test_failed_compile_exp_def(fmu_compile_failed, custom_function_no_param, options):
+    pytest.raises(
+        exceptions.OperationFailureError,
+        experiment_definition.SimpleExperimentDefinition,
+        fmu_compile_failed,
+        custom_function_no_param,
+        options,
+    )
+
+
+def test_cancelled_compile_exp_def(
+    fmu_compile_cancelled, custom_function_no_param, options
+):
+    pytest.raises(
+        exceptions.OperationFailureError,
+        experiment_definition.SimpleExperimentDefinition,
+        fmu_compile_cancelled,
+        custom_function_no_param,
+        options,
+    )
+
+
+def test_invalid_option_input(custom_function, custom_function_no_param):
+    pytest.raises(
+        TypeError,
+        experiment_definition.SimpleExperimentDefinition,
+        custom_function,
+        custom_function_no_param,
+        {},
+    )
+
+
+def test_invalid_fmu_input(fmu, custom_function_no_param):
+    pytest.raises(
+        TypeError,
+        experiment_definition.SimpleExperimentDefinition,
+        fmu,
+        custom_function_no_param,
+        {},
+    )

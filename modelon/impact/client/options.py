@@ -23,7 +23,7 @@ def _assert_option_exists(valid_opts, option_cat, *options):
 
 class ExecutionOption:
     def __init__(
-        self, workspace_id, options, custom_function_name, custom_function_service
+        self, workspace_id, options, custom_function_name, custom_function_service=None
     ):
         self._workspace_id = workspace_id
         self._options = options
