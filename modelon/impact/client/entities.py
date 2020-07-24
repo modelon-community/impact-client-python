@@ -129,7 +129,12 @@ class Workspace:
         else:
             options = spec
         resp = self._workspace_sal.experiment_create(self._workspace_id, options)
-        return Experiment(self._workspace_id, resp, self._workspace_sal, self._exp_sal)
+        return Experiment(
+            self._workspace_id,
+            resp["experiment_id"],
+            self._workspace_sal,
+            self._exp_sal,
+        )
 
 
 class Model:

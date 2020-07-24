@@ -198,7 +198,7 @@ class ModelExecutable(Operation):
             ),
             "Compilation",
         )
-        return self._workspace_sal.ss_fmu_metadata_get(self._workspace_id, self._fmu_id)
+        return self._model_exe_sal.ss_fmu_metadata_get(self._workspace_id, self._fmu_id)
 
 
 class Experiment(Operation):
@@ -283,7 +283,7 @@ class Experiment(Operation):
     def execute(self):
         return Experiment(
             self._workspace_id,
-            self._workspace_sal.experiment_execute(self._workspace_id, self._exp_id),
+            self._exp_sal.experiment_execute(self._workspace_id, self._exp_id),
             self._workspace_sal,
             self._exp_sal,
         )
