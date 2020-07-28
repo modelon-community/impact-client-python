@@ -1,3 +1,12 @@
+# [1.0.0-beta.11](https://github.com/modelon-community/impact-client-python/compare/v1.0.0-beta.10...v1.0.0-beta.11) (2020-07-28)
+
+
+### Bug Fixes
+
+* Consistent naming of functions ([fb0cee0](https://github.com/modelon-community/impact-client-python/commit/fb0cee03cf95aa718526fe66020485b1bcb0b0b9))
+* Corrected the compilation response from json to plain/text ([69743b4](https://github.com/modelon-community/impact-client-python/commit/69743b4bf437a3e374a047d0e3e0c78711721fdd))
+* Formatting and lint fixes ([4d98783](https://github.com/modelon-community/impact-client-python/commit/4d98783cdd8c1bd06471b94d203241b4bd072b62))
+
 # [1.0.0-beta.10](https://github.com/modelon-community/impact-client-python/compare/v1.0.0-beta.9...v1.0.0-beta.10) (2020-07-10)
 
 
