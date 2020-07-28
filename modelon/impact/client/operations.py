@@ -198,12 +198,12 @@ class ModelExecutable(Operation):
             ),
             "Compilation",
         )
-        return self._workspace_sal.ss_fmu_metadata_get(self._workspace_id, self._fmu_id)
+        return self._model_exe_sal.ss_fmu_metadata_get(self._workspace_id, self._fmu_id)
 
 
 class Experiment(Operation):
     def __init__(
-        self, workspace_id, exp_id=None, workspace_service=None, exp_service=None,
+        self, workspace_id, exp_id, workspace_service=None, exp_service=None,
     ):
         super().__init__()
         self._workspace_id = workspace_id
@@ -283,7 +283,7 @@ class Experiment(Operation):
     def execute(self):
         return Experiment(
             self._workspace_id,
-            self._workspace_sal.experiment_execute(self._workspace_id, self._exp_id),
+            self._exp_sal.experiment_execute(self._workspace_id, self._exp_id),
             self._workspace_sal,
             self._exp_sal,
         )
@@ -339,12 +339,13 @@ class Experiment(Operation):
 
 class Case:
     def __init__(
-        self, case_id, workspace_id, exp_id, exp_service=None,
+        self, case_id, workspace_id, exp_id, exp_service=None, workspace_service=None
     ):
         self._case_id = case_id
         self._workspace_id = workspace_id
         self._exp_id = exp_id
         self._exp_sal = exp_service
+        self._workspace_sal = workspace_service
 
     def __repr__(self):
         return f"Case with id '{self._case_id}'"
@@ -360,7 +361,6 @@ class Case:
     def info(self):
         return self._exp_sal.case_get(self._workspace_id, self._exp_id, self._case_id)
 
-    @property
     def log(self):
         _wait_to_complete(
             Experiment(

@@ -1,141 +1,17 @@
-import collections
-
 import pytest
-import requests
-import requests_mock
 import unittest.mock
-
 import modelon.impact.client
 import modelon.impact.client.sal.exceptions
-
-MockedServer = collections.namedtuple('MockedServer', ['url', 'context', 'adapter'])
-
-
-class MockContex:
-    def __init__(self, session):
-        self.session = session
+from tests.impact.client.fixtures import *
 
 
-@pytest.fixture
-def mock_server_base():
-    session = requests.Session()
-    adapter = requests_mock.Adapter()
-    session.mount('http://', adapter)
-    mock_url = 'http://mock-impact.com'
-
-    mock_server_base = MockedServer(mock_url, MockContex(session), adapter)
-    json_header = {'content-type': 'application/json'}
-    mock_server_base.adapter.register_uri(
-        'POST', f'{mock_server_base.url}/api/login', headers=json_header, json={}
+def test_create_workspace(create_workspace):
+    client = modelon.impact.client.Client(
+        url=create_workspace.url, context=create_workspace.context
     )
-
-    return mock_server_base
-
-
-@pytest.fixture
-def login_fails(mock_server_base):
-    json = {'error': {'message': 'no authroization', 'code': 123}}
-    json_header = {'content-type': 'application/json'}
-    mock_server_base.adapter.register_uri(
-        'GET',
-        f'{mock_server_base.url}/api/',
-        json=json,
-        headers=json_header,
-        status_code=401,
-    )
-
-    return mock_server_base
-
-
-@pytest.fixture
-def sem_ver_check(mock_server_base):
-    json = {"version": "1.2.1"}
-    json_header = {'content-type': 'application/json'}
-    mock_server_base.adapter.register_uri(
-        'GET', f'{mock_server_base.url}/api/', json=json, headers=json_header,
-    )
-
-    return mock_server_base
-
-
-@pytest.fixture
-def single_workspace(sem_ver_check, mock_server_base):
-    json = {'id': 'AwesomeWorkspace'}
-    json_header = {'content-type': 'application/json'}
-    mock_server_base.adapter.register_uri(
-        'GET',
-        f'{mock_server_base.url}/api/workspaces/AwesomeWorkspace',
-        json=json,
-        headers=json_header,
-    )
-
-    return mock_server_base
-
-
-@pytest.fixture
-def multiple_workspace(sem_ver_check, mock_server_base):
-    json = {'data': {'items': [{'id': 'AwesomeWorkspace'}, {'id': 'BoringWorkspace'}]}}
-    json_header = {'content-type': 'application/json'}
-    mock_server_base.adapter.register_uri(
-        'GET', f'{mock_server_base.url}/api/workspaces', json=json, headers=json_header,
-    )
-
-    return mock_server_base
-
-
-@pytest.fixture
-def create_workspace(sem_ver_check, mock_server_base):
-    json = {'id': 'newWorkspace'}
-    json_header = {'content-type': 'application/json'}
-    mock_server_base.adapter.register_uri(
-        'POST',
-        f'{mock_server_base.url}/api/workspaces',
-        json=json,
-        headers=json_header,
-    )
-
-    return mock_server_base
-
-
-@pytest.fixture
-def workspaces_error(sem_ver_check, mock_server_base):
-    json = {'error': {'message': 'no authroization', 'code': 123}}
-    json_header = {'content-type': 'application/json'}
-    mock_server_base.adapter.register_uri(
-        'GET',
-        f'{mock_server_base.url}/api/workspaces',
-        json=json,
-        headers=json_header,
-        status_code=401,
-    )
-
-    return mock_server_base
-
-
-@pytest.fixture
-def create_workspace_error(sem_ver_check, mock_server_base):
-    json = {'error': {'message': 'name not ok', 'code': 123}}
-    json_header = {'content-type': 'application/json'}
-    mock_server_base.adapter.register_uri(
-        'POST',
-        f'{mock_server_base.url}/api/workspaces',
-        json=json,
-        headers=json_header,
-        status_code=400,
-    )
-
-    return mock_server_base
-
-
-@pytest.fixture
-def semantic_version_error(sem_ver_check, mock_server_base):
-    json = {"version": "3.1.0"}
-    json_header = {'content-type': 'application/json'}
-    mock_server_base.adapter.register_uri(
-        'GET', f'{mock_server_base.url}/api/', json=json, headers=json_header,
-    )
-
-    return mock_server_base
+    workspace = client.create_workspace('AwesomeWorkspace')
+    assert workspace == modelon.impact.client.entities.Workspace('newWorkspace')
+    assert workspace.id == 'newWorkspace'
 
 
 def test_get_workspace(single_workspace):
@@ -165,15 +41,6 @@ def test_get_workspaces_error(workspaces_error):
         url=workspaces_error.url, context=workspaces_error.context
     )
     pytest.raises(modelon.impact.client.sal.exceptions.HTTPError, client.get_workspaces)
-
-
-def test_create_workspace(create_workspace):
-    client = modelon.impact.client.Client(
-        url=create_workspace.url, context=create_workspace.context
-    )
-    workspace = client.create_workspace('AwesomeWorkspace')
-    assert workspace == modelon.impact.client.entities.Workspace('newWorkspace')
-    assert workspace.id == 'newWorkspace'
 
 
 def test_create_workspace_error(create_workspace_error):
@@ -278,3 +145,4 @@ def test_client_login_fail_interactive_dont_save_key(login_fails):
     )
 
     cred_manager.write_key_to_file.assert_not_called()
+

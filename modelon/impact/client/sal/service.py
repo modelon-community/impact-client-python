@@ -94,13 +94,6 @@ class WorkspaceService:
         ).resolve()
         return self._http_client.get_json(url)
 
-    def ss_fmu_metadata_get(self, workspace_id, fmu_id):
-        url = (
-            self._base_uri / f"api/workspaces/{workspace_id}/model-executables/{fmu_id}"
-            "/steady-state-metadata"
-        ).resolve()
-        return self._http_client.get_json(url)
-
     def experiments_get(self, workspace_id):
         url = (self._base_uri / f"api/workspaces/{workspace_id}/experiments").resolve()
         return self._http_client.get_json(url)
@@ -114,15 +107,7 @@ class WorkspaceService:
 
     def experiment_create(self, workspace_id, spec):
         url = (self._base_uri / f"api/workspaces/{workspace_id}/experiments").resolve()
-        return self._http_client.post_json(url, body=spec)["experiment_id"]
-
-    def experiment_execute(self, workspace_id, exp_id):
-        url = (
-            self._base_uri
-            / f"api/workspaces/{workspace_id}/experiments/{exp_id}/execution"
-        ).resolve()
-        self._http_client.post_json_no_response_body(url)
-        return exp_id
+        return self._http_client.post_json(url, body=spec)
 
 
 class ModelExecutableService:
@@ -174,11 +159,26 @@ class ModelExecutableService:
         ).resolve()
         return self._http_client.get_json(url)
 
+    def ss_fmu_metadata_get(self, workspace_id, fmu_id):
+        url = (
+            self._base_uri / f"api/workspaces/{workspace_id}/model-executables/{fmu_id}"
+            "/steady-state-metadata"
+        ).resolve()
+        return self._http_client.get_json(url)
+
 
 class ExperimentService:
     def __init__(self, uri, HTTPClient):
         self._base_uri = uri
         self._http_client = HTTPClient
+
+    def experiment_execute(self, workspace_id, exp_id):
+        url = (
+            self._base_uri
+            / f"api/workspaces/{workspace_id}/experiments/{exp_id}/execution"
+        ).resolve()
+        self._http_client.post_json_no_response_body(url)
+        return exp_id
 
     def execute_status(self, workspace_id, experiment_id):
         url = (
