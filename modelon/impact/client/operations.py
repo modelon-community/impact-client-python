@@ -44,12 +44,11 @@ def _wait_to_complete(ops, operation_name="Operation"):
 
 
 class Status(Enum):
-    NOTSTARTED = 1
-    PENDING = 2
-    RUNNING = 3
-    DONE = 4
-    STOPPING = 5
-    CANCELLED = 6
+    PENDING = 1
+    RUNNING = 2
+    STOPPING = 3
+    CANCELLED = 4
+    DONE = 5
 
 
 class Operation(ABC):
@@ -80,11 +79,6 @@ class Operation(ABC):
         start_t = time.time()
         while True:
             time.sleep(0.5)
-            if not self.is_successful() and self.is_complete():
-                raise exceptions.OperationFailureError(
-                    f"Operation failed! Cause :- '{self.log()}'."
-                    "Try setting a higher log level for more info!"
-                )
             if self.status() == status.name.lower():
                 return self.data()
             if Status[self.status().upper()].value > status.value:
