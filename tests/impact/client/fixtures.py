@@ -636,28 +636,29 @@ def fmu_compile_failed():
         "Workspace", "Test", ws_service, model_exe_service
     )
 
+@pytest.fixture
+def fmu_compile_failed_empty_log():
+    ws_service = unittest.mock.MagicMock()
+    model_exe_service = unittest.mock.MagicMock()
+    ws_service.fmu_get.return_value = {"run_info": {"status": "failed"}}
+    model_exe_service.compile_status.return_value = {"status": "done"}
+    model_exe_service.compile_log.return_value = ""
+    return modelon.impact.client.operations.ModelExecutable(
+        "Workspace", "Test", ws_service, model_exe_service
+    )
 
 @pytest.fixture
 def fmu_compile_cancelled():
     ws_service = unittest.mock.MagicMock()
     model_exe_service = unittest.mock.MagicMock()
     ws_service.fmu_get.return_value = {"run_info": {"status": "cancelled"}}
-    model_exe_service.compile_status.return_value = {"status": "done"}
+    model_exe_service.compile_status.return_value = {"status": "cancelled"}
     return modelon.impact.client.operations.ModelExecutable(
         "Workspace", "Test", ws_service, model_exe_service
     )
 
 
-@pytest.fixture
-def fmu_compile_cancelled_log():
-    ws_service = unittest.mock.MagicMock()
-    model_exe_service = unittest.mock.MagicMock()
-    ws_service.fmu_get.return_value = {"run_info": {"status": "cancelled"}}
-    model_exe_service.compile_status.return_value = {"status": "done"}
-    model_exe_service.compile_log.return_value = ""
-    return modelon.impact.client.operations.ModelExecutable(
-        "Workspace", "Test", ws_service, model_exe_service
-    )
+
 
 
 @pytest.fixture

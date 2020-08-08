@@ -20,7 +20,7 @@ def _assert_successful_operation(ops, operation_name="Operation"):
 
 
 def _assert_is_running(status, operation_name="Operation"):
-    if status == "running" or status == "pending" or status == "not_started":
+    if status in ("running", "pending"):
         return
     else:
         raise exceptions.OperationFailureError(
@@ -29,14 +29,10 @@ def _assert_is_running(status, operation_name="Operation"):
 
 
 def _wait_to_complete(ops, operation_name="Operation"):
-    while (
-        ops.info["run_info"]["status"] == "running"
-        or ops.info["run_info"]["status"] == "pending"
-        or ops.info["run_info"]["status"] == "not_started"
-    ):
+    while ops.status() in ("running", "pending"):
         time.sleep(0.5)
         logging.info(f"{operation_name} in progress! Status : {ops.status()}")
-    if ops.status() == "cancelled" or ops.status() == "stopping":
+    if ops.status() in ('cancelled', 'stopping'):
         raise exceptions.OperationFailureError(
             f"{operation_name} was cancelled before completion! "
             f"Log file generated for cancelled {operation_name} is empty!"
@@ -73,6 +69,10 @@ class Operation(ABC):
         pass
 
     def is_complete(self):
+        if self.status() in ('cancelled', 'stopping'):
+            raise exceptions.OperationFailureError(
+                "Operation was cancelled before completion! "
+            )
         return True if self.status() == "done" else False
 
     def wait(self, timeout=None, status=Status.DONE):
@@ -83,8 +83,12 @@ class Operation(ABC):
                 return self.data()
             if Status[self.status().upper()].value > status.value:
                 raise exceptions.OperationFailureError(
-                    "Set status could not be reached."
+                    "Set status could not be reached. "
                     f"Present status of operation is {self.status()}!"
+                )
+            if status == Status.DONE and self.status() in ('cancelled', 'stopping'):
+                raise exceptions.OperationFailureError(
+                    "Operation was cancelled before completion!"
                 )
             current_t = time.time()
             if timeout and current_t - start_t > timeout:
@@ -134,11 +138,7 @@ class ModelExecutable(Operation):
             ),
             "Compilation",
         )
-        return (
-            True
-            if self.info["run_info"]["status"] == "successful" and self.is_complete()
-            else False
-        )
+        return True if self.info["run_info"]["status"] == "successful" else False
 
     def log(self):
         _wait_to_complete(
@@ -234,7 +234,7 @@ class Experiment(Operation):
             self.info["run_info"]["status"] == "done"
             and self.info["run_info"]["cancelled"] == 0
             and self.info["run_info"]["failed"] == 0
-        ) and self.is_complete():
+        ):
             return True
         else:
             return False
