@@ -33,7 +33,6 @@ class ExecutionOption:
     def __repr__(self):
         return f"Execution option for '{self._name}'"
 
-    @property
     def to_dict(self):
         return self._options
 

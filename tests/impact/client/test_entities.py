@@ -234,5 +234,5 @@ class TestCustomFunction:
             options
         )
         new = custom_function.options()
-        assert new.to_dict == {"compiler": {"c_compiler": "gcc"}}
+        assert new.to_dict() == {"compiler": {"c_compiler": "gcc"}}
         assert isinstance(new, modelon.impact.client.options.ExecutionOption)

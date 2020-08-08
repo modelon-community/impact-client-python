@@ -32,7 +32,6 @@ class SimpleCompilationDefinition(BaseCompilationDefinition):
         self.fmi_version = fmi_version
         self.platform = platform
 
-    @property
     def to_dict(self):
         return {
             "input": {

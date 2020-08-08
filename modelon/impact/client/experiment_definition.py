@@ -37,7 +37,6 @@ class SimpleExperimentDefinition(BaseExperimentDefinition):
         self.batch = batch
         self.simulation_log_level = simulation_log_level
 
-    @property
     def to_dict(self):
         return {
             "experiment": {

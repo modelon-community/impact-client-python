@@ -7,7 +7,7 @@ def test_compilation_definition(model, options):
     spec = compilation_definition.SimpleCompilationDefinition(
         model=model, options=options
     )
-    config = spec.to_dict
+    config = spec.to_dict()
     assert config == {
         "input": {
             "class_name": "Test.PID",
