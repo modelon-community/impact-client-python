@@ -282,7 +282,7 @@ class Experiment(Operation):
             self._exp_sal,
         )
 
-    def get_trajectories(self, *variables, with_time=True, pretty_print=True):
+    def get_trajectories(self, *variables, with_time=False, pretty_print=False):
         _assert_successful_operation(
             Experiment(
                 self._workspace_id, self._exp_id, self._workspace_sal, self._exp_sal,

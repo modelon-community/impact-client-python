@@ -71,7 +71,7 @@ class TestExperiment:
         assert experiment.info["run_info"]["status"] == "done"
         assert experiment.variables == ["PI.J", "inertia.I", "time"]
         assert experiment.log() == "Successful Log"
-        assert experiment.get_trajectories("PI.J") == {
+        assert experiment.get_trajectories("PI.J", with_time=True) == {
             'PI.J': [[5, 2, 9, 4]],
             'time': [[1, 2, 3, 4]],
         }
@@ -85,7 +85,7 @@ class TestExperiment:
             Case("case_1", "Workspace", "Test"),
             Case("case_2", "Workspace", "Test"),
         ]
-        assert batch_experiment.get_trajectories("PI.J") == {
+        assert batch_experiment.get_trajectories("PI.J", with_time=True) == {
             'PI.J': [[5, 2, 9, 4], [1, 2, 3, 4]],
             'time': [[1, 2, 3, 4], [1, 2, 3, 4]],
         }
