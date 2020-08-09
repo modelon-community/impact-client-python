@@ -12,13 +12,24 @@ BatchSim = col.namedtuple(
 )
 
 
-def _assert_valid_args(fmu, custom_function, options):
+def _assert_valid_args(fmu, custom_function, options, batch):
     if not isinstance(fmu, ModelExecutable):
         raise TypeError("Fmu must be an instance of ModelExecutable class")
     if not isinstance(custom_function, entities.CustomFunction):
         raise TypeError("Custom_function must be an instance of CustomFunction class")
     if not isinstance(options, ExecutionOption):
         raise TypeError("Options must be an instance of ExecutionOption class")
+    if not isinstance(batch, tuple):
+        raise TypeError("Options must be an instance of 'BatchSim' tuple")
+
+
+def _assert_settable_parameters(fmu, **variables):
+    for name in variables.keys():
+        if name not in fmu.settable_parameters:
+            raise KeyError(
+                f"{name} is not a valid parameter modifier! "
+                f"Settable parameters are {fmu.settable_parameters}"
+            )
 
 
 class BaseExperimentDefinition(ABC):
@@ -27,15 +38,35 @@ class BaseExperimentDefinition(ABC):
 
 class SimpleExperimentDefinition(BaseExperimentDefinition):
     def __init__(
-        self, fmu, custom_function, options, *batch, simulation_log_level="WARNING",
+        self,
+        fmu,
+        custom_function,
+        options,
+        simulation_log_level="WARNING",
+        *batch,
+        **modifiers,
     ):
-        _assert_valid_args(fmu, custom_function, options)
+        _assert_valid_args(fmu, custom_function, options, batch)
         _assert_successful_operation(fmu, "Compilation")
+        _assert_settable_parameters(fmu, **modifiers)
         self.fmu = fmu
         self.custom_function = custom_function
         self.options = options
-        self.batch = batch
         self.simulation_log_level = simulation_log_level
+        self.batch = batch
+        self.modifiers = modifiers
+
+    def _set_variables(self):
+        vars = {
+            "variables": {
+                f"{value.variable_name}": f"range({value.start_value},"
+                f"{value.end_value},{value.no_of_steps})"
+                for value in self.batch
+            }
+        }
+        if self.modifiers:
+            vars["variables"].update(dict(self.modifiers))
+        return dict(vars)
 
     def to_dict(self):
         return {
@@ -48,14 +79,6 @@ class SimpleExperimentDefinition(BaseExperimentDefinition):
                     "simulation_log_level": self.simulation_log_level,
                 },
                 "fmu_id": self.fmu.id,
-                "modifiers": {
-                    "variables": {
-                        f"{value.variable_name}": f"range({value.start_value},"
-                        f"{value.end_value},{value.no_of_steps})"
-                        for value in self.batch
-                    }
-                    if self.batch
-                    else {}
-                },
+                "modifiers": self._set_variables(),
             }
         }
