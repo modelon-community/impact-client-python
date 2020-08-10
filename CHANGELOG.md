@@ -1,3 +1,18 @@
+# [1.0.0-beta.12](https://github.com/modelon-community/impact-client-python/compare/v1.0.0-beta.11...v1.0.0-beta.12) (2020-08-10)
+
+
+### Bug Fixes
+
+* Corrected the to_dict to be method rather than a property ([15297d2](https://github.com/modelon-community/impact-client-python/commit/15297d2cf24e56a98c373fb87061774dca012186))
+* Correcting the compilation/simulation status checks. ([d27d1c3](https://github.com/modelon-community/impact-client-python/commit/d27d1c323eca39f135289c580cb113da5beab4fc))
+* Removed an unwanted check from wait() function ([f91c5e0](https://github.com/modelon-community/impact-client-python/commit/f91c5e0d4512d7d1b662e1ce089735f483eb7e6f))
+* Updated the defaults for get_trajectories ([f77b7e4](https://github.com/modelon-community/impact-client-python/commit/f77b7e473a15376e588f7744768b45fc5c2c57d2))
+
+
+### Features
+
+* Added possibility to set parameter modifers as a part of experiment definition instead of using legacy routes ([9802d84](https://github.com/modelon-community/impact-client-python/commit/9802d84c6b116c5eddfd53462f630ab0869672f6))
+
 # [1.0.0-beta.11](https://github.com/modelon-community/impact-client-python/compare/v1.0.0-beta.10...v1.0.0-beta.11) (2020-07-28)
 
 
