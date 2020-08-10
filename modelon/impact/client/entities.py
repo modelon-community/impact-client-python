@@ -125,7 +125,7 @@ class Workspace:
 
     def create_experiment(self, spec):
         if isinstance(spec, SimpleExperimentDefinition):
-            options = spec.to_dict
+            options = spec.to_dict()
         else:
             options = spec
         resp = self._workspace_sal.experiment_create(self._workspace_id, options)
@@ -154,7 +154,7 @@ class Model:
 
     def compile(self, options):
         if isinstance(options, SimpleCompilationDefinition):
-            options = options.to_dict
+            options = options.to_dict()
         else:
             options = options
         return ModelExecutable(

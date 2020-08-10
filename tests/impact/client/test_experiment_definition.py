@@ -8,7 +8,7 @@ def test_experiment_definition(fmu, custom_function_no_param, options):
     spec = experiment_definition.SimpleExperimentDefinition(
         fmu, custom_function=custom_function_no_param, options=options
     )
-    config = spec.to_dict
+    config = spec.to_dict()
     assert config == {
         "experiment": {
             "analysis": {

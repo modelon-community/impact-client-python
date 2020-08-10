@@ -38,17 +38,22 @@ class TestModelExecutable:
         )
 
     def test_failed_compile_wait_done(self, fmu_compile_failed):
-        pytest.raises(
-            exceptions.OperationFailureError,
-            fmu_compile_failed.wait,
-            status=Status.DONE,
-        )
+        fmu_compile_failed.wait(status=Status.DONE)
+        assert fmu_compile_failed.is_complete()
+        assert fmu_compile_failed.info["run_info"]["status"] == "failed"
+        assert not fmu_compile_failed.is_successful()
+
+    def test_failed_compile_empty_log(self, fmu_compile_failed_empty_log):
+        pytest.raises(exceptions.EmptyLogError, fmu_compile_failed_empty_log.log)
 
     def test_cancelled_compilation(self, fmu_compile_cancelled):
-        assert fmu_compile_cancelled.id == 'Test'
-        assert fmu_compile_cancelled.is_complete()
         assert fmu_compile_cancelled.info["run_info"]["status"] == "cancelled"
-        assert not fmu_compile_cancelled.is_successful()
+        pytest.raises(
+            exceptions.OperationFailureError, fmu_compile_cancelled.is_successful,
+        )
+        pytest.raises(
+            exceptions.OperationFailureError, fmu_compile_cancelled.is_complete,
+        )
 
     def test_cancelled_compile_wait_done(self, fmu_compile_cancelled):
         pytest.raises(
@@ -56,9 +61,6 @@ class TestModelExecutable:
             fmu_compile_cancelled.wait,
             status=Status.DONE,
         )
-
-    def test_cancelled_compilation_log(self, fmu_compile_cancelled_log):
-        pytest.raises(exceptions.EmptyLogError, fmu_compile_cancelled_log.log)
 
 
 class TestExperiment:
@@ -69,7 +71,7 @@ class TestExperiment:
         assert experiment.info["run_info"]["status"] == "done"
         assert experiment.variables == ["PI.J", "inertia.I", "time"]
         assert experiment.log() == "Successful Log"
-        assert experiment.get_trajectories("PI.J") == {
+        assert experiment.get_trajectories("PI.J", with_time=True) == {
             'PI.J': [[5, 2, 9, 4]],
             'time': [[1, 2, 3, 4]],
         }
@@ -83,13 +85,13 @@ class TestExperiment:
             Case("case_1", "Workspace", "Test"),
             Case("case_2", "Workspace", "Test"),
         ]
-        assert batch_experiment.get_trajectories("PI.J") == {
+        assert batch_experiment.get_trajectories("PI.J", with_time=True) == {
             'PI.J': [[5, 2, 9, 4], [1, 2, 3, 4]],
             'time': [[1, 2, 3, 4], [1, 2, 3, 4]],
         }
 
     def test_running_execution(self, running_experiment):
-        assert not running_experiment.is_successful()
+        assert not running_experiment.is_complete()
         assert running_experiment.status() == "running"
 
     def test_failed_execution(self, failed_experiment):
@@ -107,11 +109,11 @@ class TestExperiment:
         )
 
     def test_failed_execution_wait_done(self, failed_experiment):
-        pytest.raises(
-            exceptions.OperationFailureError,
-            failed_experiment.wait,
-            status=Status.DONE,
-        )
+        failed_experiment.wait(status=Status.DONE)
+        assert failed_experiment.is_complete()
+        assert failed_experiment.status() == "done"
+        assert failed_experiment.info["run_info"]["failed"] == 1
+        assert not failed_experiment.is_successful()
 
     def test_failed_execution_trajectories(self, failed_experiment):
         pytest.raises(
@@ -128,11 +130,12 @@ class TestExperiment:
         assert failed_experiment.case("case_1") == Case("case_1", "Workspace", "Test")
 
     def test_cancelled_execution(self, cancelled_experiment):
-        assert cancelled_experiment.id == 'Test'
-        assert not cancelled_experiment.is_complete()
         assert cancelled_experiment.info["run_info"]["status"] == "done"
         pytest.raises(
             exceptions.OperationFailureError, cancelled_experiment.is_successful,
+        )
+        pytest.raises(
+            exceptions.OperationFailureError, cancelled_experiment.is_complete,
         )
 
     def test_cancelled_execution_wait_done(self, cancelled_experiment):

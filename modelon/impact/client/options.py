@@ -33,9 +33,15 @@ class ExecutionOption:
     def __repr__(self):
         return f"Execution option for '{self._name}'"
 
-    @property
     def to_dict(self):
         return self._options
+
+    @property
+    def defaults(self):
+        options = self._custom_func_sal.custom_function_default_options_get(
+            self._workspace_id, self._name
+        )
+        return options
 
     def simulation(self, **modified):
         self._options = _set_options(
@@ -115,6 +121,18 @@ class ExecutionOption:
             self._workspace_id, self._name
         )
 
+    def reset(self):
+        opts_del = {
+            "options": {option: list(self._options[option]) for option in self._options}
+        }
+        self._custom_func_sal.custom_function_options_delete(
+            self._workspace_id, self._name, opts_del
+        )
+        self._options = self.defaults
+        return ExecutionOption(
+            self._workspace_id, self._options, self._name, self._custom_func_sal
+        )
+
 
 class OptionAttributes:
     def __init__(
@@ -141,3 +159,17 @@ class OptionAttributes:
             self._workspace_id, self._name
         )
         return options[self._option_cat]
+
+    def reset(self):
+        opts_del = {
+            "options": {
+                self._option_cat: [option for option in self._options[self._option_cat]]
+            }
+        }
+        self._custom_func_sal.custom_function_options_delete(
+            self._workspace_id, self._name, opts_del
+        )
+        self._options[self._option_cat] = self.defaults
+        return ExecutionOption(
+            self._workspace_id, self._options, self._name, self._custom_func_sal
+        )
