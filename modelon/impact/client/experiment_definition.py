@@ -1,11 +1,9 @@
 from abc import ABC
 import collections as col
-from modelon.impact.client.operations import (
-    ModelExecutable,
-    _assert_successful_operation,
-)
+from modelon.impact.client.operations import ModelExecutable
 import modelon.impact.client.entities as entities
 from modelon.impact.client.options import ExecutionOption
+import modelon.impact.client.exceptions as exceptions
 
 BatchSim = col.namedtuple(
     "Variable", ["variable_name", "start_value", "end_value", "no_of_steps"]
@@ -32,6 +30,13 @@ def _assert_settable_parameters(fmu, **variables):
             )
 
 
+def _assert_successful_compilation(fmu):
+    if not fmu.is_successful():
+        raise exceptions.OperationFailureError(
+            "Compilation process has failed! See the log for more info!"
+        )
+
+
 class BaseExperimentDefinition(ABC):
     pass
 
@@ -47,7 +52,7 @@ class SimpleExperimentDefinition(BaseExperimentDefinition):
         **modifiers,
     ):
         _assert_valid_args(fmu, custom_function, options, batch)
-        _assert_successful_operation(fmu, "Compilation")
+        _assert_successful_compilation(fmu)
         _assert_settable_parameters(fmu, **modifiers)
         self.fmu = fmu
         self.custom_function = custom_function
