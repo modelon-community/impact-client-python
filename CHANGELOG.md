@@ -1,3 +1,10 @@
+# [1.0.0-beta.13](https://github.com/modelon-community/impact-client-python/compare/v1.0.0-beta.12...v1.0.0-beta.13) (2020-08-11)
+
+
+### Bug Fixes
+
+* Performance improvements - Raising exceptions instead of waiting for operation completion when calling compilation/simulation methods/properties ([5834241](https://github.com/modelon-community/impact-client-python/commit/58342416dd6e3d4947b7bcbe3f51bc4921b294b1))
+
 # [1.0.0-beta.12](https://github.com/modelon-community/impact-client-python/compare/v1.0.0-beta.11...v1.0.0-beta.12) (2020-08-10)
 
 
