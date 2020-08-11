@@ -23,6 +23,11 @@ class TestModelExecutable:
         assert not fmu_compile_running.is_complete()
         assert fmu_compile_running.status() == 'running'
 
+    def test_running_compilation_log(self, fmu_compile_running):
+        pytest.raises(
+            exceptions.OperationNotCompleteError, fmu_compile_running.log,
+        )
+
     def test_failed_compilation(self, fmu_compile_failed):
         assert fmu_compile_failed.id == 'Test'
         assert fmu_compile_failed.is_complete()
@@ -93,6 +98,11 @@ class TestExperiment:
     def test_running_execution(self, running_experiment):
         assert not running_experiment.is_complete()
         assert running_experiment.status() == "running"
+
+    def test_running_execution_log(self, running_experiment):
+        pytest.raises(
+            exceptions.OperationNotCompleteError, running_experiment.log,
+        )
 
     def test_failed_execution(self, failed_experiment):
         assert failed_experiment.id == 'Test'

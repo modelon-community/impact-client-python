@@ -9,30 +9,28 @@ logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
 
 
-def _assert_successful_operation(ops, operation_name="Operation"):
-    if ops.is_successful():
-        return
-    else:
+def _assert_successful_operation(is_successful, operation_name="Operation"):
+    if not is_successful:
         raise exceptions.OperationFailureError(
-            f"{operation_name} failed! Cause :- '{ops.log()}'."
-            "Try increasing the log_level for more logging!"
+            f"{operation_name} failed! See the log for more info!"
         )
 
 
 def _assert_is_running(status, operation_name="Operation"):
-    if status in ("running", "pending"):
-        return
-    else:
-        raise exceptions.OperationFailureError(
+    if status not in ("running", "pending"):
+        raise exceptions.OperationNotCompleteError(
             f"{operation_name} has completed and cannot be cancelled!"
         )
 
 
-def _wait_to_complete(ops, operation_name="Operation"):
-    while ops.status() in ("running", "pending"):
-        time.sleep(0.5)
-        logging.info(f"{operation_name} in progress! Status : {ops.status()}")
-    if ops.status() in ('cancelled', 'stopping'):
+def _assert_is_complete(status, operation_name="Operation"):
+    if status in ("running", "pending"):
+        raise exceptions.OperationNotCompleteError(
+            f"{operation_name} is still in progress! Status : {status}."
+            f" Please use the wait() method on the {operation_name} operation"
+            " to wait until completion!"
+        )
+    if status in ('cancelled', 'stopping'):
         raise exceptions.OperationFailureError(
             f"{operation_name} was cancelled before completion! "
             f"Log file generated for cancelled {operation_name} is empty!"
@@ -95,7 +93,7 @@ class Operation(ABC):
                 raise exceptions.OperationTimeOutError(
                     f"Time exceeded the set timeout - {timeout}s!"
                 )
-            logging.info(f"Operation in progress! Status : {self.status()}")
+            logger.info(f"Operation in progress! Status : {self.status()}")
 
 
 class ModelExecutable(Operation):
@@ -129,27 +127,11 @@ class ModelExecutable(Operation):
         self._model_exe_sal.compile_cancel(self._workspace_id, self._fmu_id)
 
     def is_successful(self):
-        _wait_to_complete(
-            ModelExecutable(
-                self._workspace_id,
-                self._fmu_id,
-                self._workspace_sal,
-                self._model_exe_sal,
-            ),
-            "Compilation",
-        )
+        _assert_is_complete(self.status(), "Compilation")
         return True if self.info["run_info"]["status"] == "successful" else False
 
     def log(self):
-        _wait_to_complete(
-            ModelExecutable(
-                self._workspace_id,
-                self._fmu_id,
-                self._workspace_sal,
-                self._model_exe_sal,
-            ),
-            "Compilation",
-        )
+        _assert_is_complete(self.status(), "Compilation")
         log = self._model_exe_sal.compile_log(self._workspace_id, self._fmu_id)
         if log:
             return log
@@ -164,15 +146,7 @@ class ModelExecutable(Operation):
 
     @property
     def settable_parameters(self):
-        _assert_successful_operation(
-            ModelExecutable(
-                self._workspace_id,
-                self._fmu_id,
-                self._workspace_sal,
-                self._model_exe_sal,
-            ),
-            "Compilation",
-        )
+        _assert_successful_operation(self.is_successful(), "Compilation")
         return self._model_exe_sal.settable_parameters_get(
             self._workspace_id, self._fmu_id
         )
@@ -183,15 +157,7 @@ class ModelExecutable(Operation):
 
     @property
     def metadata(self):
-        _assert_successful_operation(
-            ModelExecutable(
-                self._workspace_id,
-                self._fmu_id,
-                self._workspace_sal,
-                self._model_exe_sal,
-            ),
-            "Compilation",
-        )
+        _assert_successful_operation(self.is_successful(), "Compilation")
         return self._model_exe_sal.ss_fmu_metadata_get(self._workspace_id, self._fmu_id)
 
 
@@ -224,12 +190,7 @@ class Experiment(Operation):
         self._exp_sal.execute_cancel(self._workspace_id, self._exp_id)
 
     def is_successful(self):
-        _wait_to_complete(
-            Experiment(
-                self._workspace_id, self._exp_id, self._workspace_sal, self._exp_sal
-            ),
-            "Simulation",
-        )
+        _assert_is_complete(self.status(), "Simulation")
         if (
             self.info["run_info"]["status"] == "done"
             and self.info["run_info"]["cancelled"] == 0
@@ -242,12 +203,7 @@ class Experiment(Operation):
     def log(self, case_id="case_1"):
         # TO DO - Update to use the compound log api from legacy routes to generate
         # combined log for batch simulations
-        _wait_to_complete(
-            Experiment(
-                self._workspace_id, self._exp_id, self._workspace_sal, self._exp_sal
-            ),
-            "Simulation",
-        )
+        _assert_is_complete(self.status(), "Simulation")
         log = self._exp_sal.case_get_log(self._workspace_id, self._exp_id, case_id)
         if log:
             return log
@@ -262,12 +218,7 @@ class Experiment(Operation):
 
     @property
     def variables(self):
-        _assert_successful_operation(
-            Experiment(
-                self._workspace_id, self._exp_id, self._workspace_sal, self._exp_sal,
-            ),
-            "Simulation",
-        )
+        _assert_successful_operation(self.is_successful(), "Simulation")
         return self._exp_sal.result_variables_get(self._workspace_id, self._exp_id)
 
     @property
@@ -283,12 +234,7 @@ class Experiment(Operation):
         )
 
     def get_trajectories(self, *variables, with_time=False, pretty_print=False):
-        _assert_successful_operation(
-            Experiment(
-                self._workspace_id, self._exp_id, self._workspace_sal, self._exp_sal,
-            ),
-            "Simulation",
-        )
+        _assert_successful_operation(self.is_successful(), "Simulation")
         variables = [variable for variable in variables]
         if with_time and "time" not in self.variables:
             raise ValueError("'time' variable is not present in the result variables!")
@@ -311,12 +257,7 @@ class Experiment(Operation):
 
     def result(self, case_id="case_1"):
         # TO DO - Update to get the results from legacy routes in the future!
-        _assert_successful_operation(
-            Experiment(
-                self._workspace_id, self._exp_id, self._workspace_sal, self._exp_sal,
-            ),
-            "Simulation",
-        )
+        _assert_successful_operation(self.is_successful(), "Simulation")
         return self._exp_sal.case_result_get(self._workspace_id, self._exp_id, case_id)
 
     def cases(self):
@@ -356,10 +297,10 @@ class Case:
         return self._exp_sal.case_get(self._workspace_id, self._exp_id, self._case_id)
 
     def log(self):
-        _wait_to_complete(
+        _assert_is_complete(
             Experiment(
                 self._workspace_id, self._exp_id, self._workspace_sal, self._exp_sal
-            ),
+            ).status(),
             "Simulation",
         )
         log = self._exp_sal.case_get_log(
@@ -376,7 +317,7 @@ class Case:
         _assert_successful_operation(
             Experiment(
                 self._workspace_id, self._exp_id, self._workspace_sal, self._exp_sal,
-            ),
+            ).is_successful(),
             "Simulation",
         )
         return self._exp_sal.case_result_get(
