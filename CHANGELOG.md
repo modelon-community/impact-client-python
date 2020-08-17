@@ -1,3 +1,10 @@
+# [1.0.0-beta.14](https://github.com/modelon-community/impact-client-python/compare/v1.0.0-beta.13...v1.0.0-beta.14) (2020-08-17)
+
+
+### Bug Fixes
+
+* Upadted the supported api version number ([cc2540e](https://github.com/modelon-community/impact-client-python/commit/cc2540e916784049ac17eae1f526be1c64c12d09))
+
 # [1.0.0-beta.13](https://github.com/modelon-community/impact-client-python/compare/v1.0.0-beta.12...v1.0.0-beta.13) (2020-08-11)
 
 
