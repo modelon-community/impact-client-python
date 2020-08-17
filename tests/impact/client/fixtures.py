@@ -96,7 +96,7 @@ def api_get_metadata(mock_server_base):
 
 @pytest.fixture
 def sem_ver_check(mock_server_base):
-    json = {"version": "1.2.1"}
+    json = {"version": "1.4.1"}
 
     return with_json_route(mock_server_base, 'GET', 'api/', json)
 
@@ -636,6 +636,7 @@ def fmu_compile_failed():
         "Workspace", "Test", ws_service, model_exe_service
     )
 
+
 @pytest.fixture
 def fmu_compile_failed_empty_log():
     ws_service = unittest.mock.MagicMock()
@@ -647,6 +648,7 @@ def fmu_compile_failed_empty_log():
         "Workspace", "Test", ws_service, model_exe_service
     )
 
+
 @pytest.fixture
 def fmu_compile_cancelled():
     ws_service = unittest.mock.MagicMock()
@@ -656,9 +658,6 @@ def fmu_compile_cancelled():
     return modelon.impact.client.operations.ModelExecutable(
         "Workspace", "Test", ws_service, model_exe_service
     )
-
-
-
 
 
 @pytest.fixture

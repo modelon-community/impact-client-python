@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 
 
 class Client:
-    _SUPPORTED_VERSION_RANGE = ">=1.2.1,<2.0.0"
+    _SUPPORTED_VERSION_RANGE = ">=1.4.1,<2.0.0"
 
     def __init__(
         self,
