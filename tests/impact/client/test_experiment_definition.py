@@ -4,9 +4,11 @@ import modelon.impact.client.exceptions as exceptions
 from tests.impact.client.fixtures import *
 
 
-def test_experiment_definition(fmu, custom_function_no_param, options):
+def test_experiment_definition(fmu, custom_function_no_param):
     spec = experiment_definition.SimpleExperimentDefinition(
-        fmu, custom_function=custom_function_no_param, options=options
+        fmu,
+        custom_function=custom_function_no_param,
+        options=custom_function_no_param.options(),
     )
     config = spec.to_dict()
     assert config == {
@@ -14,13 +16,42 @@ def test_experiment_definition(fmu, custom_function_no_param, options):
             "analysis": {
                 "analysis_function": "dynamic",
                 "parameters": {},
-                "simulation_options": {"ncp": 2000},
-                "solver_options": {"rtol": 0.0001},
+                "simulation_options": {"ncp": 500},
+                "solver_options": {},
                 "simulation_log_level": "WARNING",
             },
             "fmu_id": "Test",
-            "modifiers": {"variables": {}},
+            "modifiers": {'variables': {}},
         }
+    }
+
+
+def test_experiment_definition_with_options(fmu, custom_function_no_param):
+    spec = experiment_definition.SimpleExperimentDefinition(
+        fmu,
+        custom_function=custom_function_no_param,
+        options=custom_function_no_param.options()
+        .with_simulation_options(ncp=2000, rtol=0.0001)
+        .with_solver_options(a=1),
+    )
+    config = spec.to_dict()
+    assert config["experiment"]["analysis"]["simulation_options"] == {
+        "ncp": 2000,
+        "rtol": 0.0001,
+    }
+    assert config["experiment"]["analysis"]["solver_options"] == {"a": 1}
+
+
+def test_experiment_definition_with_modifier(fmu, custom_function_no_param):
+    spec = experiment_definition.SimpleExperimentDefinition(
+        fmu,
+        custom_function=custom_function_no_param,
+        options=custom_function_no_param.options(),
+    ).with_modifiers(v=1, h0=experiment_definition.Range(0.1, 0.5, 3))
+    config = spec.to_dict()
+    assert config["experiment"]["modifiers"]["variables"] == {
+        'h0': 'range(0.1,0.5,3)',
+        'v': 1,
     }
 
 

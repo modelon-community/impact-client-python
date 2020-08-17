@@ -1,6 +1,5 @@
 import os
 from modelon.impact.client.experiment_definition import SimpleExperimentDefinition
-from modelon.impact.client.compilation_definition import SimpleCompilationDefinition
 from modelon.impact.client.operations import (
     ModelExecutable,
     Experiment,
@@ -136,6 +135,15 @@ class Workspace:
             self._exp_sal,
         )
 
+    def execute(self, specification):
+        exp_id = self.create_experiment(specification).id
+        return Experiment(
+            self._workspace_id,
+            self._exp_sal.experiment_execute(self._workspace_id, exp_id),
+            self._workspace_sal,
+            self._exp_sal,
+        )
+
 
 class Model:
     def __init__(
@@ -152,14 +160,31 @@ class Model:
     def __eq__(self, obj):
         return isinstance(obj, Model) and obj.class_name == self.class_name
 
-    def compile(self, options):
-        if isinstance(options, SimpleCompilationDefinition):
-            options = options.to_dict()
-        else:
-            options = options
+    def compile(
+        self,
+        options,
+        compiler_log_level="info",
+        fmi_target="me",
+        fmi_version="2.0",
+        platform="auto",
+    ):
+        if not isinstance(options, ExecutionOption):
+            raise TypeError("Options must be an instance of ExecutionOption class")
+
+        body = {
+            "input": {
+                "class_name": self.class_name,
+                "compiler_options": options.to_dict()["compiler"],
+                "runtime_options": options.to_dict()["runtime"],
+                "compiler_log_level": compiler_log_level,
+                "fmi_target": fmi_target,
+                "fmi_version": fmi_version,
+                "platform": platform,
+            }
+        }
         return ModelExecutable(
             self._workspace_id,
-            self._model_exe_sal.compile_model(self._workspace_id, options),
+            self._model_exe_sal.compile_model(self._workspace_id, body),
             self._workspace_sal,
             self._model_exe_sal,
         )
@@ -239,13 +264,6 @@ class CustomFunction:
         return {p.name: p.value for p in self._param_by_name.values()}
 
     def options(self):
-        options = self._custom_func_sal.custom_function_options_get(
-            self._workspace_id, self.name
-        )
-        opts_del = {"options": {option: list(options[option]) for option in options}}
-        self._custom_func_sal.custom_function_options_delete(
-            self._workspace_id, self.name, opts_del
-        )
         options = self._custom_func_sal.custom_function_options_get(
             self._workspace_id, self.name
         )
