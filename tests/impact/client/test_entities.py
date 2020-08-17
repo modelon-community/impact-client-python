@@ -175,13 +175,13 @@ class TestWorkspace:
 
 
 class TestModel:
-    def test_model_compile(self):
+    def test_model_compile(self, options):
         model_exe_service = unittest.mock.MagicMock()
         model_exe_service.compile_model.return_value = 'test_pid_fmu_id'
         model = modelon.impact.client.entities.Model(
             'Test.PID', 'AwesomeWorkspace', model_exe_service=model_exe_service,
         )
-        fmu = model.compile({})
+        fmu = model.compile(options)
         assert fmu == modelon.impact.client.operations.ModelExecutable(
             'AwesomeWorkspace', fmu.id
         )
