@@ -12,14 +12,6 @@ Subpackages
 Submodules
 ----------
 
-modelon.impact.client.compilation\_definition module
-----------------------------------------------------
-
-.. automodule:: modelon.impact.client.compilation_definition
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 modelon.impact.client.credential\_manager module
 ------------------------------------------------
 
