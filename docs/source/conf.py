@@ -22,6 +22,7 @@ copyright = '2020, Modelon'
 author = 'Modelon'
 
 # The full version, including alpha/beta/rc tags
+# TODO : Need to ensure version number is set correctly with the release bot.
 release = '1.0.0'
 
 
