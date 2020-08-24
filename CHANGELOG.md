@@ -1,3 +1,10 @@
+# [1.0.0-beta.15](https://github.com/modelon-community/impact-client-python/compare/v1.0.0-beta.14...v1.0.0-beta.15) (2020-08-24)
+
+
+### Bug Fixes
+
+* Removing the pandas dependency due to performance hits ([50fca3a](https://github.com/modelon-community/impact-client-python/commit/50fca3aae4cbf6ccc3e33d1979ef8d58244d0f61))
+
 # [1.0.0-beta.14](https://github.com/modelon-community/impact-client-python/compare/v1.0.0-beta.13...v1.0.0-beta.14) (2020-08-17)
 
 
