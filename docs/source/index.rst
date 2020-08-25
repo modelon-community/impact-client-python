@@ -18,6 +18,7 @@ Python companion library for the Modelon Impact solution that helps with the fol
 Can be used for workflows entierly done server side
 
 .. code-block:: python
+
    from modelon.impact.client import Client
    client = Client(url=<impact-domain>)
 
@@ -29,7 +30,9 @@ Can be used for workflows entierly done server side
 
    # Compile model
    model = workspace.get_model("BouncingBall")
-   fmu = model.compile(dynamic_opts.with_compiler_options(generate_html_diagnostic=True)).wait()
+   fmu = model.compile(
+       dynamic_opts.with_compiler_options(generate_html_diagnostic=True)
+   ).wait()
 
    # Execute experiment
    experiment_def = experiment_definition.SimpleExperimentDefinition(
@@ -49,6 +52,7 @@ Can be used for workflows entierly done server side
 Or be used to fetch artifacts to do some analysis locally
 
 .. code-block:: python
+
    from modelon.impact.client import Client
    client = Client(url=<impact-domain>)
 
