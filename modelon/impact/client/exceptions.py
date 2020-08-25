@@ -18,5 +18,9 @@ class OperationNotCompleteError(Error):
     pass
 
 
+class OperationCompleteError(Error):
+    pass
+
+
 class EmptyLogError(Error):
     pass
