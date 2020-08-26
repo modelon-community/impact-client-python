@@ -37,9 +37,13 @@ def _assert_is_complete(status, operation_name="Operation"):
         )
 
 
-def _assert_variable_in_result(variable, result_variables):
-    if variable not in result_variables:
-        raise ValueError(f"{variable} is not present in the result variables!")
+def _assert_variable_in_result(variables, result_variables):
+    add = set(variables) - set(result_variables)
+    if add:
+        raise ValueError(
+            f"Variable(s) '{', '.join(add)}' {'are' if len(add)>1 else 'is'} not"
+            " present in the result"
+        )
 
 
 def create_result_dict(variables, workspace_id, exp_id, case_id, exp_sal):
@@ -240,6 +244,23 @@ class Experiment(Operation):
             self._workspace_sal,
         )
 
+    def trajectories(self, variables):
+        if not variables or not isinstance(variables, list):
+            raise ValueError(
+                "Please specify the list of result keys for the trajectories of "
+                "intrest!"
+            )
+        _assert_successful_operation(self.is_successful(), "Simulation")
+        _assert_variable_in_result(variables, self.variables())
+
+        response = self._exp_sal.trajectories_get(
+            self._workspace_id, self._exp_id, variables
+        )
+        return {
+            case.id: {variable: response[i][j] for i, variable in enumerate(variables)}
+            for j, case in enumerate(self.cases())
+        }
+
 
 class Case:
     def __init__(
@@ -308,12 +329,12 @@ class Result(Mapping):
         self._exp_id = exp_id
         self._workspace_sal = workspace_service
         self._exp_sal = exp_service
-        self.variables = Experiment(
+        self._variables = Experiment(
             self._workspace_id, self._exp_id, self._workspace_sal, self._exp_sal
         ).variables()
 
     def __getitem__(self, key):
-        _assert_variable_in_result(key, self.variables)
+        _assert_variable_in_result([key], self._variables)
         response = self._exp_sal.trajectories_get(
             self._workspace_id, self._exp_id, [key]
         )
@@ -322,7 +343,7 @@ class Result(Mapping):
 
     def __iter__(self):
         data = create_result_dict(
-            self.variables,
+            self._variables,
             self._workspace_id,
             self._exp_id,
             self._case_id,
@@ -331,4 +352,4 @@ class Result(Mapping):
         return data.__iter__()
 
     def __len__(self):
-        return self.variables.__len__()
+        return self._variables.__len__()

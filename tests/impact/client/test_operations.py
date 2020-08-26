@@ -124,6 +124,22 @@ class TestExperiment:
             "case_1", "Workspace", "Test"
         )
 
+    def test_exp_trajectories_single_run(self, experiment):
+        exp = experiment.trajectories(['inertia.I', 'time'])
+        assert exp['case_1']['inertia.I'] == [1, 2, 3, 4]
+        assert exp['case_1']['time'] == [5, 2, 9, 4]
+
+    def test_exp_trajectories_batch_execute(self, batch_experiment):
+        exp = batch_experiment.trajectories(['inertia.I'])
+        assert exp['case_1']['inertia.I'] == [1, 2, 3, 4]
+        assert exp['case_2']['inertia.I'] == [14, 4, 4, 74]
+
+    def test_exp_trajectories_no_keys(self, experiment):
+        pytest.raises(ValueError, experiment.trajectories, [])
+
+    def test_exp_trajectories_invalid_keys(self, experiment):
+        pytest.raises(ValueError, experiment.trajectories, ['s'])
+
 
 class TestCase:
     def test_case(self, experiment):
