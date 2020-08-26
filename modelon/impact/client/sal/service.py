@@ -2,7 +2,7 @@ import sys
 import logging
 import requests
 import urllib.parse
-import modelon.impact.client.sal.exceptions as exceptions
+from modelon.impact.client.sal import exceptions
 
 
 logger = logging.getLogger(__name__)

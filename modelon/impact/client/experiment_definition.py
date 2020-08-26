@@ -1,8 +1,8 @@
 from abc import ABC, abstractmethod
 from modelon.impact.client.operations import ModelExecutable
-import modelon.impact.client.entities as entities
+from modelon.impact.client import entities
 from modelon.impact.client.options import ExecutionOption
-import modelon.impact.client.exceptions as exceptions
+from modelon.impact.client import exceptions
 
 
 def _assert_valid_args(fmu, custom_function, options):
