@@ -3,7 +3,7 @@ import logging
 from abc import ABC, abstractmethod
 from collections.abc import Mapping
 from enum import Enum
-import modelon.impact.client.exceptions as exceptions
+from modelon.impact.client import exceptions
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
