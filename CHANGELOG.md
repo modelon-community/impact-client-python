@@ -1,3 +1,10 @@
+# [1.0.0-beta.17](https://github.com/modelon-community/impact-client-python/compare/v1.0.0-beta.16...v1.0.0-beta.17) (2020-08-26)
+
+
+### Bug Fixes
+
+* changed imports to be python 3.6 compatible ([ebbbf52](https://github.com/modelon-community/impact-client-python/commit/ebbbf524af365a56f263a349caebbb73927691e9))
+
 # [1.0.0-beta.16](https://github.com/modelon-community/impact-client-python/compare/v1.0.0-beta.15...v1.0.0-beta.16) (2020-08-25)
 
 
