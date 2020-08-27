@@ -1,10 +1,11 @@
 import logging
 import modelon.impact.client.entities
 import modelon.impact.client.sal.service
-from semantic_version import SimpleSpec, Version  # type: ignore
-from modelon.impact.client import exceptions
 import modelon.impact.client.sal.exceptions
 import modelon.impact.client.credential_manager
+
+from semantic_version import SimpleSpec, Version  # type: ignore
+from modelon.impact.client import exceptions
 
 logger = logging.getLogger(__name__)
 

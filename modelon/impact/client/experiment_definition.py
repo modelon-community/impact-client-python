@@ -1,12 +1,11 @@
-from abc import ABC, abstractmethod
-from modelon.impact.client.operations import ModelExecutable
 from modelon.impact.client import entities
+from abc import ABC, abstractmethod
 from modelon.impact.client.options import ExecutionOption
 from modelon.impact.client import exceptions
 
 
 def _assert_valid_args(fmu, custom_function, options):
-    if not isinstance(fmu, ModelExecutable):
+    if not isinstance(fmu, entities.ModelExecutable):
         raise TypeError("Fmu must be an instance of ModelExecutable class")
     if not isinstance(custom_function, entities.CustomFunction):
         raise TypeError("Custom_function must be an instance of CustomFunction class")
@@ -15,12 +14,13 @@ def _assert_valid_args(fmu, custom_function, options):
 
 
 def _assert_settable_parameters(fmu, **variables):
-    for name in variables.keys():
-        if name not in fmu.settable_parameters():
-            raise KeyError(
-                f"{name} is not a valid parameter modifier! "
-                f"Settable parameters are {fmu.settable_parameters()}"
-            )
+    add = set(variables.keys()) - set(fmu.settable_parameters())
+    if add:
+        raise KeyError(
+            f"Paramter(s) '{', '.join(add)}' {'are' if len(add)>1 else 'is'} "
+            "not a valid parameter modifier! Settable parameters"
+            f" are {fmu.settable_parameters()}"
+        )
 
 
 def _assert_successful_compilation(fmu):

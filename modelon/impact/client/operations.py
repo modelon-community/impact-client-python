@@ -1,19 +1,13 @@
 import time
 import logging
+import modelon.impact.client.entities as entities
+
 from abc import ABC, abstractmethod
-from collections.abc import Mapping
-from enum import Enum
 from modelon.impact.client import exceptions
+from enum import Enum
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
-
-
-def _assert_successful_operation(is_successful, operation_name="Operation"):
-    if not is_successful:
-        raise exceptions.OperationFailureError(
-            f"{operation_name} failed! See the log for more info!"
-        )
 
 
 def _assert_is_running(status, operation_name="Operation"):
@@ -21,38 +15,6 @@ def _assert_is_running(status, operation_name="Operation"):
         raise exceptions.OperationNotCompleteError(
             f"{operation_name} has completed and cannot be cancelled!"
         )
-
-
-def _assert_is_complete(status, operation_name="Operation"):
-    if status in (Status.RUNNING, Status.PENDING):
-        raise exceptions.OperationNotCompleteError(
-            f"{operation_name} is still in progress! Status : {status}."
-            f" Please use the wait() method on the {operation_name} operation"
-            " to wait until completion!"
-        )
-    if status in (Status.CANCELLED, Status.STOPPING):
-        raise exceptions.OperationFailureError(
-            f"{operation_name} was cancelled before completion! "
-            f"Log file generated for cancelled {operation_name} is empty!"
-        )
-
-
-def _assert_variable_in_result(variables, result_variables):
-    add = set(variables) - set(result_variables)
-    if add:
-        raise ValueError(
-            f"Variable(s) '{', '.join(add)}' {'are' if len(add)>1 else 'is'} not"
-            " present in the result"
-        )
-
-
-def create_result_dict(variables, workspace_id, exp_id, case_id, exp_sal):
-    response = exp_sal.trajectories_get(workspace_id, exp_id, variables)
-    case_index = int(case_id.split('_')[1])
-    data = {
-        variable: response[i][case_index - 1] for i, variable in enumerate(variables)
-    }
-    return data
 
 
 class Status(Enum):
@@ -74,10 +36,6 @@ class Operation(ABC):
 
     @abstractmethod
     def cancel(self):
-        pass
-
-    @abstractmethod
-    def is_successful(self):
         pass
 
     def is_complete(self):
@@ -102,7 +60,7 @@ class Operation(ABC):
                 )
 
 
-class ModelExecutable(Operation):
+class ModelExecutableOperation(Operation):
     def __init__(
         self, workspace_id, fmu_id, workspace_service=None, model_exe_service=None,
     ):
@@ -113,26 +71,17 @@ class ModelExecutable(Operation):
         self._model_exe_sal = model_exe_service
 
     def __repr__(self):
-        return f"FMU with id '{self._fmu_id}'"
+        return f"Model executable operations for id '{self._fmu_id}'"
 
     def __eq__(self, obj):
-        return isinstance(obj, ModelExecutable) and obj._fmu_id == self._fmu_id
+        return isinstance(obj, ModelExecutableOperation) and obj._fmu_id == self._fmu_id
 
     @property
     def id(self):
         return self._fmu_id
 
-    @property
-    def info(self):
-        return self._workspace_sal.fmu_get(self._workspace_id, self._fmu_id)
-
-    @property
-    def metadata(self):
-        _assert_successful_operation(self.is_successful(), "Compilation")
-        return self._model_exe_sal.ss_fmu_metadata_get(self._workspace_id, self._fmu_id)
-
     def data(self):
-        return ModelExecutable(
+        return entities.ModelExecutable(
             self._workspace_id, self._fmu_id, self._workspace_sal, self._model_exe_sal,
         )
 
@@ -147,28 +96,8 @@ class ModelExecutable(Operation):
         _assert_is_running(self.status(), "Compilation")
         self._model_exe_sal.compile_cancel(self._workspace_id, self._fmu_id)
 
-    def is_successful(self):
-        _assert_is_complete(self.status(), "Compilation")
-        return True if self.info["run_info"]["status"] == "successful" else False
 
-    def log(self):
-        _assert_is_complete(self.status(), "Compilation")
-        log = self._model_exe_sal.compile_log(self._workspace_id, self._fmu_id)
-        if log:
-            return log
-        else:
-            raise exceptions.EmptyLogError(
-                "Empty log file! Try to increase the log level for more logging!"
-            )
-
-    def settable_parameters(self):
-        _assert_successful_operation(self.is_successful(), "Compilation")
-        return self._model_exe_sal.settable_parameters_get(
-            self._workspace_id, self._fmu_id
-        )
-
-
-class Experiment(Operation):
+class ExperimentOperation(Operation):
     def __init__(
         self, workspace_id, exp_id, workspace_service=None, exp_service=None,
     ):
@@ -179,21 +108,17 @@ class Experiment(Operation):
         self._exp_sal = exp_service
 
     def __repr__(self):
-        return f"Experiment with id '{self._exp_id}'"
+        return f"Experiment operation for id '{self._exp_id}'"
 
     def __eq__(self, obj):
-        return isinstance(obj, Experiment) and obj._exp_id == self._exp_id
+        return isinstance(obj, ExperimentOperation) and obj._exp_id == self._exp_id
 
     @property
     def id(self):
         return self._exp_id
 
-    @property
-    def info(self):
-        return self._workspace_sal.experiment_get(self._workspace_id, self._exp_id)
-
     def data(self):
-        return Experiment(
+        return entities.Experiment(
             self._workspace_id, self._exp_id, self._workspace_sal, self._exp_sal
         )
 
@@ -205,151 +130,3 @@ class Experiment(Operation):
     def cancel(self):
         _assert_is_running(self.status(), "Simulation")
         self._exp_sal.execute_cancel(self._workspace_id, self._exp_id)
-
-    def is_successful(self):
-        _assert_is_complete(self.status(), "Simulation")
-        if (
-            self.info["run_info"]["status"] == "done"
-            and self.info["run_info"]["cancelled"] == 0
-            and self.info["run_info"]["failed"] == 0
-        ):
-            return True
-        else:
-            return False
-
-    def variables(self):
-        _assert_successful_operation(self.is_successful(), "Simulation")
-        return self._exp_sal.result_variables_get(self._workspace_id, self._exp_id)
-
-    def cases(self):
-        resp = self._exp_sal.cases_get(self._workspace_id, self._exp_id)
-        return [
-            Case(
-                case["id"],
-                self._workspace_id,
-                self._exp_id,
-                self._exp_sal,
-                self._workspace_sal,
-            )
-            for case in resp["data"]["items"]
-        ]
-
-    def case(self, case_id):
-        resp = self._exp_sal.case_get(self._workspace_id, self._exp_id, case_id)
-        return Case(
-            resp["id"],
-            self._workspace_id,
-            self._exp_id,
-            self._exp_sal,
-            self._workspace_sal,
-        )
-
-    def trajectories(self, variables):
-        if not variables or not isinstance(variables, list):
-            raise ValueError(
-                "Please specify the list of result keys for the trajectories of "
-                "intrest!"
-            )
-        _assert_successful_operation(self.is_successful(), "Simulation")
-        _assert_variable_in_result(variables, self.variables())
-
-        response = self._exp_sal.trajectories_get(
-            self._workspace_id, self._exp_id, variables
-        )
-        return {
-            case.id: {variable: response[i][j] for i, variable in enumerate(variables)}
-            for j, case in enumerate(self.cases())
-        }
-
-
-class Case:
-    def __init__(
-        self, case_id, workspace_id, exp_id, exp_service=None, workspace_service=None
-    ):
-        self._case_id = case_id
-        self._workspace_id = workspace_id
-        self._exp_id = exp_id
-        self._exp_sal = exp_service
-        self._workspace_sal = workspace_service
-
-    def __repr__(self):
-        return f"Case with id '{self._case_id}'"
-
-    def __eq__(self, obj):
-        return isinstance(obj, Case) and obj._case_id == self._case_id
-
-    @property
-    def id(self):
-        return self._case_id
-
-    @property
-    def info(self):
-        return self._exp_sal.case_get(self._workspace_id, self._exp_id, self._case_id)
-
-    def is_successful(self):
-        if self.info["run_info"]["status"] == "successful":
-            return True
-        else:
-            return False
-
-    def log(self):
-        log = self._exp_sal.case_get_log(
-            self._workspace_id, self._exp_id, self._case_id
-        )
-        if log:
-            return log
-        else:
-            raise exceptions.EmptyLogError(
-                "Empty log file! Try to increase the log level for more logging!"
-            )
-
-    def result(self):
-        _assert_successful_operation(self.is_successful(), self._case_id)
-        return self._exp_sal.case_result_get(
-            self._workspace_id, self._exp_id, self._case_id
-        )
-
-    def trajectories(self):
-        _assert_successful_operation(self.is_successful(), self._case_id)
-        return Result(
-            self._case_id,
-            self._workspace_id,
-            self._exp_id,
-            self._workspace_sal,
-            self._exp_sal,
-        )
-
-
-class Result(Mapping):
-    def __init__(
-        self, case_id, workspace_id, exp_id, workspace_service=None, exp_service=None
-    ):
-        self._case_id = case_id
-        self._workspace_id = workspace_id
-        self._exp_id = exp_id
-        self._workspace_sal = workspace_service
-        self._exp_sal = exp_service
-        self._variables = Experiment(
-            self._workspace_id, self._exp_id, self._workspace_sal, self._exp_sal
-        ).variables()
-
-    def __getitem__(self, key):
-        _assert_variable_in_result([key], self._variables)
-        response = self._exp_sal.trajectories_get(
-            self._workspace_id, self._exp_id, [key]
-        )
-        case_index = int(self._case_id.split('_')[1])
-        return response[0][case_index - 1]
-
-    def __iter__(self):
-        data = create_result_dict(
-            self._variables,
-            self._workspace_id,
-            self._exp_id,
-            self._case_id,
-            self._exp_sal,
-        )
-        return data.__iter__()
-
-    def __len__(self):
-        return self._variables.__len__()
