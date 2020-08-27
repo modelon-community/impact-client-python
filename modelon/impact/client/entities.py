@@ -1,10 +1,70 @@
 import os
+from modelon.impact.client import operations
+
 from modelon.impact.client.experiment_definition import SimpleExperimentDefinition
-from modelon.impact.client.operations import (
-    ModelExecutable,
-    Experiment,
-)
+from collections.abc import Mapping
 from modelon.impact.client.options import ExecutionOption
+from modelon.impact.client import exceptions
+from enum import Enum
+
+
+def _assert_successful_operation(is_successful, operation_name="Operation"):
+    if not is_successful:
+        raise exceptions.OperationFailureError(
+            f"{operation_name} failed! See the log for more info!"
+        )
+
+
+def _assert_is_complete(status, operation_name="Operation"):
+    if status not in (ModelExecutableStatus.SUCCESSFUL, ExperimentStatus.DONE):
+        if status in (ModelExecutableStatus.NOTSTARTED, ExperimentStatus.NOTSTARTED):
+            raise exceptions.OperationNotCompleteError(
+                f"{operation_name} is still in progress! Status : {status}."
+                f" Please call the wait() method on the {operation_name} operation"
+                " to wait until completion!"
+            )
+        elif status in (ModelExecutableStatus.CANCELLED, ExperimentStatus.CANCELLED):
+            raise exceptions.OperationFailureError(
+                f"{operation_name} was cancelled before completion! "
+                f"Log file generated for cancelled {operation_name} is empty!"
+            )
+
+
+def _assert_variable_in_result(variables, result_variables):
+    add = set(variables) - set(result_variables)
+    if add:
+        raise ValueError(
+            f"Variable(s) '{', '.join(add)}' {'are' if len(add)>1 else 'is'} not"
+            " present in the result"
+        )
+
+
+def _create_result_dict(variables, workspace_id, exp_id, case_id, exp_sal):
+    response = exp_sal.trajectories_get(workspace_id, exp_id, variables)
+    case_index = int(case_id.split('_')[1])
+    data = {
+        variable: response[i][case_index - 1] for i, variable in enumerate(variables)
+    }
+    return data
+
+
+class ModelExecutableStatus(Enum):
+    NOTSTARTED = "not_started"
+    CANCELLED = "cancelled"
+    SUCCESSFUL = "successful"
+    FAILED = "failed"
+
+
+class ExperimentStatus(Enum):
+    NOTSTARTED = "not_started"
+    CANCELLED = "cancelled"
+    DONE = "done"
+
+
+class CaseStatus(Enum):
+    SUCCESSFUL = "successful"
+    FAILED = "failed"
+    CANCELLED = "cancelled"
 
 
 class Workspace:
@@ -60,11 +120,6 @@ class Workspace:
     def delete(self):
         self._workspace_sal.workspace_delete(self._workspace_id)
 
-    def get_model(self, class_name):
-        return Model(
-            class_name, self._workspace_id, self._workspace_sal, self._model_exe_sal
-        )
-
     def import_library(self, path_to_lib):
         return self._workspace_sal.library_import(self._workspace_id, path_to_lib)
 
@@ -90,6 +145,11 @@ class Workspace:
             self._workspace_sal,
             self._model_exe_sal,
             self._exp_sal,
+        )
+
+    def get_model(self, class_name):
+        return Model(
+            class_name, self._workspace_id, self._workspace_sal, self._model_exe_sal
         )
 
     def get_fmus(self):
@@ -137,56 +197,11 @@ class Workspace:
 
     def execute(self, specification):
         exp_id = self.create_experiment(specification).id
-        return Experiment(
+        return operations.ExperimentOperation(
             self._workspace_id,
             self._exp_sal.experiment_execute(self._workspace_id, exp_id),
             self._workspace_sal,
             self._exp_sal,
-        )
-
-
-class Model:
-    def __init__(
-        self, class_name, workspace_id, workspace_service=None, model_exe_service=None
-    ):
-        self.class_name = class_name
-        self._workspace_id = workspace_id
-        self._workspace_sal = workspace_service
-        self._model_exe_sal = model_exe_service
-
-    def __repr__(self):
-        return f"Class name '{self.class_name}'"
-
-    def __eq__(self, obj):
-        return isinstance(obj, Model) and obj.class_name == self.class_name
-
-    def compile(
-        self,
-        options,
-        compiler_log_level="info",
-        fmi_target="me",
-        fmi_version="2.0",
-        platform="auto",
-    ):
-        if not isinstance(options, ExecutionOption):
-            raise TypeError("Options must be an instance of ExecutionOption class")
-
-        body = {
-            "input": {
-                "class_name": self.class_name,
-                "compiler_options": options.to_dict()["compiler"],
-                "runtime_options": options.to_dict()["runtime"],
-                "compiler_log_level": compiler_log_level,
-                "fmi_target": fmi_target,
-                "fmi_version": fmi_version,
-                "platform": platform,
-            }
-        }
-        return ModelExecutable(
-            self._workspace_id,
-            self._model_exe_sal.compile_model(self._workspace_id, body),
-            self._workspace_sal,
-            self._model_exe_sal,
         )
 
 
@@ -270,3 +285,257 @@ class CustomFunction:
         return ExecutionOption(
             self._workspace_id, options, self.name, self._custom_func_sal
         )
+
+
+class Model:
+    def __init__(
+        self, class_name, workspace_id, workspace_service=None, model_exe_service=None
+    ):
+        self.class_name = class_name
+        self._workspace_id = workspace_id
+        self._workspace_sal = workspace_service
+        self._model_exe_sal = model_exe_service
+
+    def __repr__(self):
+        return f"Class name '{self.class_name}'"
+
+    def __eq__(self, obj):
+        return isinstance(obj, Model) and obj.class_name == self.class_name
+
+    def compile(
+        self,
+        options,
+        compiler_log_level="info",
+        fmi_target="me",
+        fmi_version="2.0",
+        platform="auto",
+    ):
+        if not isinstance(options, ExecutionOption):
+            raise TypeError("Options must be an instance of ExecutionOption class")
+
+        body = {
+            "input": {
+                "class_name": self.class_name,
+                "compiler_options": options.to_dict()["compiler"],
+                "runtime_options": options.to_dict()["runtime"],
+                "compiler_log_level": compiler_log_level,
+                "fmi_target": fmi_target,
+                "fmi_version": fmi_version,
+                "platform": platform,
+            }
+        }
+        return operations.ModelExecutableOperation(
+            self._workspace_id,
+            self._model_exe_sal.compile_model(self._workspace_id, body),
+            self._workspace_sal,
+            self._model_exe_sal,
+        )
+
+
+class ModelExecutable:
+    def __init__(
+        self, workspace_id, fmu_id, workspace_service=None, model_exe_service=None,
+    ):
+        self._workspace_id = workspace_id
+        self._fmu_id = fmu_id
+        self._workspace_sal = workspace_service
+        self._model_exe_sal = model_exe_service
+
+    def __repr__(self):
+        return f"FMU with id '{self._fmu_id}'"
+
+    def __eq__(self, obj):
+        return isinstance(obj, ModelExecutable) and obj._fmu_id == self._fmu_id
+
+    @property
+    def id(self):
+        return self._fmu_id
+
+    @property
+    def info(self):
+        return self._workspace_sal.fmu_get(self._workspace_id, self._fmu_id)
+
+    @property
+    def metadata(self):
+        _assert_successful_operation(self.is_successful(), "Compilation")
+        return self._model_exe_sal.ss_fmu_metadata_get(self._workspace_id, self._fmu_id)
+
+    def is_successful(self):
+        _assert_is_complete(
+            ModelExecutableStatus(self.info["run_info"]["status"]), "Compilation"
+        )
+        return (
+            ModelExecutableStatus(self.info["run_info"]["status"])
+            == ModelExecutableStatus.SUCCESSFUL
+        )
+
+    def log(self):
+        _assert_is_complete(
+            ModelExecutableStatus(self.info["run_info"]["status"]), "Compilation"
+        )
+        return self._model_exe_sal.compile_log(self._workspace_id, self._fmu_id)
+
+    def settable_parameters(self):
+        _assert_successful_operation(self.is_successful(), "Compilation")
+        return self._model_exe_sal.settable_parameters_get(
+            self._workspace_id, self._fmu_id
+        )
+
+
+class Experiment:
+    def __init__(
+        self, workspace_id, exp_id, workspace_service=None, exp_service=None,
+    ):
+        self._workspace_id = workspace_id
+        self._exp_id = exp_id
+        self._workspace_sal = workspace_service
+        self._exp_sal = exp_service
+
+    def __repr__(self):
+        return f"Experiment with id '{self._exp_id}'"
+
+    def __eq__(self, obj):
+        return isinstance(obj, Experiment) and obj._exp_id == self._exp_id
+
+    @property
+    def id(self):
+        return self._exp_id
+
+    @property
+    def info(self):
+        return self._workspace_sal.experiment_get(self._workspace_id, self._exp_id)
+
+    def is_successful(self):
+        _assert_is_complete(
+            ExperimentStatus(self.info["run_info"]["status"]), "Simulation"
+        )
+        expected = {"status": "done", "failed": 0, "cancelled": 0}
+        return expected.items() <= self.info["run_info"].items()
+
+    def variables(self):
+        _assert_successful_operation(self.is_successful(), "Simulation")
+        return self._exp_sal.result_variables_get(self._workspace_id, self._exp_id)
+
+    def cases(self):
+        resp = self._exp_sal.cases_get(self._workspace_id, self._exp_id)
+        return [
+            Case(
+                case["id"],
+                self._workspace_id,
+                self._exp_id,
+                self._exp_sal,
+                self._workspace_sal,
+            )
+            for case in resp["data"]["items"]
+        ]
+
+    def case(self, case_id):
+        resp = self._exp_sal.case_get(self._workspace_id, self._exp_id, case_id)
+        return Case(
+            resp["id"],
+            self._workspace_id,
+            self._exp_id,
+            self._exp_sal,
+            self._workspace_sal,
+        )
+
+    def trajectories(self, variables):
+        if not isinstance(variables, list):
+            raise TypeError(
+                "Please specify the list of result keys for the trajectories of "
+                "intrest!"
+            )
+        _assert_successful_operation(self.is_successful(), "Simulation")
+        _assert_variable_in_result(variables, self.variables())
+
+        response = self._exp_sal.trajectories_get(
+            self._workspace_id, self._exp_id, variables
+        )
+        return {
+            case.id: {variable: response[i][j] for i, variable in enumerate(variables)}
+            for j, case in enumerate(self.cases())
+        }
+
+
+class Case:
+    def __init__(
+        self, case_id, workspace_id, exp_id, exp_service=None, workspace_service=None
+    ):
+        self._case_id = case_id
+        self._workspace_id = workspace_id
+        self._exp_id = exp_id
+        self._exp_sal = exp_service
+        self._workspace_sal = workspace_service
+
+    def __repr__(self):
+        return f"Case with id '{self._case_id}'"
+
+    def __eq__(self, obj):
+        return isinstance(obj, Case) and obj._case_id == self._case_id
+
+    @property
+    def id(self):
+        return self._case_id
+
+    @property
+    def info(self):
+        return self._exp_sal.case_get(self._workspace_id, self._exp_id, self._case_id)
+
+    def is_successful(self):
+        return CaseStatus(self.info["run_info"]["status"]) == CaseStatus.SUCCESSFUL
+
+    def log(self):
+        return self._exp_sal.case_get_log(
+            self._workspace_id, self._exp_id, self._case_id
+        )
+
+    def result(self):
+        _assert_successful_operation(self.is_successful(), self._case_id)
+        return self._exp_sal.case_result_get(
+            self._workspace_id, self._exp_id, self._case_id
+        )
+
+    def trajectories(self):
+        _assert_successful_operation(self.is_successful(), self._case_id)
+        return Result(
+            self._case_id,
+            self._workspace_id,
+            self._exp_id,
+            self._workspace_sal,
+            self._exp_sal,
+        )
+
+
+class Result(Mapping):
+    def __init__(
+        self, case_id, workspace_id, exp_id, workspace_service=None, exp_service=None
+    ):
+        self._case_id = case_id
+        self._workspace_id = workspace_id
+        self._exp_id = exp_id
+        self._workspace_sal = workspace_service
+        self._exp_sal = exp_service
+        self._variables = Experiment(
+            self._workspace_id, self._exp_id, self._workspace_sal, self._exp_sal
+        ).variables()
+
+    def __getitem__(self, key):
+        _assert_variable_in_result([key], self._variables)
+        response = self._exp_sal.trajectories_get(
+            self._workspace_id, self._exp_id, [key]
+        )
+        case_index = int(self._case_id.split('_')[1])
+        return response[0][case_index - 1]
+
+    def __iter__(self):
+        data = _create_result_dict(
+            self._variables,
+            self._workspace_id,
+            self._exp_id,
+            self._case_id,
+            self._exp_sal,
+        )
+        return data.__iter__()
+
+    def __len__(self):
+        return self._variables.__len__()

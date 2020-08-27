@@ -4,7 +4,13 @@ import pytest
 import requests
 import requests_mock
 import modelon.impact.client
-from modelon.impact.client.entities import CustomFunction
+from modelon.impact.client.entities import (
+    CustomFunction,
+    Workspace,
+    Model,
+    Experiment,
+    ModelExecutable,
+)
 
 MockedServer = collections.namedtuple('MockedServer', ['url', 'context', 'adapter'])
 
@@ -533,8 +539,7 @@ def del_custom_function_options(sem_ver_check, mock_server_base):
     )
 
 
-@pytest.fixture
-def custom_function_parameter_list():
+def _custom_function_parameter_list():
     return [
         {'name': 'p1', 'defaultValue': 1.0, 'type': 'Number'},
         {'name': 'p2', 'defaultValue': True, 'type': 'Boolean'},
@@ -549,10 +554,92 @@ def custom_function_parameter_list():
 
 
 @pytest.fixture
-def custom_function(custom_function_parameter_list):
+def workspace():
+    ws_service = unittest.mock.MagicMock()
     custom_function_service = unittest.mock.MagicMock()
+    exp_service = unittest.mock.MagicMock()
+    ws_service.experiment_create.return_value = {"experiment_id": "pid_2009"}
+    ws_service.experiment_execute.return_value = 'test_exp'
+    ws_service.library_import.return_value = {
+        "name": "Single",
+        "uses": {"Modelica": {"version": "3.2.2"}},
+    }
+    ws_service.workspace_clone.return_value = {"workspace_id": "MyClonedWorkspace"}
+    ws_service.fmus_get.return_value = {
+        'data': {'items': [{'id': 'as9f-3df5'}, {'id': 'as9D-4df5'}]}
+    }
+    ws_service.fmu_get.return_value = {'id': 'pid_20090615_134'}
+    ws_service.experiment_get.return_value = {'id': 'pid_20090615_134'}
+    exp_service.execute_status.return_value = {"status": "done"}
+    ws_service.experiments_get.return_value = {
+        'data': {'items': [{'id': 'as9f-3df5'}, {'id': 'dd9f-3df5'}]}
+    }
+    ws_service.workspace_download.return_value = '\x00\x00\x00\x00'
+    custom_function_service.custom_function_get.return_value = {
+        'name': 'dynamic',
+        'parameters': _custom_function_parameter_list(),
+    }
+    custom_function_service.custom_functions_get.return_value = {
+        'data': {
+            'items': [
+                {'name': 'dynamic', 'parameters': _custom_function_parameter_list()}
+            ]
+        }
+    }
+    exp_service.experiment_execute.return_value = "pid_2009"
+    return Workspace(
+        'AwesomeWorkspace',
+        ws_service,
+        experiment_service=exp_service,
+        custom_function_service=custom_function_service,
+    )
+
+
+@pytest.fixture
+def workspace_execute_running():
+    ws_service = unittest.mock.MagicMock()
+    exp_service = unittest.mock.MagicMock()
+    ws_service.experiment_create.return_value = {"experiment_id": "pid_2009"}
+    ws_service.experiment_execute.return_value = 'test_exp'
+    exp_service.experiment_execute.return_value = "pid_2009"
+    exp_service.execute_status.return_value = {"status": "running"}
+    return Workspace('AwesomeWorkspace', ws_service, experiment_service=exp_service,)
+
+
+@pytest.fixture
+def workspace_execute_cancelled():
+    ws_service = unittest.mock.MagicMock()
+    exp_service = unittest.mock.MagicMock()
+    ws_service.experiment_create.return_value = {"experiment_id": "pid_2009"}
+    ws_service.experiment_execute.return_value = 'test_exp'
+    exp_service.experiment_execute.return_value = "pid_2009"
+    exp_service.execute_status.return_value = {"status": "cancelled"}
+    return Workspace('AwesomeWorkspace', ws_service, experiment_service=exp_service,)
+
+
+@pytest.fixture
+def workspace_ops(single_workspace):
+    client = modelon.impact.client.Client(
+        url=single_workspace.url, context=single_workspace.context
+    )
+    return client.get_workspace('AwesomeWorkspace')
+
+
+@pytest.fixture
+def custom_function():
+    custom_function_service = unittest.mock.MagicMock()
+    custom_function_service.custom_function_get.return_value = {
+        'name': 'dynamic',
+        'parameters': _custom_function_parameter_list(),
+    }
+    custom_function_service.custom_function_options_get.return_value = {
+        "compiler": {"c_compiler": "gcc"},
+        "runtime": {},
+        "simulation": {"ncp": 500},
+        "solver": {},
+    }
     return CustomFunction(
-        'ws', 'test', custom_function_parameter_list, custom_function_service
+        'test_ws', 'dynamic', _custom_function_parameter_list(), custom_function_service
     )
 
 
@@ -570,8 +657,30 @@ def custom_function_no_param():
 
 
 @pytest.fixture
-def model():
-    return modelon.impact.client.entities.Model('Test.PID', "test_ws")
+def model_compiled():
+    ws_service = unittest.mock.MagicMock()
+    model_exe_service = unittest.mock.MagicMock()
+    model_exe_service.compile_model.return_value = 'test_pid_fmu_id'
+    model_exe_service.compile_status.return_value = {"status": "done"}
+    return Model('Test.PID', "test_ws", ws_service, model_exe_service)
+
+
+@pytest.fixture
+def model_compiling():
+    ws_service = unittest.mock.MagicMock()
+    model_exe_service = unittest.mock.MagicMock()
+    model_exe_service.compile_model.return_value = 'test_pid_fmu_id'
+    model_exe_service.compile_status.return_value = {"status": "running"}
+    return Model('Test.PID', "test_ws", ws_service, model_exe_service)
+
+
+@pytest.fixture
+def model_compile_cancelled():
+    ws_service = unittest.mock.MagicMock()
+    model_exe_service = unittest.mock.MagicMock()
+    model_exe_service.compile_model.return_value = 'test_pid_fmu_id'
+    model_exe_service.compile_status.return_value = {"status": "cancelled"}
+    return Model('Test.PID', "test_ws", ws_service, model_exe_service)
 
 
 @pytest.fixture
@@ -597,15 +706,6 @@ def options():
 
 
 @pytest.fixture
-def workspace(single_workspace):
-    client = modelon.impact.client.Client(
-        url=single_workspace.url, context=single_workspace.context
-    )
-    workspace = client.get_workspace('AwesomeWorkspace')
-    return workspace
-
-
-@pytest.fixture
 def fmu():
     ws_service = unittest.mock.MagicMock()
     model_exe_service = unittest.mock.MagicMock()
@@ -616,20 +716,16 @@ def fmu():
     model_exe_service.ss_fmu_metadata_get.return_value = {
         "steady_state": {"residual_variable_count": 1, "iteration_variable_count": 2}
     }
-    return modelon.impact.client.operations.ModelExecutable(
-        "Workspace", "Test", ws_service, model_exe_service
-    )
+    return ModelExecutable("Workspace", "Test", ws_service, model_exe_service)
 
 
 @pytest.fixture
 def fmu_compile_running():
     ws_service = unittest.mock.MagicMock()
     model_exe_service = unittest.mock.MagicMock()
-    ws_service.fmu_get.return_value = {"run_info": {"status": "running"}}
+    ws_service.fmu_get.return_value = {"run_info": {"status": "not_started"}}
     model_exe_service.compile_status.return_value = {"status": "running"}
-    return modelon.impact.client.operations.ModelExecutable(
-        "Workspace", "Test", ws_service, model_exe_service
-    )
+    return ModelExecutable("Workspace", "Test", ws_service, model_exe_service)
 
 
 @pytest.fixture
@@ -639,21 +735,7 @@ def fmu_compile_failed():
     ws_service.fmu_get.return_value = {"run_info": {"status": "failed"}}
     model_exe_service.compile_status.return_value = {"status": "done"}
     model_exe_service.compile_log.return_value = "Failed Log"
-    return modelon.impact.client.operations.ModelExecutable(
-        "Workspace", "Test", ws_service, model_exe_service
-    )
-
-
-@pytest.fixture
-def fmu_compile_failed_empty_log():
-    ws_service = unittest.mock.MagicMock()
-    model_exe_service = unittest.mock.MagicMock()
-    ws_service.fmu_get.return_value = {"run_info": {"status": "failed"}}
-    model_exe_service.compile_status.return_value = {"status": "done"}
-    model_exe_service.compile_log.return_value = ""
-    return modelon.impact.client.operations.ModelExecutable(
-        "Workspace", "Test", ws_service, model_exe_service
-    )
+    return ModelExecutable("Workspace", "Test", ws_service, model_exe_service)
 
 
 @pytest.fixture
@@ -662,9 +744,7 @@ def fmu_compile_cancelled():
     model_exe_service = unittest.mock.MagicMock()
     ws_service.fmu_get.return_value = {"run_info": {"status": "cancelled"}}
     model_exe_service.compile_status.return_value = {"status": "cancelled"}
-    return modelon.impact.client.operations.ModelExecutable(
-        "Workspace", "Test", ws_service, model_exe_service
-    )
+    return ModelExecutable("Workspace", "Test", ws_service, model_exe_service)
 
 
 @pytest.fixture
@@ -684,9 +764,7 @@ def experiment():
     exp_service.case_get_log.return_value = "Successful Log"
     exp_service.case_result_get.return_value = bytes(4)
     exp_service.trajectories_get.return_value = [[[1, 2, 3, 4]], [[5, 2, 9, 4]]]
-    return modelon.impact.client.operations.Experiment(
-        "Workspace", "Test", ws_service, exp_service
-    )
+    return Experiment("Workspace", "Test", ws_service, exp_service)
 
 
 @pytest.fixture
@@ -711,19 +789,16 @@ def batch_experiment():
         [[1, 2, 3, 4], [14, 4, 4, 74]],
         [[5, 2, 9, 4], [11, 22, 32, 44]],
     ]
-    return modelon.impact.client.operations.Experiment(
-        "Workspace", "Test", ws_service, exp_service
-    )
+    return Experiment("Workspace", "Test", ws_service, exp_service)
 
 
 @pytest.fixture
 def running_experiment():
     ws_service = unittest.mock.MagicMock()
     exp_service = unittest.mock.MagicMock()
+    ws_service.experiment_get.return_value = {"run_info": {"status": "not_started"}}
     exp_service.execute_status.return_value = {"status": "running"}
-    return modelon.impact.client.operations.Experiment(
-        "Workspace", "Test", ws_service, exp_service
-    )
+    return Experiment("Workspace", "Test", ws_service, exp_service)
 
 
 @pytest.fixture
@@ -739,9 +814,7 @@ def failed_experiment():
         "id": "case_1",
         "run_info": {"status": "failed"},
     }
-    return modelon.impact.client.operations.Experiment(
-        "Workspace", "Test", ws_service, exp_service
-    )
+    return Experiment("Workspace", "Test", ws_service, exp_service)
 
 
 @pytest.fixture
@@ -749,11 +822,15 @@ def cancelled_experiment():
     ws_service = unittest.mock.MagicMock()
     exp_service = unittest.mock.MagicMock()
     ws_service.experiment_get.return_value = {
-        "run_info": {"status": "done", "failed": 1, "successful": 0, "cancelled": 1}
+        "run_info": {
+            "status": "cancelled",
+            "failed": 0,
+            "successful": 0,
+            "cancelled": 1,
+        }
     }
     exp_service.cases_get.return_value = {"data": {"items": [{"id": "case_1"}]}}
     exp_service.case_get.return_value = {"id": "case_1"}
     exp_service.execute_status.return_value = {"status": "cancelled"}
-    return modelon.impact.client.operations.Experiment(
-        "Workspace", "Test", ws_service, exp_service
-    )
+    return Experiment("Workspace", "Test", ws_service, exp_service)
+
