@@ -33,7 +33,7 @@ def _assert_successful_compilation(fmu):
 class Operator:
     @abstractmethod
     def __str__(self):
-        "returns a string representation of the operator"
+        "Returns a string representation of the operator"
         pass
 
 
