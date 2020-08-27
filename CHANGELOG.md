@@ -1,3 +1,10 @@
+# [1.0.0-beta.18](https://github.com/modelon-community/impact-client-python/compare/v1.0.0-beta.17...v1.0.0-beta.18) (2020-08-27)
+
+
+### Bug Fixes
+
+* Fixed a typo ([4783eb2](https://github.com/modelon-community/impact-client-python/commit/4783eb2f9f47957a03f9767cd7a2a0f0877936a6))
+
 # [1.0.0-beta.17](https://github.com/modelon-community/impact-client-python/compare/v1.0.0-beta.16...v1.0.0-beta.17) (2020-08-26)
 
 
