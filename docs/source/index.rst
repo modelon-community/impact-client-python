@@ -6,6 +6,7 @@ Welcome to Modelon-impact-client's documentation!
    :caption: Contents:
 
    modules
+   api_keys
 
 Indices and tables
 ==================
