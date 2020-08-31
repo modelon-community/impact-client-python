@@ -41,7 +41,7 @@ def _assert_variable_in_result(variables, result_variables):
 
 def _create_result_dict(variables, workspace_id, exp_id, case_id, exp_sal):
     response = exp_sal.trajectories_get(workspace_id, exp_id, variables)
-    case_index = int(case_id.split('_')[1])
+    case_index = int(case_id.split("_")[1])
     data = {
         variable: response[i][case_index - 1] for i, variable in enumerate(variables)
     }
@@ -524,7 +524,7 @@ class Result(Mapping):
         response = self._exp_sal.trajectories_get(
             self._workspace_id, self._exp_id, [key]
         )
-        case_index = int(self._case_id.split('_')[1])
+        case_index = int(self._case_id.split("_")[1])
         return response[0][case_index - 1]
 
     def __iter__(self):
