@@ -36,9 +36,6 @@ class TestModelExecutableOperation:
         fmu = model_compile_cancelled.compile(options)
         assert fmu.id == "test_pid_fmu_id"
         assert fmu.status() == Status.CANCELLED
-        pytest.raises(
-            exceptions.OperationFailureError, fmu.is_complete,
-        )
         assert fmu.wait(status=Status.CANCELLED) == ModelExecutable(
             'AwesomeWorkspace', 'test_pid_fmu_id'
         )
@@ -47,9 +44,6 @@ class TestModelExecutableOperation:
         fmu = model_compile_cancelled.compile(options)
         assert fmu.id == "test_pid_fmu_id"
         assert fmu.status() == Status.CANCELLED
-        pytest.raises(
-            exceptions.OperationFailureError, fmu.is_complete,
-        )
         pytest.raises(exceptions.OperationTimeOutError, fmu.wait, 1e-10, Status.DONE)
 
 
@@ -85,9 +79,6 @@ class TestExperimentOperation:
         exp = workspace_execute_cancelled.execute({})
         assert exp.id == "pid_2009"
         assert exp.status() == Status.CANCELLED
-        pytest.raises(
-            exceptions.OperationFailureError, exp.is_complete,
-        )
         assert exp.wait(status=Status.CANCELLED) == Experiment(
             'AwesomeWorkspace', 'pid_2009'
         )
@@ -96,7 +87,4 @@ class TestExperimentOperation:
         exp = workspace_execute_cancelled.execute({})
         assert exp.id == "pid_2009"
         assert exp.status() == Status.CANCELLED
-        pytest.raises(
-            exceptions.OperationFailureError, exp.is_complete,
-        )
         pytest.raises(exceptions.OperationTimeOutError, exp.wait, 1e-10, Status.DONE)

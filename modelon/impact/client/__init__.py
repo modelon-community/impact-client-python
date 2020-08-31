@@ -75,6 +75,23 @@ class Client:
             self._credentials.write_key_to_file(self.api_key)
 
     def get_workspace(self, workspace_id):
+        """
+        Returns a Workspace class object.
+
+        Parameters::
+
+            workspace_id --
+                The name of the workspace.
+
+        Returns::
+
+            workspace --
+                Workspace class object.
+
+        Example::
+
+            client.get_workspace('my_workspace')
+        """
         resp = self._sal.workspace.workspace_get(workspace_id)
         return modelon.impact.client.entities.Workspace(
             resp["id"],
@@ -85,6 +102,18 @@ class Client:
         )
 
     def get_workspaces(self):
+        """
+        Returns a list of Workspace class object.
+
+        Returns::
+
+            workspace --
+                A list of Workspace class objects.
+
+        Example::
+
+            client.get_workspaces()
+        """
         resp = self._sal.workspace.workspaces_get()
         return [
             modelon.impact.client.entities.Workspace(
@@ -98,6 +127,23 @@ class Client:
         ]
 
     def create_workspace(self, workspace_id):
+        """ Creates and returns a Workspace.
+        Returns a workspace class object.
+
+        Parameters::
+
+            workspace_id --
+                The name of the workspace to create.
+
+        Returns::
+
+            workspace --
+                The created workspace class object.
+
+        Example::
+
+            client.create_workspace('my_workspace')
+        """
         resp = self._sal.workspace.workspace_create(workspace_id)
         return modelon.impact.client.entities.Workspace(
             resp["id"],
@@ -108,6 +154,25 @@ class Client:
         )
 
     def upload_workspace(self, workspace_id, path_to_workspace):
+        """ Uploads a Workspace
+        Returns the workspace class object of the imported workspace.
+
+        Parameters::
+
+            workspace_id --
+                The name of the workspace.
+            path_to_workspace --
+                The path for the compressed workspace(.zip) to be uploaded.
+
+        Returns::
+
+            workspace --
+                Workspace class object.
+
+        Example::
+
+            client.upload_workspace('my_workspace', path_to_workspace)
+        """
         resp = self._sal.workspace.workspace_upload(workspace_id, path_to_workspace)
         return modelon.impact.client.entities.Workspace(
             resp["id"],

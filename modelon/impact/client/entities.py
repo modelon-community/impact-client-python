@@ -49,6 +49,11 @@ def _create_result_dict(variables, workspace_id, exp_id, case_id, exp_sal):
 
 
 class ModelExecutableStatus(Enum):
+    """
+    Class representing an enumeration for the possible
+    model-executable run info states.
+    """
+
     NOTSTARTED = "not_started"
     CANCELLED = "cancelled"
     SUCCESSFUL = "successful"
@@ -56,18 +61,32 @@ class ModelExecutableStatus(Enum):
 
 
 class ExperimentStatus(Enum):
+    """
+    Class representing an enumeration for the possible
+    experiment run info states.
+    """
+
     NOTSTARTED = "not_started"
     CANCELLED = "cancelled"
     DONE = "done"
 
 
 class CaseStatus(Enum):
+    """
+    Class representing an enumeration for the possible
+    Case run info states.
+    """
+
     SUCCESSFUL = "successful"
     FAILED = "failed"
     CANCELLED = "cancelled"
 
 
 class Workspace:
+    """
+    Class containing Workspace functionalities.
+    """
+
     def __init__(
         self,
         workspace_id,
@@ -90,9 +109,27 @@ class Workspace:
 
     @property
     def id(self):
+        """Workspace id"""
         return self._workspace_id
 
     def get_custom_function(self, name):
+        """
+        Returns a CustomFunction class object.
+
+        Parameters::
+
+            name --
+                The name of the custom function.
+
+        Returns::
+
+            custom_function --
+                The CustomFunction class object.
+
+        Example::
+
+            workspace.get_custom_function('dynamic')
+        """
         custom_function = self._custom_func_sal.custom_function_get(
             self._workspace_id, name
         )
@@ -104,6 +141,18 @@ class Workspace:
         )
 
     def get_custom_functions(self):
+        """
+        Returns a list of CustomFunctions class objects.
+
+        Returns::
+
+            custom_functions --
+                A list of CustomFunction class objects.
+
+        Example::
+
+            workspace.get_custom_functions()
+        """
         custom_functions = self._custom_func_sal.custom_functions_get(
             self._workspace_id
         )
@@ -118,20 +167,89 @@ class Workspace:
         ]
 
     def delete(self):
+        """Deletes a workspace.
+
+        Example::
+
+            workspace.delete()
+        """
         self._workspace_sal.workspace_delete(self._workspace_id)
 
     def import_library(self, path_to_lib):
-        return self._workspace_sal.library_import(self._workspace_id, path_to_lib)
+        """Imports a library to the workspace.
+
+        Parameters::
+
+            path_to_lib --
+                The path for the library to be imported.
+
+        Example::
+
+            workspace.import_library('C:/A.mo')
+            workspace.import_library('C:/B.mol')
+        """
+        self._workspace_sal.library_import(self._workspace_id, path_to_lib)
 
     def lock(self):
+        """Locks the workspace to the user.
+
+        Example::
+
+            workspace.lock()
+        """
         self._workspace_sal.workspace_lock(self._workspace_id)
 
     def unlock(self):
+        """Unlocks the workspace for other users.
+
+        Example::
+
+            workspace.unlock()
+        """
         self._workspace_sal.workspace_unlock(self._workspace_id)
 
     def download(self, options, path):
         # TO DO: Needs to be tested
-        data = self._workspace_sal.workspace_download(self._workspace_id, options, path)
+        """Downloads the workspace as a binary compressed archive.
+        Returns the local path to the downloaded workspace archive.
+
+        Parameters::
+
+            options --
+                The specification of what workspace resources to include when
+                exporting the workspace.
+
+            path --
+                The local path to store the downloaded workspace.
+
+        Returns::
+
+            path --
+                Local path to the downloaded workspace archive.
+
+        Example::
+            options = {
+                "contents": {
+                    "libraries": [
+                        {"name": "LiquidCooling", "resources_to_exclude": []},
+                        {
+                            "name": "Workspace",
+                            "resources_to_exclude": ["my_plot.png", "my_sheet.csv"],
+                        },
+                    ],
+                    "experiment_ids": [
+                        "_nics_multibody_examples_elementary_doublependulum_20191029_084342_2c956e9",
+                        "modelica_blocks_examples_pid_controller_20191023_151659_f32a30d",
+                    ],
+                    "fmu_ids": [
+                        "_nics_multibody_examples_elementary_doublependulum_20191029_084342_2c956e9",
+                        "modelica_blocks_examples_pid_controller_20191023_151659_f32a30d",
+                    ],
+                }
+            }
+            workspace.download(options, path)
+        """
+        data = self._workspace_sal.workspace_download(self._workspace_id, options)
 
         os.makedirs(os.path.dirname(path), exist_ok=True)
         with open(path, "w") as f:
@@ -139,6 +257,18 @@ class Workspace:
         return path
 
     def clone(self):
+        """Clones the workspace.
+        Returns a clone Workspace class object.
+
+        Returns::
+
+            workspace_clone --
+                Clones workspace class object.
+
+        Example::
+
+            workspace.clone()
+        """
         resp = self._workspace_sal.workspace_clone(self._workspace_id)
         return Workspace(
             resp["workspace_id"],
@@ -148,11 +278,40 @@ class Workspace:
         )
 
     def get_model(self, class_name):
+        """
+        Returns a Model class object.
+
+        Parameters::
+
+            class_name --
+                The modelica class path of the model.
+
+        Returns::
+
+            model --
+                Model class object.
+
+        Example::
+
+            workspace.get_model(class_name)
+        """
         return Model(
             class_name, self._workspace_id, self._workspace_sal, self._model_exe_sal
         )
 
     def get_fmus(self):
+        """
+        Returns a list of ModelExecutable class objects.
+
+        Returns::
+
+            FMUs --
+                List of ModelExecutable class objects.
+
+        Example::
+
+            workspace.get_fmus()
+        """
         resp = self._workspace_sal.fmus_get(self._workspace_id)
         return [
             ModelExecutable(
@@ -162,12 +321,36 @@ class Workspace:
         ]
 
     def get_fmu(self, fmu_id):
+        """
+        Returns a ModelExecutable class object.
+
+        Returns::
+
+            FMU --
+                ModelExecutable class object.
+
+        Example::
+
+            workspace.get_fmu(fmu_id)
+        """
         resp = self._workspace_sal.fmu_get(self._workspace_id, fmu_id)
         return ModelExecutable(
             self._workspace_id, resp["id"], self._workspace_sal, self._model_exe_sal
         )
 
     def get_experiments(self):
+        """
+        Returns a list of Experiment class objects.
+
+        Returns::
+
+            experiment --
+                List of Experiment class objects.
+
+        Example::
+
+            workspace.get_experiments()
+        """
         resp = self._workspace_sal.experiments_get(self._workspace_id)
         return [
             Experiment(
@@ -177,12 +360,47 @@ class Workspace:
         ]
 
     def get_experiment(self, experiment_id):
+        """
+        Returns an Experiment class object.
+
+        Parameters::
+
+            class_name --
+                The modelica class path of the model.
+
+        Returns::
+
+            experiment --
+                Experiment class object.
+
+        Example::
+
+            workspace.get_experiment(experiment_id)
+        """
         resp = self._workspace_sal.experiment_get(self._workspace_id, experiment_id)
         return Experiment(
             self._workspace_id, resp["id"], self._workspace_sal, self._exp_sal
         )
 
     def create_experiment(self, spec):
+        """Creates an experiment.
+        Returns an Experiment class object.
+
+        Parameters::
+
+            spec --
+                An parametrized experiment specification class of type
+                modelon.impact.client.experiment_definition.SimpleExperimentDefinition.
+
+        Returns::
+
+            experiment --
+                Experiment class object.
+
+        Example::
+
+            workspace.create_experiment(specification)
+        """
         if isinstance(spec, SimpleExperimentDefinition):
             options = spec.to_dict()
         else:
@@ -196,6 +414,27 @@ class Workspace:
         )
 
     def execute(self, specification):
+        """Exceutes an experiment.
+        Returns an modelon.impact.client.operations.ExperimentOperation class object.
+
+        Parameters::
+
+            spec --
+                An parametrized experiment specification class of type
+                modelon.impact.client.experiment_definition.SimpleExperimentDefinition.
+
+        Returns::
+
+            experiment_ops --
+                An modelon.impact.client.operations.ExperimentOperation class object.
+
+        Example::
+
+            experiment_ops = workspace.execute(specification)
+            experiment_ops.cancel()
+            experiment_ops.status()
+            experiment_ops.wait()
+        """
         exp_id = self.create_experiment(specification).id
         return operations.ExperimentOperation(
             self._workspace_id,
@@ -240,6 +479,10 @@ class _Parameter:
 
 
 class CustomFunction:
+    """
+    Class containing CustomFunction functionalities.
+    """
+
     def __init__(self, workspace_id, name, parameter_data, custom_function_service):
         self.name = name
         self._workspace_id = workspace_id
@@ -259,6 +502,18 @@ class CustomFunction:
         return isinstance(obj, CustomFunction) and obj.name == self.name
 
     def with_parameters(self, **modified):
+        """Sets/updates the custom_function parameters for an experiment.
+
+        Parameters::
+
+            parameters --
+                A keyworded, variable-length argument list of custom_function
+                parameters.
+
+        Example::
+
+            custom_function.with_parameters(start_time=0.0, final_time=2.0)
+        """
         new = CustomFunction(
             self._workspace_id, self.name, self._parameter_data, self._custom_func_sal
         )
@@ -276,9 +531,23 @@ class CustomFunction:
 
     @property
     def parameter_values(self):
+        """Custom_function parameters and value as a dictionary"""
         return {p.name: p.value for p in self._param_by_name.values()}
 
     def options(self):
+        """
+        Return an modelon.impact.client.options.ExecutionOption object.
+
+        Returns::
+
+            options --
+                An modelon.impact.client.options.ExecutionOption object.
+
+        Example::
+
+            custom_function.options()
+            custom_function.options().with_simulation_options(ncp=500)
+        """
         options = self._custom_func_sal.custom_function_options_get(
             self._workspace_id, self.name
         )
@@ -288,6 +557,10 @@ class CustomFunction:
 
 
 class Model:
+    """
+    Class containing Model functionalities.
+    """
+
     def __init__(
         self, class_name, workspace_id, workspace_service=None, model_exe_service=None
     ):
@@ -310,6 +583,23 @@ class Model:
         fmi_version="2.0",
         platform="auto",
     ):
+        """Compiles the model to an FMU.
+        Returns an modelon.impact.client.operations.ModelExecutableOperation class
+        object.
+
+        Returns::
+
+            modelexecutableoperation --
+                An modelon.impact.client.operations.ModelExecutableOperation class
+                object.
+
+        Example::
+
+            compile_ops=model.compile(options)
+            compile_ops.cancel()
+            compile_ops.status()
+            model.compile(options).wait()
+        """
         if not isinstance(options, ExecutionOption):
             raise TypeError("Options must be an instance of ExecutionOption class")
 
@@ -333,6 +623,10 @@ class Model:
 
 
 class ModelExecutable:
+    """
+    Class containing ModelExecutable functionalities.
+    """
+
     def __init__(
         self, workspace_id, fmu_id, workspace_service=None, model_exe_service=None,
     ):
@@ -349,18 +643,38 @@ class ModelExecutable:
 
     @property
     def id(self):
+        """FMU id"""
         return self._fmu_id
 
     @property
     def info(self):
+        """Compilation information as a dictionary"""
         return self._workspace_sal.fmu_get(self._workspace_id, self._fmu_id)
 
     @property
     def metadata(self):
+        """FMU metadata"""
         _assert_successful_operation(self.is_successful(), "Compilation")
         return self._model_exe_sal.ss_fmu_metadata_get(self._workspace_id, self._fmu_id)
 
     def is_successful(self):
+        """
+        Returns True if the model has compiled successfully.
+
+        Returns::
+
+            True -> If model has compiled successfully.
+            False -> If compilation process has failed.
+
+        Raises::
+
+            OperationNotCompleteError if compilation process is in progress.
+            OperationFailureError if compilation process was cancelled.
+
+        Example::
+
+            fmu.is_successful()
+        """
         _assert_is_complete(
             ModelExecutableStatus(self.info["run_info"]["status"]), "Compilation"
         )
@@ -370,12 +684,46 @@ class ModelExecutable:
         )
 
     def log(self):
+        """
+        Returns compilation log if the model has compiled.
+
+        Returns::
+
+            log --
+                The model executable compilation log.
+
+        Raises::
+
+            OperationNotCompleteError if compilation process is in progress.
+            OperationFailureError if compilation process was cancelled.
+
+        Example::
+
+            print(fmu.log())
+        """
         _assert_is_complete(
             ModelExecutableStatus(self.info["run_info"]["status"]), "Compilation"
         )
         return self._model_exe_sal.compile_log(self._workspace_id, self._fmu_id)
 
     def settable_parameters(self):
+        """
+        Returns a list of settable parameters for the FMU.
+
+        Returns::
+
+            settable_parameters --
+                A list of parameters than can be set on the FMU.
+
+        Raises::
+
+            OperationNotCompleteError if compilation process is in progress.
+            OperationFailureError if compilation process has failed or was cancelled.
+
+        Example::
+
+            fmu.settable_parameters()
+        """
         _assert_successful_operation(self.is_successful(), "Compilation")
         return self._model_exe_sal.settable_parameters_get(
             self._workspace_id, self._fmu_id
@@ -383,6 +731,10 @@ class ModelExecutable:
 
 
 class Experiment:
+    """
+    Class containing Experiment functionalities.
+    """
+
     def __init__(
         self, workspace_id, exp_id, workspace_service=None, exp_service=None,
     ):
@@ -399,13 +751,32 @@ class Experiment:
 
     @property
     def id(self):
+        """Experiment id"""
         return self._exp_id
 
     @property
     def info(self):
+        """Experiment information as a dictionary"""
         return self._workspace_sal.experiment_get(self._workspace_id, self._exp_id)
 
     def is_successful(self):
+        """
+        Returns True if the FMU has executed successfully.
+
+        Returns::
+
+            True -> If execution process has completed successfully.
+            False -> If execution process has failed.
+
+        Raises::
+
+            OperationNotCompleteError if simulation process is in progress.
+            OperationFailureError if simulation process was cancelled.
+
+        Example::
+
+            experiment.is_successful()
+        """
         _assert_is_complete(
             ExperimentStatus(self.info["run_info"]["status"]), "Simulation"
         )
@@ -413,10 +784,39 @@ class Experiment:
         return expected.items() <= self.info["run_info"].items()
 
     def variables(self):
+        """
+        Returns a list of variables available in the result.
+
+        Returns::
+
+            variables --
+                An list of result variables.
+
+        Raises::
+
+            OperationNotCompleteError if simulation process is in progress.
+            OperationFailureError if simulation process has failed or was cancelled.
+
+        Example::
+
+            experiment.variables()
+        """
         _assert_successful_operation(self.is_successful(), "Simulation")
         return self._exp_sal.result_variables_get(self._workspace_id, self._exp_id)
 
     def cases(self):
+        """
+        Returns a list of case objects for an experiment.
+
+        Returns::
+
+            cases --
+                An list of case objects.
+
+        Example::
+
+            experiment.cases()
+        """
         resp = self._exp_sal.cases_get(self._workspace_id, self._exp_id)
         return [
             Case(
@@ -430,6 +830,23 @@ class Experiment:
         ]
 
     def case(self, case_id):
+        """
+        Returns a case object for a given case_id.
+
+        Parameters::
+
+            case_id --
+                The case_id for the case.
+
+        Returns::
+
+            cases --
+                An case object.
+
+        Example::
+
+            experiment.case('case_1')
+        """
         resp = self._exp_sal.case_get(self._workspace_id, self._exp_id, case_id)
         return Case(
             resp["id"],
@@ -440,6 +857,21 @@ class Experiment:
         )
 
     def trajectories(self, variables):
+        """
+        Returns a dictionary containing the result trajectories
+        for a list of result variables for all the cases.
+
+        Parameters::
+
+            variables --
+                A list of result variables to fecth trajectories for.
+
+        Example::
+
+            result = experiment.trajectories(['h', 'time'])
+            height = result['case_1']['h']
+            time = result['case_1']['time']
+        """
         if not isinstance(variables, list):
             raise TypeError(
                 "Please specify the list of result keys for the trajectories of "
@@ -458,6 +890,10 @@ class Experiment:
 
 
 class Case:
+    """
+    Class containing Case functionalities.
+    """
+
     def __init__(
         self, case_id, workspace_id, exp_id, exp_service=None, workspace_service=None
     ):
@@ -475,27 +911,67 @@ class Case:
 
     @property
     def id(self):
+        """Case id"""
         return self._case_id
 
     @property
     def info(self):
+        """Case meta-data"""
         return self._exp_sal.case_get(self._workspace_id, self._exp_id, self._case_id)
 
     def is_successful(self):
+        """
+        Returns True if a case has completed successfully.
+
+        Returns::
+
+            True -> If the case has executed successfully.
+            False -> If the case has failed execution.
+
+        Example::
+
+            case.is_successful()
+        """
         return CaseStatus(self.info["run_info"]["status"]) == CaseStatus.SUCCESSFUL
 
     def log(self):
+        """
+        Returns the log for a finished case.
+
+        Example::
+
+            print(case.log())
+        """
         return self._exp_sal.case_get_log(
             self._workspace_id, self._exp_id, self._case_id
         )
 
     def result(self):
+        """
+        Returns the result stream and the file name for a finished case.
+
+        Example::
+
+            result, file_name = case.result()
+            with open(file_name, "wb") as f:
+                f.write(result)
+        """
         _assert_successful_operation(self.is_successful(), self._case_id)
-        return self._exp_sal.case_result_get(
+        result, file_name = self._exp_sal.case_result_get(
             self._workspace_id, self._exp_id, self._case_id
         )
+        return result, file_name
 
     def trajectories(self):
+        """
+        Returns result(Mapping) object containing the result trajectories.
+
+        Example::
+
+            result = case.trajectories()
+            height = result['h']
+            time = res['time']
+        """
         _assert_successful_operation(self.is_successful(), self._case_id)
         return Result(
             self._case_id,
@@ -507,6 +983,10 @@ class Case:
 
 
 class Result(Mapping):
+    """
+    Result class containing base functionality.
+    """
+
     def __init__(
         self, case_id, workspace_id, exp_id, workspace_service=None, exp_service=None
     ):

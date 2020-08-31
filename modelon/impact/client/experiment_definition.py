@@ -31,6 +31,10 @@ def _assert_successful_compilation(fmu):
 
 
 class Operator:
+    """
+    Base class for an Operator.
+    """
+
     @abstractmethod
     def __str__(self):
         "Returns a string representation of the operator"
@@ -38,6 +42,10 @@ class Operator:
 
 
 class Range(Operator):
+    """
+    Range operator class for parameterizing batch runs.
+    """
+
     def __init__(self, start_value, end_value, no_of_steps):
         self.start_value = start_value
         self.end_value = end_value
@@ -48,10 +56,18 @@ class Range(Operator):
 
 
 class BaseExperimentDefinition(ABC):
+    """
+    Base class for an ExperimentDefinition class.
+    """
+
     pass
 
 
 class SimpleExperimentDefinition(BaseExperimentDefinition):
+    """
+    A Simple ExperimentDefinition class for creating experiement definitions.
+    """
+
     def __init__(
         self, fmu, custom_function, options, simulation_log_level="WARNING",
     ):
@@ -64,6 +80,22 @@ class SimpleExperimentDefinition(BaseExperimentDefinition):
         self.variable_modifiers = {}
 
     def with_modifiers(self, **modifiers):
+        """ Sets the modifiers parameters for an experiment.
+
+        Parameters::
+
+            modifiers --
+                A keyworded, variable-length argument list of variable
+                modifiers.
+
+        Example::
+            from modelon.impact.client.experiment_definition import
+            SimpleExperimentDefinition, Range
+
+            options = custom_function.options()
+            simulate_def = SimpleExperimentDefinition(fmu, custom_function, options)
+            .with_modifiers(h0 = 1, e = Range(0.1, 0.5, 3))
+        """
         _assert_settable_parameters(self.fmu, **modifiers)
         new = SimpleExperimentDefinition(
             self.fmu, self.custom_function, self.options, self.simulation_log_level
@@ -76,6 +108,21 @@ class SimpleExperimentDefinition(BaseExperimentDefinition):
         return new
 
     def to_dict(self):
+        """ Returns the experiment specification as a dictionary.
+
+        Returns::
+
+            specification_dict --
+                A dictionary containing the experiment definition.
+
+        Example::
+            from modelon.impact.client.experiment_definition import
+            SimpleExperimentDefinition
+
+            options = custom_function.options()
+            simulate_def = SimpleExperimentDefinition(fmu, custom_function, options)
+            simulate_def.to_dict()
+        """
         return {
             "experiment": {
                 "analysis": {

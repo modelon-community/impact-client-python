@@ -11,6 +11,10 @@ def _set_options(
 
 
 class ExecutionOption:
+    """
+    An class containing the simulation, compiler, solver and runtime options settings.
+    """
+
     def __init__(
         self, workspace_id, options, custom_function_name, custom_function_service=None
     ):
@@ -23,9 +27,29 @@ class ExecutionOption:
         return f"Execution option for '{self._name}'"
 
     def to_dict(self):
+        """
+        Returns the options as a dictionary.
+
+        Returns::
+
+            options_dict --
+                The options object as a dictionary.
+        """
         return self._options
 
     def with_simulation_options(self, **modified):
+        """ Sets/updates the simulation options.
+
+        Parameters::
+
+            parameters --
+                A keyworded, variable-length argument list of simulation
+                options.
+
+        Example::
+
+            custom_function.with_simulation_options(ncp=1000)
+        """
         options = _set_options(
             self._workspace_id,
             self._name,
@@ -39,6 +63,18 @@ class ExecutionOption:
         )
 
     def with_compiler_options(self, **modified):
+        """ Sets/updates the compiler options.
+
+        Parameters::
+
+            parameters --
+                A keyworded, variable-length argument list of compiler
+                options.
+
+        Example::
+
+            custom_function.with_compiler_options(c_compiler='gcc')
+        """
         options = _set_options(
             self._workspace_id,
             self._name,
@@ -52,6 +88,18 @@ class ExecutionOption:
         )
 
     def with_solver_options(self, **modified):
+        """ Sets/updates the solver options.
+
+        Parameters::
+
+            parameters --
+                A keyworded, variable-length argument list of solver
+                options.
+
+        Example::
+
+            custom_function.with_solver_options(rtol=1e-7)
+        """
         options = _set_options(
             self._workspace_id,
             self._name,
@@ -65,6 +113,18 @@ class ExecutionOption:
         )
 
     def with_runtime_options(self, **modified):
+        """ Sets/updates the runtime options.
+
+        Parameters::
+
+            parameters --
+                A keyworded, variable-length argument list of runtime
+                options.
+
+        Example::
+
+            custom_function.with_runtime_options(rtol=1e-7)
+        """
         options = _set_options(
             self._workspace_id,
             self._name,

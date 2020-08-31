@@ -39,12 +39,14 @@ class TestWorkspace:
         )
         assert 'DELETE' == delete_call.method
 
-    def test_import_library(self, workspace):
-        resp = workspace.import_library(SINGLE_FILE_LIBRARY_PATH)
-        assert resp == {
-            "name": "Single",
-            "uses": {"Modelica": {"version": "3.2.2"}},
-        }
+    def test_import_library(self, workspace_ops, import_lib):
+        workspace_ops.import_library(SINGLE_FILE_LIBRARY_PATH)
+        import_call = import_lib.adapter.request_history[3]
+        assert (
+            'http://mock-impact.com/api/workspaces/AwesomeWorkspace/libraries'
+            == import_call.url
+        )
+        assert 'POST' == import_call.method
 
     def test_lock(self, workspace_ops, lock_workspace):
         workspace_ops.lock()
@@ -297,7 +299,8 @@ class TestCase:
         assert case.id == "case_1"
         assert case.info["run_info"]["status"] == "successful"
         assert case.log() == "Successful Log"
-        assert case.result() == b'\x00\x00\x00\x00'
+        result, name = case.result()
+        assert (result, name) == (b'\x00\x00\x00\x00', 'result.mat')
         assert case.is_successful()
         assert case.trajectories()['inertia.I'] == [1, 2, 3, 4]
 
@@ -306,7 +309,8 @@ class TestCase:
         assert case.id == "case_2"
         assert case.info["run_info"]["status"] == "successful"
         assert case.log() == "Successful Log"
-        assert case.result() == b'\x00\x00\x00\x00'
+        result, name = case.result()
+        assert (result, name) == (b'\x00\x00\x00\x00', 'result.mat')
         assert case.is_successful()
         assert case.trajectories()['inertia.I'] == [14, 4, 4, 74]
 
