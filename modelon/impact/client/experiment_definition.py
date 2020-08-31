@@ -86,6 +86,6 @@ class SimpleExperimentDefinition(BaseExperimentDefinition):
                     "simulation_log_level": self.simulation_log_level,
                 },
                 "fmu_id": self.fmu.id,
-                "modifiers": {'variables': self.variable_modifiers},
+                "modifiers": {"variables": self.variable_modifiers},
             }
         }
