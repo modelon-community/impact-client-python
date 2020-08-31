@@ -1,3 +1,10 @@
+# [1.0.0-beta.19](https://github.com/modelon-community/impact-client-python/compare/v1.0.0-beta.18...v1.0.0-beta.19) (2020-08-31)
+
+
+### Bug Fixes
+
+* Seperating the operations and entities module ([e953cf0](https://github.com/modelon-community/impact-client-python/commit/e953cf022a264ca887e0e8f8f605212554f455db))
+
 # [1.0.0-beta.18](https://github.com/modelon-community/impact-client-python/compare/v1.0.0-beta.17...v1.0.0-beta.18) (2020-08-27)
 
 
