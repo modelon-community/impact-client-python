@@ -1,3 +1,10 @@
+# [1.0.0-beta.20](https://github.com/modelon-community/impact-client-python/compare/v1.0.0-beta.19...v1.0.0-beta.20) (2020-08-31)
+
+
+### Bug Fixes
+
+* using correct body field for the secret key ([0d5f306](https://github.com/modelon-community/impact-client-python/commit/0d5f306ae14c664577964840feb99422bfc43e63))
+
 # [1.0.0-beta.19](https://github.com/modelon-community/impact-client-python/compare/v1.0.0-beta.18...v1.0.0-beta.19) (2020-08-31)
 
 
