@@ -10,14 +10,12 @@ logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
 
 
-def _assert_is_running(status, operation_name="Operation"):
-    if status not in (Status.RUNNING, Status.PENDING):
-        raise exceptions.OperationNotCompleteError(
-            f"{operation_name} has completed and cannot be cancelled!"
-        )
-
-
 class Status(Enum):
+    """
+    Class representing an enumeration for the possible
+    operation states.
+    """
+
     PENDING = "pending"
     RUNNING = "running"
     STOPPING = "stopping"
@@ -26,26 +24,75 @@ class Status(Enum):
 
 
 class Operation(ABC):
+    """
+    Abstract operation class containing base functionality.
+    """
+
     @abstractmethod
     def data(self):
+        """
+        Returns the operation class.
+        """
         pass
 
     @abstractmethod
     def status(self):
+        """
+        Returns the operation status as an enumeration.
+        """
         pass
 
     @abstractmethod
     def cancel(self):
+        """
+        Terminates the operation.
+        """
         pass
 
     def is_complete(self):
-        if self.status() in (Status.CANCELLED, Status.STOPPING):
-            raise exceptions.OperationFailureError(
-                "Operation was cancelled before completion! "
-            )
+        """
+        Returns True if the operation has completed.
+
+        Returns::
+
+            True -> If operation has completed.
+            False -> If operation has not completed.
+
+        Example::
+
+           model.compile(options).is_complete()
+           workspace.execute(specification).is_complete()
+        """
         return self.status() == Status.DONE
 
     def wait(self, timeout=None, status=Status.DONE):
+        """Waits until the operation achieves the set status.
+        Returns the operation class instance if the set status is achieved.
+
+        Parameters::
+
+            timeout --
+                Time to wait in seconds for achieving the status. By default 
+                the timeout is set to 'None', which signifies an infinity time 
+                to wait until the status is achieved.
+
+            status --
+                Operation status to be achieved.
+                Default: Status.DONE
+
+        Returns::
+
+            Operation class instance if the set status is achieved.
+
+        Raises::
+
+            OperationTimeOutError if time exceeds set timeout.
+
+        Example::
+
+           model.compile(compile_options).wait(timeout = 120, status = Status.CANCELLED)
+           workspace.execute(experiment_definition).wait(timeout = 120)
+        """
         start_t = time.time()
         while True:
             logger.info(f"Operation in progress! Status : {self.status().name}")
@@ -61,6 +108,10 @@ class Operation(ABC):
 
 
 class ModelExecutableOperation(Operation):
+    """
+    An operation class for the modelon.impact.client.entities.ModelExecutable class.
+    """
+
     def __init__(
         self, workspace_id, fmu_id, workspace_service=None, model_exe_service=None,
     ):
@@ -78,14 +129,37 @@ class ModelExecutableOperation(Operation):
 
     @property
     def id(self):
+        """FMU id"""
         return self._fmu_id
 
     def data(self):
+        """
+        Returns a new ModelExecutable class instance.
+
+        Returns::
+
+            model_executable --
+                A model_executable class instance.
+        """
         return entities.ModelExecutable(
             self._workspace_id, self._fmu_id, self._workspace_sal, self._model_exe_sal,
         )
 
     def status(self):
+        """
+        Returns the compilation status as an enumeration.
+
+        Returns::
+
+            status --
+                The compilation status enum. The status can have the enum values
+                Status.PENDING, Status.RUNNING, Status.STOPPING, Status.CANCELLED
+                or Status.DONE
+
+        Example::
+
+            model.compile(options).status()
+        """
         return Status(
             self._model_exe_sal.compile_status(self._workspace_id, self._fmu_id)[
                 "status"
@@ -93,11 +167,21 @@ class ModelExecutableOperation(Operation):
         )
 
     def cancel(self):
-        _assert_is_running(self.status(), "Compilation")
+        """
+        Terminates the compilation process.
+
+        Example::
+
+            model.compile(options).cancel()
+        """
         self._model_exe_sal.compile_cancel(self._workspace_id, self._fmu_id)
 
 
 class ExperimentOperation(Operation):
+    """
+    An operation class for the modelon.impact.client.entities.Experiment class.
+    """
+
     def __init__(
         self, workspace_id, exp_id, workspace_service=None, exp_service=None,
     ):
@@ -115,18 +199,47 @@ class ExperimentOperation(Operation):
 
     @property
     def id(self):
+        """Experiment id"""
         return self._exp_id
 
     def data(self):
+        """
+        Returns a new Experiment class instance.
+
+        Returns::
+
+            experiment --
+                An experiment class instance.
+        """
         return entities.Experiment(
             self._workspace_id, self._exp_id, self._workspace_sal, self._exp_sal
         )
 
     def status(self):
+        """
+        Returns the execution status as an enumeration.
+
+        Returns::
+
+            status --
+                The execution status enum. The status can have the enum values
+                Status.PENDING, Status.RUNNING, Status.STOPPING, Status.CANCELLED
+                or Status.DONE
+
+        Example::
+
+            workspace.execute(specification).status()
+        """
         return Status(
             self._exp_sal.execute_status(self._workspace_id, self._exp_id)["status"]
         )
 
     def cancel(self):
-        _assert_is_running(self.status(), "Simulation")
+        """
+        Terminates the execution process.
+
+        Example::
+
+            workspace.execute(specification).cancel()
+        """
         self._exp_sal.execute_cancel(self._workspace_id, self._exp_id)

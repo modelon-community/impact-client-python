@@ -1,4 +1,5 @@
 import sys
+import re
 import logging
 import requests
 import urllib.parse
@@ -52,7 +53,7 @@ class WorkspaceService:
     def library_import(self, workspace_id, path_to_lib):
         url = (self._base_uri / f"api/workspaces/{workspace_id}/libraries").resolve()
         with open(path_to_lib, "rb") as f:
-            return self._http_client.post_json(url, files={"file": f})
+            self._http_client.post_json(url, files={"file": f})
 
     def workspace_upload(self, path_to_workspace):
         url = (self._base_uri / "api/workspaces").resolve()
@@ -238,7 +239,10 @@ class ExperimentService:
             / f"api/workspaces/{workspace_id}/experiments/{experiment_id}/cases/"
             f"{case_id}/result"
         ).resolve()
-        return self._http_client.get_octet_stream(url)
+        result, headers = self._http_client.get_octet_stream(url)
+        d = headers['content-disposition']
+        file_name = re.findall("filename=(.+)", d)[0]
+        return result, file_name
 
 
 class CustomFunctionService:
@@ -306,7 +310,8 @@ class HTTPClient:
 
     def get_octet_stream(self, url):
         request = RequestOctetStream(self._context, "GET", url)
-        return request.execute().data
+        resp = request.execute()
+        return resp.data, resp.headers
 
     def get_zip(self, url):
         request = RequestZip(self._context, "GET", url)
@@ -495,7 +500,11 @@ class OctetStreamResponse(Response):
                 "Incorrect content type on response, expected octet-stream"
             )
 
-        return self._resp_obj.text
+        return self._resp_obj.content
+
+    @property
+    def headers(self):
+        return self._resp_obj.headers
 
 
 class ZIPResponse(Response):

@@ -16,3 +16,7 @@ class OperationFailureError(Error):
 
 class OperationNotCompleteError(Error):
     pass
+
+
+class OperationCompleteError(Error):
+    pass

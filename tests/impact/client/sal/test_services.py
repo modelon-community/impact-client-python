@@ -288,8 +288,8 @@ class TestExperimentService:
         service = modelon.impact.client.sal.service.Service(
             uri=uri, context=get_case_results.context
         )
-        data = service.experiment.case_result_get("WS", "pid_2009", "case_1")
-        assert data == '\x00\x00\x00\x00'
+        data, name = service.experiment.case_result_get("WS", "pid_2009", "case_1")
+        assert data == b'\x00\x00\x00\x00'
 
 
 class TestCustomFunctionService:

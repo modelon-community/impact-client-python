@@ -65,7 +65,15 @@ def with_octet_stream_route(
     mock_server_base, method, url, octet_response, status_code=200
 ):
     content = octet_response
-    content_header = {'content-type': 'application/octet-stream'}
+    content_header = {
+        'content-type': 'application/octet-stream',
+        'content-disposition': 'attachment; '
+        'filename="BouncingBall_2020-09-01_14-33_case_1.mat"',
+        'connection': 'close',
+        'date': 'Tue, 01 Sep 2020 14:33:56 GMT',
+        'server': '127.0.0.1',
+        'Transfer-Encoding': 'chunked',
+    }
     mock_server_base.adapter.register_uri(
         method,
         f'{mock_server_base.url}/{url}',
@@ -762,7 +770,7 @@ def experiment():
         "run_info": {"status": "successful"},
     }
     exp_service.case_get_log.return_value = "Successful Log"
-    exp_service.case_result_get.return_value = bytes(4)
+    exp_service.case_result_get.return_value = (bytes(4), 'result.mat')
     exp_service.trajectories_get.return_value = [[[1, 2, 3, 4]], [[5, 2, 9, 4]]]
     return Experiment("Workspace", "Test", ws_service, exp_service)
 
@@ -784,7 +792,7 @@ def batch_experiment():
         "run_info": {"status": "successful"},
     }
     exp_service.case_get_log.return_value = "Successful Log"
-    exp_service.case_result_get.return_value = bytes(4)
+    exp_service.case_result_get.return_value = (bytes(4), 'result.mat')
     exp_service.trajectories_get.return_value = [
         [[1, 2, 3, 4], [14, 4, 4, 74]],
         [[5, 2, 9, 4], [11, 22, 32, 44]],
@@ -833,4 +841,3 @@ def cancelled_experiment():
     exp_service.case_get.return_value = {"id": "case_1"}
     exp_service.execute_status.return_value = {"status": "cancelled"}
     return Experiment("Workspace", "Test", ws_service, exp_service)
-
