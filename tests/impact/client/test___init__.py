@@ -84,7 +84,7 @@ def test_client_login_given_api_key(sem_ver_check):
 
     assert_login_called(
         adapter=sem_ver_check.adapter,
-        body={"secret_key": "test_client_login_given_api_key_key"},
+        body={"secretKey": "test_client_login_given_api_key_key"},
     )
 
 
@@ -99,7 +99,7 @@ def test_client_login_api_key_from_credential_manager(sem_ver_check):
 
     assert_login_called(
         adapter=sem_ver_check.adapter,
-        body={"secret_key": "test_from_credential_manager_key"},
+        body={"secretKey": "test_from_credential_manager_key"},
     )
 
 
