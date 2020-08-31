@@ -66,7 +66,7 @@ class Client:
             )
             login_data = {}
         else:
-            login_data = {"secret_key": self.api_key}
+            login_data = {"secretKey": self.api_key}
 
         self._sal.api_login(login_data)
         if interactive:
