@@ -729,6 +729,34 @@ class ModelExecutable:
             self._workspace_id, self._fmu_id
         )
 
+    def new_experiment_definition(
+        self, custom_function, options, simulation_log_level="WARNING"
+    ):
+        """
+        Returns a new experiment definition using this FMU.
+
+        Returns::
+
+            custom_function --
+                The custom function to use for this experiment.
+            options --
+                The options to use for this experiment.
+            simulation_log_level --
+                Simulation log level for this experiment.
+
+        Example::
+
+            fmu = model.compile().wait()
+            dynamic = workspace.get_custom_function('dynamic')
+            experiment_definition = fmu.new_experiment_definition(
+                dynamic, dynamic.options()
+            )
+            experiment = workspace.execute(experiment_definition).wait()
+        """
+        return SimpleExperimentDefinition(
+            self, custom_function, options, simulation_log_level
+        )
+
 
 class Experiment:
     """
