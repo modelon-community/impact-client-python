@@ -1,6 +1,6 @@
 import time
 import logging
-import modelon.impact.client.entities as entities
+from modelon.impact.client import entities
 
 from abc import ABC, abstractmethod
 from modelon.impact.client import exceptions

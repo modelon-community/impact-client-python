@@ -1,5 +1,5 @@
 import pytest
-import modelon.impact.client.exceptions as exceptions
+from modelon.impact.client import exceptions
 
 from modelon.impact.client.entities import ModelExecutable, Experiment
 from modelon.impact.client.operations import Status

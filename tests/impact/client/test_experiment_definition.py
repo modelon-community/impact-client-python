@@ -1,9 +1,6 @@
-from modelon.impact.client import (
-    SimpleExperimentDefinition,
-    Range
-)
+from modelon.impact.client import SimpleExperimentDefinition, Range
 import pytest
-import modelon.impact.client.exceptions as exceptions
+from modelon.impact.client import exceptions
 
 from tests.impact.client.fixtures import *
 
@@ -93,9 +90,5 @@ def test_invalid_option_input(custom_function, custom_function_no_param):
 
 def test_invalid_fmu_input(fmu, custom_function_no_param):
     pytest.raises(
-        TypeError,
-        SimpleExperimentDefinition,
-        fmu,
-        custom_function_no_param,
-        {},
+        TypeError, SimpleExperimentDefinition, fmu, custom_function_no_param, {},
     )
