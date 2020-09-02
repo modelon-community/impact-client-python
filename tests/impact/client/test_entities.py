@@ -214,6 +214,19 @@ class TestModelExecutable:
             exceptions.OperationFailureError, fmu_compile_cancelled.settable_parameters,
         )
 
+    def test_create_experiment_definition(self, fmu, custom_function):
+        experiment_definition = fmu.new_experiment_definition(
+            custom_function=custom_function,
+            options=custom_function.options()
+            .with_simulation_options(ncp=2000, rtol=0.1)
+        )
+        config = experiment_definition.to_dict()
+        assert config['experiment']['fmu_id'] == fmu.id
+        assert config['experiment']['analysis']['simulation_options'] == {
+            'ncp': 2000,
+            'rtol': 0.1
+        }
+
 
 class TestExperiment:
     def test_execute_successful(self, experiment):
