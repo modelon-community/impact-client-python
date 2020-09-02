@@ -72,8 +72,8 @@ class Operation(ABC):
         Parameters::
 
             timeout --
-                Time to wait in seconds for achieving the status. By default 
-                the timeout is set to 'None', which signifies an infinity time 
+                Time to wait in seconds for achieving the status. By default
+                the timeout is set to 'None', which signifies an infinity time
                 to wait until the status is achieved.
 
             status --

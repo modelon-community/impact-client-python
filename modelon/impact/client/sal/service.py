@@ -240,7 +240,7 @@ class ExperimentService:
             f"{case_id}/result"
         ).resolve()
         result, headers = self._http_client.get_octet_stream(url)
-        d = headers['content-disposition']
+        d = headers["content-disposition"]
         file_name = re.findall("filename=(.+)", d)[0]
         return result, file_name
 
