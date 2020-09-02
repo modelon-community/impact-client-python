@@ -90,7 +90,10 @@ class Operation(ABC):
 
         Example::
 
-           model.compile(compile_options).wait(timeout = 120, status = Status.CANCELLED)
+           model.compile(compile_options).wait(
+               timeout = 120,
+               status = Status.CANCELLED
+           )
            workspace.execute(experiment_definition).wait(timeout = 120)
         """
         start_t = time.time()
