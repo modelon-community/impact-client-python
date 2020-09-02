@@ -3,7 +3,7 @@ import pytest
 import os
 import tempfile
 import modelon.impact.client.options
-import modelon.impact.client.exceptions as exceptions
+from modelon.impact.client import exceptions
 
 from tests.files.paths import SINGLE_FILE_LIBRARY_PATH
 from modelon.impact.client.entities import (
