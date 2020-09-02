@@ -1,3 +1,11 @@
+# [1.0.0-beta.21](https://github.com/modelon-community/impact-client-python/compare/v1.0.0-beta.20...v1.0.0-beta.21) (2020-09-02)
+
+
+### Bug Fixes
+
+* Adding Docstrings and minor fixes ([fe87659](https://github.com/modelon-community/impact-client-python/commit/fe876598d28623dd80ae2165920a548506fdd45c))
+* Lint fixes ([2c4a7f4](https://github.com/modelon-community/impact-client-python/commit/2c4a7f443286da683e81222717fc6db36ab9402c))
+
 # [1.0.0-beta.20](https://github.com/modelon-community/impact-client-python/compare/v1.0.0-beta.19...v1.0.0-beta.20) (2020-08-31)
 
 
