@@ -1,3 +1,10 @@
+# [1.0.0-beta.23](https://github.com/modelon-community/impact-client-python/compare/v1.0.0-beta.22...v1.0.0-beta.23) (2020-09-03)
+
+
+### Bug Fixes
+
+* Added missing raises and return to documentation ([594eefb](https://github.com/modelon-community/impact-client-python/commit/594eefb4957e51623cf467c59702969086fafdae))
+
 # [1.0.0-beta.22](https://github.com/modelon-community/impact-client-python/compare/v1.0.0-beta.21...v1.0.0-beta.22) (2020-09-02)
 
 
