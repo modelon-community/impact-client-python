@@ -681,9 +681,15 @@ class ModelExecutable:
             == ModelExecutableStatus.SUCCESSFUL
         )
 
-    def log(self):
+    def log(self, pretty_print=True):
         """
         Returns compilation log if the model has compiled.
+
+        Parameters::
+
+            pretty_print --
+                A formated text is printed to the console if set to 'True'.
+                Should be set to 'False' if the log is to be stored and written to file.
 
         Returns::
 
@@ -697,12 +703,17 @@ class ModelExecutable:
 
         Example::
 
-            print(fmu.log())
+            fmu.log()
+            fmu.log(pretty_print=False)
         """
         _assert_is_complete(
             ModelExecutableStatus(self.info["run_info"]["status"]), "Compilation"
         )
-        return self._model_exe_sal.compile_log(self._workspace_id, self._fmu_id)
+        log = self._model_exe_sal.compile_log(self._workspace_id, self._fmu_id)
+        if pretty_print:
+            print(log)
+        else:
+            return log
 
     def settable_parameters(self):
         """
@@ -972,17 +983,33 @@ class Case:
         """
         return CaseStatus(self.info["run_info"]["status"]) == CaseStatus.SUCCESSFUL
 
-    def log(self):
+    def log(self, pretty_print=True):
         """
         Returns the log for a finished case.
 
+        Parameters::
+
+            pretty_print --
+                A formated text is printed to the console if set to 'True'.
+                Should be set to 'False' if the log is to be stored and written to file.
+
+        Returns::
+
+            log --
+                The case execution log.
+
         Example::
 
-            print(case.log())
+            case.log()
+            case.log(pretty_print=False)
         """
-        return self._exp_sal.case_get_log(
+        log = self._exp_sal.case_get_log(
             self._workspace_id, self._exp_id, self._case_id
         )
+        if pretty_print:
+            print(log)
+        else:
+            return log
 
     def result(self):
         """
