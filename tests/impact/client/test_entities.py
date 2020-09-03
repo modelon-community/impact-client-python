@@ -172,7 +172,7 @@ class TestModelExecutable:
         assert fmu.id == 'Test'
         assert fmu.is_successful()
         assert fmu.settable_parameters() == ['h0', 'v']
-        assert fmu.log() == "Successful Log"
+        assert fmu.log(pretty_print=False) == "Successful Log"
         assert fmu.metadata == {
             "steady_state": {
                 "residual_variable_count": 1,
@@ -197,7 +197,7 @@ class TestModelExecutable:
     def test_compilation_failed(self, fmu_compile_failed):
         assert fmu_compile_failed.info["run_info"]["status"] == "failed"
         assert not fmu_compile_failed.is_successful()
-        assert fmu_compile_failed.log() == "Failed Log"
+        assert fmu_compile_failed.log(pretty_print=False) == "Failed Log"
         pytest.raises(
             exceptions.OperationFailureError, fmu_compile_failed.settable_parameters,
         )
@@ -312,7 +312,7 @@ class TestCase:
         case = experiment.case("case_1")
         assert case.id == "case_1"
         assert case.info["run_info"]["status"] == "successful"
-        assert case.log() == "Successful Log"
+        assert case.log(pretty_print=False) == "Successful Log"
         result, name = case.result()
         assert (result, name) == (b'\x00\x00\x00\x00', 'result.mat')
         assert case.is_successful()
@@ -322,7 +322,7 @@ class TestCase:
         case = batch_experiment.case("case_2")
         assert case.id == "case_2"
         assert case.info["run_info"]["status"] == "successful"
-        assert case.log() == "Successful Log"
+        assert case.log(pretty_print=False) == "Successful Log"
         result, name = case.result()
         assert (result, name) == (b'\x00\x00\x00\x00', 'result.mat')
         assert case.is_successful()
