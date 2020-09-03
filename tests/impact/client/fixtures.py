@@ -709,7 +709,7 @@ def options():
     custom_function_service.custom_function_options_get.return_value = opts
     custom_function_service.custom_function_default_options_get.return_value = def_opts
     return modelon.impact.client.options.ExecutionOption(
-        "test_ws", opts, "dynamic", custom_function_service
+        opts, "dynamic", custom_function_service
     )
 
 
