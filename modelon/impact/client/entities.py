@@ -551,9 +551,7 @@ class CustomFunction:
         options = self._custom_func_sal.custom_function_options_get(
             self._workspace_id, self.name
         )
-        return ExecutionOption(
-            self._workspace_id, options, self.name, self._custom_func_sal
-        )
+        return ExecutionOption(options, self.name, self._custom_func_sal)
 
 
 class Model:
