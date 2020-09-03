@@ -8,7 +8,7 @@ def _set_options(custom_func_name, custom_func_sal, option_cat, options, **modif
     return opts
 
 
-class ExecutionOption:
+class ExecutionOptions:
     """
     An class containing the simulation, compiler, solver and runtime options settings.
     """
@@ -48,7 +48,7 @@ class ExecutionOption:
         options = _set_options(
             self._name, self._custom_func_sal, "simulation", self._options, **modified,
         )
-        return ExecutionOption(options, self._name, self._custom_func_sal)
+        return ExecutionOptions(options, self._name, self._custom_func_sal)
 
     def with_compiler_options(self, **modified):
         """ Sets/updates the compiler options.
@@ -66,7 +66,7 @@ class ExecutionOption:
         options = _set_options(
             self._name, self._custom_func_sal, "compiler", self._options, **modified,
         )
-        return ExecutionOption(options, self._name, self._custom_func_sal)
+        return ExecutionOptions(options, self._name, self._custom_func_sal)
 
     def with_solver_options(self, **modified):
         """ Sets/updates the solver options.
@@ -84,7 +84,7 @@ class ExecutionOption:
         options = _set_options(
             self._name, self._custom_func_sal, "solver", self._options, **modified,
         )
-        return ExecutionOption(options, self._name, self._custom_func_sal)
+        return ExecutionOptions(options, self._name, self._custom_func_sal)
 
     def with_runtime_options(self, **modified):
         """ Sets/updates the runtime options.
@@ -102,4 +102,4 @@ class ExecutionOption:
         options = _set_options(
             self._name, self._custom_func_sal, "runtime", self._options, **modified,
         )
-        return ExecutionOption(options, self._name, self._custom_func_sal)
+        return ExecutionOptions(options, self._name, self._custom_func_sal)

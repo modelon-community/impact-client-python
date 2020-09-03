@@ -1,6 +1,6 @@
 from modelon.impact.client import entities
 from abc import ABC, abstractmethod
-from modelon.impact.client.options import ExecutionOption
+from modelon.impact.client.options import ExecutionOptions
 from modelon.impact.client import exceptions
 
 
@@ -9,8 +9,8 @@ def _assert_valid_args(fmu, custom_function, options):
         raise TypeError("Fmu must be an instance of ModelExecutable class")
     if not isinstance(custom_function, entities.CustomFunction):
         raise TypeError("Custom_function must be an instance of CustomFunction class")
-    if not isinstance(options, ExecutionOption):
-        raise TypeError("Options must be an instance of ExecutionOption class")
+    if not isinstance(options, ExecutionOptions):
+        raise TypeError("Options must be an instance of ExecutionOptions class")
 
 
 def _assert_settable_parameters(fmu, **variables):

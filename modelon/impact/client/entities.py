@@ -3,7 +3,7 @@ from modelon.impact.client import operations
 
 from modelon.impact.client.experiment_definition import SimpleExperimentDefinition
 from collections.abc import Mapping
-from modelon.impact.client.options import ExecutionOption
+from modelon.impact.client.options import ExecutionOptions
 from modelon.impact.client import exceptions
 from enum import Enum
 
@@ -536,12 +536,12 @@ class CustomFunction:
 
     def options(self):
         """
-        Return an modelon.impact.client.options.ExecutionOption object.
+        Return an modelon.impact.client.options.ExecutionOptions object.
 
         Returns::
 
             options --
-                An modelon.impact.client.options.ExecutionOption object.
+                An modelon.impact.client.options.ExecutionOptions object.
 
         Example::
 
@@ -551,7 +551,7 @@ class CustomFunction:
         options = self._custom_func_sal.custom_function_options_get(
             self._workspace_id, self.name
         )
-        return ExecutionOption(options, self.name, self._custom_func_sal)
+        return ExecutionOptions(options, self.name, self._custom_func_sal)
 
 
 class Model:
@@ -598,8 +598,8 @@ class Model:
             compile_ops.status()
             model.compile(options).wait()
         """
-        if not isinstance(options, ExecutionOption):
-            raise TypeError("Options must be an instance of ExecutionOption class")
+        if not isinstance(options, ExecutionOptions):
+            raise TypeError("Options must be an instance of ExecutionOptions class")
 
         body = {
             "input": {

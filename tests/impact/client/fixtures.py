@@ -708,7 +708,7 @@ def options():
     }
     custom_function_service.custom_function_options_get.return_value = opts
     custom_function_service.custom_function_default_options_get.return_value = def_opts
-    return modelon.impact.client.options.ExecutionOption(
+    return modelon.impact.client.options.ExecutionOptions(
         opts, "dynamic", custom_function_service
     )
 
