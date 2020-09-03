@@ -894,6 +894,18 @@ class Experiment:
             variables --
                 A list of result variables to fecth trajectories for.
 
+        Returns::
+
+            trajectory --
+                A dictionary object containing the result trajectories for all cases.
+
+        Raises::
+
+            OperationNotCompleteError if simulation process is in progress.
+            OperationFailureError if simulation process has failed or was cancelled.
+            TypeError if the variable is not a list object.
+            ValueError if trajectory variable is not present in the result.
+
         Example::
 
             result = experiment.trajectories(['h', 'time'])
@@ -978,6 +990,22 @@ class Case:
         """
         Returns the result stream and the file name for a finished case.
 
+        Returns::
+
+            result --
+                The result byte stream.
+
+            filename --
+                The filename for the result. This name could be used to write the
+                result stream.
+
+        Raises::
+
+            OperationNotCompleteError if simulation process is in progress.
+            OperationFailureError if simulation process has failed or was cancelled.
+            TypeError if the variable is not a list object.
+            ValueError if trajectory variable is not present in the result.
+
         Example::
 
             result, file_name = case.result()
@@ -993,6 +1021,16 @@ class Case:
     def trajectories(self):
         """
         Returns result(Mapping) object containing the result trajectories.
+
+        Returns::
+
+            trajectories --
+                A result trajectory dictionary object.
+
+        Raises::
+
+            OperationNotCompleteError if simulation process is in progress.
+            OperationFailureError if simulation process has failed or was cancelled.
 
         Example::
 

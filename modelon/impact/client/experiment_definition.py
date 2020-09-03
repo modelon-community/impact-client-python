@@ -89,11 +89,11 @@ class SimpleExperimentDefinition(BaseExperimentDefinition):
                 modifiers.
 
         Example::
-            from modelon.impact.client.experiment_definition import
-            SimpleExperimentDefinition, Range
+            from modelon.impact.client import Range
 
+            fmu = model.compile().wait()
             options = custom_function.options()
-            simulate_def = SimpleExperimentDefinition(fmu, custom_function, options)
+            simulate_def = fmu.new_experiment_definition(custom_function, options)
             .with_modifiers(h0 = 1, e = Range(0.1, 0.5, 3))
         """
         _assert_settable_parameters(self.fmu, **modifiers)
@@ -116,11 +116,10 @@ class SimpleExperimentDefinition(BaseExperimentDefinition):
                 A dictionary containing the experiment definition.
 
         Example::
-            from modelon.impact.client.experiment_definition import
-            SimpleExperimentDefinition
 
+            fmu = model.compile().wait()
             options = custom_function.options()
-            simulate_def = SimpleExperimentDefinition(fmu, custom_function, options)
+            simulate_def = fmu.new_experiment_definition(custom_function, options)
             simulate_def.to_dict()
         """
         return {
