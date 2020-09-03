@@ -681,20 +681,8 @@ class ModelExecutable:
             == ModelExecutableStatus.SUCCESSFUL
         )
 
-    def log(self, pretty_print=True):
-        """
-        Returns compilation log if the model has compiled.
-
-        Parameters::
-
-            pretty_print --
-                A formated text is printed to the console if set to 'True'.
-                Should be set to 'False' if the log is to be stored and written to file.
-
-        Returns::
-
-            log --
-                The model executable compilation log.
+    def log(self):
+        """Prints the compilation log.
 
         Raises::
 
@@ -704,16 +692,34 @@ class ModelExecutable:
         Example::
 
             fmu.log()
-            fmu.log(pretty_print=False)
         """
         _assert_is_complete(
             ModelExecutableStatus(self.info["run_info"]["status"]), "Compilation"
         )
-        log = self._model_exe_sal.compile_log(self._workspace_id, self._fmu_id)
-        if pretty_print:
-            print(log)
-        else:
-            return log
+        print(self._model_exe_sal.compile_log(self._workspace_id, self._fmu_id))
+
+    def get_log(self):
+        """
+        Returns the raw compilation log.
+
+        Returns::
+
+            log --
+                The raw compilation log.
+
+        Raises::
+
+            OperationNotCompleteError if compilation process is in progress.
+            OperationFailureError if compilation process was cancelled.
+
+        Example::
+
+            fmu.get_log()
+        """
+        _assert_is_complete(
+            ModelExecutableStatus(self.info["run_info"]["status"]), "Compilation"
+        )
+        return self._model_exe_sal.compile_log(self._workspace_id, self._fmu_id)
 
     def settable_parameters(self):
         """
@@ -971,33 +977,33 @@ class Case:
         """
         return CaseStatus(self.info["run_info"]["status"]) == CaseStatus.SUCCESSFUL
 
-    def log(self, pretty_print=True):
-        """
-        Returns the log for a finished case.
-
-        Parameters::
-
-            pretty_print --
-                A formated text is printed to the console if set to 'True'.
-                Should be set to 'False' if the log is to be stored and written to file.
-
-        Returns::
-
-            log --
-                The case execution log.
+    def log(self):
+        """Prints the formatted log for a finished case.
 
         Example::
 
             case.log()
-            case.log(pretty_print=False)
         """
-        log = self._exp_sal.case_get_log(
+        print(
+            self._exp_sal.case_get_log(self._workspace_id, self._exp_id, self._case_id)
+        )
+
+    def get_log(self):
+        """
+        Returns the raw log for a finished case.
+
+        Returns::
+
+            log --
+                The raw case execution log.
+
+        Example::
+
+            case.get_log()
+        """
+        return self._exp_sal.case_get_log(
             self._workspace_id, self._exp_id, self._case_id
         )
-        if pretty_print:
-            print(log)
-        else:
-            return log
 
     def result(self):
         """
