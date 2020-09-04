@@ -18,8 +18,8 @@ def _assert_settable_parameters(fmu, **variables):
     if add:
         raise KeyError(
             f"Paramter(s) '{', '.join(add)}' {'are' if len(add)>1 else 'is'} "
-            "not a valid parameter modifier! Settable parameters"
-            f" are {fmu.settable_parameters()}"
+            "not a valid parameter modifier! Call the settable_parameters() "
+            "method on the fmu to view the list of settable parameters."
         )
 
 
