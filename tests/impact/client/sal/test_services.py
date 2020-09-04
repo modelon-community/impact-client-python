@@ -114,6 +114,14 @@ class TestWorkspaceService:
         data = service.workspace.fmus_get("WS")
         assert data == {'data': {'items': [{'id': 'as9f-3df5'}, {'id': 'as9f-3df5'}]}}
 
+    def test_fmu_download(self, download_fmu):
+        uri = modelon.impact.client.sal.service.URI(download_fmu.url)
+        service = modelon.impact.client.sal.service.Service(
+            uri=uri, context=download_fmu.context
+        )
+        data = service.workspace.fmu_download("WS", 'pid_20090615_134')
+        assert data == b'\x00\x00\x00\x00'
+
     def test_get_experiment(self, get_experiment):
         uri = modelon.impact.client.sal.service.URI(get_experiment.url)
         service = modelon.impact.client.sal.service.Service(
