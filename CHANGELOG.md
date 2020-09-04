@@ -1,3 +1,14 @@
+# [1.0.0-beta.24](https://github.com/modelon-community/impact-client-python/compare/v1.0.0-beta.23...v1.0.0-beta.24) (2020-09-04)
+
+
+### Bug Fixes
+
+* ExecutionOption -> ExecutionOptions ([dcad9a6](https://github.com/modelon-community/impact-client-python/commit/dcad9a6521abadef20d1f334b139902cb6f8b4d2))
+* pretty print the log ([e277c68](https://github.com/modelon-community/impact-client-python/commit/e277c684c9a8280d9ec96d2040d7a3d55184f0c6))
+* Remove dead code ([ac5cfec](https://github.com/modelon-community/impact-client-python/commit/ac5cfecd19044af0cb2e97a546b8a682d0ad81c9))
+* Renamed options to values in execution options ([7ef6745](https://github.com/modelon-community/impact-client-python/commit/7ef6745f4c6a70e24d152838ad73be3d59844065))
+* Seperate methods for getting and printing log ([c600364](https://github.com/modelon-community/impact-client-python/commit/c6003640bf65d91d0288544fb042ef2cb7dced25))
+
 # [1.0.0-beta.23](https://github.com/modelon-community/impact-client-python/compare/v1.0.0-beta.22...v1.0.0-beta.23) (2020-09-03)
 
 
