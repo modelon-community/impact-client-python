@@ -847,6 +847,8 @@ def failed_experiment():
         "id": "case_1",
         "run_info": {"status": "failed"},
     }
+    exp_service.result_variables_get.return_value = ["inertia.I", "time"]
+    exp_service.trajectories_get.return_value = [[[1, 2, 3, 4]], [[5, 2, 9, 4]]]
     return Experiment("Workspace", "Test", ws_service, exp_service)
 
 
