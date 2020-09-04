@@ -273,14 +273,9 @@ class TestExperiment:
         assert failed_experiment.cases() == [Case("case_1", "Workspace", "Test")]
         assert failed_experiment.case("case_1") == Case("case_1", "Workspace", "Test")
         assert not failed_experiment.is_successful()
-        pytest.raises(
-            exceptions.OperationFailureError, failed_experiment.variables,
-        )
-        pytest.raises(
-            exceptions.OperationFailureError,
-            failed_experiment.trajectories,
-            ['inertia.I'],
-        )
+        assert failed_experiment.trajectories(['inertia.I']) == {
+            'case_1': {'inertia.I': [1, 2, 3, 4]}
+        }
 
     def test_cancelled_execution(self, cancelled_experiment):
         assert cancelled_experiment.info["run_info"]["status"] == "cancelled"
@@ -336,9 +331,7 @@ class TestCase:
         pytest.raises(
             exceptions.OperationFailureError, failed_case.result,
         )
-        pytest.raises(
-            exceptions.OperationFailureError, failed_case.trajectories,
-        )
+        assert failed_case.trajectories()["inertia.I"] == [1, 2, 3, 4]
 
     def test_failed_execution_result(self, failed_experiment):
         pytest.raises(

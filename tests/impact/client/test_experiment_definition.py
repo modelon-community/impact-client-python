@@ -48,7 +48,7 @@ def test_experiment_definition_with_modifier(fmu, custom_function_no_param):
         fmu,
         custom_function=custom_function_no_param,
         options=custom_function_no_param.options(),
-    ).with_modifiers(v=1, h0=Range(0.1, 0.5, 3))
+    ).with_modifiers({'h0': Range(0.1, 0.5, 3)}, v=1)
     config = spec.to_dict()
     assert config["experiment"]["modifiers"]["variables"] == {
         'h0': 'range(0.1,0.5,3)',

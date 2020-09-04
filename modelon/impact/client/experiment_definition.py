@@ -1,3 +1,5 @@
+import itertools
+
 from modelon.impact.client import entities
 from abc import ABC, abstractmethod
 from modelon.impact.client.options import ExecutionOptions
@@ -13,8 +15,8 @@ def _assert_valid_args(fmu, custom_function, options):
         raise TypeError("Options must be an instance of ExecutionOptions class")
 
 
-def _assert_settable_parameters(fmu, **variables):
-    add = set(variables.keys()) - set(fmu.settable_parameters())
+def _assert_settable_parameters(fmu, modifiers):
+    add = set(modifiers.keys()) - set(fmu.settable_parameters())
     if add:
         raise KeyError(
             f"Paramter(s) '{', '.join(add)}' {'are' if len(add)>1 else 'is'} "
@@ -79,12 +81,17 @@ class SimpleExperimentDefinition(BaseExperimentDefinition):
         self.simulation_log_level = simulation_log_level
         self.variable_modifiers = {}
 
-    def with_modifiers(self, **modifiers):
+    def with_modifiers(self, modifiers=None, **modifiers_kwargs):
         """ Sets the modifiers parameters for an experiment.
 
         Parameters::
 
             modifiers --
+                A dictionary of variable modifiers. Could be used if
+                modifiers keys conflict with python identifiers or keywords.
+                Default: None.
+
+            modifiers_kwargs --
                 A keyworded, variable-length argument list of variable
                 modifiers.
 
@@ -94,14 +101,18 @@ class SimpleExperimentDefinition(BaseExperimentDefinition):
             fmu = model.compile().wait()
             options = custom_function.options()
             simulate_def = fmu.new_experiment_definition(custom_function, options)
-            .with_modifiers(h0 = 1, e = Range(0.1, 0.5, 3))
+            .with_modifiers({'inertia1.J': 2, 'inertia2.J': Range(0.1, 0.5, 3)},k=2,w=7)
         """
-        _assert_settable_parameters(self.fmu, **modifiers)
+        modifiers = {} if modifiers is None else modifiers
+        _assert_settable_parameters(self.fmu, modifiers)
+        _assert_settable_parameters(self.fmu, modifiers_kwargs)
         new = SimpleExperimentDefinition(
             self.fmu, self.custom_function, self.options, self.simulation_log_level
         )
 
-        for variable, value in modifiers.items():
+        for variable, value in itertools.chain(
+            modifiers.items(), modifiers_kwargs.items()
+        ):
             new.variable_modifiers[variable] = (
                 str(value) if isinstance(value, Operator) else value
             )

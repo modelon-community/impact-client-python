@@ -16,14 +16,22 @@ def _assert_successful_operation(is_successful, operation_name="Operation"):
 
 
 def _assert_is_complete(status, operation_name="Operation"):
-    if status not in (ModelExecutableStatus.SUCCESSFUL, ExperimentStatus.DONE):
+    if status not in (
+        ModelExecutableStatus.SUCCESSFUL,
+        ExperimentStatus.DONE,
+        CaseStatus.SUCCESSFUL,
+    ):
         if status in (ModelExecutableStatus.NOTSTARTED, ExperimentStatus.NOTSTARTED):
             raise exceptions.OperationNotCompleteError(
                 f"{operation_name} is still in progress! Status : {status}."
                 f" Please call the wait() method on the {operation_name} operation"
                 " to wait until completion!"
             )
-        elif status in (ModelExecutableStatus.CANCELLED, ExperimentStatus.CANCELLED):
+        elif status in (
+            ModelExecutableStatus.CANCELLED,
+            ExperimentStatus.CANCELLED,
+            CaseStatus.CANCELLED,
+        ):
             raise exceptions.OperationFailureError(
                 f"{operation_name} was cancelled before completion! "
                 f"Log file generated for cancelled {operation_name} is empty!"
@@ -844,7 +852,9 @@ class Experiment:
 
             experiment.variables()
         """
-        _assert_successful_operation(self.is_successful(), "Simulation")
+        _assert_is_complete(
+            ExperimentStatus(self.info["run_info"]["status"]), "Simulation"
+        )
         return self._exp_sal.result_variables_get(self._workspace_id, self._exp_id)
 
     def cases(self):
@@ -917,7 +927,7 @@ class Experiment:
         Raises::
 
             OperationNotCompleteError if simulation process is in progress.
-            OperationFailureError if simulation process has failed or was cancelled.
+            OperationFailureError if simulation process was cancelled.
             TypeError if the variable is not a list object.
             ValueError if trajectory variable is not present in the result.
 
@@ -932,7 +942,9 @@ class Experiment:
                 "Please specify the list of result keys for the trajectories of "
                 "intrest!"
             )
-        _assert_successful_operation(self.is_successful(), "Simulation")
+        _assert_is_complete(
+            ExperimentStatus(self.info["run_info"]["status"]), "Simulation"
+        )
         _assert_variable_in_result(variables, self.variables())
 
         response = self._exp_sal.trajectories_get(
@@ -1061,7 +1073,7 @@ class Case:
         Raises::
 
             OperationNotCompleteError if simulation process is in progress.
-            OperationFailureError if simulation process has failed or was cancelled.
+            OperationFailureError if simulation process was cancelled.
 
         Example::
 
@@ -1069,7 +1081,7 @@ class Case:
             height = result['h']
             time = res['time']
         """
-        _assert_successful_operation(self.is_successful(), self._case_id)
+        _assert_is_complete(CaseStatus(self.info["run_info"]["status"]), "Simulation")
         return Result(
             self._case_id,
             self._workspace_id,
