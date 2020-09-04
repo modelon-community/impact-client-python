@@ -402,10 +402,15 @@ class Workspace:
             workspace.create_experiment(specification)
         """
         if isinstance(spec, SimpleExperimentDefinition):
-            options = spec.to_dict()
-        else:
-            options = spec
-        resp = self._workspace_sal.experiment_create(self._workspace_id, options)
+            spec = spec.to_dict()
+        elif not isinstance(spec, dict):
+            raise TypeError(
+                "Specification object must either be a dictionary or an instance of "
+                "modelon.impact.client.experiment_definition.SimpleExperimentDefinition"
+                " class!"
+            )
+
+        resp = self._workspace_sal.experiment_create(self._workspace_id, spec)
         return Experiment(
             self._workspace_id,
             resp["experiment_id"],
@@ -420,8 +425,9 @@ class Workspace:
         Parameters::
 
             spec --
-                An parametrized experiment specification class of type
-                modelon.impact.client.experiment_definition.SimpleExperimentDefinition.
+                An experiment specification class instance of
+                modelon.impact.client.experiment_definition.SimpleExperimentDefinition
+                or a dictionary object containing the specification.
 
         Returns::
 
@@ -585,6 +591,27 @@ class Model:
         Returns an modelon.impact.client.operations.ModelExecutableOperation class
         object.
 
+        Parameters::
+
+            options --
+                An compilation options class instance of
+                modelon.impact.client.options.ExecutionOptions or
+                a dictionary object containing the compilation options.
+
+            compiler_log_level --
+                The logging for the compiler. Possible values are "error",
+                "warning", "info", "verbose" and "debug". Default: 'info'.
+
+            fmi_target --
+                Compiler target. Possible values are 'me' and 'cs'. Default: 'me'.
+
+            fmi_version --
+                The FMI version. Valid options are '1.0' and '2.0'. Default: '2.0'.
+
+            platform --
+                Platform for FMU binary. Supported values are "auto", "win64", "win32"
+                or "linux64". Default: 'auto'.
+
         Returns::
 
             modelexecutableoperation --
@@ -597,15 +624,25 @@ class Model:
             compile_ops.cancel()
             compile_ops.status()
             model.compile(options).wait()
+            model.compile({'c_compiler':'gcc'}).wait()
         """
-        if not isinstance(options, ExecutionOptions):
-            raise TypeError("Options must be an instance of ExecutionOptions class")
+        if isinstance(options, ExecutionOptions):
+            compiler_options = options.to_dict().get("compiler", {})
+            runtime_options = options.to_dict().get("runtime", {})
+        elif isinstance(options, dict):
+            compiler_options = options
+            runtime_options = {}
+        else:
+            raise TypeError(
+                "Options object must either be a dictionary or an "
+                "instance of modelon.impact.client.options.ExecutionOptions class!"
+            )
 
         body = {
             "input": {
                 "class_name": self.class_name,
-                "compiler_options": options.to_dict()["compiler"],
-                "runtime_options": options.to_dict()["runtime"],
+                "compiler_options": compiler_options,
+                "runtime_options": runtime_options,
                 "compiler_log_level": compiler_log_level,
                 "fmi_target": fmi_target,
                 "fmi_version": fmi_version,
