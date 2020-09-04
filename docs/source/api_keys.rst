@@ -4,13 +4,14 @@ Authentication with API keys
 To use the client, authentication with an API key is required. To generate the key, go
 to `the API key manager`_ (located at <impact url>/admin/keys/). You will get a secret
 API key and a key ID. The API key is personal and each user may have one single key at
-a time, so do not share one key
-between several persons.
+a time, so do not share one key between several persons.
 
 *Remember that this is the only time you will see the secret. Make sure to store it
 safely.*
 
-If the key is lost or compromised, it must be deleted before a new key can be generated.
+If the key is lost or compromised, you can generate a new one by clicking the refresh
+button. This will delete the old key, so any application that uses it must have their
+keys updated in order to work.
 
 There are several ways to use the API key, depending on how it is stored. It can either
 be set as an argument when the client is initialized, set as an environment variable,
