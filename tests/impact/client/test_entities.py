@@ -166,6 +166,13 @@ class TestModel:
         fmu = model_compiled.compile(options)
         assert fmu == ModelExecutableOperation('AwesomeWorkspace', 'test_pid_fmu_id')
 
+    def test_compile_dict_options(self, model_compiled):
+        fmu = model_compiled.compile({'c_compiler': 'gcc'})
+        assert fmu == ModelExecutableOperation('AwesomeWorkspace', 'test_pid_fmu_id')
+
+    def test_compile_invalid_type_options(self, model_compiled):
+        pytest.raises(TypeError, model_compiled.compile, [])
+
 
 class TestModelExecutable:
     def test_compile_successful(self, fmu):
