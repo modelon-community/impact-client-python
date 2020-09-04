@@ -1,4 +1,5 @@
 import os
+import tempfile
 from modelon.impact.client import operations
 
 from modelon.impact.client.experiment_definition import SimpleExperimentDefinition
@@ -209,7 +210,6 @@ class Workspace:
         self._workspace_sal.workspace_unlock(self._workspace_id)
 
     def download(self, options, path):
-        # TO DO: Needs to be tested
         """Downloads the workspace as a binary compressed archive.
         Returns the local path to the downloaded workspace archive.
 
@@ -250,11 +250,12 @@ class Workspace:
             workspace.download(options, path)
         """
         data = self._workspace_sal.workspace_download(self._workspace_id, options)
+        ws_path = os.path.join(path, self._workspace_id + '.zip')
 
         os.makedirs(os.path.dirname(path), exist_ok=True)
-        with open(path, "w") as f:
+        with open(ws_path, "wb") as f:
             f.write(data)
-        return path
+        return ws_path
 
     def clone(self):
         """Clones the workspace.
@@ -771,6 +772,35 @@ class ModelExecutable:
         return SimpleExperimentDefinition(
             self, custom_function, options, simulation_log_level
         )
+
+    def download(self, path=None):
+        """Downloads an FMU binary that is compiled.
+        Returns the local path to the downloaded FMU archive.
+
+        Parameters::
+
+            path --
+                The local path to store the downloaded FMU. Default: None.
+                If no path is given, FMU will be downloaded in a temporary directory.
+
+        Returns::
+
+            path --
+                Local path to the downloaded FMU.
+
+        Example::
+
+            fmu_path = model.compile().wait().download()
+            fmu_path = model.compile().wait().download('C:/Downloads')
+        """
+        data = self._workspace_sal.fmu_download(self._workspace_id, self._fmu_id)
+        if path is None:
+            path = os.path.join(tempfile.gettempdir(), 'impact-downloads')
+        os.makedirs(path, exist_ok=True)
+        fmu_path = os.path.join(path, self._fmu_id + '.fmu')
+        with open(fmu_path, "wb") as f:
+            f.write(data)
+        return fmu_path
 
 
 class Experiment:

@@ -95,6 +95,13 @@ class WorkspaceService:
         ).resolve()
         return self._http_client.get_json(url)
 
+    def fmu_download(self, workspace_id, fmu_id):
+        url = (
+            self._base_uri
+            / f"api/workspaces/{workspace_id}/model-executables/{fmu_id}/binary"
+        ).resolve()
+        return self._http_client.get_zip(url)
+
     def experiments_get(self, workspace_id):
         url = (self._base_uri / f"api/workspaces/{workspace_id}/experiments").resolve()
         return self._http_client.get_json(url)

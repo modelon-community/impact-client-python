@@ -67,8 +67,8 @@ class TestWorkspace:
         assert 'DELETE' == unlock_call.method
 
     def test_download_workspace(self, workspace):
-        t = os.path.join(tempfile.gettempdir(), os.urandom(24).hex())
-        resp = workspace.download({}, t)
+        t = os.path.join(tempfile.gettempdir(), workspace.id + '.zip')
+        resp = workspace.download({}, tempfile.gettempdir())
         assert resp == t
 
     def test_clone(self, workspace):
@@ -227,6 +227,16 @@ class TestModelExecutable:
             'ncp': 2000,
             'rtol': 0.1,
         }
+
+    def test_download_fmu(self, fmu):
+        t = os.path.join(tempfile.gettempdir(), fmu.id + '.fmu')
+        resp = fmu.download(tempfile.gettempdir())
+        assert resp == t
+
+    def test_download_fmu_no_path(self, fmu):
+        t = os.path.join(tempfile.gettempdir(), 'impact-downloads', fmu.id + '.fmu')
+        resp = fmu.download()
+        assert resp == t
 
 
 class TestExperiment:

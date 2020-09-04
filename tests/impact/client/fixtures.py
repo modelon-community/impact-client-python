@@ -271,6 +271,18 @@ def get_all_fmu(sem_ver_check, mock_server_base):
 
 
 @pytest.fixture
+def download_fmu(sem_ver_check, mock_server_base):
+    content = bytes(4)
+
+    return with_zip_route(
+        mock_server_base,
+        'GET',
+        'api/workspaces/WS/model-executables/pid_20090615_134/binary',
+        content,
+    )
+
+
+@pytest.fixture
 def get_all_experiments(sem_ver_check, mock_server_base):
     json = {"data": {"items": [{"id": "as9f-3df5"}, {"id": "as9f-3df5"}]}}
 
@@ -582,7 +594,7 @@ def workspace():
     ws_service.experiments_get.return_value = {
         'data': {'items': [{'id': 'as9f-3df5'}, {'id': 'dd9f-3df5'}]}
     }
-    ws_service.workspace_download.return_value = '\x00\x00\x00\x00'
+    ws_service.workspace_download.return_value = b'\x00\x00\x00\x00'
     custom_function_service.custom_function_get.return_value = {
         'name': 'dynamic',
         'parameters': _custom_function_parameter_list(),
@@ -718,6 +730,7 @@ def fmu():
     ws_service = unittest.mock.MagicMock()
     model_exe_service = unittest.mock.MagicMock()
     ws_service.fmu_get.return_value = {"run_info": {"status": "successful"}}
+    ws_service.fmu_download.return_value = b'\x00\x00\x00\x00'
     model_exe_service.compile_status.return_value = {"status": "done"}
     model_exe_service.settable_parameters_get.return_value = ['h0', 'v']
     model_exe_service.compile_log.return_value = "Successful Log"
