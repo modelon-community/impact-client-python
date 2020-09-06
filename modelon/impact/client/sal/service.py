@@ -381,6 +381,11 @@ class Request:
                 resp = self.context.session.delete(self.url, json=self.body)
             else:
                 raise NotImplementedError()
+        except requests.exceptions.SSLError as exce:
+            raise exceptions.SSLError(
+                "SSL error, could not verify connection. Please check that "
+                "certificates are setup correctly for the Modelon Impact server"
+            ) from exce
         except requests.exceptions.RequestException as exce:
             raise exceptions.CommunicationError(
                 "Communication when doing a request failed"

@@ -28,6 +28,13 @@ def with_json_route(mock_server_base, method, url, json_response, status_code=20
     return mock_server_base
 
 
+def with_exception(mock_server_base, method, url, exce):
+    mock_server_base.adapter.register_uri(
+        method, f'{mock_server_base.url}/{url}', exc=exce
+    )
+    return mock_server_base
+
+
 def with_json_route_no_resp(mock_server_base, method, url, status_code=200):
     mock_server_base.adapter.register_uri(
         method, f'{mock_server_base.url}/{url}', status_code=status_code,
@@ -185,6 +192,11 @@ def get_with_error(sem_ver_check, mock_server_base):
     json = {'error': {'message': 'no authroization', 'code': 123}}
 
     return with_json_route(mock_server_base, 'GET', '', json, 401)
+
+
+@pytest.fixture
+def get_with_ssl_exception(sem_ver_check, mock_server_base):
+    return with_exception(mock_server_base, 'GET', '', requests.exceptions.SSLError)
 
 
 @pytest.fixture
