@@ -365,3 +365,13 @@ class TestHTTPClient:
         )
         data = client.get_json(get_ok_empty_json.url)
         assert data == {}
+
+    def test_ssl_error_mapping(self, get_with_ssl_exception):
+        client = modelon.impact.client.sal.service.HTTPClient(
+            context=get_with_ssl_exception.context
+        )
+        pytest.raises(
+            modelon.impact.client.sal.exceptions.SSLError,
+            client.get_json,
+            get_with_ssl_exception.url,
+        )

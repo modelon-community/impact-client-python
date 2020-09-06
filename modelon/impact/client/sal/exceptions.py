@@ -6,6 +6,10 @@ class CommunicationError(ServiceAccessError):
     pass
 
 
+class SSLError(ServiceAccessError):
+    pass
+
+
 class InvalidContentTypeError(ServiceAccessError):
     pass
 
