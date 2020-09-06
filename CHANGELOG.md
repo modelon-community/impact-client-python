@@ -1,3 +1,10 @@
+# [1.0.0-beta.25](https://github.com/modelon-community/impact-client-python/compare/v1.0.0-beta.24...v1.0.0-beta.25) (2020-09-06)
+
+
+### Bug Fixes
+
+* Removing the settable parameter call from the assert ([bd011a2](https://github.com/modelon-community/impact-client-python/commit/bd011a2fc470c52177b05e737a2f278691a53f08))
+
 # [1.0.0-beta.24](https://github.com/modelon-community/impact-client-python/compare/v1.0.0-beta.23...v1.0.0-beta.24) (2020-09-04)
 
 
