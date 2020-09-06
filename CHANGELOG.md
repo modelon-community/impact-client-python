@@ -1,3 +1,10 @@
+# [1.0.0-beta.26](https://github.com/modelon-community/impact-client-python/compare/v1.0.0-beta.25...v1.0.0-beta.26) (2020-09-06)
+
+
+### Bug Fixes
+
+* example doc code should be closer to being executable now ([1506fd2](https://github.com/modelon-community/impact-client-python/commit/1506fd20cea85c1053cbf980ae925681ba5ad40e))
+
 # [1.0.0-beta.25](https://github.com/modelon-community/impact-client-python/compare/v1.0.0-beta.24...v1.0.0-beta.25) (2020-09-06)
 
 
