@@ -363,7 +363,7 @@ class Workspace:
         resp = self._workspace_sal.experiments_get(self._workspace_id)
         return [
             Experiment(
-                self._workspace_id, item["id"], self._workspace_sal, self._exp_sal
+                self._workspace_id, item["id"], self._workspace_sal, self._exp_sal, item
             )
             for item in resp["data"]["items"]
         ]
@@ -388,7 +388,7 @@ class Workspace:
         """
         resp = self._workspace_sal.experiment_get(self._workspace_id, experiment_id)
         return Experiment(
-            self._workspace_id, resp["id"], self._workspace_sal, self._exp_sal
+            self._workspace_id, resp["id"], self._workspace_sal, self._exp_sal, resp
         )
 
     def create_experiment(self, spec):
@@ -854,12 +854,13 @@ class Experiment:
     """
 
     def __init__(
-        self, workspace_id, exp_id, workspace_service=None, exp_service=None,
+        self, workspace_id, exp_id, workspace_service=None, exp_service=None, info=None
     ):
         self._workspace_id = workspace_id
         self._exp_id = exp_id
         self._workspace_sal = workspace_service
         self._exp_sal = exp_service
+        self._info = info
 
     def __repr__(self):
         return f"Experiment with id '{self._exp_id}'"
@@ -875,7 +876,11 @@ class Experiment:
     @property
     def info(self):
         """Experiment information as a dictionary"""
-        return self._workspace_sal.experiment_get(self._workspace_id, self._exp_id)
+        if self._info is None:
+            self._info = self._workspace_sal.experiment_get(
+                self._workspace_id, self._exp_id
+            )
+        return self._info
 
     def is_successful(self):
         """
@@ -945,6 +950,7 @@ class Experiment:
                 self._exp_id,
                 self._exp_sal,
                 self._workspace_sal,
+                case,
             )
             for case in resp["data"]["items"]
         ]
@@ -974,6 +980,7 @@ class Experiment:
             self._exp_id,
             self._exp_sal,
             self._workspace_sal,
+            resp,
         )
 
     def trajectories(self, variables):
@@ -1029,13 +1036,20 @@ class Case:
     """
 
     def __init__(
-        self, case_id, workspace_id, exp_id, exp_service=None, workspace_service=None
+        self,
+        case_id,
+        workspace_id,
+        exp_id,
+        exp_service=None,
+        workspace_service=None,
+        info=None,
     ):
         self._case_id = case_id
         self._workspace_id = workspace_id
         self._exp_id = exp_id
         self._exp_sal = exp_service
         self._workspace_sal = workspace_service
+        self._info = info
 
     def __repr__(self):
         return f"Case with id '{self._case_id}'"
@@ -1051,7 +1065,11 @@ class Case:
     @property
     def info(self):
         """Case meta-data"""
-        return self._exp_sal.case_get(self._workspace_id, self._exp_id, self._case_id)
+        if self._info is None:
+            self._info = self._exp_sal.case_get(
+                self._workspace_id, self._exp_id, self._case_id
+            )
+        return self._info
 
     def is_successful(self):
         """
