@@ -791,19 +791,21 @@ class ModelExecutable:
         )
 
     def new_experiment_definition(
-        self, custom_function, options, simulation_log_level="WARNING"
+        self, custom_function, options=None, simulation_log_level="WARNING"
     ):
         """
         Returns a new experiment definition using this FMU.
 
-        Returns::
+        Parameters::
 
             custom_function --
                 The custom function to use for this experiment.
             options --
-                The options to use for this experiment.
+                The options to use for this experiment. By default the options
+                is set to None, which means the default options for the
+                custom_function input is used.
             simulation_log_level --
-                Simulation log level for this experiment.
+                Simulation log level for this experiment. Default is 'WARNING'.
 
         Example::
 

@@ -27,6 +27,24 @@ def test_experiment_definition(fmu, custom_function_no_param):
     }
 
 
+def test_experiment_definition_default_options(fmu, custom_function_no_param):
+    spec = SimpleExperimentDefinition(fmu, custom_function=custom_function_no_param)
+    config = spec.to_dict()
+    assert config == {
+        "experiment": {
+            "analysis": {
+                "analysis_function": "dynamic",
+                "parameters": {},
+                "simulation_options": {"ncp": 500},
+                "solver_options": {},
+                "simulation_log_level": "WARNING",
+            },
+            "fmu_id": "Test",
+            "modifiers": {'variables': {}},
+        }
+    }
+
+
 def test_experiment_definition_with_options(fmu, custom_function_no_param):
     spec = SimpleExperimentDefinition(
         fmu,
