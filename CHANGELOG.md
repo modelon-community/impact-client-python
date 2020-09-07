@@ -1,3 +1,10 @@
+# [1.0.0-beta.34](https://github.com/modelon-community/impact-client-python/compare/v1.0.0-beta.33...v1.0.0-beta.34) (2020-09-07)
+
+
+### Features
+
+* default behaviour for option input to SimpleExperiment ([3bdb899](https://github.com/modelon-community/impact-client-python/commit/3bdb8998c7999b0057270de177a274b1c56a56ad))
+
 # [1.0.0-beta.33](https://github.com/modelon-community/impact-client-python/compare/v1.0.0-beta.32...v1.0.0-beta.33) (2020-09-07)
 
 
