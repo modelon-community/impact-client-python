@@ -11,7 +11,7 @@ def _assert_valid_args(fmu, custom_function, options):
         raise TypeError("Fmu must be an instance of ModelExecutable class")
     if not isinstance(custom_function, entities.CustomFunction):
         raise TypeError("Custom_function must be an instance of CustomFunction class")
-    if not isinstance(options, ExecutionOptions):
+    if options is not None and not isinstance(options, ExecutionOptions):
         raise TypeError("Options must be an instance of ExecutionOptions class")
 
 
@@ -71,13 +71,27 @@ class SimpleExperimentDefinition(BaseExperimentDefinition):
     """
 
     def __init__(
-        self, fmu, custom_function, options, simulation_log_level="WARNING",
+        self, fmu, custom_function, options=None, simulation_log_level="WARNING",
     ):
+        """
+        Parameters::
+
+            fmu --
+                The FMU to be excecuted for this experiment.
+            custom_function --
+                The custom function to use for this experiment.
+            options --
+                The options to use for this experiment. By default the options
+                is set to None, which means the default options for the
+                custom_function input is used.
+            simulation_log_level --
+                Simulation log level for this experiment. Default is 'WARNING'.
+        """
         _assert_valid_args(fmu, custom_function, options)
         _assert_successful_compilation(fmu)
         self.fmu = fmu
         self.custom_function = custom_function
-        self.options = options
+        self.options = custom_function.options() if options is None else options
         self.simulation_log_level = simulation_log_level
         self.variable_modifiers = {}
 
