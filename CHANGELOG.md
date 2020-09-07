@@ -1,3 +1,10 @@
+# [1.0.0-beta.28](https://github.com/modelon-community/impact-client-python/compare/v1.0.0-beta.27...v1.0.0-beta.28) (2020-09-07)
+
+
+### Bug Fixes
+
+* change wording on refreshing api keys ([d4f229f](https://github.com/modelon-community/impact-client-python/commit/d4f229f5418592b2b32f747dc9cc6fc8f5ddcc21))
+
 # [1.0.0-beta.27](https://github.com/modelon-community/impact-client-python/compare/v1.0.0-beta.26...v1.0.0-beta.27) (2020-09-07)
 
 
