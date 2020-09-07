@@ -1,3 +1,10 @@
+# [1.0.0-beta.35](https://github.com/modelon-community/impact-client-python/compare/v1.0.0-beta.34...v1.0.0-beta.35) (2020-09-07)
+
+
+### Bug Fixes
+
+* Moving info to model_exe constructor ([b00eeba](https://github.com/modelon-community/impact-client-python/commit/b00eeba710ac6f05063e32962bfb464c48712a8f))
+
 # [1.0.0-beta.34](https://github.com/modelon-community/impact-client-python/compare/v1.0.0-beta.33...v1.0.0-beta.34) (2020-09-07)
 
 
