@@ -1,3 +1,10 @@
+# [1.0.0-beta.30](https://github.com/modelon-community/impact-client-python/compare/v1.0.0-beta.29...v1.0.0-beta.30) (2020-09-07)
+
+
+### Bug Fixes
+
+* Allowing options/specs to be given as a dict or options/specs class instance ([9b3bf83](https://github.com/modelon-community/impact-client-python/commit/9b3bf83a16843fedfa7e9d7d1f8f322375eb2879))
+
 # [1.0.0-beta.29](https://github.com/modelon-community/impact-client-python/compare/v1.0.0-beta.28...v1.0.0-beta.29) (2020-09-07)
 
 
