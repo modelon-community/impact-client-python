@@ -1,3 +1,10 @@
+# [1.0.0-beta.27](https://github.com/modelon-community/impact-client-python/compare/v1.0.0-beta.26...v1.0.0-beta.27) (2020-09-07)
+
+
+### Features
+
+* Add possibility to download FMU ([5e597f0](https://github.com/modelon-community/impact-client-python/commit/5e597f01bcee76b71f54b0c720cc000c37f89da7))
+
 # [1.0.0-beta.26](https://github.com/modelon-community/impact-client-python/compare/v1.0.0-beta.25...v1.0.0-beta.26) (2020-09-06)
 
 
