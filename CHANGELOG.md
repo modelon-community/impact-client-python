@@ -1,3 +1,10 @@
+# [1.0.0-beta.33](https://github.com/modelon-community/impact-client-python/compare/v1.0.0-beta.32...v1.0.0-beta.33) (2020-09-07)
+
+
+### Bug Fixes
+
+* performance improvement, do not call cases unless neccessary ([0f382db](https://github.com/modelon-community/impact-client-python/commit/0f382dbde5755b5c10e4ee9d7a243ff6e5228f47))
+
 # [1.0.0-beta.32](https://github.com/modelon-community/impact-client-python/compare/v1.0.0-beta.31...v1.0.0-beta.32) (2020-09-07)
 
 
