@@ -1,3 +1,10 @@
+# [1.0.0-beta.29](https://github.com/modelon-community/impact-client-python/compare/v1.0.0-beta.28...v1.0.0-beta.29) (2020-09-07)
+
+
+### Bug Fixes
+
+* do not give NoResponseFetchVersionError for SSL error ([3b842a9](https://github.com/modelon-community/impact-client-python/commit/3b842a93796417b1485519269f8f574a2de29c70))
+
 # [1.0.0-beta.28](https://github.com/modelon-community/impact-client-python/compare/v1.0.0-beta.27...v1.0.0-beta.28) (2020-09-07)
 
 
