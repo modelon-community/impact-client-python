@@ -324,7 +324,11 @@ class Workspace:
         resp = self._workspace_sal.fmus_get(self._workspace_id)
         return [
             ModelExecutable(
-                self._workspace_id, item["id"], self._workspace_sal, self._model_exe_sal
+                self._workspace_id,
+                item["id"],
+                self._workspace_sal,
+                self._model_exe_sal,
+                item,
             )
             for item in resp["data"]["items"]
         ]
@@ -344,7 +348,11 @@ class Workspace:
         """
         resp = self._workspace_sal.fmu_get(self._workspace_id, fmu_id)
         return ModelExecutable(
-            self._workspace_id, resp["id"], self._workspace_sal, self._model_exe_sal
+            self._workspace_id,
+            resp["id"],
+            self._workspace_sal,
+            self._model_exe_sal,
+            resp,
         )
 
     def get_experiments(self):
@@ -672,12 +680,18 @@ class ModelExecutable:
     """
 
     def __init__(
-        self, workspace_id, fmu_id, workspace_service=None, model_exe_service=None,
+        self,
+        workspace_id,
+        fmu_id,
+        workspace_service=None,
+        model_exe_service=None,
+        info=None,
     ):
         self._workspace_id = workspace_id
         self._fmu_id = fmu_id
         self._workspace_sal = workspace_service
         self._model_exe_sal = model_exe_service
+        self._info = info
 
     def __repr__(self):
         return f"FMU with id '{self._fmu_id}'"
@@ -693,7 +707,9 @@ class ModelExecutable:
     @property
     def info(self):
         """Compilation information as a dictionary"""
-        return self._workspace_sal.fmu_get(self._workspace_id, self._fmu_id)
+        if self._info is None:
+            self._info = self._workspace_sal.fmu_get(self._workspace_id, self._fmu_id)
+        return self._info
 
     @property
     def metadata(self):
