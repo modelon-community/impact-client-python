@@ -1,3 +1,10 @@
+# [1.0.0-beta.31](https://github.com/modelon-community/impact-client-python/compare/v1.0.0-beta.30...v1.0.0-beta.31) (2020-09-07)
+
+
+### Bug Fixes
+
+* Updated modifers to be a dict ([7adb322](https://github.com/modelon-community/impact-client-python/commit/7adb3225516fc950c0c855d003155c6457f99dde))
+
 # [1.0.0-beta.30](https://github.com/modelon-community/impact-client-python/compare/v1.0.0-beta.29...v1.0.0-beta.30) (2020-09-07)
 
 
