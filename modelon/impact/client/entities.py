@@ -258,7 +258,7 @@ class Workspace:
             workspace.download(options, path)
         """
         data = self._workspace_sal.workspace_download(self._workspace_id, options)
-        ws_path = os.path.join(path, self._workspace_id + '.zip')
+        ws_path = os.path.join(path, self._workspace_id + ".zip")
 
         os.makedirs(os.path.dirname(path), exist_ok=True)
         with open(ws_path, "wb") as f:
@@ -840,9 +840,9 @@ class ModelExecutable:
         """
         data = self._workspace_sal.fmu_download(self._workspace_id, self._fmu_id)
         if path is None:
-            path = os.path.join(tempfile.gettempdir(), 'impact-downloads')
+            path = os.path.join(tempfile.gettempdir(), "impact-downloads")
         os.makedirs(path, exist_ok=True)
-        fmu_path = os.path.join(path, self._fmu_id + '.fmu')
+        fmu_path = os.path.join(path, self._fmu_id + ".fmu")
         with open(fmu_path, "wb") as f:
             f.write(data)
         return fmu_path
@@ -1017,9 +1017,17 @@ class Experiment:
         response = self._exp_sal.trajectories_get(
             self._workspace_id, self._exp_id, variables
         )
+
+        if response:
+            case_nbrs = range(len(response[0]))
+        else:
+            case_nbrs = range(len(self.cases()))
+
         return {
-            case.id: {variable: response[i][j] for i, variable in enumerate(variables)}
-            for j, case in enumerate(self.cases())
+            f"case_{j + 1}": {
+                variable: response[i][j] for i, variable in enumerate(variables)
+            }
+            for j in case_nbrs
         }
 
 
