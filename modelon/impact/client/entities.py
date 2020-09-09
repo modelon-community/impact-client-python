@@ -591,7 +591,7 @@ class Model:
     def compile(
         self,
         options,
-        compiler_log_level="info",
+        compiler_log_level="warning",
         fmi_target="me",
         fmi_version="2.0",
         platform="auto",
@@ -609,7 +609,7 @@ class Model:
 
             compiler_log_level --
                 The logging for the compiler. Possible values are "error",
-                "warning", "info", "verbose" and "debug". Default: 'info'.
+                "warning", "info", "verbose" and "debug". Default: 'warning'.
 
             fmi_target --
                 Compiler target. Possible values are 'me' and 'cs'. Default: 'me'.

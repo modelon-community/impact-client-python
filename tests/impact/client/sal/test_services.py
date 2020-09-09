@@ -159,7 +159,7 @@ class TestModelExecutbleService:
                 "class_name": "Workspace.PID_Controller",
                 "compiler_options": {},
                 "runtime_options": {"log_level": 4},
-                "compiler_log_level": "info",
+                "compiler_log_level": "warning",
                 "fmi_target": "me",
                 "fmi_version": "2.0",
                 "platform": "win64",
