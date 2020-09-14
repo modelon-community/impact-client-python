@@ -2,7 +2,7 @@ import os
 import tempfile
 from modelon.impact.client import operations
 
-from modelon.impact.client.experiment_definition import SimpleExperimentDefinition
+from modelon.impact.client.experiment_specification import SimpleExperimentSpecification
 from collections.abc import Mapping
 from modelon.impact.client.options import ExecutionOptions
 from modelon.impact.client import exceptions
@@ -407,7 +407,7 @@ class Workspace:
 
             spec --
                 An parametrized experiment specification class of type
-                modelon.impact.client.experiment_definition.SimpleExperimentDefinition.
+                modelon.impact.client.experiment_specification.SimpleExperimentSpecification.
 
         Returns::
 
@@ -418,13 +418,13 @@ class Workspace:
 
             workspace.create_experiment(specification)
         """
-        if isinstance(spec, SimpleExperimentDefinition):
+        if isinstance(spec, SimpleExperimentSpecification):
             spec = spec.to_dict()
         elif not isinstance(spec, dict):
             raise TypeError(
                 "Specification object must either be a dictionary or an instance of "
-                "modelon.impact.client.experiment_definition.SimpleExperimentDefinition"
-                " class!"
+                "modelon.impact.client.experiment_specification."
+                "SimpleExperimentSpecification class!"
             )
 
         resp = self._workspace_sal.experiment_create(self._workspace_id, spec)
@@ -443,7 +443,7 @@ class Workspace:
 
             spec --
                 An experiment specification class instance of
-                modelon.impact.client.experiment_definition.SimpleExperimentDefinition
+                modelon.impact.client.experiment_specification.SimpleExperimentSpecification
                 or a dictionary object containing the specification.
 
         Returns::
@@ -557,7 +557,7 @@ class CustomFunction:
         """Custom_function parameters and value as a dictionary"""
         return {p.name: p.value for p in self._param_by_name.values()}
 
-    def options(self):
+    def get_options(self):
         """
         Return an modelon.impact.client.options.ExecutionOptions object.
 
@@ -568,8 +568,8 @@ class CustomFunction:
 
         Example::
 
-            custom_function.options()
-            custom_function.options().with_simulation_options(ncp=500)
+            custom_function.get_options()
+            custom_function.get_options().with_simulation_options(ncp=500)
         """
         options = self._custom_func_sal.custom_function_options_get(
             self._workspace_id, self.name
@@ -743,31 +743,14 @@ class ModelExecutable:
             == ModelExecutableStatus.SUCCESSFUL
         )
 
-    def log(self):
-        """Prints the compilation log.
-
-        Raises::
-
-            OperationNotCompleteError if compilation process is in progress.
-            OperationFailureError if compilation process was cancelled.
-
-        Example::
-
-            fmu.log()
-        """
-        _assert_is_complete(
-            ModelExecutableStatus(self.info["run_info"]["status"]), "Compilation"
-        )
-        print(self._model_exe_sal.compile_log(self._workspace_id, self._fmu_id))
-
     def get_log(self):
         """
-        Returns the raw compilation log.
+        Returns the compilation log object.
 
         Returns::
 
             log --
-                The raw compilation log.
+                The compilation log object.
 
         Raises::
 
@@ -776,14 +759,15 @@ class ModelExecutable:
 
         Example::
 
-            fmu.get_log()
+            log = fmu.get_log()
+            log.show()
         """
         _assert_is_complete(
             ModelExecutableStatus(self.info["run_info"]["status"]), "Compilation"
         )
-        return self._model_exe_sal.compile_log(self._workspace_id, self._fmu_id)
+        return Log(self._model_exe_sal.compile_log(self._workspace_id, self._fmu_id))
 
-    def settable_parameters(self):
+    def get_settable_parameters(self):
         """
         Returns a list of settable parameters for the FMU.
 
@@ -799,18 +783,18 @@ class ModelExecutable:
 
         Example::
 
-            fmu.settable_parameters()
+            fmu.get_settable_parameters()
         """
         _assert_successful_operation(self.is_successful(), "Compilation")
         return self._model_exe_sal.settable_parameters_get(
             self._workspace_id, self._fmu_id
         )
 
-    def new_experiment_definition(
+    def new_experiment_specification(
         self, custom_function, options=None, simulation_log_level="WARNING"
     ):
         """
-        Returns a new experiment definition using this FMU.
+        Returns a new experiment specification using this FMU.
 
         Parameters::
 
@@ -827,12 +811,12 @@ class ModelExecutable:
 
             fmu = model.compile().wait()
             dynamic = workspace.get_custom_function('dynamic')
-            experiment_definition = fmu.new_experiment_definition(
-                dynamic, dynamic.options()
+            experiment_specification = fmu.new_experiment_specification(
+                dynamic, dynamic.get_options()
             )
-            experiment = workspace.execute(experiment_definition).wait()
+            experiment = workspace.execute(experiment_specification).wait()
         """
-        return SimpleExperimentDefinition(
+        return SimpleExperimentSpecification(
             self, custom_function, options, simulation_log_level
         )
 
@@ -924,7 +908,7 @@ class Experiment:
         expected = {"status": "done", "failed": 0, "cancelled": 0}
         return expected.items() <= self.info["run_info"].items()
 
-    def variables(self):
+    def get_variables(self):
         """
         Returns a list of variables available in the result.
 
@@ -940,14 +924,14 @@ class Experiment:
 
         Example::
 
-            experiment.variables()
+            experiment.get_variables()
         """
         _assert_is_complete(
             ExperimentStatus(self.info["run_info"]["status"]), "Simulation"
         )
         return self._exp_sal.result_variables_get(self._workspace_id, self._exp_id)
 
-    def cases(self):
+    def get_cases(self):
         """
         Returns a list of case objects for an experiment.
 
@@ -958,7 +942,7 @@ class Experiment:
 
         Example::
 
-            experiment.cases()
+            experiment.get_cases()
         """
         resp = self._exp_sal.cases_get(self._workspace_id, self._exp_id)
         return [
@@ -973,7 +957,7 @@ class Experiment:
             for case in resp["data"]["items"]
         ]
 
-    def case(self, case_id):
+    def get_case(self, case_id):
         """
         Returns a case object for a given case_id.
 
@@ -989,7 +973,7 @@ class Experiment:
 
         Example::
 
-            experiment.case('case_1')
+            experiment.get_case('case_1')
         """
         resp = self._exp_sal.case_get(self._workspace_id, self._exp_id, case_id)
         return Case(
@@ -1001,7 +985,7 @@ class Experiment:
             resp,
         )
 
-    def trajectories(self, variables):
+    def get_trajectories(self, variables):
         """
         Returns a dictionary containing the result trajectories
         for a list of result variables for all the cases.
@@ -1025,7 +1009,7 @@ class Experiment:
 
         Example::
 
-            result = experiment.trajectories(['h', 'time'])
+            result = experiment.get_trajectories(['h', 'time'])
             height = result['case_1']['h']
             time = result['case_1']['time']
         """
@@ -1037,7 +1021,7 @@ class Experiment:
         _assert_is_complete(
             ExperimentStatus(self.info["run_info"]["status"]), "Simulation"
         )
-        _assert_variable_in_result(variables, self.variables())
+        _assert_variable_in_result(variables, self.get_variables())
 
         response = self._exp_sal.trajectories_get(
             self._workspace_id, self._exp_id, variables
@@ -1046,7 +1030,7 @@ class Experiment:
         if response:
             case_nbrs = range(len(response[0]))
         else:
-            case_nbrs = range(len(self.cases()))
+            case_nbrs = range(len(self.get_cases()))
 
         return {
             f"case_{j + 1}": {
@@ -1112,35 +1096,25 @@ class Case:
         """
         return CaseStatus(self.info["run_info"]["status"]) == CaseStatus.SUCCESSFUL
 
-    def log(self):
-        """Prints the formatted log for a finished case.
-
-        Example::
-
-            case.log()
-        """
-        print(
-            self._exp_sal.case_get_log(self._workspace_id, self._exp_id, self._case_id)
-        )
-
     def get_log(self):
         """
-        Returns the raw log for a finished case.
+        Returns the log class object for a finished case.
 
         Returns::
 
             log --
-                The raw case execution log.
+                The case execution log class object.
 
         Example::
 
-            case.get_log()
+            log = case.get_log()
+            log.show()
         """
-        return self._exp_sal.case_get_log(
-            self._workspace_id, self._exp_id, self._case_id
+        return Log(
+            self._exp_sal.case_get_log(self._workspace_id, self._exp_id, self._case_id)
         )
 
-    def result(self):
+    def get_result(self):
         """
         Returns the result stream and the file name for a finished case.
 
@@ -1162,7 +1136,7 @@ class Case:
 
         Example::
 
-            result, file_name = case.result()
+            result, file_name = case.get_result()
             with open(file_name, "wb") as f:
                 f.write(result)
         """
@@ -1172,7 +1146,7 @@ class Case:
         )
         return result, file_name
 
-    def trajectories(self):
+    def get_trajectories(self):
         """
         Returns result(Mapping) object containing the result trajectories.
 
@@ -1188,7 +1162,8 @@ class Case:
 
         Example::
 
-            result = case.trajectories()
+            result = case.get_trajectories()
+            result_variables = result.keys()
             height = result['h']
             time = res['time']
         """
@@ -1217,7 +1192,7 @@ class Result(Mapping):
         self._exp_sal = exp_service
         self._variables = Experiment(
             self._workspace_id, self._exp_id, self._workspace_sal, self._exp_sal
-        ).variables()
+        ).get_variables()
 
     def __getitem__(self, key):
         _assert_variable_in_result([key], self._variables)
@@ -1239,3 +1214,16 @@ class Result(Mapping):
 
     def __len__(self):
         return self._variables.__len__()
+
+    def keys(self):
+        return self._variables
+
+
+class Log(str):
+    """
+    Log class inheriting from string object.
+    """
+
+    def show(self):
+        """Prints the formatted log."""
+        print(self)

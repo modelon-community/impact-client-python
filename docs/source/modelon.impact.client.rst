@@ -12,6 +12,14 @@ Subpackages
 Submodules
 ----------
 
+modelon.impact.client.client module
+-----------------------------------
+
+.. automodule:: modelon.impact.client.client
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 modelon.impact.client.credential\_manager module
 ------------------------------------------------
 
@@ -36,10 +44,10 @@ modelon.impact.client.exceptions module
    :undoc-members:
    :show-inheritance:
 
-modelon.impact.client.experiment\_definition module
----------------------------------------------------
+modelon.impact.client.experiment\_specification module
+------------------------------------------------------
 
-.. automodule:: modelon.impact.client.experiment_definition
+.. automodule:: modelon.impact.client.experiment_specification
    :members:
    :undoc-members:
    :show-inheritance:

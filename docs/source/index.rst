@@ -26,7 +26,7 @@ Can be used for workflows entierly done server side
 
    # Choose analysis type
    dynamic = workspace.get_custom_function('dynamic')
-   dynamic_opts = dynamic.options()
+   dynamic_opts = dynamic.get_options()
 
    # Compile model
    model = workspace.get_model("Modelica.Blocks.Examples.PID_Controller")
@@ -35,7 +35,7 @@ Can be used for workflows entierly done server side
    ).wait()
 
    # Execute experiment
-   experiment_def = fmu.new_experiment_definition(
+   experiment_def = fmu.new_experiment_specification(
        dynamic.with_parameters(start_time=0.0, final_time=2.0),
        dynamic_opts.with_simulation_options(ncp=500),
     ).with_modifiers({'inertia1.J': 2, 'inertia2.J': Range(0.1, 0.5, 3)})
@@ -43,8 +43,8 @@ Can be used for workflows entierly done server side
 
    # Plot Trajectory
    import matplotlib.pyplot as plt
-   case = next(iter([case for case in exp.cases() if case.is_successful()]))
-   res = case.trajectories()
+   case = next(iter([case for case in exp.get_cases() if case.is_successful()]))
+   res = case.get_trajectories()
    plt.plot(res['time'], res['inertia1.phi'])
    plt.show()
 

@@ -45,22 +45,22 @@ class Range(Operator):
         return f"range({self.start_value},{self.end_value},{self.no_of_steps})"
 
 
-class BaseExperimentDefinition(ABC):
+class BaseExperimentSpecification(ABC):
     """
-    Base class for an ExperimentDefinition class.
+    Base class for an Experiment specification class.
     """
 
     @abstractmethod
     def validate(self):
         """
-        Validates the modifiers appended to the experiment definition.
+        Validates the modifiers appended to the experiment specification.
         """
         pass
 
 
-class SimpleExperimentDefinition(BaseExperimentDefinition):
+class SimpleExperimentSpecification(BaseExperimentSpecification):
     """
-    A Simple ExperimentDefinition class for creating experiement definitions.
+    A Simple ExperimentSpecification class for creating experiement specification.
     """
 
     def __init__(
@@ -84,16 +84,18 @@ class SimpleExperimentDefinition(BaseExperimentDefinition):
         _assert_successful_compilation(fmu)
         self.fmu = fmu
         self.custom_function = custom_function
-        self.options = custom_function.options() if options is None else options
+        self.options = custom_function.get_options() if options is None else options
         self.simulation_log_level = simulation_log_level
         self.variable_modifiers = {}
 
     def validate(self):
-        add = set(self.variable_modifiers.keys()) - set(self.fmu.settable_parameters())
+        add = set(self.variable_modifiers.keys()) - set(
+            self.fmu.get_settable_parameters()
+        )
         if add:
             raise KeyError(
                 f"Paramter(s) '{', '.join(add)}' {'are' if len(add)>1 else 'is'} "
-                "not a valid parameter modifier! Call the settable_parameters() "
+                "not a valid parameter modifier! Call the get_settable_parameters() "
                 "method on the fmu to view the list of settable parameters."
             )
 
@@ -115,13 +117,13 @@ class SimpleExperimentDefinition(BaseExperimentDefinition):
             from modelon.impact.client import Range
 
             fmu = model.compile().wait()
-            options = custom_function.options()
-            simulate_def = fmu.new_experiment_definition(custom_function, options)
+            options = custom_function.get_options()
+            simulate_def = fmu.new_experiment_specification(custom_function, options)
             .with_modifiers({'inertia1.J': 2, 'inertia2.J': Range(0.1, 0.5, 3)},k=2,w=7)
         """
         modifiers = {} if modifiers is None else modifiers
         modifiers_aggregate = {**modifiers, **modifiers_kwargs}
-        new = SimpleExperimentDefinition(
+        new = SimpleExperimentSpecification(
             self.fmu, self.custom_function, self.options, self.simulation_log_level
         )
 
@@ -137,13 +139,13 @@ class SimpleExperimentDefinition(BaseExperimentDefinition):
         Returns::
 
             specification_dict --
-                A dictionary containing the experiment definition.
+                A dictionary containing the experiment specification.
 
         Example::
 
             fmu = model.compile().wait()
-            options = custom_function.options()
-            simulate_def = fmu.new_experiment_definition(custom_function, options)
+            options = custom_function.get_options()
+            simulate_def = fmu.new_experiment_specification(custom_function, options)
             simulate_def.to_dict()
         """
         return {
