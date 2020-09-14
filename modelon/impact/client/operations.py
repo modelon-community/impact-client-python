@@ -94,7 +94,7 @@ class Operation(ABC):
                timeout = 120,
                status = Status.CANCELLED
            )
-           workspace.execute(experiment_definition).wait(timeout = 120)
+           workspace.execute(experiment_specification).wait(timeout = 120)
         """
         start_t = time.time()
         while True:
