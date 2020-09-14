@@ -1,3 +1,10 @@
+# [1.0.0-beta.36](https://github.com/modelon-community/impact-client-python/compare/v1.0.0-beta.35...v1.0.0-beta.36) (2020-09-14)
+
+
+### Bug Fixes
+
+* Corrected the default compiler log level to 'warning' ([1b53a4f](https://github.com/modelon-community/impact-client-python/commit/1b53a4fce11a7a7d25b3fe319f60d681d2f1c01c))
+
 # [1.0.0-beta.35](https://github.com/modelon-community/impact-client-python/compare/v1.0.0-beta.34...v1.0.0-beta.35) (2020-09-07)
 
 
