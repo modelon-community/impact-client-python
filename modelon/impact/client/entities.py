@@ -469,10 +469,10 @@ class Workspace:
 
 class _Parameter:
     _JSON_2_PY_TYPE = {
-        "Number": float,
-        "String": str,
-        "Boolean": bool,
-        "Enumeration": str,
+        "Number": (float, int,),
+        "String": (str,),
+        "Boolean": (bool,),
+        "Enumeration": (str,),
     }
 
     def __init__(self, name, value, value_type, valid_values):

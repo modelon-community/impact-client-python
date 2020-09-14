@@ -113,13 +113,14 @@ class TestWorkspace:
 class TestCustomFunction:
     def test_custom_function_with_parameters_ok(self, custom_function):
         new = custom_function.with_parameters(
-            p1=3.4, p2=False, p3='då', p4='new string'
+            p1=3.4, p2=False, p3='då', p4='new string', p5=4,
         )
         assert new.parameter_values == {
             'p1': 3.4,
             'p2': False,
             'p3': 'då',
             'p4': 'new string',
+            'p5': 4.0,
         }
 
     def test_custom_function_with_parameters_no_such_parameter(self, custom_function):
