@@ -7,15 +7,15 @@ from tests.impact.client.fixtures import *
 
 
 class TestModelExecutableOperation:
-    def test_compile_wait_done(self, model_compiled, options):
-        fmu = model_compiled.compile(options)
+    def test_compile_wait_done(self, model_compiled, compiler_options):
+        fmu = model_compiled.compile(compiler_options)
         assert fmu.id == "test_pid_fmu_id"
         assert fmu.status() == Status.DONE
         assert fmu.is_complete()
         assert fmu.wait() == ModelExecutable('AwesomeWorkspace', 'test_pid_fmu_id')
 
-    def test_compile_wait_cancel_timeout(self, model_compiled, options):
-        fmu = model_compiled.compile(options)
+    def test_compile_wait_cancel_timeout(self, model_compiled, compiler_options):
+        fmu = model_compiled.compile(compiler_options)
         assert fmu.id == "test_pid_fmu_id"
         assert fmu.status() == Status.DONE
         assert fmu.is_complete()
@@ -23,8 +23,8 @@ class TestModelExecutableOperation:
             exceptions.OperationTimeOutError, fmu.wait, 1e-10, Status.CANCELLED
         )
 
-    def test_compile_wait_running(self, model_compiling, options):
-        fmu = model_compiling.compile(options)
+    def test_compile_wait_running(self, model_compiling, compiler_options):
+        fmu = model_compiling.compile(compiler_options)
         assert fmu.id == "test_pid_fmu_id"
         assert fmu.status() == Status.RUNNING
         assert not fmu.is_complete()
@@ -32,16 +32,16 @@ class TestModelExecutableOperation:
             'AwesomeWorkspace', 'test_pid_fmu_id'
         )
 
-    def test_compile_wait_cancelled(self, model_compile_cancelled, options):
-        fmu = model_compile_cancelled.compile(options)
+    def test_compile_wait_cancelled(self, model_compile_cancelled, compiler_options):
+        fmu = model_compile_cancelled.compile(compiler_options)
         assert fmu.id == "test_pid_fmu_id"
         assert fmu.status() == Status.CANCELLED
         assert fmu.wait(status=Status.CANCELLED) == ModelExecutable(
             'AwesomeWorkspace', 'test_pid_fmu_id'
         )
 
-    def test_compile_wait_timeout(self, model_compile_cancelled, options):
-        fmu = model_compile_cancelled.compile(options)
+    def test_compile_wait_timeout(self, model_compile_cancelled, compiler_options):
+        fmu = model_compile_cancelled.compile(compiler_options)
         assert fmu.id == "test_pid_fmu_id"
         assert fmu.status() == Status.CANCELLED
         pytest.raises(exceptions.OperationTimeOutError, fmu.wait, 1e-10, Status.DONE)

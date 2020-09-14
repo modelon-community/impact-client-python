@@ -57,6 +57,21 @@ def _create_result_dict(variables, workspace_id, exp_id, case_id, exp_sal):
     return data
 
 
+def _assert_valid_args(compiler_options, runtime_options):
+    if not isinstance(compiler_options, (ExecutionOptions, dict)):
+        raise TypeError(
+            "Compiler options object must either be a dictionary or an "
+            "instance of modelon.impact.client.options.ExecutionOptions class!"
+        )
+    if runtime_options is not None and not isinstance(
+        runtime_options, (ExecutionOptions, dict)
+    ):
+        raise TypeError(
+            "Runtime options object must either be a dictionary or an "
+            "instance of modelon.impact.client.options.ExecutionOptions class!"
+        )
+
+
 class ModelExecutableStatus(Enum):
     """
     Class representing an enumeration for the possible
@@ -399,13 +414,13 @@ class Workspace:
             self._workspace_id, resp["id"], self._workspace_sal, self._exp_sal, resp
         )
 
-    def create_experiment(self, spec):
+    def create_experiment(self, specification):
         """Creates an experiment.
         Returns an Experiment class object.
 
         Parameters::
 
-            spec --
+            specification --
                 An parametrized experiment specification class of type
                 modelon.impact.client.experiment_specification.SimpleExperimentSpecification.
 
@@ -418,16 +433,16 @@ class Workspace:
 
             workspace.create_experiment(specification)
         """
-        if isinstance(spec, SimpleExperimentSpecification):
-            spec = spec.to_dict()
-        elif not isinstance(spec, dict):
+        if isinstance(specification, SimpleExperimentSpecification):
+            specification = specification.to_dict()
+        elif not isinstance(specification, dict):
             raise TypeError(
                 "Specification object must either be a dictionary or an instance of "
                 "modelon.impact.client.experiment_specification."
                 "SimpleExperimentSpecification class!"
             )
 
-        resp = self._workspace_sal.experiment_create(self._workspace_id, spec)
+        resp = self._workspace_sal.experiment_create(self._workspace_id, specification)
         return Experiment(
             self._workspace_id,
             resp["experiment_id"],
@@ -441,7 +456,7 @@ class Workspace:
 
         Parameters::
 
-            spec --
+            specification --
                 An experiment specification class instance of
                 modelon.impact.client.experiment_specification.SimpleExperimentSpecification
                 or a dictionary object containing the specification.
@@ -557,24 +572,81 @@ class CustomFunction:
         """Custom_function parameters and value as a dictionary"""
         return {p.name: p.value for p in self._param_by_name.values()}
 
-    def get_options(self):
+    def get_compiler_options(self):
         """
-        Return an modelon.impact.client.options.ExecutionOptions object.
+        Return a modelon.impact.client.options.ExecutionOptions object.
 
         Returns::
 
-            options --
-                An modelon.impact.client.options.ExecutionOptions object.
+            compiler_options --
+                A modelon.impact.client.options.ExecutionOptions object.
 
         Example::
 
-            custom_function.get_options()
-            custom_function.get_options().with_simulation_options(ncp=500)
+            opts = custom_function.get_compiler_options()
+            opts_2 = opts.with_values(c_compiler='gcc')
         """
         options = self._custom_func_sal.custom_function_options_get(
             self._workspace_id, self.name
         )
-        return ExecutionOptions(options, self.name, self._custom_func_sal)
+        return ExecutionOptions(options['compiler'], self.name, self._custom_func_sal)
+
+    def get_runtime_options(self):
+        """
+        Return a modelon.impact.client.options.ExecutionOptions object.
+
+        Returns::
+
+            runtime_options --
+                A modelon.impact.client.options.ExecutionOptions object.
+
+        Example::
+
+            opts = custom_function.get_runtime_options()
+            opts_2 = opts.with_values(cs_solver=0)
+        """
+        options = self._custom_func_sal.custom_function_options_get(
+            self._workspace_id, self.name
+        )
+        return ExecutionOptions(options['runtime'], self.name, self._custom_func_sal)
+
+    def get_solver_options(self):
+        """
+        Return a modelon.impact.client.options.ExecutionOptions object.
+
+        Returns::
+
+            solver_options --
+                A modelon.impact.client.options.ExecutionOptions object.
+
+        Example::
+
+            opts = custom_function.get_solver_options()
+            opts_2 = opts.with_values(rtol=1e-7)
+        """
+        options = self._custom_func_sal.custom_function_options_get(
+            self._workspace_id, self.name
+        )
+        return ExecutionOptions(options['solver'], self.name, self._custom_func_sal)
+
+    def get_simulation_options(self):
+        """
+        Return a modelon.impact.client.options.ExecutionOptions object.
+
+        Returns::
+
+            simulation_options --
+                A modelon.impact.client.options.ExecutionOptions object.
+
+        Example::
+
+            opts = custom_function.get_simulation_options()
+            opts_2 = opts.with_values(ncp=500)
+        """
+        options = self._custom_func_sal.custom_function_options_get(
+            self._workspace_id, self.name
+        )
+        return ExecutionOptions(options['simulation'], self.name, self._custom_func_sal)
 
 
 class Model:
@@ -598,7 +670,8 @@ class Model:
 
     def compile(
         self,
-        options,
+        compiler_options,
+        runtime_options=None,
         compiler_log_level="warning",
         fmi_target="me",
         fmi_version="2.0",
@@ -610,10 +683,15 @@ class Model:
 
         Parameters::
 
-            options --
+            compiler_options --
                 An compilation options class instance of
                 modelon.impact.client.options.ExecutionOptions or
-                a dictionary object containing the compilation options.
+                a dictionary object containing the compiler options.
+
+            runtime_options --
+                An runtime options class instance of
+                modelon.impact.client.options.ExecutionOptions or
+                a dictionary object containing the runtime options. Default: None.
 
             compiler_log_level --
                 The logging for the compiler. Possible values are "error",
@@ -637,23 +715,29 @@ class Model:
 
         Example::
 
-            compile_ops=model.compile(options)
+            compile_ops=model.compile(compiler_options)
             compile_ops.cancel()
             compile_ops.status()
-            model.compile(options).wait()
+            compiler_options=custom_function.get_compiler_options.with_values(c_compiler='gcc')
+            runtime_options={'cs_solver':0}
+            model.compile(compiler_options, runtime_options).wait()
             model.compile({'c_compiler':'gcc'}).wait()
         """
-        if isinstance(options, ExecutionOptions):
-            compiler_options = options.to_dict().get("compiler", {})
-            runtime_options = options.to_dict().get("runtime", {})
-        elif isinstance(options, dict):
-            compiler_options = options
-            runtime_options = {}
-        else:
-            raise TypeError(
-                "Options object must either be a dictionary or an "
-                "instance of modelon.impact.client.options.ExecutionOptions class!"
-            )
+        _assert_valid_args(compiler_options, runtime_options)
+        compiler_options = (
+            compiler_options.to_dict()
+            if isinstance(compiler_options, ExecutionOptions)
+            else compiler_options
+            if isinstance(compiler_options, dict)
+            else {}
+        )
+        runtime_options = (
+            runtime_options.to_dict()
+            if isinstance(runtime_options, ExecutionOptions)
+            else runtime_options
+            if isinstance(runtime_options, dict)
+            else {}
+        )
 
         body = {
             "input": {
@@ -791,7 +875,11 @@ class ModelExecutable:
         )
 
     def new_experiment_specification(
-        self, custom_function, options=None, simulation_log_level="WARNING"
+        self,
+        custom_function,
+        solver_options=None,
+        simulation_options=None,
+        simulation_log_level="WARNING",
     ):
         """
         Returns a new experiment specification using this FMU.
@@ -800,9 +888,13 @@ class ModelExecutable:
 
             custom_function --
                 The custom function to use for this experiment.
-            options --
-                The options to use for this experiment. By default the options
+            solver_options --
+                The solver options to use for this experiment. By default the options
                 is set to None, which means the default options for the
+                custom_function input is used.
+            simulation_options --
+                The simulation_options to use for this experiment. By default the
+                options is set to None, which means the default options for the
                 custom_function input is used.
             simulation_log_level --
                 Simulation log level for this experiment. Default is 'WARNING'.
@@ -811,13 +903,19 @@ class ModelExecutable:
 
             fmu = model.compile().wait()
             dynamic = workspace.get_custom_function('dynamic')
+            solver_options = {'atol':1e-8}
+            simulation_options = dynamic.get_simulation_options().
+            with_values(ncp=500)
             experiment_specification = fmu.new_experiment_specification(
-                dynamic, dynamic.get_options()
-            )
+                dynamic, solver_options, simulation_options)
             experiment = workspace.execute(experiment_specification).wait()
         """
         return SimpleExperimentSpecification(
-            self, custom_function, options, simulation_log_level
+            self,
+            custom_function,
+            solver_options,
+            simulation_options,
+            simulation_log_level,
         )
 
     def download(self, path=None):

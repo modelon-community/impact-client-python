@@ -37,7 +37,7 @@ Can be used for workflows entierly done server side
    # Execute experiment
    experiment_def = fmu.new_experiment_specification(
        dynamic.with_parameters(start_time=0.0, final_time=2.0),
-       dynamic_opts.with_simulation_options(ncp=500),
+       simulation_options = dynamic_opts.with_simulation_options(ncp=500),
     ).with_modifiers({'inertia1.J': 2, 'inertia2.J': Range(0.1, 0.5, 3)})
    exp = workspace.execute(experiment_def).wait()
 

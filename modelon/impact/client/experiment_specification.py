@@ -4,13 +4,25 @@ from modelon.impact.client.options import ExecutionOptions
 from modelon.impact.client import exceptions
 
 
-def _assert_valid_args(fmu, custom_function, options):
+def _assert_valid_args(fmu, custom_function, solver_options, simulation_options):
     if not isinstance(fmu, entities.ModelExecutable):
-        raise TypeError("Fmu must be an instance of ModelExecutable class")
+        raise TypeError("Fmu must be an instance of ModelExecutable class!")
     if not isinstance(custom_function, entities.CustomFunction):
-        raise TypeError("Custom_function must be an instance of CustomFunction class")
-    if options is not None and not isinstance(options, ExecutionOptions):
-        raise TypeError("Options must be an instance of ExecutionOptions class")
+        raise TypeError("Custom_function must be an instance of CustomFunction class!")
+    if solver_options is not None and not isinstance(
+        solver_options, (ExecutionOptions, dict)
+    ):
+        raise TypeError(
+            "Solver options must be an instance of ExecutionOptions class or a "
+            "dictionary class object!"
+        )
+    if simulation_options is not None and not isinstance(
+        simulation_options, (ExecutionOptions, dict)
+    ):
+        raise TypeError(
+            "Simulation options must be an instance of ExecutionOptions class or"
+            " a dictionary class object!"
+        )
 
 
 def _assert_successful_compilation(fmu):
@@ -60,31 +72,57 @@ class BaseExperimentSpecification(ABC):
 
 class SimpleExperimentSpecification(BaseExperimentSpecification):
     """
-    A Simple ExperimentSpecification class for creating experiement specification.
+    A simple experiment specification class for defining experiements.
     """
 
     def __init__(
-        self, fmu, custom_function, options=None, simulation_log_level="WARNING",
+        self,
+        fmu,
+        custom_function,
+        solver_options=None,
+        simulation_options=None,
+        simulation_log_level="WARNING",
     ):
         """
         Parameters::
 
             fmu --
                 The FMU to be excecuted for this experiment.
+
             custom_function --
                 The custom function to use for this experiment.
-            options --
-                The options to use for this experiment. By default the options
+
+            solver_options --
+                The solver options to use for this experiment. By default the options
                 is set to None, which means the default options for the
                 custom_function input is used.
+
+            simulation_options --
+                The simulation_options to use for this experiment. By default the
+                options is set to None, which means the default options for the
+                custom_function input is used.
+
             simulation_log_level --
                 Simulation log level for this experiment. Default is 'WARNING'.
         """
-        _assert_valid_args(fmu, custom_function, options)
+        _assert_valid_args(fmu, custom_function, solver_options, simulation_options)
         _assert_successful_compilation(fmu)
         self.fmu = fmu
         self.custom_function = custom_function
-        self.options = custom_function.get_options() if options is None else options
+        self._solver_options = (
+            custom_function.get_solver_options().to_dict()
+            if solver_options is None
+            else solver_options.to_dict()
+            if isinstance(solver_options, ExecutionOptions)
+            else solver_options
+        )
+        self._simulation_options = (
+            custom_function.get_simulation_options().to_dict()
+            if simulation_options is None
+            else simulation_options.to_dict()
+            if isinstance(simulation_options, ExecutionOptions)
+            else simulation_options
+        )
         self.simulation_log_level = simulation_log_level
         self.variable_modifiers = {}
 
@@ -117,14 +155,18 @@ class SimpleExperimentSpecification(BaseExperimentSpecification):
             from modelon.impact.client import Range
 
             fmu = model.compile().wait()
-            options = custom_function.get_options()
-            simulate_def = fmu.new_experiment_specification(custom_function, options)
-            .with_modifiers({'inertia1.J': 2, 'inertia2.J': Range(0.1, 0.5, 3)},k=2,w=7)
+            experiment_specification = fmu.new_experiment_specification(
+                custom_function).with_modifiers({'inertia1.J': 2,
+                'inertia2.J': Range(0.1, 0.5, 3)}, k=2, w=7)
         """
         modifiers = {} if modifiers is None else modifiers
         modifiers_aggregate = {**modifiers, **modifiers_kwargs}
         new = SimpleExperimentSpecification(
-            self.fmu, self.custom_function, self.options, self.simulation_log_level
+            self.fmu,
+            self.custom_function,
+            self._solver_options,
+            self._simulation_options,
+            self.simulation_log_level,
         )
 
         for variable, value in modifiers_aggregate.items():
@@ -144,8 +186,11 @@ class SimpleExperimentSpecification(BaseExperimentSpecification):
         Example::
 
             fmu = model.compile().wait()
-            options = custom_function.get_options()
-            simulate_def = fmu.new_experiment_specification(custom_function, options)
+            simulation_options = custom_function.simulation_options()
+                .with_values(ncp=500)
+            solver_options = {'atol':1e-8}
+            simulate_def = fmu.new_experiment_specification(custom_function,
+            solver_options, simulation_options)
             simulate_def.to_dict()
         """
         return {
@@ -153,8 +198,8 @@ class SimpleExperimentSpecification(BaseExperimentSpecification):
                 "analysis": {
                     "analysis_function": self.custom_function.name,
                     "parameters": self.custom_function.parameter_values,
-                    "simulation_options": self.options.to_dict()["simulation"],
-                    "solver_options": self.options.to_dict()["solver"],
+                    "simulation_options": self._simulation_options,
+                    "solver_options": self._solver_options,
                     "simulation_log_level": self.simulation_log_level,
                 },
                 "fmu_id": self.fmu.id,
