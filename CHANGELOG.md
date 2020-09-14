@@ -1,3 +1,10 @@
+# [1.0.0-beta.37](https://github.com/modelon-community/impact-client-python/compare/v1.0.0-beta.36...v1.0.0-beta.37) (2020-09-14)
+
+
+### Bug Fixes
+
+* allow integers in custom function parameters ([f23ddf4](https://github.com/modelon-community/impact-client-python/commit/f23ddf4583264640b661888f3f79ce6cf9739c3f))
+
 # [1.0.0-beta.36](https://github.com/modelon-community/impact-client-python/compare/v1.0.0-beta.35...v1.0.0-beta.36) (2020-09-14)
 
 
