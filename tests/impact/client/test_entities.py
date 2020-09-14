@@ -151,20 +151,30 @@ class TestCustomFunction:
     ):
         pytest.raises(ValueError, custom_function.with_parameters, p3='not in values')
 
-    def test_options(self, custom_function):
-        new = custom_function.get_options()
-        assert new.to_dict() == {
-            "compiler": {"c_compiler": "gcc"},
-            "runtime": {},
-            "simulation": {"ncp": 500},
-            "solver": {},
-        }
+    def test_compiler_options(self, custom_function):
+        new = custom_function.get_compiler_options().with_values(c_compiler='gcc')
+        assert new.to_dict() == {"c_compiler": "gcc"}
+        assert isinstance(new, modelon.impact.client.options.ExecutionOptions)
+
+    def test_runtime_options(self, custom_function):
+        new = custom_function.get_runtime_options().with_values(cs_solver=0)
+        assert new.to_dict() == {"cs_solver": 0}
+        assert isinstance(new, modelon.impact.client.options.ExecutionOptions)
+
+    def test_simulation_options(self, custom_function):
+        new = custom_function.get_simulation_options().with_values(ncp=500)
+        assert new.to_dict() == {"ncp": 500}
+        assert isinstance(new, modelon.impact.client.options.ExecutionOptions)
+
+    def test_solver_options(self, custom_function):
+        new = custom_function.get_solver_options().with_values(atol=1e-7, rtol=1e-9)
+        assert new.to_dict() == {'atol': 1e-7, 'rtol': 1e-9}
         assert isinstance(new, modelon.impact.client.options.ExecutionOptions)
 
 
 class TestModel:
-    def test_compile(self, model_compiled, options):
-        fmu = model_compiled.compile(options)
+    def test_compile(self, model_compiled, compiler_options, runtime_options):
+        fmu = model_compiled.compile(compiler_options, runtime_options)
         assert fmu == ModelExecutableOperation('AwesomeWorkspace', 'test_pid_fmu_id')
 
     def test_compile_dict_options(self, model_compiled):
@@ -227,7 +237,7 @@ class TestModelExecutable:
     def test_create_experiment_specification(self, fmu, custom_function):
         experiment_specification = fmu.new_experiment_specification(
             custom_function=custom_function,
-            options=custom_function.get_options().with_simulation_options(
+            simulation_options=custom_function.get_simulation_options().with_values(
                 ncp=2000, rtol=0.1
             ),
         )

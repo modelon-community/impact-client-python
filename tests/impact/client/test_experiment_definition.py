@@ -6,11 +6,7 @@ from tests.impact.client.fixtures import *
 
 
 def test_experiment_specification(fmu, custom_function_no_param):
-    spec = SimpleExperimentSpecification(
-        fmu,
-        custom_function=custom_function_no_param,
-        options=custom_function_no_param.get_options(),
-    )
+    spec = SimpleExperimentSpecification(fmu, custom_function=custom_function_no_param)
     config = spec.to_dict()
     assert config == {
         "experiment": {
@@ -49,9 +45,10 @@ def test_experiment_specification_with_options(fmu, custom_function_no_param):
     spec = SimpleExperimentSpecification(
         fmu,
         custom_function=custom_function_no_param,
-        options=custom_function_no_param.get_options()
-        .with_simulation_options(ncp=2000, rtol=0.0001)
-        .with_solver_options(a=1),
+        simulation_options=custom_function_no_param.get_simulation_options().with_values(
+            ncp=2000, rtol=0.0001
+        ),
+        solver_options={'a': 1},
     )
     config = spec.to_dict()
     assert config["experiment"]["analysis"]["simulation_options"] == {
@@ -63,9 +60,7 @@ def test_experiment_specification_with_options(fmu, custom_function_no_param):
 
 def test_experiment_specification_with_modifier(fmu, custom_function_no_param):
     spec = SimpleExperimentSpecification(
-        fmu,
-        custom_function=custom_function_no_param,
-        options=custom_function_no_param.get_options(),
+        fmu, custom_function=custom_function_no_param,
     ).with_modifiers({'h0': Range(0.1, 0.5, 3)}, v=1)
     config = spec.to_dict()
     assert config["experiment"]["modifiers"]["variables"] == {
@@ -74,25 +69,29 @@ def test_experiment_specification_with_modifier(fmu, custom_function_no_param):
     }
 
 
-def test_failed_compile_exp_def(fmu_compile_failed, custom_function_no_param, options):
+def test_failed_compile_exp_def(
+    fmu_compile_failed, custom_function_no_param, solver_options, simulation_options
+):
     pytest.raises(
         exceptions.OperationFailureError,
         SimpleExperimentSpecification,
         fmu_compile_failed,
         custom_function_no_param,
-        options,
+        solver_options,
+        simulation_options,
     )
 
 
 def test_cancelled_compile_exp_def(
-    fmu_compile_cancelled, custom_function_no_param, options
+    fmu_compile_cancelled, custom_function_no_param, solver_options, simulation_options
 ):
     pytest.raises(
         exceptions.OperationFailureError,
         SimpleExperimentSpecification,
         fmu_compile_cancelled,
         custom_function_no_param,
-        options,
+        solver_options,
+        simulation_options,
     )
 
 
@@ -108,5 +107,5 @@ def test_invalid_option_input(custom_function, custom_function_no_param):
 
 def test_invalid_fmu_input(fmu, custom_function_no_param):
     pytest.raises(
-        TypeError, SimpleExperimentSpecification, fmu, custom_function_no_param, {},
+        TypeError, SimpleExperimentSpecification, fmu, custom_function_no_param, "", ""
     )

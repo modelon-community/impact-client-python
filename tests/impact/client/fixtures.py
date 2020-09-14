@@ -667,9 +667,9 @@ def custom_function():
     }
     custom_function_service.custom_function_options_get.return_value = {
         "compiler": {"c_compiler": "gcc"},
-        "runtime": {},
+        "runtime": {"cs_solver": 0},
         "simulation": {"ncp": 500},
-        "solver": {},
+        "solver": {'atol': 1e-7, 'rtol': 1e-9},
     }
     return CustomFunction(
         'test_ws', 'dynamic', _custom_function_parameter_list(), custom_function_service
@@ -717,7 +717,7 @@ def model_compile_cancelled():
 
 
 @pytest.fixture
-def options():
+def compiler_options():
     custom_function_service = unittest.mock.MagicMock()
     opts = {
         "compiler": {"c_compiler": "gcc"},
@@ -734,7 +734,73 @@ def options():
     custom_function_service.custom_function_options_get.return_value = opts
     custom_function_service.custom_function_default_options_get.return_value = def_opts
     return modelon.impact.client.options.ExecutionOptions(
-        opts, "dynamic", custom_function_service
+        opts["compiler"], "dynamic", custom_function_service
+    )
+
+
+@pytest.fixture
+def runtime_options():
+    custom_function_service = unittest.mock.MagicMock()
+    opts = {
+        "compiler": {"c_compiler": "gcc"},
+        "runtime": {"log_level": 3},
+        "simulation": {"ncp": 2000},
+        "solver": {"rtol": 0.0001},
+    }
+    def_opts = {
+        "compiler": {"c_compiler": "msvs"},
+        "runtime": {"log_level": 2},
+        "simulation": {"ncp": 500},
+        "solver": {"rtol": 1e-5},
+    }
+    custom_function_service.custom_function_options_get.return_value = opts
+    custom_function_service.custom_function_default_options_get.return_value = def_opts
+    return modelon.impact.client.options.ExecutionOptions(
+        opts["runtime"], "dynamic", custom_function_service
+    )
+
+
+@pytest.fixture
+def simulation_options():
+    custom_function_service = unittest.mock.MagicMock()
+    opts = {
+        "compiler": {"c_compiler": "gcc"},
+        "runtime": {"log_level": 3},
+        "simulation": {"ncp": 2000},
+        "solver": {"rtol": 0.0001},
+    }
+    def_opts = {
+        "compiler": {"c_compiler": "msvs"},
+        "runtime": {"log_level": 2},
+        "simulation": {"ncp": 500},
+        "solver": {"rtol": 1e-5},
+    }
+    custom_function_service.custom_function_options_get.return_value = opts
+    custom_function_service.custom_function_default_options_get.return_value = def_opts
+    return modelon.impact.client.options.ExecutionOptions(
+        opts["simulation"], "dynamic", custom_function_service
+    )
+
+
+@pytest.fixture
+def solver_options():
+    custom_function_service = unittest.mock.MagicMock()
+    opts = {
+        "compiler": {"c_compiler": "gcc"},
+        "runtime": {"log_level": 3},
+        "simulation": {"ncp": 2000},
+        "solver": {"rtol": 0.0001},
+    }
+    def_opts = {
+        "compiler": {"c_compiler": "msvs"},
+        "runtime": {"log_level": 2},
+        "simulation": {"ncp": 500},
+        "solver": {"rtol": 1e-5},
+    }
+    custom_function_service.custom_function_options_get.return_value = opts
+    custom_function_service.custom_function_default_options_get.return_value = def_opts
+    return modelon.impact.client.options.ExecutionOptions(
+        opts["solver"], "dynamic", custom_function_service
     )
 
 
