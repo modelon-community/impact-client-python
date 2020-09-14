@@ -582,6 +582,7 @@ def _custom_function_parameter_list():
             'values': ['hej', 'då'],
         },
         {'name': 'p4', 'defaultValue': 'a string', 'type': 'String'},
+        {'name': 'p5', 'defaultValue': 0.0, 'type': 'Number'},
     ]
 
 
