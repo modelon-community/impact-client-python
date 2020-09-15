@@ -19,6 +19,34 @@ Can be used for workflows entierly done server side
 
 .. code-block:: python
 
+   from modelon.impact.client import Client
+
+   client = Client(url=<impact-domain>)
+   workspace = client.create_workspace(<project-workspace>)
+
+   # Choose analysis type
+   dynamic = workspace.get_custom_function('dynamic')
+
+   # Compile model
+   model = workspace.get_model("Modelica.Blocks.Examples.PID_Controller")
+   fmu = model.compile(compiler_options=dynamic.get_compiler_options()).wait()
+
+   # Execute experiment
+   experiment_def = fmu.new_experiment_specification(dynamic)
+   exp = workspace.execute(experiment_def).wait()
+
+   # Plot Trajectory
+   import matplotlib.pyplot as plt
+
+   case = exp.get_case('case_1')
+   res = case.get_trajectories()
+   plt.plot(res['time'], res['inertia1.phi'])
+   plt.show()
+
+Or a multi-simulation workflow with custom execution options configured
+
+.. code-block:: python
+
    from modelon.impact.client import Client, Range
 
    client = Client(url=<impact-domain>)
@@ -26,26 +54,33 @@ Can be used for workflows entierly done server side
 
    # Choose analysis type
    dynamic = workspace.get_custom_function('dynamic')
-   dynamic_opts = dynamic.get_options()
 
    # Compile model
    model = workspace.get_model("Modelica.Blocks.Examples.PID_Controller")
    fmu = model.compile(
-       dynamic_opts.with_compiler_options(generate_html_diagnostics=True)
+      compiler_options=dynamic.get_compiler_options().with_values(
+         generate_html_diagnostics=True
+      )
    ).wait()
 
    # Execute experiment
-   experiment_def = fmu.new_experiment_specification(
-       dynamic.with_parameters(start_time=0.0, final_time=2.0),
-       simulation_options = dynamic_opts.with_simulation_options(ncp=500),
-    ).with_modifiers({'inertia1.J': 2, 'inertia2.J': Range(0.1, 0.5, 3)})
-   exp = workspace.execute(experiment_def).wait()
+   experiment_specification = fmu.new_experiment_specification(
+      dynamic.with_parameters(start_time=0.0, final_time=2.0),
+      simulation_options=dynamic.get_simulation_options().with_values(ncp=500),
+      solver_options={'atol': 1e-8},
+   ).with_modifiers({'inertia1.J': 2, 'PI.k': Range(10, 100, 3)})
+   exp = workspace.execute(experiment_specification).wait()
 
    # Plot Trajectory
    import matplotlib.pyplot as plt
-   case = next(iter([case for case in exp.get_cases() if case.is_successful()]))
-   res = case.get_trajectories()
-   plt.plot(res['time'], res['inertia1.phi'])
+
+   plt.figure(1)
+   plt.clf()
+   for case in exp.get_cases():
+      if case.is_successful():
+         res = case.get_trajectories()
+         plt.plot(res['time'], res['inertia1.phi'])
+   plt.grid()
    plt.show()
 
 Or be used to fetch artifacts to do some analysis locally
