@@ -186,7 +186,7 @@ class SimpleExperimentSpecification(BaseExperimentSpecification):
         Example::
 
             fmu = model.compile().wait()
-            simulation_options = custom_function.simulation_options()
+            simulation_options = custom_function.get_simulation_options()
                 .with_values(ncp=500)
             solver_options = {'atol':1e-8}
             simulate_def = fmu.new_experiment_specification(custom_function,
