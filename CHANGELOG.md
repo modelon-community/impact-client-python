@@ -1,3 +1,10 @@
+# [1.0.0-beta.38](https://github.com/modelon-community/impact-client-python/compare/v1.0.0-beta.37...v1.0.0-beta.38) (2020-09-15)
+
+
+### Bug Fixes
+
+* Renamed experiment_definition -> experiment_definition ([0879358](https://github.com/modelon-community/impact-client-python/commit/08793586da5bd54f65b13cdc5ee62de307c66bed))
+
 # [1.0.0-beta.37](https://github.com/modelon-community/impact-client-python/compare/v1.0.0-beta.36...v1.0.0-beta.37) (2020-09-14)
 
 
