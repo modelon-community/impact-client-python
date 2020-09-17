@@ -1,3 +1,10 @@
+# [1.0.0-beta.39](https://github.com/modelon-community/impact-client-python/compare/v1.0.0-beta.38...v1.0.0-beta.39) (2020-09-17)
+
+
+### Bug Fixes
+
+* cases,case --> get_cases,get_case ([d0895a3](https://github.com/modelon-community/impact-client-python/commit/d0895a3bad3c39653cc533ea41632d57cc5e75f6))
+
 # [1.0.0-beta.38](https://github.com/modelon-community/impact-client-python/compare/v1.0.0-beta.37...v1.0.0-beta.38) (2020-09-15)
 
 
