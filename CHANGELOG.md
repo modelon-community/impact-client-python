@@ -1,3 +1,10 @@
+# [1.0.0-beta.40](https://github.com/modelon-community/impact-client-python/compare/v1.0.0-beta.39...v1.0.0-beta.40) (2020-09-17)
+
+
+### Bug Fixes
+
+* Simplifying the code for engineers ([74e3bdf](https://github.com/modelon-community/impact-client-python/commit/74e3bdf106fccd34b3642762a81ce62b4447e7ea))
+
 # [1.0.0-beta.39](https://github.com/modelon-community/impact-client-python/compare/v1.0.0-beta.38...v1.0.0-beta.39) (2020-09-17)
 
 
