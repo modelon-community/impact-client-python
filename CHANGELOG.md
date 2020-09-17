@@ -1,3 +1,10 @@
+# [1.0.0-beta.41](https://github.com/modelon-community/impact-client-python/compare/v1.0.0-beta.40...v1.0.0-beta.41) (2020-09-17)
+
+
+### Features
+
+* possible to specify client inputs through env variables ([e0f6bfe](https://github.com/modelon-community/impact-client-python/commit/e0f6bfef58e907c91e7143d6aa6bdc80cba26846))
+
 # [1.0.0-beta.40](https://github.com/modelon-community/impact-client-python/compare/v1.0.0-beta.39...v1.0.0-beta.40) (2020-09-17)
 
 
