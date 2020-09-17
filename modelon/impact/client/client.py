@@ -1,4 +1,5 @@
 import logging
+import modelon.impact.client.configuration
 import modelon.impact.client.entities
 import modelon.impact.client.sal.service
 import modelon.impact.client.sal.exceptions
@@ -16,14 +17,16 @@ class Client:
     def __init__(
         self,
         url=None,
-        interactive=False,
+        interactive=None,
         api_key=None,
         credentail_manager=None,
         context=None,
     ):
         if url is None:
-            url = "http://localhost:8080/"
-            logger.warning("No URL for client was specified, will use: {}".format(url))
+            url = modelon.impact.client.configuration.get_client_url()
+
+        if interactive is None:
+            interactive = modelon.impact.client.configuration.get_client_interactive()
 
         if credentail_manager is None:
             credentail_manager = (
