@@ -49,6 +49,14 @@ class Operation(ABC):
         """
         pass
 
+    @property
+    @abstractmethod
+    def name(self):
+        """
+        Name of the operation.
+        """
+        pass
+
     def is_complete(self):
         """
         Returns True if the operation has completed.
@@ -61,7 +69,7 @@ class Operation(ABC):
         Example::
 
            model.compile(options).is_complete()
-           workspace.execute(specification).is_complete()
+           workspace.execute(definition).is_complete()
         """
         return self.status() == Status.DONE
 
@@ -94,13 +102,14 @@ class Operation(ABC):
                timeout = 120,
                status = Status.CANCELLED
            )
-           workspace.execute(experiment_specification).wait(timeout = 120)
+           workspace.execute(experiment_definition).wait(timeout = 120)
         """
         start_t = time.time()
         while True:
-            logger.info(f"Operation in progress! Status : {self.status().name}")
+            logger.info(f"{self.name} in progress! Status : {self.status().name}")
             time.sleep(0.5)
             if self.status() == status:
+                logger.info(f"{self.name} completed! Status : {self.status().name}")
                 return self.data()
             current_t = time.time()
             if timeout and current_t - start_t > timeout:
@@ -134,6 +143,11 @@ class ModelExecutableOperation(Operation):
     def id(self):
         """FMU id"""
         return self._fmu_id
+
+    @property
+    def name(self):
+        """Return the name of operation"""
+        return "Compilation"
 
     def data(self):
         """
@@ -205,6 +219,11 @@ class ExperimentOperation(Operation):
         """Experiment id"""
         return self._exp_id
 
+    @property
+    def name(self):
+        """Return the name of operation"""
+        return "Execution"
+
     def data(self):
         """
         Returns a new Experiment class instance.
@@ -231,7 +250,7 @@ class ExperimentOperation(Operation):
 
         Example::
 
-            workspace.execute(specification).status()
+            workspace.execute(definition).status()
         """
         return Status(
             self._exp_sal.execute_status(self._workspace_id, self._exp_id)["status"]
@@ -243,6 +262,6 @@ class ExperimentOperation(Operation):
 
         Example::
 
-            workspace.execute(specification).cancel()
+            workspace.execute(definition).cancel()
         """
         self._exp_sal.execute_cancel(self._workspace_id, self._exp_id)

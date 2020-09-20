@@ -113,9 +113,9 @@ class WorkspaceService:
         ).resolve()
         return self._http_client.get_json(url)
 
-    def experiment_create(self, workspace_id, spec):
+    def experiment_create(self, workspace_id, definition):
         url = (self._base_uri / f"api/workspaces/{workspace_id}/experiments").resolve()
-        return self._http_client.post_json(url, body=spec)
+        return self._http_client.post_json(url, body=definition)
 
 
 class ModelExecutableService:

@@ -1,13 +1,15 @@
-from modelon.impact.client import SimpleExperimentSpecification, Range
+from modelon.impact.client import SimpleExperimentDefinition, Range
 import pytest
 from modelon.impact.client import exceptions
 
 from tests.impact.client.fixtures import *
 
 
-def test_experiment_specification(fmu, custom_function_no_param):
-    spec = SimpleExperimentSpecification(fmu, custom_function=custom_function_no_param)
-    config = spec.to_dict()
+def test_experiment_definition(fmu, custom_function_no_param):
+    definition = SimpleExperimentDefinition(
+        fmu, custom_function=custom_function_no_param
+    )
+    config = definition.to_dict()
     assert config == {
         "experiment": {
             "analysis": {
@@ -23,9 +25,11 @@ def test_experiment_specification(fmu, custom_function_no_param):
     }
 
 
-def test_experiment_specification_default_options(fmu, custom_function_no_param):
-    spec = SimpleExperimentSpecification(fmu, custom_function=custom_function_no_param)
-    config = spec.to_dict()
+def test_experiment_definition_default_options(fmu, custom_function_no_param):
+    definition = SimpleExperimentDefinition(
+        fmu, custom_function=custom_function_no_param
+    )
+    config = definition.to_dict()
     assert config == {
         "experiment": {
             "analysis": {
@@ -41,8 +45,8 @@ def test_experiment_specification_default_options(fmu, custom_function_no_param)
     }
 
 
-def test_experiment_specification_with_options(fmu, custom_function_no_param):
-    spec = SimpleExperimentSpecification(
+def test_experiment_definition_with_options(fmu, custom_function_no_param):
+    definition = SimpleExperimentDefinition(
         fmu,
         custom_function=custom_function_no_param,
         simulation_options=custom_function_no_param.get_simulation_options().with_values(
@@ -50,7 +54,7 @@ def test_experiment_specification_with_options(fmu, custom_function_no_param):
         ),
         solver_options={'a': 1},
     )
-    config = spec.to_dict()
+    config = definition.to_dict()
     assert config["experiment"]["analysis"]["simulation_options"] == {
         "ncp": 2000,
         "rtol": 0.0001,
@@ -58,11 +62,11 @@ def test_experiment_specification_with_options(fmu, custom_function_no_param):
     assert config["experiment"]["analysis"]["solver_options"] == {"a": 1}
 
 
-def test_experiment_specification_with_modifier(fmu, custom_function_no_param):
-    spec = SimpleExperimentSpecification(
+def test_experiment_definition_with_modifier(fmu, custom_function_no_param):
+    definition = SimpleExperimentDefinition(
         fmu, custom_function=custom_function_no_param,
     ).with_modifiers({'h0': Range(0.1, 0.5, 3)}, v=1)
-    config = spec.to_dict()
+    config = definition.to_dict()
     assert config["experiment"]["modifiers"]["variables"] == {
         'h0': 'range(0.1,0.5,3)',
         'v': 1,
@@ -74,7 +78,7 @@ def test_failed_compile_exp_def(
 ):
     pytest.raises(
         exceptions.OperationFailureError,
-        SimpleExperimentSpecification,
+        SimpleExperimentDefinition,
         fmu_compile_failed,
         custom_function_no_param,
         solver_options,
@@ -87,7 +91,7 @@ def test_cancelled_compile_exp_def(
 ):
     pytest.raises(
         exceptions.OperationFailureError,
-        SimpleExperimentSpecification,
+        SimpleExperimentDefinition,
         fmu_compile_cancelled,
         custom_function_no_param,
         solver_options,
@@ -98,7 +102,7 @@ def test_cancelled_compile_exp_def(
 def test_invalid_option_input(custom_function, custom_function_no_param):
     pytest.raises(
         TypeError,
-        SimpleExperimentSpecification,
+        SimpleExperimentDefinition,
         custom_function,
         custom_function_no_param,
         {},
@@ -107,5 +111,5 @@ def test_invalid_option_input(custom_function, custom_function_no_param):
 
 def test_invalid_fmu_input(fmu, custom_function_no_param):
     pytest.raises(
-        TypeError, SimpleExperimentSpecification, fmu, custom_function_no_param, "", ""
+        TypeError, SimpleExperimentDefinition, fmu, custom_function_no_param, "", ""
     )

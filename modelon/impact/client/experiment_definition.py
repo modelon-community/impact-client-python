@@ -57,22 +57,22 @@ class Range(Operator):
         return f"range({self.start_value},{self.end_value},{self.no_of_steps})"
 
 
-class BaseExperimentSpecification(ABC):
+class BaseExperimentDefinition(ABC):
     """
-    Base class for an Experiment specification class.
+    Base class for an Experiment definition class.
     """
 
     @abstractmethod
     def validate(self):
         """
-        Validates the modifiers appended to the experiment specification.
+        Validates the modifiers appended to the experiment definition.
         """
         pass
 
 
-class SimpleExperimentSpecification(BaseExperimentSpecification):
+class SimpleExperimentDefinition(BaseExperimentDefinition):
     """
-    A simple experiment specification class for defining experiements.
+    A simple experiment definition class for defining experiements.
     """
 
     def __init__(
@@ -152,16 +152,17 @@ class SimpleExperimentSpecification(BaseExperimentSpecification):
                 modifiers.
 
         Example::
+
             from modelon.impact.client import Range
 
             fmu = model.compile().wait()
-            experiment_specification = fmu.new_experiment_specification(
+            experiment_definition = fmu.new_experiment_definition(
                 custom_function).with_modifiers({'inertia1.J': 2,
                 'inertia2.J': Range(0.1, 0.5, 3)}, k=2, w=7)
         """
         modifiers = {} if modifiers is None else modifiers
         modifiers_aggregate = {**modifiers, **modifiers_kwargs}
-        new = SimpleExperimentSpecification(
+        new = SimpleExperimentDefinition(
             self.fmu,
             self.custom_function,
             self._solver_options,
@@ -176,12 +177,12 @@ class SimpleExperimentSpecification(BaseExperimentSpecification):
         return new
 
     def to_dict(self):
-        """ Returns the experiment specification as a dictionary.
+        """ Returns the experiment definition as a dictionary.
 
         Returns::
 
-            specification_dict --
-                A dictionary containing the experiment specification.
+            definition_dict --
+                A dictionary containing the experiment definition.
 
         Example::
 
@@ -189,7 +190,7 @@ class SimpleExperimentSpecification(BaseExperimentSpecification):
             simulation_options = custom_function.get_simulation_options()
                 .with_values(ncp=500)
             solver_options = {'atol':1e-8}
-            simulate_def = fmu.new_experiment_specification(custom_function,
+            simulate_def = fmu.new_experiment_definition(custom_function,
             solver_options, simulation_options)
             simulate_def.to_dict()
         """
