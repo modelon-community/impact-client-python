@@ -2,7 +2,7 @@ import os
 import tempfile
 from modelon.impact.client import operations
 
-from modelon.impact.client.experiment_specification import SimpleExperimentSpecification
+from modelon.impact.client.experiment_definition import SimpleExperimentDefinition
 from collections.abc import Mapping
 from modelon.impact.client.options import ExecutionOptions
 from modelon.impact.client import exceptions
@@ -199,8 +199,8 @@ class Workspace:
         """
         self._workspace_sal.workspace_delete(self._workspace_id)
 
-    def import_library(self, path_to_lib):
-        """Imports a library to the workspace.
+    def upload_model_library(self, path_to_lib):
+        """Uploads a modelica library or a modelica model to the workspace.
 
         Parameters::
 
@@ -209,8 +209,8 @@ class Workspace:
 
         Example::
 
-            workspace.import_library('C:/A.mo')
-            workspace.import_library('C:/B.mol')
+            workspace.upload_model_library('C:/A.mo')
+            workspace.upload_model_library('C:/B.mol')
         """
         self._workspace_sal.library_import(self._workspace_id, path_to_lib)
 
@@ -239,7 +239,7 @@ class Workspace:
         Parameters::
 
             options --
-                The specification of what workspace resources to include when
+                The definition of what workspace resources to include when
                 exporting the workspace.
 
             path --
@@ -251,6 +251,7 @@ class Workspace:
                 Local path to the downloaded workspace archive.
 
         Example::
+
             options = {
                 "contents": {
                     "libraries": [
@@ -414,15 +415,15 @@ class Workspace:
             self._workspace_id, resp["id"], self._workspace_sal, self._exp_sal, resp
         )
 
-    def create_experiment(self, specification):
+    def create_experiment(self, definition):
         """Creates an experiment.
         Returns an Experiment class object.
 
         Parameters::
 
-            specification --
-                An parametrized experiment specification class of type
-                modelon.impact.client.experiment_specification.SimpleExperimentSpecification.
+            definition --
+                An parametrized experiment definition class of type
+                modelon.impact.client.experiment_definition.SimpleExperimentDefinition.
 
         Returns::
 
@@ -431,18 +432,18 @@ class Workspace:
 
         Example::
 
-            workspace.create_experiment(specification)
+            workspace.create_experiment(definition)
         """
-        if isinstance(specification, SimpleExperimentSpecification):
-            specification = specification.to_dict()
-        elif not isinstance(specification, dict):
+        if isinstance(definition, SimpleExperimentDefinition):
+            definition = definition.to_dict()
+        elif not isinstance(definition, dict):
             raise TypeError(
-                "Specification object must either be a dictionary or an instance of "
-                "modelon.impact.client.experiment_specification."
-                "SimpleExperimentSpecification class!"
+                "Definition object must either be a dictionary or an instance of "
+                "modelon.impact.client.experiment_definition."
+                "SimpleExperimentDefinition class!"
             )
 
-        resp = self._workspace_sal.experiment_create(self._workspace_id, specification)
+        resp = self._workspace_sal.experiment_create(self._workspace_id, definition)
         return Experiment(
             self._workspace_id,
             resp["experiment_id"],
@@ -450,16 +451,16 @@ class Workspace:
             self._exp_sal,
         )
 
-    def execute(self, specification):
+    def execute(self, definition):
         """Exceutes an experiment.
         Returns an modelon.impact.client.operations.ExperimentOperation class object.
 
         Parameters::
 
-            specification --
-                An experiment specification class instance of
-                modelon.impact.client.experiment_specification.SimpleExperimentSpecification
-                or a dictionary object containing the specification.
+            definition --
+                An experiment definition class instance of
+                modelon.impact.client.experiment_definition.SimpleExperimentDefinition
+                or a dictionary object containing the definition.
 
         Returns::
 
@@ -468,12 +469,12 @@ class Workspace:
 
         Example::
 
-            experiment_ops = workspace.execute(specification)
+            experiment_ops = workspace.execute(definition)
             experiment_ops.cancel()
             experiment_ops.status()
             experiment_ops.wait()
         """
-        exp_id = self.create_experiment(specification).id
+        exp_id = self.create_experiment(definition).id
         return operations.ExperimentOperation(
             self._workspace_id,
             self._exp_sal.experiment_execute(self._workspace_id, exp_id),
@@ -874,7 +875,7 @@ class ModelExecutable:
             self._workspace_id, self._fmu_id
         )
 
-    def new_experiment_specification(
+    def new_experiment_definition(
         self,
         custom_function,
         solver_options=None,
@@ -882,7 +883,7 @@ class ModelExecutable:
         simulation_log_level="WARNING",
     ):
         """
-        Returns a new experiment specification using this FMU.
+        Returns a new experiment definition using this FMU.
 
         Parameters::
 
@@ -906,11 +907,11 @@ class ModelExecutable:
             solver_options = {'atol':1e-8}
             simulation_options = dynamic.get_simulation_options().
             with_values(ncp=500)
-            experiment_specification = fmu.new_experiment_specification(
+            experiment_definition = fmu.new_experiment_definition(
                 dynamic, solver_options, simulation_options)
-            experiment = workspace.execute(experiment_specification).wait()
+            experiment = workspace.execute(experiment_definition).wait()
         """
-        return SimpleExperimentSpecification(
+        return SimpleExperimentDefinition(
             self,
             custom_function,
             solver_options,

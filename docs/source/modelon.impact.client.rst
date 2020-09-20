@@ -20,6 +20,14 @@ modelon.impact.client.client module
    :undoc-members:
    :show-inheritance:
 
+modelon.impact.client.configuration module
+------------------------------------------
+
+.. automodule:: modelon.impact.client.configuration
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 modelon.impact.client.credential\_manager module
 ------------------------------------------------
 
@@ -44,10 +52,10 @@ modelon.impact.client.exceptions module
    :undoc-members:
    :show-inheritance:
 
-modelon.impact.client.experiment\_specification module
-------------------------------------------------------
+modelon.impact.client.experiment\_definition module
+---------------------------------------------------
 
-.. automodule:: modelon.impact.client.experiment_specification
+.. automodule:: modelon.impact.client.experiment_definition
    :members:
    :undoc-members:
    :show-inheritance:

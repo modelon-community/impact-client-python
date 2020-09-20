@@ -40,7 +40,7 @@ class TestWorkspace:
         assert 'DELETE' == delete_call.method
 
     def test_import_library(self, workspace_ops, import_lib):
-        workspace_ops.import_library(SINGLE_FILE_LIBRARY_PATH)
+        workspace_ops.upload_model_library(SINGLE_FILE_LIBRARY_PATH)
         import_call = import_lib.adapter.request_history[3]
         assert (
             'http://mock-impact.com/api/workspaces/AwesomeWorkspace/libraries'
@@ -234,14 +234,14 @@ class TestModelExecutable:
             fmu_compile_cancelled.get_settable_parameters,
         )
 
-    def test_create_experiment_specification(self, fmu, custom_function):
-        experiment_specification = fmu.new_experiment_specification(
+    def test_create_experiment_definition(self, fmu, custom_function):
+        experiment_definition = fmu.new_experiment_definition(
             custom_function=custom_function,
             simulation_options=custom_function.get_simulation_options().with_values(
                 ncp=2000, rtol=0.1
             ),
         )
-        config = experiment_specification.to_dict()
+        config = experiment_definition.to_dict()
         assert config['experiment']['fmu_id'] == fmu.id
         assert config['experiment']['analysis']['simulation_options'] == {
             'ncp': 2000,
