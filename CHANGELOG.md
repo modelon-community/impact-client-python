@@ -1,3 +1,10 @@
+# [1.0.0-beta.42](https://github.com/modelon-community/impact-client-python/compare/v1.0.0-beta.41...v1.0.0-beta.42) (2020-09-22)
+
+
+### Bug Fixes
+
+* Renaming import_library to upload_model_library ([7705160](https://github.com/modelon-community/impact-client-python/commit/7705160689b97f5a82c98c58b8f50d3ce9560ec6))
+
 # [1.0.0-beta.41](https://github.com/modelon-community/impact-client-python/compare/v1.0.0-beta.40...v1.0.0-beta.41) (2020-09-17)
 
 
