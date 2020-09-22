@@ -76,9 +76,9 @@ We can fetch the default values for the mandotory ``compiler_options`` arument a
    compiler_options = dynamic.get_compiler_options()
    runtime_options = dynamic.get_runtime_options()
 
-To view the default compiler options, the ``to_dict()`` method can be called on it::
+To view the default compiler options, the ``dict()`` method can be called on it::
    
-   compiler_options.to_dict()
+   dict(compiler_options)
 
 It is also possible to apend/modfiy the default options either by calling the ``with_values()`` method on the 
 ``compiler_options`` class object::

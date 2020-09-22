@@ -110,16 +110,16 @@ class SimpleExperimentDefinition(BaseExperimentDefinition):
         self.fmu = fmu
         self.custom_function = custom_function
         self._solver_options = (
-            custom_function.get_solver_options().to_dict()
+            dict(custom_function.get_solver_options())
             if solver_options is None
-            else solver_options.to_dict()
+            else dict(solver_options)
             if isinstance(solver_options, ExecutionOptions)
             else solver_options
         )
         self._simulation_options = (
-            custom_function.get_simulation_options().to_dict()
+            dict(custom_function.get_simulation_options())
             if simulation_options is None
-            else simulation_options.to_dict()
+            else dict(simulation_options)
             if isinstance(simulation_options, ExecutionOptions)
             else simulation_options
         )

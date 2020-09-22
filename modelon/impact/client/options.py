@@ -1,4 +1,5 @@
 from copy import deepcopy
+from collections.abc import Mapping
 
 
 def _set_options(options, **modified):
@@ -8,7 +9,7 @@ def _set_options(options, **modified):
     return opts
 
 
-class ExecutionOptions:
+class ExecutionOptions(Mapping):
     """
     An class containing the simulation, compiler, solver and runtime options settings.
     """
@@ -23,16 +24,14 @@ class ExecutionOptions:
     def __repr__(self):
         return f"Execution option for '{self._name}'"
 
-    def to_dict(self):
-        """
-        Returns the options as a dictionary.
+    def __getitem__(self, key):
+        return self._values[key]
 
-        Returns::
+    def __iter__(self):
+        return self._values.__iter__()
 
-            options_dict --
-                The options object as a dictionary.
-        """
-        return self._values
+    def __len__(self):
+        return self._values.__len__()
 
     def with_values(self, **modified):
         """ Sets/updates the compiler options.

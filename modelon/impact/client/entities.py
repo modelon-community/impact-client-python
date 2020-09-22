@@ -726,14 +726,14 @@ class Model:
         """
         _assert_valid_args(compiler_options, runtime_options)
         compiler_options = (
-            compiler_options.to_dict()
+            dict(compiler_options)
             if isinstance(compiler_options, ExecutionOptions)
             else compiler_options
             if isinstance(compiler_options, dict)
             else {}
         )
         runtime_options = (
-            runtime_options.to_dict()
+            dict(runtime_options)
             if isinstance(runtime_options, ExecutionOptions)
             else runtime_options
             if isinstance(runtime_options, dict)

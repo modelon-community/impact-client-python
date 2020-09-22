@@ -153,22 +153,22 @@ class TestCustomFunction:
 
     def test_compiler_options(self, custom_function):
         new = custom_function.get_compiler_options().with_values(c_compiler='gcc')
-        assert new.to_dict() == {"c_compiler": "gcc"}
+        assert dict(new) == {"c_compiler": "gcc"}
         assert isinstance(new, modelon.impact.client.options.ExecutionOptions)
 
     def test_runtime_options(self, custom_function):
         new = custom_function.get_runtime_options().with_values(cs_solver=0)
-        assert new.to_dict() == {"cs_solver": 0}
+        assert dict(new) == {"cs_solver": 0}
         assert isinstance(new, modelon.impact.client.options.ExecutionOptions)
 
     def test_simulation_options(self, custom_function):
         new = custom_function.get_simulation_options().with_values(ncp=500)
-        assert new.to_dict() == {"ncp": 500}
+        assert dict(new) == {"ncp": 500}
         assert isinstance(new, modelon.impact.client.options.ExecutionOptions)
 
     def test_solver_options(self, custom_function):
         new = custom_function.get_solver_options().with_values(atol=1e-7, rtol=1e-9)
-        assert new.to_dict() == {'atol': 1e-7, 'rtol': 1e-9}
+        assert dict(new) == {'atol': 1e-7, 'rtol': 1e-9}
         assert isinstance(new, modelon.impact.client.options.ExecutionOptions)
 
 

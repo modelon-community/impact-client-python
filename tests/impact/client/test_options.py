@@ -10,10 +10,10 @@ def test_modify_options(
     solver_opts = solver_options.with_values(rtol=50)
     compiler_opts = compiler_options.with_values(c_compiler=4)
 
-    assert compiler_opts.to_dict() == {'c_compiler': 4}
-    assert runtime_opts.to_dict() == {'log_level': 1}
-    assert simulation_opts.to_dict() == {'ncp': 10}
-    assert solver_opts.to_dict() == {'rtol': 50}
+    assert dict(compiler_opts) == {'c_compiler': 4}
+    assert dict(runtime_opts) == {'log_level': 1}
+    assert dict(simulation_opts) == {'ncp': 10}
+    assert dict(solver_opts) == {'rtol': 50}
 
 
 def test_append_options(
@@ -25,7 +25,7 @@ def test_append_options(
     solver_opts = solver_options.with_values(c=5.0)
     compiler_opts = compiler_options.with_values(d=True)
 
-    assert compiler_opts.to_dict() == {'c_compiler': 'gcc', 'd': True}
-    assert runtime_opts.to_dict() == {'log_level': 3, 'b': 'hello'}
-    assert simulation_opts.to_dict() == {'ncp': 2000, 'a': 10}
-    assert solver_opts.to_dict() == {'rtol': 0.0001, 'c': 5.0}
+    assert dict(compiler_opts) == {'c_compiler': 'gcc', 'd': True}
+    assert dict(runtime_opts) == {'log_level': 3, 'b': 'hello'}
+    assert dict(simulation_opts) == {'ncp': 2000, 'a': 10}
+    assert dict(solver_opts) == {'rtol': 0.0001, 'c': 5.0}
