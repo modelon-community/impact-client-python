@@ -1,3 +1,10 @@
+# [1.0.0-beta.43](https://github.com/modelon-community/impact-client-python/compare/v1.0.0-beta.42...v1.0.0-beta.43) (2020-09-23)
+
+
+### Bug Fixes
+
+* Inheriting mapping class for ExecutionOptions ([e934d92](https://github.com/modelon-community/impact-client-python/commit/e934d92dbe16ad9f418d7ce23b233a5a7a8fc6c1))
+
 # [1.0.0-beta.42](https://github.com/modelon-community/impact-client-python/compare/v1.0.0-beta.41...v1.0.0-beta.42) (2020-09-22)
 
 
