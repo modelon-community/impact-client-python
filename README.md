@@ -1,17 +1,10 @@
 # Modelon-impact-client
-Modelon Impact Services Client
+Client library for easy scripting against Modelon Impact
 
-## Install
+## Installation
 
-Install from internal PYPI repo.
+For installation instructions and requirements, please refer to the [documentation](https://modelon-impact-client.readthedocs.io).
 
-```
-pip install --extra-index-url https://artifactory.modelon.com/artifactory/api/pypi/pypi-release-local/simple modelon-impact-client
-```
-
-## Usage
-
-TODO
 
 ## Develop
 
