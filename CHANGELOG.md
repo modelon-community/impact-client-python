@@ -1,3 +1,11 @@
+# [1.0.0-beta.44](https://github.com/modelon-community/impact-client-python/compare/v1.0.0-beta.43...v1.0.0-beta.44) (2020-09-23)
+
+
+### Bug Fixes
+
+* Adding read the docs specifics ([ec2fd03](https://github.com/modelon-community/impact-client-python/commit/ec2fd03fbc114ce4cfb86f9fdafacfdcf140e528))
+* error fix ([65c4884](https://github.com/modelon-community/impact-client-python/commit/65c4884905f39abd005ba9cbcdd4f75a6c8d1bfe))
+
 # [1.0.0-beta.43](https://github.com/modelon-community/impact-client-python/compare/v1.0.0-beta.42...v1.0.0-beta.43) (2020-09-23)
 
 
