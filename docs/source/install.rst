@@ -8,14 +8,14 @@ Conda
 
 You can install the client with ``conda``::
 
-   conda install --extra-index-url https://artifactory.modelon.com/artifactory/api/pypi/pypi-release-local/simple modelon-impact-client
+   conda install modelon-impact-client
 
 Pip
 ---
 
 You can install the client with ``pip``::
 
-   pip install --extra-index-url https://artifactory.modelon.com/artifactory/api/pypi/pypi-release-local/simple modelon-impact-client
+   pip install modelon-impact-client
 
 Install from Source
 -------------------
