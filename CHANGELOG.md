@@ -1,3 +1,10 @@
+# [1.0.0-beta.46](https://github.com/modelon-community/impact-client-python/compare/v1.0.0-beta.45...v1.0.0-beta.46) (2020-09-23)
+
+
+### Bug Fixes
+
+* Updated Readme and pyproject.toml ([272debf](https://github.com/modelon-community/impact-client-python/commit/272debf1c498e89b6c469b0244fd123b1fe1e52f))
+
 # [1.0.0-beta.45](https://github.com/modelon-community/impact-client-python/compare/v1.0.0-beta.44...v1.0.0-beta.45) (2020-09-23)
 
 
