@@ -1,3 +1,10 @@
+# [1.0.0-beta.45](https://github.com/modelon-community/impact-client-python/compare/v1.0.0-beta.44...v1.0.0-beta.45) (2020-09-23)
+
+
+### Bug Fixes
+
+* using api tokens instead of usename password for jenkins ([76ee2a2](https://github.com/modelon-community/impact-client-python/commit/76ee2a2bbcbb97c4d3289d2e5e5e4c261a9babf1))
+
 # [1.0.0-beta.44](https://github.com/modelon-community/impact-client-python/compare/v1.0.0-beta.43...v1.0.0-beta.44) (2020-09-23)
 
 
