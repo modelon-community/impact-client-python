@@ -61,7 +61,7 @@ class Operation(ABC):
         """
         Returns True if the operation has completed.
 
-        Returns::
+        Returns:
 
             True -> If operation has completed.
             False -> If operation has not completed.
@@ -77,7 +77,7 @@ class Operation(ABC):
         """Waits until the operation achieves the set status.
         Returns the operation class instance if the set status is achieved.
 
-        Parameters::
+        Parameters:
 
             timeout --
                 Time to wait in seconds for achieving the status. By default
@@ -88,11 +88,11 @@ class Operation(ABC):
                 Operation status to be achieved.
                 Default: Status.DONE
 
-        Returns::
+        Returns:
 
             Operation class instance if the set status is achieved.
 
-        Raises::
+        Raises:
 
             OperationTimeOutError if time exceeds set timeout.
 
@@ -153,7 +153,7 @@ class ModelExecutableOperation(Operation):
         """
         Returns a new ModelExecutable class instance.
 
-        Returns::
+        Returns:
 
             model_executable --
                 A model_executable class instance.
@@ -166,7 +166,7 @@ class ModelExecutableOperation(Operation):
         """
         Returns the compilation status as an enumeration.
 
-        Returns::
+        Returns:
 
             status --
                 The compilation status enum. The status can have the enum values
@@ -228,7 +228,7 @@ class ExperimentOperation(Operation):
         """
         Returns a new Experiment class instance.
 
-        Returns::
+        Returns:
 
             experiment --
                 An experiment class instance.
@@ -241,7 +241,7 @@ class ExperimentOperation(Operation):
         """
         Returns the execution status as an enumeration.
 
-        Returns::
+        Returns:
 
             status --
                 The execution status enum. The status can have the enum values

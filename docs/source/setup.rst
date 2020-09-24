@@ -1,8 +1,8 @@
 Setup
 =====
 
-This page describes the procedure to setup api keys to authenticate your login and
-various ways to use the generated api key to login to the client.
+This page describes the procedure to set up API keys to authenticate your login and
+various ways to use the generated API key to log in to the client.
 
 
 Authentication with API keys
@@ -18,11 +18,11 @@ safely.*
 
 If the key is lost or compromised, you can generate a new one by clicking the refresh
 button. This will delete the old key, so any application that uses it must have their
-keys updated in order to work.
+keys updated to work.
 
 There are several ways to use the API key, depending on how it is stored. It can either
 be set as an argument when the client is initialized, set as an environment variable,
-saved in a key file or entered interactivly.
+saved in a key file or entered interactively.
 
 
 Initializer argument
@@ -37,7 +37,7 @@ to specify which key to use.
 
     client = Client(api_key=my_api_key)
 
-With this method the key can be stored and retrieved in any way. Remember not to store
+With this method, the key can be stored and retrieved in any way. Remember not to store
 the API key in your source code file.
 
 
@@ -53,9 +53,9 @@ Credentials file
 
 It may also be stored in a credentials file named ``api.key`` located in the directory
 ``.impact`` in the users home folder. The client class will look for the key there if
-the key is neither passed as an argument or set as an environment variable.
+the key is neither passed as an argument nor set as an environment variable.
 
-This file is used by the client to store the key in interactive mode, and may be
+This file is used by the client to store the key in interactive mode and might be
 overwritten, see :ref:`interactive-mode`.
 
 
@@ -87,7 +87,7 @@ argument in interactive mode:
     >>>> client = Client(url=impact_url, api_key='new-api-key', interactive=True)
 
 This will remove the old key and add the new one to the credentials file. The stored
-api key can also be modified using the ``CredentialManager`` class.
+API key can also be modified using the ``CredentialManager`` class.
 
 .. code-block:: pycon
 

@@ -20,7 +20,7 @@ You can install the client with ``pip``::
 Install from Source
 -------------------
 
-The client library is actively developed on GitHub. To install Modelon Impact Client from source, clone the repository from `github
+The client library is actively developed on GitHub. To install Modelon Impact Client from source, clone the repository from `GitHub
 <https://github.com/modelon-community/impact-client-python>`_::
 
     git clone https://github.com/modelon-community/impact-client-python.git
@@ -30,5 +30,5 @@ The client library is actively developed on GitHub. To install Modelon Impact Cl
 Requirements
 ------------
 
-Modelon Impact Client supports Python versions 3.6 or higher.The client library is developed in sync with 
+Modelon Impact Client supports Python versions 3.6 or higher. The client library is developed in sync with 
 Modelon Impact and is kept updated with the latest changes in the tool.

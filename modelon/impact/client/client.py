@@ -81,12 +81,12 @@ class Client:
         """
         Returns a Workspace class object.
 
-        Parameters::
+        Parameters:
 
             workspace_id --
                 The name of the workspace.
 
-        Returns::
+        Returns:
 
             workspace --
                 Workspace class object.
@@ -108,7 +108,7 @@ class Client:
         """
         Returns a list of Workspace class object.
 
-        Returns::
+        Returns:
 
             workspace --
                 A list of Workspace class objects.
@@ -133,12 +133,12 @@ class Client:
         """ Creates and returns a Workspace.
         Returns a workspace class object.
 
-        Parameters::
+        Parameters:
 
             workspace_id --
                 The name of the workspace to create.
 
-        Returns::
+        Returns:
 
             workspace --
                 The created workspace class object.
@@ -160,14 +160,14 @@ class Client:
         """ Uploads a Workspace
         Returns the workspace class object of the imported workspace.
 
-        Parameters::
+        Parameters:
 
             workspace_id --
                 The name of the workspace.
             path_to_workspace --
                 The path for the compressed workspace(.zip) to be uploaded.
 
-        Returns::
+        Returns:
 
             workspace --
                 Workspace class object.
