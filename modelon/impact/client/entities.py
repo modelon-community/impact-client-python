@@ -140,12 +140,12 @@ class Workspace:
         """
         Returns a CustomFunction class object.
 
-        Parameters::
+        Parameters:
 
             name --
                 The name of the custom function.
 
-        Returns::
+        Returns:
 
             custom_function --
                 The CustomFunction class object.
@@ -168,7 +168,7 @@ class Workspace:
         """
         Returns a list of CustomFunctions class objects.
 
-        Returns::
+        Returns:
 
             custom_functions --
                 A list of CustomFunction class objects.
@@ -202,7 +202,7 @@ class Workspace:
     def upload_model_library(self, path_to_lib):
         """Uploads a modelica library or a modelica model to the workspace.
 
-        Parameters::
+        Parameters:
 
             path_to_lib --
                 The path for the library to be imported.
@@ -236,7 +236,7 @@ class Workspace:
         """Downloads the workspace as a binary compressed archive.
         Returns the local path to the downloaded workspace archive.
 
-        Parameters::
+        Parameters:
 
             options --
                 The definition of what workspace resources to include when
@@ -245,7 +245,7 @@ class Workspace:
             path --
                 The local path to store the downloaded workspace.
 
-        Returns::
+        Returns:
 
             path --
                 Local path to the downloaded workspace archive.
@@ -285,7 +285,7 @@ class Workspace:
         """Clones the workspace.
         Returns a clone Workspace class object.
 
-        Returns::
+        Returns:
 
             workspace_clone --
                 Clones workspace class object.
@@ -306,12 +306,12 @@ class Workspace:
         """
         Returns a Model class object.
 
-        Parameters::
+        Parameters:
 
             class_name --
                 The modelica class path of the model.
 
-        Returns::
+        Returns:
 
             model --
                 Model class object.
@@ -328,7 +328,7 @@ class Workspace:
         """
         Returns a list of ModelExecutable class objects.
 
-        Returns::
+        Returns:
 
             FMUs --
                 List of ModelExecutable class objects.
@@ -353,7 +353,7 @@ class Workspace:
         """
         Returns a ModelExecutable class object.
 
-        Returns::
+        Returns:
 
             FMU --
                 ModelExecutable class object.
@@ -375,7 +375,7 @@ class Workspace:
         """
         Returns a list of Experiment class objects.
 
-        Returns::
+        Returns:
 
             experiment --
                 List of Experiment class objects.
@@ -396,12 +396,12 @@ class Workspace:
         """
         Returns an Experiment class object.
 
-        Parameters::
+        Parameters:
 
             class_name --
                 The modelica class path of the model.
 
-        Returns::
+        Returns:
 
             experiment --
                 Experiment class object.
@@ -419,13 +419,13 @@ class Workspace:
         """Creates an experiment.
         Returns an Experiment class object.
 
-        Parameters::
+        Parameters:
 
             definition --
                 An parametrized experiment definition class of type
                 modelon.impact.client.experiment_definition.SimpleExperimentDefinition.
 
-        Returns::
+        Returns:
 
             experiment --
                 Experiment class object.
@@ -455,14 +455,14 @@ class Workspace:
         """Exceutes an experiment.
         Returns an modelon.impact.client.operations.ExperimentOperation class object.
 
-        Parameters::
+        Parameters:
 
             definition --
                 An experiment definition class instance of
                 modelon.impact.client.experiment_definition.SimpleExperimentDefinition
                 or a dictionary object containing the definition.
 
-        Returns::
+        Returns:
 
             experiment_ops --
                 An modelon.impact.client.operations.ExperimentOperation class object.
@@ -543,7 +543,7 @@ class CustomFunction:
     def with_parameters(self, **modified):
         """Sets/updates the custom_function parameters for an experiment.
 
-        Parameters::
+        Parameters:
 
             parameters --
                 A keyworded, variable-length argument list of custom_function
@@ -577,7 +577,7 @@ class CustomFunction:
         """
         Return a modelon.impact.client.options.ExecutionOptions object.
 
-        Returns::
+        Returns:
 
             compiler_options --
                 A modelon.impact.client.options.ExecutionOptions object.
@@ -596,7 +596,7 @@ class CustomFunction:
         """
         Return a modelon.impact.client.options.ExecutionOptions object.
 
-        Returns::
+        Returns:
 
             runtime_options --
                 A modelon.impact.client.options.ExecutionOptions object.
@@ -615,7 +615,7 @@ class CustomFunction:
         """
         Return a modelon.impact.client.options.ExecutionOptions object.
 
-        Returns::
+        Returns:
 
             solver_options --
                 A modelon.impact.client.options.ExecutionOptions object.
@@ -634,7 +634,7 @@ class CustomFunction:
         """
         Return a modelon.impact.client.options.ExecutionOptions object.
 
-        Returns::
+        Returns:
 
             simulation_options --
                 A modelon.impact.client.options.ExecutionOptions object.
@@ -682,7 +682,7 @@ class Model:
         Returns an modelon.impact.client.operations.ModelExecutableOperation class
         object.
 
-        Parameters::
+        Parameters:
 
             compiler_options --
                 An compilation options class instance of
@@ -708,7 +708,7 @@ class Model:
                 Platform for FMU binary. Supported values are "auto", "win64", "win32"
                 or "linux64". Default: 'auto'.
 
-        Returns::
+        Returns:
 
             modelexecutableoperation --
                 An modelon.impact.client.operations.ModelExecutableOperation class
@@ -806,12 +806,12 @@ class ModelExecutable:
         """
         Returns True if the model has compiled successfully.
 
-        Returns::
+        Returns:
 
             True -> If model has compiled successfully.
             False -> If compilation process has failed.
 
-        Raises::
+        Raises:
 
             OperationNotCompleteError if compilation process is in progress.
             OperationFailureError if compilation process was cancelled.
@@ -832,12 +832,12 @@ class ModelExecutable:
         """
         Returns the compilation log object.
 
-        Returns::
+        Returns:
 
             log --
                 The compilation log object.
 
-        Raises::
+        Raises:
 
             OperationNotCompleteError if compilation process is in progress.
             OperationFailureError if compilation process was cancelled.
@@ -856,12 +856,12 @@ class ModelExecutable:
         """
         Returns a list of settable parameters for the FMU.
 
-        Returns::
+        Returns:
 
             settable_parameters --
                 A list of parameters than can be set on the FMU.
 
-        Raises::
+        Raises:
 
             OperationNotCompleteError if compilation process is in progress.
             OperationFailureError if compilation process has failed or was cancelled.
@@ -885,7 +885,7 @@ class ModelExecutable:
         """
         Returns a new experiment definition using this FMU.
 
-        Parameters::
+        Parameters:
 
             custom_function --
                 The custom function to use for this experiment.
@@ -923,13 +923,13 @@ class ModelExecutable:
         """Downloads an FMU binary that is compiled.
         Returns the local path to the downloaded FMU archive.
 
-        Parameters::
+        Parameters:
 
             path --
                 The local path to store the downloaded FMU. Default: None.
                 If no path is given, FMU will be downloaded in a temporary directory.
 
-        Returns::
+        Returns:
 
             path --
                 Local path to the downloaded FMU.
@@ -987,12 +987,12 @@ class Experiment:
         """
         Returns True if the FMU has executed successfully.
 
-        Returns::
+        Returns:
 
             True -> If execution process has completed successfully.
             False -> If execution process has failed.
 
-        Raises::
+        Raises:
 
             OperationNotCompleteError if simulation process is in progress.
             OperationFailureError if simulation process was cancelled.
@@ -1011,12 +1011,12 @@ class Experiment:
         """
         Returns a list of variables available in the result.
 
-        Returns::
+        Returns:
 
             variables --
                 An list of result variables.
 
-        Raises::
+        Raises:
 
             OperationNotCompleteError if simulation process is in progress.
             OperationFailureError if simulation process has failed or was cancelled.
@@ -1034,7 +1034,7 @@ class Experiment:
         """
         Returns a list of case objects for an experiment.
 
-        Returns::
+        Returns:
 
             cases --
                 An list of case objects.
@@ -1060,12 +1060,12 @@ class Experiment:
         """
         Returns a case object for a given case_id.
 
-        Parameters::
+        Parameters:
 
             case_id --
                 The case_id for the case.
 
-        Returns::
+        Returns:
 
             cases --
                 An case object.
@@ -1089,17 +1089,17 @@ class Experiment:
         Returns a dictionary containing the result trajectories
         for a list of result variables for all the cases.
 
-        Parameters::
+        Parameters:
 
             variables --
                 A list of result variables to fecth trajectories for.
 
-        Returns::
+        Returns:
 
             trajectory --
                 A dictionary object containing the result trajectories for all cases.
 
-        Raises::
+        Raises:
 
             OperationNotCompleteError if simulation process is in progress.
             OperationFailureError if simulation process was cancelled.
@@ -1184,7 +1184,7 @@ class Case:
         """
         Returns True if a case has completed successfully.
 
-        Returns::
+        Returns:
 
             True -> If the case has executed successfully.
             False -> If the case has failed execution.
@@ -1199,7 +1199,7 @@ class Case:
         """
         Returns the log class object for a finished case.
 
-        Returns::
+        Returns:
 
             log --
                 The case execution log class object.
@@ -1217,7 +1217,7 @@ class Case:
         """
         Returns the result stream and the file name for a finished case.
 
-        Returns::
+        Returns:
 
             result --
                 The result byte stream.
@@ -1226,7 +1226,7 @@ class Case:
                 The filename for the result. This name could be used to write the
                 result stream.
 
-        Raises::
+        Raises:
 
             OperationNotCompleteError if simulation process is in progress.
             OperationFailureError if simulation process has failed or was cancelled.
@@ -1249,12 +1249,12 @@ class Case:
         """
         Returns result(Mapping) object containing the result trajectories.
 
-        Returns::
+        Returns:
 
             trajectories --
                 A result trajectory dictionary object.
 
-        Raises::
+        Raises:
 
             OperationNotCompleteError if simulation process is in progress.
             OperationFailureError if simulation process was cancelled.

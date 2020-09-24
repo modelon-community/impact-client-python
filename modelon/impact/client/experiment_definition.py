@@ -84,7 +84,7 @@ class SimpleExperimentDefinition(BaseExperimentDefinition):
         simulation_log_level="WARNING",
     ):
         """
-        Parameters::
+        Parameters:
 
             fmu --
                 The FMU to be excecuted for this experiment.
@@ -140,7 +140,7 @@ class SimpleExperimentDefinition(BaseExperimentDefinition):
     def with_modifiers(self, modifiers=None, **modifiers_kwargs):
         """ Sets the modifiers parameters for an experiment.
 
-        Parameters::
+        Parameters:
 
             modifiers --
                 A dictionary of variable modifiers. Could be used if
@@ -179,7 +179,7 @@ class SimpleExperimentDefinition(BaseExperimentDefinition):
     def to_dict(self):
         """ Returns the experiment definition as a dictionary.
 
-        Returns::
+        Returns:
 
             definition_dict --
                 A dictionary containing the experiment definition.

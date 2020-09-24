@@ -7,9 +7,9 @@ simulation on a given model and plot the results.
 Initializing the client
 -----------------------
 
-Before we setup our workspace and execute our dynamic simulation workflow we need to initialize the 
+Before we set up our workspace and execute our dynamic simulation workflow we need to initialize the 
 client with the impact domain. An API key is required to be autentiate our login to the client. Refer
-to the steps listed in the :doc:`Setup <setup>` section to configure an api key::
+to the steps listed in the :doc:`Setup <setup>` section to configure an API key::
 
    from modelon.impact.client import Client
 
@@ -33,7 +33,7 @@ Choosing analysis type
 
 Once we have our ``Workspace`` class object, we need to choose an analysis method to fetch the different options available
 to configure for our compilation and simulation steps. The analysis methods in Modelon Impact are referred to as custom functions.
-There are different analysis methods, one can choose from depending on the workflow we intend to accomplish.
+There are different analysis methods one can choose from depending on the workflow we intend to accomplish.
 We could fetch a list of available analysis methods and print them by executing::
 
    custom_functions = [
@@ -43,14 +43,14 @@ We could fetch a list of available analysis methods and print them by executing:
 
 By default, there are three available custom functions shipped with Impact namely ``steady state``, ``dynamic`` and ``linearize``.
 It is also possible to create an analysis function for a specific need by following the documentation available in the 
-``Help Center`` in Modelon Impact. For this tutorial, we will use the ``dynamic`` custom function::
+Help Center in Modelon Impact (located at <impact url>/help). For this tutorial, we will use the ``dynamic`` custom function::
 
    dynamic = workspace.get_custom_function('dynamic')
 
 This will return an instance of a ``dynamic`` ``CustomFunction`` class object.
 
-Setup model for analysis
-------------------------
+Set up model for analysis
+-------------------------
 
 We can either choose a model from a library pre-loaded in Modelon Impact or upload a model to our workspace. To upload
 a model to our workspace, we can pass the path to the modelica file::
@@ -94,8 +94,7 @@ With the options now defined we can pass them to the ``compile()`` method::
 
    fmu = model.compile(compiler_options=compiler_options_modified,runtime_options=runtime_options).wait()
 
-Note:
-#####
+**Note:**
 
 We have called the ``wait()`` method after the ``compile()`` method to ensure that the compilation process reaches completion.
 If ``wait()`` is not called on the model an ``Operation`` object is returned and ``is_completed`` can be used to check the status of the 
@@ -105,7 +104,7 @@ compilation. Calling the ``wait()`` method returns a ``ModelExecutable`` object 
 Setting up an experiment
 ------------------------
 
-With the ``model`` now compiled as an FMU, we could use it to setup an experiment by defining a ``SimpleExperimentDefinition``
+With the ``model`` now compiled as an FMU, we could use it to set up an experiment by defining a ``SimpleExperimentDefinition``
 class with our analysis specific parametrization.
 
 This could be done by either creating a ``SimpleExperimentDefinition`` class by passing the fmu and the ``dynamic`` custom
@@ -120,7 +119,7 @@ object as an argument::
 
    experiment_definition = fmu.new_experiment_definition(dynamic)
 
-This would again return a ``SimpleExperimentDefinition`` clas object
+This would again return a ``SimpleExperimentDefinition`` class object
 
 To override the default parameters for the ``dynamic`` simulation workflow, call the ``with_parameters()``
 method on the ``dynamic`` custom function class::
@@ -146,7 +145,7 @@ They can be set in a way similar to the compiler_options::
 Setting up a series of simulations
 ----------------------------------
 
-The ``experiment_definition`` created could be modified to setup a series of simulations by specifying the
+The ``experiment_definition`` created could be modified to set up a series of simulations by specifying the
 the parameter to sweep and the range by calling the ``with_modifiers()`` method on the ``experiment_definition``::
 
    from modelon.impact.client import Range
@@ -154,14 +153,14 @@ the parameter to sweep and the range by calling the ``with_modifiers()`` method 
    experiment_definition = experiment_definition.with_modifiers({'PI.k': Range(10, 100, 3)})
 
 The ``Range()`` operator class is used to specify the ``start_value``, ``end_value`` and ``no_of_steps`` for the parameter to sweep.
-The parametrization in the examples above would configure a set of three simulation cases for the fmu with ``3`` equdistant
+The parametrization in the examples above would configure a set of three simulation cases for the fmu with ``3`` equidistant
 values set for the ``PI.k`` parameter, with a start value of ``10`` and an end value of ``100``.
 
 
 Executing the experiment
 ------------------------
 
-The experiment definition setup can now be passed to the ``execute()`` function:: 
+The experiment definition set up can now be passed to the ``execute()`` function:: 
 
    exp = workspace.execute(experiment_definition).wait()
 
@@ -178,7 +177,7 @@ method can be called on the experiment and further it could be checked if the ca
 the ``is_successful()`` method on the case. The ``get_trajectories()`` function can be called on the individual ``case`` objects to 
 fetch the ``Result`` class object for that specific case.
 
-To plot the results, the variable names of intrest could be passed as index variables on the ``Result`` class object:: 
+To plot the results, the variable names of interest could be passed as index variables on the ``Result`` class object:: 
 
    import matplotlib.pyplot as plt
 

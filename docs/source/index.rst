@@ -6,10 +6,10 @@ Modelon Impact Client
 Python companion library for Modelon Impact that wraps its REST API framework and helps with:
 
 1. Authenticate users against Modelon Impact
-2. Compiling models on server and downloading them as FMUs
+2. Compiling models on the server and downloading them as FMUs
 3. Creating and automating custom work-flows
-4. Defining  and executing simulations on Impact server
-5. Fetching results and post-processing them using custom python scripts 
+4. Defining and executing simulations on the Impact server
+5. Fetching results and post-processing them using custom python scripts
 
 
 .. image:: images/client-server.svg

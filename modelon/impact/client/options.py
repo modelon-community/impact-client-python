@@ -36,7 +36,7 @@ class ExecutionOptions(Mapping):
     def with_values(self, **modified):
         """ Sets/updates the compiler options.
 
-        Parameters::
+        Parameters:
 
             parameters --
                 A keyworded, variable-length argument list of compiler

@@ -81,16 +81,15 @@ A workflow to fetch artifacts to do some analysis locally could be accomplished 
    model = workspace.get_model("Modelica.Blocks.Examples.PID_Controller")
    fmu = model.compile({'c_compiler': 'gcc'}).wait().download()
 
-   # Use PyFMI or other tool that works with FMUs
+   # Use PyFMI or other tools that work with FMUs
    from pyfmi import load_fmu
 
    m = load_fmu(fmu)
    res = m.simulate()
    ...
 
-Note:
-#####
+**Note:**
 
-The OS running the Impact server must match environment that runs the compiled FMU. This is neccessary as the binaries
+The OS running the Impact server must match the environment that runs the compiled FMU. This is necessary as the binaries
 packaged with the FMU are based on the platform generating the FMU. For example, if the Impact server is running Linux 
 the binary in the downloaded FMU is compiled for Linux. The downloaded FMU can then not be simulated on Windows.

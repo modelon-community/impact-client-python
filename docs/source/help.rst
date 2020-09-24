@@ -6,7 +6,7 @@ About Modelon
 
 Modelon provides software solutions and expert services to organizations that use model-based simulation tools 
 to design and develop technical systems. Modelon’s libraries, solver, and deployment solutions are leading products 
-available in the market today for modeling, simulation and optimization. Our products enable companies to focus on 
+available in the market today for modeling, simulation, and optimization. Our products enable companies to focus on 
 delivering a unified picture of product system interaction and performance – from product concept to operation.
 
 Modelon is an industry leader in model-based systems engineering with a goal of advancing open-standard technologies, 
