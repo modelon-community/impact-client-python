@@ -113,7 +113,8 @@ def test_client_login_api_key_missing(sem_ver_check):
     )
 
     assert_login_called(
-        adapter=sem_ver_check.adapter, body={},
+        adapter=sem_ver_check.adapter,
+        body={},
     )
 
 

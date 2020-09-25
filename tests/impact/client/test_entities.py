@@ -113,7 +113,11 @@ class TestWorkspace:
 class TestCustomFunction:
     def test_custom_function_with_parameters_ok(self, custom_function):
         new = custom_function.with_parameters(
-            p1=3.4, p2=False, p3='då', p4='new string', p5=4,
+            p1=3.4,
+            p2=False,
+            p3='då',
+            p4='new string',
+            p5=4,
         )
         assert new.parameter_values == {
             'p1': 3.4,
@@ -137,7 +141,8 @@ class TestCustomFunction:
         pytest.raises(ValueError, custom_function.with_parameters, p2='not a boolean')
 
     def test_custom_function_with_parameters_cannot_set_enumeration_type(
-        self, custom_function,
+        self,
+        custom_function,
     ):
         pytest.raises(ValueError, custom_function.with_parameters, p3=4.6)
 
@@ -147,7 +152,8 @@ class TestCustomFunction:
         pytest.raises(ValueError, custom_function.with_parameters, p4=4.6)
 
     def test_custom_function_with_parameters_cannot_set_enumeration_value(
-        self, custom_function,
+        self,
+        custom_function,
     ):
         pytest.raises(ValueError, custom_function.with_parameters, p3='not in values')
 
@@ -202,14 +208,16 @@ class TestModelExecutable:
     def test_compilation_running(self, fmu_compile_running):
         assert fmu_compile_running.info["run_info"]["status"] == "not_started"
         pytest.raises(
-            exceptions.OperationNotCompleteError, fmu_compile_running.get_log,
+            exceptions.OperationNotCompleteError,
+            fmu_compile_running.get_log,
         )
         pytest.raises(
             exceptions.OperationNotCompleteError,
             fmu_compile_running.get_settable_parameters,
         )
         pytest.raises(
-            exceptions.OperationNotCompleteError, fmu_compile_running.is_successful,
+            exceptions.OperationNotCompleteError,
+            fmu_compile_running.is_successful,
         )
 
     def test_compilation_failed(self, fmu_compile_failed):
@@ -224,10 +232,12 @@ class TestModelExecutable:
     def test_compilation_cancelled(self, fmu_compile_cancelled):
         assert fmu_compile_cancelled.info["run_info"]["status"] == "cancelled"
         pytest.raises(
-            exceptions.OperationFailureError, fmu_compile_cancelled.is_successful,
+            exceptions.OperationFailureError,
+            fmu_compile_cancelled.is_successful,
         )
         pytest.raises(
-            exceptions.OperationFailureError, fmu_compile_cancelled.get_log,
+            exceptions.OperationFailureError,
+            fmu_compile_cancelled.get_log,
         )
         pytest.raises(
             exceptions.OperationFailureError,
@@ -290,7 +300,8 @@ class TestExperiment:
     def test_running_execution(self, running_experiment):
         assert running_experiment.info["run_info"]["status"] == "not_started"
         pytest.raises(
-            exceptions.OperationNotCompleteError, running_experiment.get_variables,
+            exceptions.OperationNotCompleteError,
+            running_experiment.get_variables,
         )
         pytest.raises(
             exceptions.OperationNotCompleteError,
@@ -316,10 +327,12 @@ class TestExperiment:
             "case_1", "Workspace", "Test"
         )
         pytest.raises(
-            exceptions.OperationFailureError, cancelled_experiment.is_successful,
+            exceptions.OperationFailureError,
+            cancelled_experiment.is_successful,
         )
         pytest.raises(
-            exceptions.OperationFailureError, cancelled_experiment.get_variables,
+            exceptions.OperationFailureError,
+            cancelled_experiment.get_variables,
         )
         pytest.raises(
             exceptions.OperationFailureError,
@@ -361,7 +374,8 @@ class TestCase:
         assert failed_case.info["run_info"]["status"] == "failed"
         assert not failed_case.is_successful()
         pytest.raises(
-            exceptions.OperationFailureError, failed_case.get_result,
+            exceptions.OperationFailureError,
+            failed_case.get_result,
         )
         assert failed_case.get_trajectories()["inertia.I"] == [1, 2, 3, 4]
 

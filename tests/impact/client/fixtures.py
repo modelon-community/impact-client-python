@@ -37,7 +37,9 @@ def with_exception(mock_server_base, method, url, exce):
 
 def with_json_route_no_resp(mock_server_base, method, url, status_code=200):
     mock_server_base.adapter.register_uri(
-        method, f'{mock_server_base.url}/{url}', status_code=status_code,
+        method,
+        f'{mock_server_base.url}/{url}',
+        status_code=status_code,
     )
     return mock_server_base
 
@@ -636,7 +638,11 @@ def workspace_execute_running():
     ws_service.experiment_execute.return_value = 'test_exp'
     exp_service.experiment_execute.return_value = "pid_2009"
     exp_service.execute_status.return_value = {"status": "running"}
-    return Workspace('AwesomeWorkspace', ws_service, experiment_service=exp_service,)
+    return Workspace(
+        'AwesomeWorkspace',
+        ws_service,
+        experiment_service=exp_service,
+    )
 
 
 @pytest.fixture
@@ -647,7 +653,11 @@ def workspace_execute_cancelled():
     ws_service.experiment_execute.return_value = 'test_exp'
     exp_service.experiment_execute.return_value = "pid_2009"
     exp_service.execute_status.return_value = {"status": "cancelled"}
-    return Workspace('AwesomeWorkspace', ws_service, experiment_service=exp_service,)
+    return Workspace(
+        'AwesomeWorkspace',
+        ws_service,
+        experiment_service=exp_service,
+    )
 
 
 @pytest.fixture
