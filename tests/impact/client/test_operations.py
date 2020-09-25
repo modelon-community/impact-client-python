@@ -49,7 +49,8 @@ class TestModelExecutableOperation:
 
 class TestExperimentOperation:
     def test_execute_wait_done(
-        self, workspace,
+        self,
+        workspace,
     ):
         exp = workspace.execute({})
         assert exp.id == "pid_2009"

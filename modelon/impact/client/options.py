@@ -34,7 +34,7 @@ class ExecutionOptions(Mapping):
         return self._values.__len__()
 
     def with_values(self, **modified):
-        """ Sets/updates the compiler options.
+        """Sets/updates the compiler options.
 
         Parameters:
 

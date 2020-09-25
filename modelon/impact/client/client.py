@@ -1,3 +1,4 @@
+"""This module provides an entry-point to the client APIs."""
 import logging
 import modelon.impact.client.configuration
 import modelon.impact.client.entities
@@ -12,6 +13,43 @@ logger = logging.getLogger(__name__)
 
 
 class Client:
+    """This Class contains methods to authenticate logins, create new workspaces and
+    upload or fetch existing workspaces.
+
+    Parameters:
+
+        url --
+            The URL for Modelon Impact client host. Defaults to the value specified
+            by env variable 'MODELON_IMPACT_CLIENT_URL' if set else uses the URL
+            'http://localhost:8080/'.
+
+        interactive --
+            True, if running an interactive python shell. Defaults to the value
+            specified by env variable 'MODELON_IMPACT_CLIENT_INTERACTIVE' if set else
+            False.
+
+        api_key --
+            The API token. This could be set as a keyword argument,
+            'MODELON_IMPACT_CLIENT_API_KEY', credentials file or entered in the
+            interactive mode. The recommended way is to store it in an env variable or
+            a credentials file.
+
+        credentail_manager --
+            Help class for managing credentials for the Impact server. Default is None
+            and then the default credential manager is used.
+
+        context --
+            Request contexts to pass data alongside a HTTP request. Default is None and
+            then the default context is used.
+
+    Examples::
+        from modelon.impact.client import Client
+
+        client = Client(api_key=my_api_key)
+        client = Client(url=impact_url, interactive=True)
+        client = Client(url=impact_url, api_key='new-api-key', interactive=True)
+    """
+
     _SUPPORTED_VERSION_RANGE = ">=1.4.1,<2.0.0"
 
     def __init__(
@@ -130,7 +168,7 @@ class Client:
         ]
 
     def create_workspace(self, workspace_id):
-        """ Creates and returns a Workspace.
+        """Creates and returns a Workspace.
         Returns a workspace class object.
 
         Parameters:
@@ -157,7 +195,7 @@ class Client:
         )
 
     def upload_workspace(self, workspace_id, path_to_workspace):
-        """ Uploads a Workspace
+        """Uploads a Workspace
         Returns the workspace class object of the imported workspace.
 
         Parameters:

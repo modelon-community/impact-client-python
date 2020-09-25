@@ -79,13 +79,14 @@ A workflow to fetch artifacts to do some analysis locally could be accomplished 
 
    # Compile and download model
    model = workspace.get_model("Modelica.Blocks.Examples.PID_Controller")
-   fmu = model.compile({'c_compiler': 'gcc'}).wait().download()
+   fmu = model.compile({'c_compiler': 'gcc'}).wait()
+   fmu_path = fmu.download()
 
    # Use PyFMI or other tools that work with FMUs
    from pyfmi import load_fmu
 
-   m = load_fmu(fmu)
-   res = m.simulate()
+   fmu_model = load_fmu(fmu_path)
+   res = fmu_model.simulate()
    ...
 
 **Note:**

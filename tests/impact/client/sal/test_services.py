@@ -238,7 +238,9 @@ class TestExperimentService:
             "finished_executions": 1,
             "total_executions": 2,
             "status": "running",
-            "progress": [{"message": "Simulating at 1.0", "percentage": 1},],
+            "progress": [
+                {"message": "Simulating at 1.0", "percentage": 1},
+            ],
         }
 
     def test_cancel_execute(self, cancel_execute):

@@ -590,7 +590,7 @@ class CustomFunction:
         options = self._custom_func_sal.custom_function_options_get(
             self._workspace_id, self.name
         )
-        return ExecutionOptions(options['compiler'], self.name, self._custom_func_sal)
+        return ExecutionOptions(options["compiler"], self.name, self._custom_func_sal)
 
     def get_runtime_options(self):
         """
@@ -609,7 +609,7 @@ class CustomFunction:
         options = self._custom_func_sal.custom_function_options_get(
             self._workspace_id, self.name
         )
-        return ExecutionOptions(options['runtime'], self.name, self._custom_func_sal)
+        return ExecutionOptions(options["runtime"], self.name, self._custom_func_sal)
 
     def get_solver_options(self):
         """
@@ -628,7 +628,7 @@ class CustomFunction:
         options = self._custom_func_sal.custom_function_options_get(
             self._workspace_id, self.name
         )
-        return ExecutionOptions(options['solver'], self.name, self._custom_func_sal)
+        return ExecutionOptions(options["solver"], self.name, self._custom_func_sal)
 
     def get_simulation_options(self):
         """
@@ -647,7 +647,7 @@ class CustomFunction:
         options = self._custom_func_sal.custom_function_options_get(
             self._workspace_id, self.name
         )
-        return ExecutionOptions(options['simulation'], self.name, self._custom_func_sal)
+        return ExecutionOptions(options["simulation"], self.name, self._custom_func_sal)
 
 
 class Model:

@@ -46,6 +46,27 @@ class Operator:
 class Range(Operator):
     """
     Range operator class for parameterizing batch runs.
+
+    Parameters:
+
+        start_value --
+            The start value for the sweep parameter.
+
+        end_value --
+            The end value for the sweep parameter.
+
+        no_of_steps --
+            The number of steps to intermediate steps to take between start_value
+            and end_value.
+
+    Examples::
+
+        from modelon.impact.client import Range
+
+        fmu = model.compile().wait()
+        experiment_definition = fmu.new_experiment_definition(
+            custom_function).with_modifiers({'inertia1.J': 2,
+            'inertia2.J': Range(0.1, 0.5, 3)}, k=2, w=7)
     """
 
     def __init__(self, start_value, end_value, no_of_steps):
@@ -73,6 +94,37 @@ class BaseExperimentDefinition(ABC):
 class SimpleExperimentDefinition(BaseExperimentDefinition):
     """
     A simple experiment definition class for defining experiements.
+
+    Parameters:
+
+        fmu --
+            The FMU to be excecuted for this experiment.
+
+        custom_function --
+            The custom function to use for this experiment.
+
+        solver_options --
+            The solver options to use for this experiment. By default the options
+            is set to None, which means the default options for the
+            custom_function input is used.
+
+        simulation_options --
+            The simulation_options to use for this experiment. By default the
+            options is set to None, which means the default options for the
+            custom_function input is used.
+
+        simulation_log_level --
+            Simulation log level for this experiment. Default is 'WARNING'.
+
+    Examples::
+
+        fmu = model.compile().wait()
+        simulation_options = custom_function.get_simulation_options()
+        .with_values(ncp=500)
+        solver_options = {'atol':1e-8}
+        simulate_def = fmu.new_experiment_definition(custom_function,
+        solver_options, simulation_options)
+        simulate_def.to_dict()
     """
 
     def __init__(
@@ -83,28 +135,6 @@ class SimpleExperimentDefinition(BaseExperimentDefinition):
         simulation_options=None,
         simulation_log_level="WARNING",
     ):
-        """
-        Parameters:
-
-            fmu --
-                The FMU to be excecuted for this experiment.
-
-            custom_function --
-                The custom function to use for this experiment.
-
-            solver_options --
-                The solver options to use for this experiment. By default the options
-                is set to None, which means the default options for the
-                custom_function input is used.
-
-            simulation_options --
-                The simulation_options to use for this experiment. By default the
-                options is set to None, which means the default options for the
-                custom_function input is used.
-
-            simulation_log_level --
-                Simulation log level for this experiment. Default is 'WARNING'.
-        """
         _assert_valid_args(fmu, custom_function, solver_options, simulation_options)
         _assert_successful_compilation(fmu)
         self.fmu = fmu
@@ -138,7 +168,7 @@ class SimpleExperimentDefinition(BaseExperimentDefinition):
             )
 
     def with_modifiers(self, modifiers=None, **modifiers_kwargs):
-        """ Sets the modifiers parameters for an experiment.
+        """Sets the modifiers parameters for an experiment.
 
         Parameters:
 
@@ -177,7 +207,7 @@ class SimpleExperimentDefinition(BaseExperimentDefinition):
         return new
 
     def to_dict(self):
-        """ Returns the experiment definition as a dictionary.
+        """Returns the experiment definition as a dictionary.
 
         Returns:
 
