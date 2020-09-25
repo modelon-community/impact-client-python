@@ -1,3 +1,10 @@
+# [1.0.0-beta.47](https://github.com/modelon-community/impact-client-python/compare/v1.0.0-beta.46...v1.0.0-beta.47) (2020-09-25)
+
+
+### Bug Fixes
+
+* fix bad kerning in svg file ([fe85eb6](https://github.com/modelon-community/impact-client-python/commit/fe85eb6c94f7e47eb2cd98c3df9755c04c9ef70e))
+
 # [1.0.0-beta.46](https://github.com/modelon-community/impact-client-python/compare/v1.0.0-beta.45...v1.0.0-beta.46) (2020-09-23)
 
 
