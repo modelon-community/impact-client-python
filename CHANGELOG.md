@@ -1,3 +1,10 @@
+# [1.0.0-beta.48](https://github.com/modelon-community/impact-client-python/compare/v1.0.0-beta.47...v1.0.0-beta.48) (2020-09-25)
+
+
+### Bug Fixes
+
+* Grammar/font fixes ([7ddd2bd](https://github.com/modelon-community/impact-client-python/commit/7ddd2bde116db4167ac995b77661a2cc3fc16dec))
+
 # [1.0.0-beta.47](https://github.com/modelon-community/impact-client-python/compare/v1.0.0-beta.46...v1.0.0-beta.47) (2020-09-25)
 
 
