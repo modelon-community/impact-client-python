@@ -2,6 +2,7 @@
 import logging
 import modelon.impact.client.configuration
 import modelon.impact.client.entities
+import modelon.impact.client.exceptions
 import modelon.impact.client.sal.service
 import modelon.impact.client.sal.exceptions
 import modelon.impact.client.credential_manager
@@ -100,7 +101,16 @@ class Client:
         else:
             login_data = {"secretKey": api_key}
 
-        self._sal.api_login(login_data)
+        try:
+            self._sal.api_login(login_data)
+        except modelon.impact.client.sal.exceptions.HTTPError as error:
+            if interactive:
+                self._credentials.delete_key()
+            raise modelon.impact.client.exceptions.InvalidAPIKeyError(
+                "The provided API key is not valid. If the API key has been set as an "
+                "environment variable, it must be replaced"
+            ) from error
+
         if interactive:
             # Save the api_key for next time if
             # running interactively and login was successfuly

@@ -20,3 +20,7 @@ class OperationNotCompleteError(Error):
 
 class OperationCompleteError(Error):
     pass
+
+
+class InvalidAPIKeyError(Error):
+    pass
