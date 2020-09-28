@@ -123,6 +123,7 @@ def test_client_login_interactive_saves_key(sem_ver_check):
 def test_client_login_fail_interactive_dont_save_key(_, login_fails):
     cred_manager = unittest.mock.MagicMock()
     cred_manager.get_key.return_value = 'test_client_login_fails'
+    cred_manager.get_key_from_prompt.return_value = 'test_client_login_still_fails'
 
     pytest.raises(
         modelon.impact.client.sal.exceptions.HTTPError,
