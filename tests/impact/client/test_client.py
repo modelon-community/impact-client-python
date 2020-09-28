@@ -79,7 +79,7 @@ def test_client_login_api_key_from_credential_manager(sem_ver_check):
     modelon.impact.client.Client(
         url=sem_ver_check.url,
         context=sem_ver_check.context,
-        credentail_manager=cred_manager,
+        credential_manager=cred_manager,
     )
 
     assert_login_called(
@@ -94,10 +94,61 @@ def test_client_login_api_key_missing(sem_ver_check):
     modelon.impact.client.Client(
         url=sem_ver_check.url,
         context=sem_ver_check.context,
-        credentail_manager=cred_manager,
+        credential_manager=cred_manager,
     )
 
     assert_login_called(
         adapter=sem_ver_check.adapter,
         body={},
     )
+
+
+def test_client_login_interactive_saves_key(sem_ver_check):
+    cred_manager = unittest.mock.MagicMock()
+    cred_manager.get_key.return_value = 'test_client_login_interactive_saves_key'
+
+    modelon.impact.client.Client(
+        url=sem_ver_check.url,
+        context=sem_ver_check.context,
+        credential_manager=cred_manager,
+        interactive=True,
+    )
+
+    cred_manager.write_key_to_file.assert_called_with(
+        'test_client_login_interactive_saves_key'
+    )
+
+
+@unittest.mock.patch.object(modelon.impact.client.Client, '_validate_compatible_api_version')
+def test_client_login_fail_interactive_dont_save_key(_, login_fails):
+    cred_manager = unittest.mock.MagicMock()
+    cred_manager.get_key.return_value = 'test_client_login_fails'
+    cred_manager.get_key_from_prompt.return_value = 'test_client_login_still_fails'
+
+    pytest.raises(
+        modelon.impact.client.sal.exceptions.HTTPError,
+        modelon.impact.client.Client,
+        url=login_fails.url,
+        context=login_fails.context,
+        credential_manager=cred_manager,
+        interactive=True,
+    )
+
+    cred_manager.write_key_to_file.assert_not_called()
+
+@unittest.mock.patch.object(modelon.impact.client.Client, '_validate_compatible_api_version')
+def test_client_login_fail_lets_user_enter_new_key(_, login_fails):
+    cred_manager = unittest.mock.MagicMock()
+    cred_manager.get_key.return_value = 'test_client_login_fails'
+    cred_manager.get_key_from_prompt.return_value = 'test_client_login_still_fails'
+
+    pytest.raises(
+        modelon.impact.client.sal.exceptions.HTTPError,
+        modelon.impact.client.Client,
+        url=login_fails.url,
+        context=login_fails.context,
+        credential_manager=cred_manager,
+        interactive=True
+    )
+
+    cred_manager.get_key_from_prompt.assert_called()

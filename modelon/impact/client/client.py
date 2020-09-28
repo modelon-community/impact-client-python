@@ -2,6 +2,7 @@
 import logging
 import modelon.impact.client.configuration
 import modelon.impact.client.entities
+import modelon.impact.client.exceptions
 import modelon.impact.client.sal.service
 import modelon.impact.client.sal.exceptions
 import modelon.impact.client.credential_manager
@@ -28,7 +29,7 @@ class Client:
             specified by env variable 'MODELON_IMPACT_CLIENT_INTERACTIVE' if set else
             False.
 
-        credentail_manager --
+        credential_manager --
             Help class for managing credentials for the Impact server. Default is None
             and then the default credential manager is used.
 
@@ -46,11 +47,7 @@ class Client:
     _SUPPORTED_VERSION_RANGE = ">=1.4.1,<2.0.0"
 
     def __init__(
-        self,
-        url=None,
-        interactive=None,
-        credentail_manager=None,
-        context=None,
+        self, url=None, interactive=None, credential_manager=None, context=None,
     ):
         if url is None:
             url = modelon.impact.client.configuration.get_client_url()
@@ -58,17 +55,29 @@ class Client:
         if interactive is None:
             interactive = modelon.impact.client.configuration.get_client_interactive()
 
-        if credentail_manager is None:
-            credentail_manager = (
+        if credential_manager is None:
+            credential_manager = (
                 modelon.impact.client.credential_manager.CredentialManager()
             )
 
         self.uri = modelon.impact.client.sal.service.URI(url)
         self._sal = modelon.impact.client.sal.service.Service(self.uri, context)
-        self._credentials = credentail_manager
+        self._credentials = credential_manager
+        self._api_key = None
 
         self._validate_compatible_api_version()
-        self._authenticate_against_api(interactive)
+
+        try:
+            self._authenticate_against_api(interactive)
+        except modelon.impact.client.sal.exceptions.HTTPError:
+            if interactive:
+                logger.warning(
+                    "The provided API key is not valid, please enter a new key"
+                )
+                self._api_key = self._credentials.get_key_from_prompt()
+                self._authenticate_against_api(interactive)
+            else:
+                raise
 
     def _validate_compatible_api_version(self):
         try:
@@ -89,22 +98,23 @@ class Client:
 
     def _authenticate_against_api(self, interactive):
 
-        api_key = self._credentials.get_key(interactive=interactive)
+        if self._api_key is None:
+            self._api_key = self._credentials.get_key(interactive=interactive)
 
-        if api_key is None:
+        if self._api_key is None:
             logger.warning(
                 "No API key could be found, will log in as anonymous user. "
                 "Permissions may be limited"
             )
             login_data = {}
         else:
-            login_data = {"secretKey": api_key}
+            login_data = {"secretKey": self._api_key}
 
         self._sal.api_login(login_data)
         if interactive:
             # Save the api_key for next time if
             # running interactively and login was successfuly
-            self._credentials.write_key_to_file(api_key)
+            self._credentials.write_key_to_file(self._api_key)
 
     def get_workspace(self, workspace_id):
         """

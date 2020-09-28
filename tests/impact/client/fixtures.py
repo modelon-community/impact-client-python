@@ -128,7 +128,7 @@ def sem_ver_check(mock_server_base):
 def login_fails(mock_server_base):
     json = {'error': {'message': 'no authroization', 'code': 123}}
 
-    return with_json_route(mock_server_base, 'GET', 'api/', json, 401)
+    return with_json_route(mock_server_base, 'POST', 'api/login', json, 401)
 
 
 @pytest.fixture
