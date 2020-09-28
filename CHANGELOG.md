@@ -1,3 +1,10 @@
+# [1.0.0-beta.50](https://github.com/modelon-community/impact-client-python/compare/v1.0.0-beta.49...v1.0.0-beta.50) (2020-09-28)
+
+
+### Bug Fixes
+
+* delete invalid api keys to let user reenter new ones ([#61](https://github.com/modelon-community/impact-client-python/issues/61)) ([f1c71af](https://github.com/modelon-community/impact-client-python/commit/f1c71afd31006628768d08dff77a0e4cd6c72fa5))
+
 # [1.0.0-beta.49](https://github.com/modelon-community/impact-client-python/compare/v1.0.0-beta.48...v1.0.0-beta.49) (2020-09-28)
 
 
