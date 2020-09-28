@@ -79,7 +79,7 @@ def test_client_login_api_key_from_credential_manager(sem_ver_check):
     modelon.impact.client.Client(
         url=sem_ver_check.url,
         context=sem_ver_check.context,
-        credentail_manager=cred_manager,
+        credential_manager=cred_manager,
     )
 
     assert_login_called(
@@ -94,7 +94,7 @@ def test_client_login_api_key_missing(sem_ver_check):
     modelon.impact.client.Client(
         url=sem_ver_check.url,
         context=sem_ver_check.context,
-        credentail_manager=cred_manager,
+        credential_manager=cred_manager,
     )
 
     assert_login_called(
@@ -110,7 +110,7 @@ def test_client_login_interactive_saves_key(sem_ver_check):
     modelon.impact.client.Client(
         url=sem_ver_check.url,
         context=sem_ver_check.context,
-        credentail_manager=cred_manager,
+        credential_manager=cred_manager,
         interactive=True,
     )
 
@@ -129,7 +129,7 @@ def test_client_login_fail_interactive_dont_save_key(_, login_fails):
         modelon.impact.client.Client,
         url=login_fails.url,
         context=login_fails.context,
-        credentail_manager=cred_manager,
+        credential_manager=cred_manager,
         interactive=True,
     )
 
@@ -146,7 +146,7 @@ def test_client_login_fail_lets_user_enter_new_key(_, login_fails):
         modelon.impact.client.Client,
         url=login_fails.url,
         context=login_fails.context,
-        credentail_manager=cred_manager,
+        credential_manager=cred_manager,
         interactive=True
     )
 

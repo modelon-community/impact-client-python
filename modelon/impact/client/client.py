@@ -29,7 +29,7 @@ class Client:
             specified by env variable 'MODELON_IMPACT_CLIENT_INTERACTIVE' if set else
             False.
 
-        credentail_manager --
+        credential_manager --
             Help class for managing credentials for the Impact server. Default is None
             and then the default credential manager is used.
 
@@ -47,7 +47,7 @@ class Client:
     _SUPPORTED_VERSION_RANGE = ">=1.4.1,<2.0.0"
 
     def __init__(
-        self, url=None, interactive=None, credentail_manager=None, context=None,
+        self, url=None, interactive=None, credential_manager=None, context=None,
     ):
         if url is None:
             url = modelon.impact.client.configuration.get_client_url()
@@ -55,14 +55,14 @@ class Client:
         if interactive is None:
             interactive = modelon.impact.client.configuration.get_client_interactive()
 
-        if credentail_manager is None:
-            credentail_manager = (
+        if credential_manager is None:
+            credential_manager = (
                 modelon.impact.client.credential_manager.CredentialManager()
             )
 
         self.uri = modelon.impact.client.sal.service.URI(url)
         self._sal = modelon.impact.client.sal.service.Service(self.uri, context)
-        self._credentials = credentail_manager
+        self._credentials = credential_manager
 
         self._validate_compatible_api_version()
 
