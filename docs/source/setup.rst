@@ -21,31 +21,13 @@ button. This will delete the old key, so any application that uses it must have 
 keys updated to work.
 
 There are several ways to use the API key, depending on how it is stored. It can either
-be set as an argument when the client is initialized, set as an environment variable,
-saved in a key file or entered interactively.
-
-
-Initializer argument
-####################
-
-When initializing the client, you may specify the optional keyword argument ``api_key``
-to specify which key to use.
-
-.. code-block:: python
-
-    from modelon.impact.client import Client
-
-    client = Client(api_key=my_api_key)
-
-With this method, the key can be stored and retrieved in any way. Remember not to store
-the API key in your source code file.
+set as an environment variable, saved in a key file or entered interactively.
 
 
 Environment variable
 ####################
 
-If the ``api_key`` argument is not specified in the initializer, it may be set as the
-environment variable ``MODELON_IMPACT_CLIENT_API_KEY``.
+The ``api_key`` can be set as the environment variable ``MODELON_IMPACT_CLIENT_API_KEY``.
 
 
 Credentials file
@@ -53,7 +35,7 @@ Credentials file
 
 It may also be stored in a credentials file named ``api.key`` located in the directory
 ``.impact`` in the users home folder. The client class will look for the key there if
-the key is neither passed as an argument nor set as an environment variable.
+the key is not set as an environment variable.
 
 This file is used by the client to store the key in interactive mode and might be
 overwritten, see :ref:`interactive-mode`.
@@ -79,15 +61,8 @@ prompt.
 When the key has been entered the first time, it will be stored in the credentials file
 to be used in future requests, and the prompt will not be shown again. If the key is
 changed, the file may be deleted which will cause the prompt to be shown again.
-Alternatively, the credentials file may be updated by specifying the ``api_key``
-argument in interactive mode:
 
-.. code-block:: pycon
-
-    >>>> client = Client(url=impact_url, api_key='new-api-key', interactive=True)
-
-This will remove the old key and add the new one to the credentials file. The stored
-API key can also be modified using the ``CredentialManager`` class.
+The stored API key can also be modified using the ``CredentialManager`` class.
 
 .. code-block:: pycon
 
