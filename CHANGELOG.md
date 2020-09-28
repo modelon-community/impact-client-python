@@ -1,3 +1,10 @@
+# [1.0.0-beta.49](https://github.com/modelon-community/impact-client-python/compare/v1.0.0-beta.48...v1.0.0-beta.49) (2020-09-28)
+
+
+### Bug Fixes
+
+* Avoid users to hard-code api keys ([85d0a63](https://github.com/modelon-community/impact-client-python/commit/85d0a6362d8c0726fb192b2a1583c7070814f08f))
+
 # [1.0.0-beta.48](https://github.com/modelon-community/impact-client-python/compare/v1.0.0-beta.47...v1.0.0-beta.48) (2020-09-25)
 
 
