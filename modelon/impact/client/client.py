@@ -47,11 +47,7 @@ class Client:
     _SUPPORTED_VERSION_RANGE = ">=1.4.1,<2.0.0"
 
     def __init__(
-        self,
-        url=None,
-        interactive=None,
-        credentail_manager=None,
-        context=None,
+        self, url=None, interactive=None, credentail_manager=None, context=None,
     ):
         if url is None:
             url = modelon.impact.client.configuration.get_client_url()

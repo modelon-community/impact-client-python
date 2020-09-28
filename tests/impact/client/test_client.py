@@ -105,11 +105,12 @@ def test_client_login_api_key_missing(sem_ver_check):
 
 def test_client_login_interactive_saves_key(sem_ver_check):
     cred_manager = unittest.mock.MagicMock()
+    cred_manager.get_key.return_value = 'test_client_login_interactive_saves_key'
+
     modelon.impact.client.Client(
         url=sem_ver_check.url,
         context=sem_ver_check.context,
         credentail_manager=cred_manager,
-        api_key='test_client_login_interactive_saves_key',
         interactive=True,
     )
 
@@ -121,7 +122,7 @@ def test_client_login_interactive_saves_key(sem_ver_check):
 @unittest.mock.patch.object(modelon.impact.client.Client, '_validate_compatible_api_version')
 def test_client_login_fail_interactive_dont_save_key(_, login_fails):
     cred_manager = unittest.mock.MagicMock()
-    cred_manager.get_key_from_prompt.return_value = 'test_client_login_still_fails'
+    cred_manager.get_key.return_value = 'test_client_login_fails'
 
     pytest.raises(
         modelon.impact.client.sal.exceptions.HTTPError,
@@ -129,7 +130,6 @@ def test_client_login_fail_interactive_dont_save_key(_, login_fails):
         url=login_fails.url,
         context=login_fails.context,
         credentail_manager=cred_manager,
-        api_key='test_client_login_fail_interactive_dont_save_key',
         interactive=True,
     )
 
@@ -138,6 +138,7 @@ def test_client_login_fail_interactive_dont_save_key(_, login_fails):
 @unittest.mock.patch.object(modelon.impact.client.Client, '_validate_compatible_api_version')
 def test_client_login_fail_lets_user_enter_new_key(_, login_fails):
     cred_manager = unittest.mock.MagicMock()
+    cred_manager.get_key.return_value = 'test_client_login_fails'
     cred_manager.get_key_from_prompt.return_value = 'test_client_login_still_fails'
 
     pytest.raises(
@@ -146,7 +147,6 @@ def test_client_login_fail_lets_user_enter_new_key(_, login_fails):
         url=login_fails.url,
         context=login_fails.context,
         credentail_manager=cred_manager,
-        api_key='test_client_login_fail_lets_user_enter_new_key',
         interactive=True
     )
 
