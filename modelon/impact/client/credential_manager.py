@@ -34,6 +34,3 @@ class CredentialManager:
             return api_key
 
         return self.get_key_from_prompt()
-
-    def delete_key(self):
-        self.write_key_to_file("")
