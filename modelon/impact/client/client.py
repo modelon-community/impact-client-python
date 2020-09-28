@@ -28,12 +28,6 @@ class Client:
             specified by env variable 'MODELON_IMPACT_CLIENT_INTERACTIVE' if set else
             False.
 
-        api_key --
-            The API token. This could be set as a keyword argument,
-            'MODELON_IMPACT_CLIENT_API_KEY', credentials file or entered in the
-            interactive mode. The recommended way is to store it in an env variable or
-            a credentials file.
-
         credentail_manager --
             Help class for managing credentials for the Impact server. Default is None
             and then the default credential manager is used.
@@ -45,9 +39,8 @@ class Client:
     Examples::
         from modelon.impact.client import Client
 
-        client = Client(api_key=my_api_key)
+        client = Client(url=impact_url)
         client = Client(url=impact_url, interactive=True)
-        client = Client(url=impact_url, api_key='new-api-key', interactive=True)
     """
 
     _SUPPORTED_VERSION_RANGE = ">=1.4.1,<2.0.0"
@@ -56,7 +49,6 @@ class Client:
         self,
         url=None,
         interactive=None,
-        api_key=None,
         credentail_manager=None,
         context=None,
     ):
@@ -71,7 +63,6 @@ class Client:
                 modelon.impact.client.credential_manager.CredentialManager()
             )
 
-        self.api_key = api_key
         self.uri = modelon.impact.client.sal.service.URI(url)
         self._sal = modelon.impact.client.sal.service.Service(self.uri, context)
         self._credentials = credentail_manager
@@ -97,23 +88,23 @@ class Client:
             )
 
     def _authenticate_against_api(self, interactive):
-        if self.api_key is None:
-            self.api_key = self._credentials.get_key(interactive=interactive)
 
-        if self.api_key is None:
+        api_key = self._credentials.get_key(interactive=interactive)
+
+        if api_key is None:
             logger.warning(
                 "No API key could be found, will log in as anonymous user. "
                 "Permissions may be limited"
             )
             login_data = {}
         else:
-            login_data = {"secretKey": self.api_key}
+            login_data = {"secretKey": api_key}
 
         self._sal.api_login(login_data)
         if interactive:
             # Save the api_key for next time if
             # running interactively and login was successfuly
-            self._credentials.write_key_to_file(self.api_key)
+            self._credentials.write_key_to_file(api_key)
 
     def get_workspace(self, workspace_id):
         """

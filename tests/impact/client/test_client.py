@@ -73,21 +73,6 @@ def assert_login_called(*, adapter, body):
     assert body == login_call.json()
 
 
-def test_client_login_given_api_key(sem_ver_check):
-    cred_manager = unittest.mock.MagicMock()
-    modelon.impact.client.Client(
-        url=sem_ver_check.url,
-        context=sem_ver_check.context,
-        api_key='test_client_login_given_api_key_key',
-        credentail_manager=cred_manager,
-    )
-
-    assert_login_called(
-        adapter=sem_ver_check.adapter,
-        body={"secretKey": "test_client_login_given_api_key_key"},
-    )
-
-
 def test_client_login_api_key_from_credential_manager(sem_ver_check):
     cred_manager = unittest.mock.MagicMock()
     cred_manager.get_key.return_value = 'test_from_credential_manager_key'
@@ -116,33 +101,3 @@ def test_client_login_api_key_missing(sem_ver_check):
         adapter=sem_ver_check.adapter,
         body={},
     )
-
-
-def test_client_login_interactive_saves_key(sem_ver_check):
-    cred_manager = unittest.mock.MagicMock()
-    modelon.impact.client.Client(
-        url=sem_ver_check.url,
-        context=sem_ver_check.context,
-        credentail_manager=cred_manager,
-        api_key='test_client_login_interactive_saves_key',
-        interactive=True,
-    )
-
-    cred_manager.write_key_to_file.assert_called_with(
-        'test_client_login_interactive_saves_key'
-    )
-
-
-def test_client_login_fail_interactive_dont_save_key(login_fails):
-    cred_manager = unittest.mock.MagicMock()
-    pytest.raises(
-        modelon.impact.client.sal.exceptions.HTTPError,
-        modelon.impact.client.Client,
-        url=login_fails.url,
-        context=login_fails.context,
-        credentail_manager=cred_manager,
-        api_key='test_client_login_fail_interactive_dont_save_key',
-        interactive=True,
-    )
-
-    cred_manager.write_key_to_file.assert_not_called()
