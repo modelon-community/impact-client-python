@@ -1,3 +1,10 @@
+# 1.0.0 (2020-09-28)
+
+
+### Features
+
+* First release of modelon-impact-client ([6aa3720](https://github.com/modelon-community/impact-client-python/commit/6aa3720b78f2595547d0aa89953739da3ba2d9bf))
+
 # [1.0.0-beta.50](https://github.com/modelon-community/impact-client-python/compare/v1.0.0-beta.49...v1.0.0-beta.50) (2020-09-28)
 
 
