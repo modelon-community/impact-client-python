@@ -267,7 +267,7 @@ class TestExperimentService:
         data = service.experiment.trajectories_get(
             "WS", "pid_2009", ["variable1", "variable2"]
         )
-        assert data == {"variable_names": ["variable1", "variable2"]}
+        assert data == [[[1.0, 1.0], [3.0, 3.0], [5.0, 5.0]]]
 
     def test_get_cases(self, get_cases):
         uri = modelon.impact.client.sal.service.URI(get_cases.url)
@@ -300,6 +300,16 @@ class TestExperimentService:
         )
         data, name = service.experiment.case_result_get("WS", "pid_2009", "case_1")
         assert data == b'\x00\x00\x00\x00'
+
+    def test_case_get_trajectories(self, get_case_trajectories):
+        uri = modelon.impact.client.sal.service.URI(get_case_trajectories.url)
+        service = modelon.impact.client.sal.service.Service(
+            uri=uri, context=get_case_trajectories.context
+        )
+        data = service.experiment.case_trajectories_get(
+            "WS", "pid_2009", "case_1", ["variable1", "variable2"]
+        )
+        assert data == [[1.0, 2.0, 7.0], [2.0, 3.0, 5.0]]
 
 
 class TestCustomFunctionService:

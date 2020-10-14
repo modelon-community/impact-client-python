@@ -485,7 +485,10 @@ class Workspace:
 
 class _Parameter:
     _JSON_2_PY_TYPE = {
-        "Number": (float, int,),
+        "Number": (
+            float,
+            int,
+        ),
         "String": (str,),
         "Boolean": (bool,),
         "Enumeration": (str,),
@@ -528,7 +531,10 @@ class CustomFunction:
         self._parameter_data = parameter_data
         self._param_by_name = {
             p["name"]: _Parameter(
-                p["name"], p["defaultValue"], p["type"], p.get("values", []),
+                p["name"],
+                p["defaultValue"],
+                p["type"],
+                p.get("values", []),
             )
             for p in parameter_data
         }
@@ -1295,11 +1301,10 @@ class Result(Mapping):
 
     def __getitem__(self, key):
         _assert_variable_in_result([key], self._variables)
-        response = self._exp_sal.trajectories_get(
-            self._workspace_id, self._exp_id, [key]
+        response = self._exp_sal.case_trajectories_get(
+            self._workspace_id, self._exp_id, self._case_id, [key]
         )
-        case_index = int(self._case_id.split("_")[1])
-        return response[0][case_index - 1]
+        return response[0]
 
     def __iter__(self):
         data = _create_result_dict(

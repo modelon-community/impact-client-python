@@ -61,7 +61,7 @@ def test_semantic_version_error(semantic_version_error):
         )
     assert (
         "Version '3.1.0' of the HTTP REST API is not supported, must be in the "
-        "range '>=1.4.1,<2.0.0'! Updgrade or downgrade this package to a version"
+        "range '>=1.8.0,<2.0.0'! Updgrade or downgrade this package to a version"
         " that supports version '3.1.0' of the HTTP REST API." in str(excinfo.value)
     )
 
@@ -119,7 +119,9 @@ def test_client_login_interactive_saves_key(sem_ver_check):
     )
 
 
-@unittest.mock.patch.object(modelon.impact.client.Client, '_validate_compatible_api_version')
+@unittest.mock.patch.object(
+    modelon.impact.client.Client, '_validate_compatible_api_version'
+)
 def test_client_login_fail_interactive_dont_save_key(_, login_fails):
     cred_manager = unittest.mock.MagicMock()
     cred_manager.get_key.return_value = 'test_client_login_fails'
@@ -136,7 +138,10 @@ def test_client_login_fail_interactive_dont_save_key(_, login_fails):
 
     cred_manager.write_key_to_file.assert_not_called()
 
-@unittest.mock.patch.object(modelon.impact.client.Client, '_validate_compatible_api_version')
+
+@unittest.mock.patch.object(
+    modelon.impact.client.Client, '_validate_compatible_api_version'
+)
 def test_client_login_fail_lets_user_enter_new_key(_, login_fails):
     cred_manager = unittest.mock.MagicMock()
     cred_manager.get_key.return_value = 'test_client_login_fails'
@@ -148,7 +153,7 @@ def test_client_login_fail_lets_user_enter_new_key(_, login_fails):
         url=login_fails.url,
         context=login_fails.context,
         credential_manager=cred_manager,
-        interactive=True
+        interactive=True,
     )
 
     cred_manager.get_key_from_prompt.assert_called()

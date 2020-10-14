@@ -44,10 +44,14 @@ class Client:
         client = Client(url=impact_url, interactive=True)
     """
 
-    _SUPPORTED_VERSION_RANGE = ">=1.4.1,<2.0.0"
+    _SUPPORTED_VERSION_RANGE = ">=1.8.0,<2.0.0"
 
     def __init__(
-        self, url=None, interactive=None, credential_manager=None, context=None,
+        self,
+        url=None,
+        interactive=None,
+        credential_manager=None,
+        context=None,
     ):
         if url is None:
             url = modelon.impact.client.configuration.get_client_url()
