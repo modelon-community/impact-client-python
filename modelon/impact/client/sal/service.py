@@ -251,6 +251,15 @@ class ExperimentService:
         file_name = re.findall("filename=(.+)", d)[0]
         return result, file_name
 
+    def case_trajectories_get(self, workspace_id, experiment_id, case_id, variables):
+        body = {"variable_names": variables}
+        url = (
+            self._base_uri
+            / f"api/workspaces/{workspace_id}/experiments/{experiment_id}/cases/"
+            f"{case_id}/trajectories"
+        ).resolve()
+        return self._http_client.post_json(url, body=body)
+
 
 class CustomFunctionService:
     def __init__(self, uri, HTTPClient):
