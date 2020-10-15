@@ -203,7 +203,7 @@ class SimpleExperimentDefinition(BaseExperimentDefinition):
             else simulation_options
         )
         self._simulation_log_level = simulation_log_level
-        self.variable_modifiers = {}
+        self.variable_modifiers = fmu.modifiers
         self.extensions = []
 
     def validate(self):

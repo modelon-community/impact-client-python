@@ -16,6 +16,7 @@ from modelon.impact.client.entities import (
 from modelon.impact.client.operations import (
     ExperimentOperation,
     ModelExecutableOperation,
+    CachedModelExecutableOperation,
 )
 from tests.impact.client.fixtures import *
 
@@ -113,7 +114,7 @@ class TestWorkspace:
 class TestCustomFunction:
     def test_custom_function_with_parameters_ok(self, custom_function):
         new = custom_function.with_parameters(
-            p1=3.4, p2=False, p3='då', p4='new string', p5=4,
+            p1=3.4, p2=False, p3='då', p4='new string', p5=4
         )
         assert new.parameter_values == {
             'p1': 3.4,
@@ -137,7 +138,7 @@ class TestCustomFunction:
         pytest.raises(ValueError, custom_function.with_parameters, p2='not a boolean')
 
     def test_custom_function_with_parameters_cannot_set_enumeration_type(
-        self, custom_function,
+        self, custom_function
     ):
         pytest.raises(ValueError, custom_function.with_parameters, p3=4.6)
 
@@ -147,7 +148,7 @@ class TestCustomFunction:
         pytest.raises(ValueError, custom_function.with_parameters, p4=4.6)
 
     def test_custom_function_with_parameters_cannot_set_enumeration_value(
-        self, custom_function,
+        self, custom_function
     ):
         pytest.raises(ValueError, custom_function.with_parameters, p3='not in values')
 
@@ -173,12 +174,20 @@ class TestCustomFunction:
 
 
 class TestModel:
-    def test_compile(self, model_compiled, compiler_options, runtime_options):
-        fmu = model_compiled.compile(compiler_options, runtime_options)
+    def test_find_cached(self, model_cached, compiler_options, runtime_options):
+        fmu = model_cached.compile(compiler_options, runtime_options)
+        assert fmu == CachedModelExecutableOperation(
+            'AwesomeWorkspace', 'test_pid_fmu_id'
+        )
+
+    def test_force_compile(self, model_compiled, compiler_options, runtime_options):
+        fmu = model_compiled.compile(
+            compiler_options, runtime_options, force_compilation=True
+        )
         assert fmu == ModelExecutableOperation('AwesomeWorkspace', 'test_pid_fmu_id')
 
-    def test_compile_dict_options(self, model_compiled):
-        fmu = model_compiled.compile({'c_compiler': 'gcc'})
+    def test_force_compile_dict_options(self, model_compiled):
+        fmu = model_compiled.compile({'c_compiler': 'gcc'}, force_compilation=True)
         assert fmu == ModelExecutableOperation('AwesomeWorkspace', 'test_pid_fmu_id')
 
     def test_compile_invalid_type_options(self, model_compiled):
@@ -197,19 +206,42 @@ class TestModelExecutable:
                 "iteration_variable_count": 2,
             }
         }
-        assert fmu.info == {'run_info': {'status': 'successful'}}
+        assert fmu.info == {
+            'id': 'workspace_pid_controller_20210113_131626_77c5174',
+            'input': {
+                'class_name': 'Workspace.PID_Controller',
+                'compiler_options': {'c_compiler': 'gcc'},
+                'runtime_options': {},
+                'compiler_log_level': 'w',
+                'fmi_target': 'me',
+                'fmi_version': '2.0',
+                'platform': 'auto',
+                'model_snapshot': '1610523986117',
+                'toolchain_version': '0.0.1',
+                'compiled_on_sys': 'win32',
+            },
+            'run_info': {
+                'status': 'successful',
+                'datetime_started': 1610523986193,
+                'errors': [],
+                'datetime_finished': 1610523990763,
+            },
+            'meta': {
+                'created_epoch': 1610523986,
+                'input_hash': 'f47e0d051a804eee3cde3e3d98da5f39',
+                'fmu_file': 'model.fmu',
+            },
+        }
 
     def test_compilation_running(self, fmu_compile_running):
         assert fmu_compile_running.info["run_info"]["status"] == "not_started"
-        pytest.raises(
-            exceptions.OperationNotCompleteError, fmu_compile_running.get_log,
-        )
+        pytest.raises(exceptions.OperationNotCompleteError, fmu_compile_running.get_log)
         pytest.raises(
             exceptions.OperationNotCompleteError,
             fmu_compile_running.get_settable_parameters,
         )
         pytest.raises(
-            exceptions.OperationNotCompleteError, fmu_compile_running.is_successful,
+            exceptions.OperationNotCompleteError, fmu_compile_running.is_successful
         )
 
     def test_compilation_failed(self, fmu_compile_failed):
@@ -224,11 +256,9 @@ class TestModelExecutable:
     def test_compilation_cancelled(self, fmu_compile_cancelled):
         assert fmu_compile_cancelled.info["run_info"]["status"] == "cancelled"
         pytest.raises(
-            exceptions.OperationFailureError, fmu_compile_cancelled.is_successful,
+            exceptions.OperationFailureError, fmu_compile_cancelled.is_successful
         )
-        pytest.raises(
-            exceptions.OperationFailureError, fmu_compile_cancelled.get_log,
-        )
+        pytest.raises(exceptions.OperationFailureError, fmu_compile_cancelled.get_log)
         pytest.raises(
             exceptions.OperationFailureError,
             fmu_compile_cancelled.get_settable_parameters,
@@ -290,7 +320,7 @@ class TestExperiment:
     def test_running_execution(self, running_experiment):
         assert running_experiment.info["run_info"]["status"] == "not_started"
         pytest.raises(
-            exceptions.OperationNotCompleteError, running_experiment.get_variables,
+            exceptions.OperationNotCompleteError, running_experiment.get_variables
         )
         pytest.raises(
             exceptions.OperationNotCompleteError,
@@ -316,10 +346,10 @@ class TestExperiment:
             "case_1", "Workspace", "Test"
         )
         pytest.raises(
-            exceptions.OperationFailureError, cancelled_experiment.is_successful,
+            exceptions.OperationFailureError, cancelled_experiment.is_successful
         )
         pytest.raises(
-            exceptions.OperationFailureError, cancelled_experiment.get_variables,
+            exceptions.OperationFailureError, cancelled_experiment.get_variables
         )
         pytest.raises(
             exceptions.OperationFailureError,
@@ -364,9 +394,7 @@ class TestCase:
         assert failed_case.id == "case_1"
         assert failed_case.info["run_info"]["status"] == "failed"
         assert not failed_case.is_successful()
-        pytest.raises(
-            exceptions.OperationFailureError, failed_case.get_result,
-        )
+        pytest.raises(exceptions.OperationFailureError, failed_case.get_result)
         assert failed_case.get_trajectories()["inertia.I"] == [1, 2, 3, 4]
 
     def test_failed_execution_result(self, failed_experiment):

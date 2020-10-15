@@ -62,6 +62,16 @@ def test_experiment_definition_with_modifier(fmu, custom_function_no_param):
     }
 
 
+def test_experiment_definition_with_fmu_modifiers(
+    fmu_with_modifiers, custom_function_no_param
+):
+    definition = SimpleExperimentDefinition(
+        fmu_with_modifiers, custom_function=custom_function_no_param,
+    )
+    config = definition.to_dict()
+    assert config["experiment"]["base"]["modifiers"]["variables"] == {'PI.K': 20}
+
+
 def test_experiment_definition_with_extensions(fmu, custom_function_no_param):
     ext1 = SimpleExperimentExtension().with_modifiers(p=2)
     ext2 = SimpleExperimentExtension({'final_time': 10}).with_modifiers(p=3)
