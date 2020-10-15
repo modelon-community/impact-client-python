@@ -127,25 +127,27 @@ class ModelExecutableService:
         self._base_uri = uri
         self._http_client = HTTPClient
 
-    def _fmu_setup(self, workspace_id, options):
+    def fmu_setup(self, workspace_id, options, get_cached):
         url = (
             self._base_uri / f"api/workspaces/{workspace_id}/model-executables"
+            f"?getCached={'true' if get_cached else 'false'}"
         ).resolve()
-        return self._http_client.post_json(url, body=options)["id"]
+        resp = self._http_client.post_json(url, body=options)
+        return resp["id"], resp["parameters"]
 
-    def compile_model(self, workspace_id, options):
-        fmuId = self._fmu_setup(workspace_id, options)
+    def compile_model(self, workspace_id, fmu_id):
         url = (
             self._base_uri
-            / f"api/workspaces/{workspace_id}/model-executables/{fmuId}/compilation"
+            / f"api/workspaces/{workspace_id}/model-executables/{fmu_id}/compilation"
         ).resolve()
         self._http_client.post_json_no_response_body(url)
-        return fmuId
+        return fmu_id
 
-    def compile_log(self, workspace_id, fmuId):
+    def compile_log(self, workspace_id, fmu_id):
         url = (
             self._base_uri
-            / f"api/workspaces/{workspace_id}/model-executables/{fmuId}/compilation/log"
+            / f"api/workspaces/{workspace_id}/model-executables/{fmu_id}/compilation/"
+            "log"
         ).resolve()
         return self._http_client.get_text(url)
 

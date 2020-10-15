@@ -81,7 +81,7 @@ class Operation(ABC):
 
             timeout --
                 Time to wait in seconds for achieving the status. By default
-                the timeout is set to 'None', which signifies an infinity time
+                the timeout is set to 'None', which signifies an infinite time
                 to wait until the status is achieved.
 
             status --
@@ -125,11 +125,7 @@ class ModelExecutableOperation(Operation):
     """
 
     def __init__(
-        self,
-        workspace_id,
-        fmu_id,
-        workspace_service=None,
-        model_exe_service=None,
+        self, workspace_id, fmu_id, workspace_service=None, model_exe_service=None,
     ):
         super().__init__()
         self._workspace_id = workspace_id
@@ -163,10 +159,7 @@ class ModelExecutableOperation(Operation):
                 A model_executable class instance.
         """
         return entities.ModelExecutable(
-            self._workspace_id,
-            self._fmu_id,
-            self._workspace_sal,
-            self._model_exe_sal,
+            self._workspace_id, self._fmu_id, self._workspace_sal, self._model_exe_sal,
         )
 
     def status(self):
@@ -201,17 +194,134 @@ class ModelExecutableOperation(Operation):
         self._model_exe_sal.compile_cancel(self._workspace_id, self._fmu_id)
 
 
+class CachedModelExecutableOperation(Operation):
+    """
+    An operation class for a cached modelon.impact.client.entities.ModelExecutable
+    class.
+    """
+
+    def __init__(
+        self,
+        workspace_id,
+        fmu_id,
+        workspace_service=None,
+        model_exe_service=None,
+        info=None,
+        modifiers=None,
+    ):
+        super().__init__()
+        self._workspace_id = workspace_id
+        self._fmu_id = fmu_id
+        self._workspace_service = workspace_service
+        self._model_exe_sal = model_exe_service
+        self._info = info
+        self._modifiers = modifiers
+
+    def __repr__(self):
+        return f"Cached model executable operations for id '{self._fmu_id}'"
+
+    def __eq__(self, obj):
+        return (
+            isinstance(obj, CachedModelExecutableOperation)
+            and obj._fmu_id == self._fmu_id
+        )
+
+    @property
+    def id(self):
+        """FMU id"""
+        return self._fmu_id
+
+    @property
+    def name(self):
+        """Return the name of operation"""
+        return "Looking for cached FMU"
+
+    def data(self):
+        """
+        Returns a new ModelExecutable class instance.
+
+        Returns:
+
+            model_executable --
+                A model_executable class instance.
+        """
+        return entities.ModelExecutable(
+            self._workspace_id,
+            self._fmu_id,
+            self._workspace_service,
+            self._model_exe_sal,
+            self._info,
+            self._modifiers,
+        )
+
+    def status(self):
+        """
+        Returns the compilation status as an enumeration.
+
+        Returns:
+
+            status --
+                The compilation status enum. The status has the enum value
+                Status.DONE as a cached FMU is only possible for a
+                successfully finished compilation.
+
+        Example::
+
+            model.compile(options).status()
+        """
+        return Status.DONE
+
+    def cancel(self):
+        raise NotImplementedError(
+            "Cancel is not supported for CachedModelExecutableOperation class"
+        )
+
+    def wait(self, timeout=None, status=Status.DONE):
+        """Waits until the operation achieves the set status.
+        Returns the operation class instance if the set status is achieved.
+
+        Parameters:
+
+            timeout --
+                Time to wait in seconds for achieving the status.This argument is
+                not accounted for the CachedModelExecutableOperation class as the
+                model has a successfully compiled status(Status.DONE) in this class.
+
+            status --
+                Operation status to be achieved. The only possible status for the
+                CachedModelExecutableOperation class is Status.DONE as cached FMU
+                is only avaiable for a successfully compiled model.
+
+        Returns:
+
+            Operation class instance if the set status is achieved.
+
+        Raises:
+
+            OperationTimeOutError if operation status is not set as Status.DONE.
+
+        Example::
+
+           model.compile(compile_options).wait()
+        """
+
+        if self.status() != status:
+            raise exceptions.OperationTimeOutError(
+                f"The operation '{self.name}' has the status '{self.status().name}'"
+                f", it will never get the status '{status.name}'!"
+            )
+
+        logger.info("Cached FMU found! Using the cached FMU!")
+        return self.data()
+
+
 class ExperimentOperation(Operation):
     """
     An operation class for the modelon.impact.client.entities.Experiment class.
     """
 
     def __init__(
-        self,
-        workspace_id,
-        exp_id,
-        workspace_service=None,
-        exp_service=None,
+        self, workspace_id, exp_id, workspace_service=None, exp_service=None,
     ):
         super().__init__()
         self._workspace_id = workspace_id

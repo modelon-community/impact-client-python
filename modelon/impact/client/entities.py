@@ -1,5 +1,6 @@
 import os
 import tempfile
+import logging
 from modelon.impact.client import operations
 
 from modelon.impact.client.experiment_definition import SimpleExperimentDefinition
@@ -7,6 +8,8 @@ from collections.abc import Mapping
 from modelon.impact.client.options import ExecutionOptions
 from modelon.impact.client import exceptions
 from enum import Enum
+
+logger = logging.getLogger(__name__)
 
 
 def _assert_successful_operation(is_successful, operation_name="Operation"):
@@ -677,6 +680,7 @@ class Model:
         fmi_target="me",
         fmi_version="2.0",
         platform="auto",
+        force_compilation=False,
     ):
         """Compiles the model to an FMU.
         Returns an modelon.impact.client.operations.ModelExecutableOperation class
@@ -707,6 +711,9 @@ class Model:
             platform --
                 Platform for FMU binary. Supported values are "auto", "win64", "win32"
                 or "linux64". Default: 'auto'.
+
+            force_compilation --
+                Force a model compilation.
 
         Returns:
 
@@ -751,9 +758,26 @@ class Model:
                 "platform": platform,
             }
         }
+        if not force_compilation:
+            fmu_id, modifiers = self._model_exe_sal.fmu_setup(
+                self._workspace_id, body, True
+            )
+            if fmu_id:
+                return operations.CachedModelExecutableOperation(
+                    self._workspace_id,
+                    fmu_id,
+                    self._workspace_sal,
+                    self._model_exe_sal,
+                    None,
+                    modifiers,
+                )
+
+        # No cached FMU, setup up a new one
+        fmu_id, _ = self._model_exe_sal.fmu_setup(self._workspace_id, body, False)
+
         return operations.ModelExecutableOperation(
             self._workspace_id,
-            self._model_exe_sal.compile_model(self._workspace_id, body),
+            self._model_exe_sal.compile_model(self._workspace_id, fmu_id),
             self._workspace_sal,
             self._model_exe_sal,
         )
@@ -771,12 +795,14 @@ class ModelExecutable:
         workspace_service=None,
         model_exe_service=None,
         info=None,
+        modifiers=None,
     ):
         self._workspace_id = workspace_id
         self._fmu_id = fmu_id
         self._workspace_sal = workspace_service
         self._model_exe_sal = model_exe_service
         self._info = info
+        self._modifiers = modifiers
 
     def __repr__(self):
         return f"FMU with id '{self._fmu_id}'"
@@ -788,6 +814,11 @@ class ModelExecutable:
     def id(self):
         """FMU id"""
         return self._fmu_id
+
+    @property
+    def modifiers(self):
+        """FMU modifiers"""
+        return {} if self._modifiers is None else self._modifiers
 
     @property
     def info(self):

@@ -165,8 +165,46 @@ class TestModelExecutbleService:
                 "platform": "win64",
             }
         }
-        service.model_executable.compile_model("WS", options)
-        assert model_compile.adapter.called
+        fmu_id, modifiers = service.model_executable.fmu_setup(
+            "WS", options, get_cached=False
+        )
+        assert fmu_id, modifiers == (None, {})
+        service.model_executable.compile_model("WS", fmu_id)
+        compile_call = model_compile.adapter.request_history
+        assert len(compile_call) == 2
+        assert "http://mock-impact.com/api/workspaces/WS/model-executables/"
+        "workspace_pid_controller_20090615_134530_as86g32/"
+        "compilation" == compile_call[1].url
+
+    def test_get_cached_fmu_id(self, get_cached_fmu_id):
+        uri = modelon.impact.client.sal.service.URI(get_cached_fmu_id.url)
+        service = modelon.impact.client.sal.service.Service(
+            uri=uri, context=get_cached_fmu_id.context
+        )
+        options = {
+            "input": {
+                "class_name": "Workspace.PID_Controller",
+                "compiler_options": {},
+                "runtime_options": {"log_level": 4},
+                "compiler_log_level": "warning",
+                "fmi_target": "me",
+                "fmi_version": "2.0",
+                "platform": "win64",
+            }
+        }
+        fmu_id, modifiers = service.model_executable.fmu_setup(
+            "WS", options, get_cached=True
+        )
+        cached_call = get_cached_fmu_id.adapter.request_history
+        assert fmu_id, modifiers == (
+            'workspace_pid_controller_20090615_134530_as86g32',
+            {},
+        )
+        assert len(cached_call) == 1
+        assert (
+            "http://mock-impact.com/api/workspaces/WS/model-executables?getCached=true"
+            == cached_call[0].url
+        )
 
     def test_get_compile_log(self, get_compile_log):
         uri = modelon.impact.client.sal.service.URI(get_compile_log.url)
