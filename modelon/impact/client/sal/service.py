@@ -104,14 +104,18 @@ class WorkspaceService:
 
     def experiments_get(self, workspace_id):
         url = (self._base_uri / f"api/workspaces/{workspace_id}/experiments").resolve()
-        return self._http_client.get_json(url)
+        return self._http_client.get_json(
+            url, headers={"Accept": "application/vnd.impact.experiment.v2+json"}
+        )
 
     def experiment_get(self, workspace_id, experiment_id):
         url = (
             self._base_uri
             / f"api/workspaces/{workspace_id}/experiments/{experiment_id}"
         ).resolve()
-        return self._http_client.get_json(url)
+        return self._http_client.get_json(
+            url, headers={"Accept": "application/vnd.impact.experiment.v2+json"}
+        )
 
     def experiment_create(self, workspace_id, definition):
         url = (self._base_uri / f"api/workspaces/{workspace_id}/experiments").resolve()
@@ -316,8 +320,8 @@ class HTTPClient:
     def __init__(self, context=None):
         self._context = context if context else Context()
 
-    def get_json(self, url):
-        request = RequestJSON(self._context, "GET", url)
+    def get_json(self, url, headers=None):
+        request = RequestJSON(self._context, "GET", url, headers=headers)
         return request.execute().data
 
     def get_text(self, url):
@@ -369,13 +373,16 @@ class URI:
 
 
 class Request:
-    def __init__(self, context, method, url, request_type, body=None, files=None):
+    def __init__(
+        self, context, method, url, request_type, body=None, files=None, headers=None
+    ):
         self.context = context
         self.method = method
         self.url = url
         self.body = body
         self.files = files
         self.request_type = request_type
+        self.headers = headers
 
     def execute(self, check_return=True):
         try:
@@ -385,7 +392,7 @@ class Request:
                     self.url, json=self.body, files=self.files
                 )
             elif self.method == "GET":
-                resp = self.context.session.get(self.url)
+                resp = self.context.session.get(self.url, headers=self.headers)
             elif self.method == "DELETE":
                 resp = self.context.session.delete(self.url, json=self.body)
             else:
@@ -408,23 +415,25 @@ class Request:
 
 
 class RequestJSON(Request):
-    def __init__(self, context, method, url, body=None, files=None):
-        super().__init__(context, method, url, JSONResponse, body, files)
+    def __init__(self, context, method, url, body=None, files=None, headers=None):
+        super().__init__(context, method, url, JSONResponse, body, files, headers)
 
 
 class RequestZip(Request):
-    def __init__(self, context, method, url, body=None, files=None):
-        super().__init__(context, method, url, ZIPResponse, body, files)
+    def __init__(self, context, method, url, body=None, files=None, headers=None):
+        super().__init__(context, method, url, ZIPResponse, body, files, headers)
 
 
 class RequestText(Request):
-    def __init__(self, context, method, url, body=None, files=None):
-        super().__init__(context, method, url, TextResponse, body, files)
+    def __init__(self, context, method, url, body=None, files=None, headers=None):
+        super().__init__(context, method, url, TextResponse, body, files, headers)
 
 
 class RequestOctetStream(Request):
-    def __init__(self, context, method, url, body=None, files=None):
-        super().__init__(context, method, url, OctetStreamResponse, body, files)
+    def __init__(self, context, method, url, body=None, files=None, headers=None):
+        super().__init__(
+            context, method, url, OctetStreamResponse, body, files, headers
+        )
 
 
 class Context:
