@@ -32,6 +32,29 @@ def _assert_successful_compilation(fmu):
         )
 
 
+def _assert_valid_case_modifiers(cases_modifiers):
+    if not isinstance(cases_modifiers, list):
+        raise TypeError("The case modifiers argument must be a list!")
+    for case_modifier in cases_modifiers:
+        if not isinstance(case_modifier, dict):
+            raise TypeError(
+                "The variable modifiers in the case_modifier list must be a "
+                "dictionary!"
+            )
+
+
+def _assert_valid_extensions(experiment_extensions):
+    if not isinstance(experiment_extensions, list):
+        raise TypeError("The experiment extensions argument must be a list!")
+    for extension in experiment_extensions:
+        if not isinstance(extension, SimpleExperimentExtension):
+            raise TypeError(
+                "The extension object in the experiment extension list "
+                "must be an instance of modelon.impact.client.experiment_definition."
+                "SimpleExperimentExtension class!"
+            )
+
+
 class Operator:
     """
     Base class for an Operator.
@@ -153,8 +176,9 @@ class SimpleExperimentDefinition(BaseExperimentDefinition):
             if isinstance(simulation_options, ExecutionOptions)
             else simulation_options
         )
-        self.simulation_log_level = simulation_log_level
+        self._simulation_log_level = simulation_log_level
         self.variable_modifiers = {}
+        self.extensions = []
 
     def validate(self):
         add = set(self.variable_modifiers.keys()) - set(
@@ -197,7 +221,7 @@ class SimpleExperimentDefinition(BaseExperimentDefinition):
             self.custom_function,
             self._solver_options,
             self._simulation_options,
-            self.simulation_log_level,
+            self._simulation_log_level,
         )
 
         for variable, value in modifiers_aggregate.items():
@@ -205,6 +229,79 @@ class SimpleExperimentDefinition(BaseExperimentDefinition):
                 str(value) if isinstance(value, Operator) else value
             )
         return new
+
+    def with_extensions(self, experiment_extensions):
+        """Sets up an experiment with multiple experiment extensions.
+
+        Parameters:
+
+            experiment_extensions --
+                "A list of experiment extension objects."
+                "Extension object must an instance of "
+                "modelon.impact.client.experiment_definition."
+                "SimpleExperimentExtension class."
+
+        Example::
+
+            fmu = model.compile().wait()
+            experiment_definition = fmu.new_experiment_definition(custom_function).
+            with_extensions(
+                [
+                    SimpleExperimentExtension().with_modifiers({'PI.k': 20}),
+                    SimpleExperimentExtension().with_modifiers({'PI.k': 30}),
+                ]
+            )
+
+            experiment_definition = fmu.new_experiment_definition(custom_function).
+            with_extensions(
+                [
+                    SimpleExperimentExtension(
+                        parameter_modifiers={'start_time': 0.0, 'final_time': 2.0}
+                    ).with_modifiers({'PI.k': 20})
+                ]
+            )
+        """
+
+        _assert_valid_extensions(experiment_extensions)
+        exp_ext = []
+        for extension in experiment_extensions:
+            exp_ext.append(extension)
+
+        new = SimpleExperimentDefinition(
+            self.fmu,
+            self.custom_function,
+            self._solver_options,
+            self._simulation_options,
+            self._simulation_log_level,
+        )
+        new.variable_modifiers = self.variable_modifiers
+        new.extensions = self.extensions + exp_ext
+        return new
+
+    def with_cases(self, cases_modifiers):
+        """Sets up an experiment with multiple cases with different
+        variable modifiers.
+
+        Parameters:
+
+            cases_modifiers --
+                A list of variable modifier dictionaries.
+                Multiple dictionaries with variable modifiers could to added to create
+                multiple cases.
+
+        Example::
+
+            fmu = model.compile().wait()
+            experiment_definition = fmu.new_experiment_definition(
+                custom_function).with_cases([{'PI.k': 20}, {'PI.k': 30}])
+        """
+        _assert_valid_case_modifiers(cases_modifiers)
+
+        extensions = [
+            SimpleExperimentExtension().with_modifiers(modifiers)
+            for modifiers in cases_modifiers
+        ]
+        return self.with_extensions(extensions)
 
     def to_dict(self):
         """Returns the experiment definition as a dictionary.
@@ -226,14 +323,182 @@ class SimpleExperimentDefinition(BaseExperimentDefinition):
         """
         return {
             "experiment": {
-                "analysis": {
-                    "analysis_function": self.custom_function.name,
-                    "parameters": self.custom_function.parameter_values,
-                    "simulation_options": self._simulation_options,
-                    "solver_options": self._solver_options,
-                    "simulation_log_level": self.simulation_log_level,
+                "version": 2,
+                "base": {
+                    "model": {"fmu": {"id": self.fmu.id}},
+                    "modifiers": {"variables": self.variable_modifiers},
+                    "analysis": {
+                        "type": self.custom_function.name,
+                        "parameters": self.custom_function.parameter_values,
+                        "simulationOptions": self._simulation_options,
+                        "solverOptions": self._solver_options,
+                        "simulationLogLevel": self._simulation_log_level,
+                    },
                 },
-                "fmu_id": self.fmu.id,
-                "modifiers": {"variables": self.variable_modifiers},
+                "extensions": [ext.to_dict() for ext in self.extensions],
             }
         }
+
+
+class BaseExperimentExtension(ABC):
+    """
+    Base class for an experiment extension class.
+    """
+
+
+class SimpleExperimentExtension(BaseExperimentExtension):
+    """
+    A simple experiment extension class for defining experiement extensions.
+
+    Parameters:
+
+        parameter_modifiers --
+            The custom function parameters passes as a dictionary. By default, the
+            parameter_modifier is set to None, which means the options set in
+            the experiment definition will be used.
+
+        solver_options --
+            The solver options to use for this experiment. By default, the solver
+            options is set to None, which means the options set in the experiment
+            definition will be used.
+
+        simulation_options --
+            The simulation_options to use for this experiment. By default the simulation
+            options is set to None, which means the options set in the experiment
+            definition will be used.
+
+        simulation_log_level --
+            Simulation log level for this experiment. Default is 'WARNING'.
+
+    Examples::
+
+        fmu = model.compile().wait()
+        simulation_options = custom_function.get_simulation_options()
+        .with_values(ncp=500)
+        solver_options = {'atol':1e-8}
+        simulate_def = fmu.new_experiment_definition(custom_function,
+        solver_options, simulation_options).with_modifiers({'inertia1.J': 2})
+        simulate_ext = SimpleExperimentExtension(
+        {'start_time': 0.0, 'final_time': 4.0},
+        solver_options,
+        simulation_options.with_values(ncp=600)
+        ).with_modifiers({'PI.k': 40})
+        simulate_def = simulate_def.with_extensions(simulate_ext)
+        simulate_def.to_dict()
+    """
+
+    def __init__(
+        self,
+        parameter_modifiers=None,
+        solver_options=None,
+        simulation_options=None,
+        simulation_log_level=None,
+    ):
+        self._parameter_modifiers = (
+            {} if parameter_modifiers is None else parameter_modifiers
+        )
+        self._solver_options = (
+            {}
+            if solver_options is None
+            else dict(solver_options)
+            if isinstance(solver_options, ExecutionOptions)
+            else solver_options
+        )
+        self._simulation_options = (
+            {}
+            if simulation_options is None
+            else dict(simulation_options)
+            if isinstance(simulation_options, ExecutionOptions)
+            else simulation_options
+        )
+        self._simulation_log_level = simulation_log_level
+        self.variable_modifiers = {}
+
+    def with_modifiers(self, modifiers=None, **modifiers_kwargs):
+        """Sets the modifiers variables for an experiment extension.
+
+        Parameters:
+
+            modifiers --
+                A dictionary of variable modifiers. Could be used if
+                modifiers keys conflict with python identifiers or keywords.
+                Default: None.
+
+            modifiers_kwargs --
+                A keyworded, variable-length argument list of variable
+                modifiers.
+
+        Example::
+
+            fmu = model.compile().wait()
+            simulation_options = custom_function.get_simulation_options()
+            .with_values(ncp=500)
+            solver_options = {'atol':1e-8}
+            simulate_ext = SimpleExperimentExtension().with_modifiers({'PI.k': 40})
+            simulate_ext = SimpleExperimentExtension(
+            {'start_time': 0.0, 'final_time': 4.0},
+            solver_options,
+            simulation_options
+            ).with_modifiers({'PI.k': 40})
+
+        """
+        modifiers = {} if modifiers is None else modifiers
+        modifiers_aggregate = {**modifiers, **modifiers_kwargs}
+        new = SimpleExperimentExtension(
+            self._parameter_modifiers,
+            self._solver_options,
+            self._simulation_options,
+            self._simulation_log_level,
+        )
+
+        for variable, value in modifiers_aggregate.items():
+            if isinstance(value, Operator):
+                raise ValueError(
+                    "Range operator is not supported when using extentions"
+                    " in the experiment"
+                )
+            new.variable_modifiers[variable] = value
+        return new
+
+    def to_dict(self):
+        """Returns the experiment extensions as a dictionary.
+
+        Returns:
+
+            extensions_dict --
+                A dictionary containing the experiment extensions.
+
+        Example::
+
+            fmu = model.compile().wait()
+            simulation_options = custom_function.get_simulation_options()
+                .with_values(ncp=500)
+            solver_options = {'atol':1e-8}
+            simulate_ext = SimpleExperimentExtension(
+            {'start_time': 0.0, 'final_time': 4.0},
+            solver_options,
+            simulation_options,
+            ).with_modifiers({'PI.k': 40})
+            simulate_ext.to_dict()
+        """
+        ext_dict = {}
+        if self.variable_modifiers:
+            ext_dict["modifiers"] = {"variables": self.variable_modifiers}
+
+        if self._parameter_modifiers:
+            ext_dict.setdefault("analysis", {})
+            ext_dict["analysis"]["parameters"] = self._parameter_modifiers
+
+        if self._solver_options:
+            ext_dict.setdefault("analysis", {})
+            ext_dict["analysis"]["solverOptions"] = self._solver_options
+
+        if self._simulation_options:
+            ext_dict.setdefault("analysis", {})
+            ext_dict["analysis"]["simulationOptions"] = self._simulation_options
+
+        if self._simulation_log_level:
+            ext_dict.setdefault("analysis", {})
+            ext_dict["analysis"]["simulationLogLevel"] = self._simulation_log_level
+
+        return ext_dict
