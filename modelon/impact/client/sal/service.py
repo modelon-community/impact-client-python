@@ -248,7 +248,7 @@ class ExperimentService:
         ).resolve()
         result, headers = self._http_client.get_octet_stream(url)
         d = headers["content-disposition"]
-        file_name = re.findall("filename=(.+)", d)[0]
+        file_name = re.findall("filename=(.+)", d)[0].strip('"')
         return result, file_name
 
     def case_trajectories_get(self, workspace_id, experiment_id, case_id, variables):

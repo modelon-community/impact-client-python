@@ -238,9 +238,7 @@ class TestExperimentService:
             "finished_executions": 1,
             "total_executions": 2,
             "status": "running",
-            "progress": [
-                {"message": "Simulating at 1.0", "percentage": 1},
-            ],
+            "progress": [{"message": "Simulating at 1.0", "percentage": 1},],
         }
 
     def test_cancel_execute(self, cancel_execute):
@@ -300,6 +298,7 @@ class TestExperimentService:
         )
         data, name = service.experiment.case_result_get("WS", "pid_2009", "case_1")
         assert data == b'\x00\x00\x00\x00'
+        assert name == 'Modelica.Blocks.Examples.PID_Controller_2020-10-22_06-03.csv'
 
     def test_case_get_trajectories(self, get_case_trajectories):
         uri = modelon.impact.client.sal.service.URI(get_case_trajectories.url)
