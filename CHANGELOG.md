@@ -1,3 +1,10 @@
+# [1.1.0-beta.3](https://github.com/modelon-community/impact-client-python/compare/v1.1.0-beta.2...v1.1.0-beta.3) (2020-10-22)
+
+
+### Bug Fixes
+
+* Striping quotes from suggested filename ([f735b50](https://github.com/modelon-community/impact-client-python/commit/f735b5058cbcc62e5deec640606b67cc3f0d88e9))
+
 # [1.1.0-beta.2](https://github.com/modelon-community/impact-client-python/compare/v1.1.0-beta.1...v1.1.0-beta.2) (2020-10-22)
 
 
