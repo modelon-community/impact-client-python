@@ -1,3 +1,10 @@
+# [1.1.0-beta.2](https://github.com/modelon-community/impact-client-python/compare/v1.1.0-beta.1...v1.1.0-beta.2) (2020-10-22)
+
+
+### Features
+
+* Using the case trajectory api to fetch case trajectories ([8d16708](https://github.com/modelon-community/impact-client-python/commit/8d167084dd4d58f419f55318509f7a170ab5474e))
+
 # [1.1.0-beta.1](https://github.com/modelon-community/impact-client-python/compare/v1.0.0...v1.1.0-beta.1) (2020-10-14)
 
 
