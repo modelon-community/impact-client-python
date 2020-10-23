@@ -70,6 +70,27 @@ An example of setting up and executing a series of simulations on a server and r
    plt.grid()
    plt.show()
 
+A more flexible and customized way to define a series of simulations::
+   
+   from modelon.impact.client import SimpleExperimentExtension
+   
+   experiment_definition = fmu.new_experiment_definition(
+      dynamic.with_parameters(start_time=0.0, final_time=2.0),
+      simulation_options=dynamic.get_simulation_options().with_values(ncp=500),
+      solver_options={'atol': 1e-8},
+   ).with_modifiers({'inertia1.J': 2})
+
+   simulate_ext1 = SimpleExperimentExtension(
+      {'final_time': 5}, {'atol': 1e-7}
+   ).with_modifiers({'PI.k': 40})
+   simulate_ext2 = SimpleExperimentExtension().with_modifiers({'PI.k': 50})
+
+   experiment_definition = experiment_definition.with_extensions(
+      [simulate_ext1, simulate_ext2]
+   )
+
+   experiment_definition = experiment_definition.with_cases([{'PI.k': 20}, {'PI.k': 30}])
+
 A workflow to fetch artifacts to do some analysis locally could be accomplished like below::
 
    from modelon.impact.client import Client
