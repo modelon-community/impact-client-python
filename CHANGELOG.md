@@ -1,3 +1,10 @@
+# [1.1.0-beta.4](https://github.com/modelon-community/impact-client-python/compare/v1.1.0-beta.3...v1.1.0-beta.4) (2020-10-23)
+
+
+### Features
+
+* Possibility to add extensions to experiment ([0c4c2d8](https://github.com/modelon-community/impact-client-python/commit/0c4c2d814be80008a6762bd6e2def140be866725))
+
 # [1.1.0-beta.3](https://github.com/modelon-community/impact-client-python/compare/v1.1.0-beta.2...v1.1.0-beta.3) (2020-10-22)
 
 
