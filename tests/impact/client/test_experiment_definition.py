@@ -1,6 +1,7 @@
 from modelon.impact.client import (
     SimpleExperimentDefinition,
     Range,
+    Choices,
     SimpleExperimentExtension,
 )
 import pytest
@@ -53,11 +54,11 @@ def test_experiment_definition_with_options(fmu, custom_function_no_param):
 def test_experiment_definition_with_modifier(fmu, custom_function_no_param):
     definition = SimpleExperimentDefinition(
         fmu, custom_function=custom_function_no_param,
-    ).with_modifiers({'h0': Range(0.1, 0.5, 3)}, v=1)
+    ).with_modifiers({'h0': Range(0.1, 0.5, 3)}, v=Choices(0.1, 0.5, 3))
     config = definition.to_dict()
     assert config["experiment"]["base"]["modifiers"]["variables"] == {
         'h0': 'range(0.1,0.5,3)',
-        'v': 1,
+        'v': 'choices(0.1, 0.5, 3)',
     }
 
 
@@ -165,6 +166,11 @@ def test_experiment_extension_with_modifiers():
 def test_experiment_extension_with_range_modifier():
     ext = SimpleExperimentExtension()
     pytest.raises(ValueError, ext.with_modifiers, {'h0': Range(0.1, 0.5, 3)})
+
+
+def test_experiment_extension_with_choices_modifier():
+    ext = SimpleExperimentExtension()
+    pytest.raises(ValueError, ext.with_modifiers, {'h0': Choices(0.1, 0.5, 3)})
 
 
 def test_invalid_with_extensions_input(fmu, custom_function_no_param):
