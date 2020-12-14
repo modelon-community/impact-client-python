@@ -89,7 +89,7 @@ class Range(Operator):
         fmu = model.compile().wait()
         experiment_definition = fmu.new_experiment_definition(
             custom_function).with_modifiers({'inertia1.J': 2,
-            'inertia2.J': Range(0.1, 0.5, 3)}, k=2, w=7)
+            'inertia2.J': Range(0.1, 0.5, 3)})
     """
 
     def __init__(self, start_value, end_value, no_of_steps):
@@ -99,6 +99,32 @@ class Range(Operator):
 
     def __str__(self):
         return f"range({self.start_value},{self.end_value},{self.no_of_steps})"
+
+
+class Choices(Operator):
+    """
+    Choices operator class for parameterizing batch runs.
+
+    Parameters:
+
+        values --
+            Variable number of numerical arguments to sweep.
+
+    Examples::
+
+        from modelon.impact.client import Choices
+
+        fmu = model.compile().wait()
+        experiment_definition = fmu.new_experiment_definition(
+            custom_function).with_modifiers({'inertia1.J': 2,
+            'inertia2.J': Choices(0.1, 0.5)})
+    """
+
+    def __init__(self, *values):
+        self.values = values
+
+    def __str__(self):
+        return f"choices{self.values}"
 
 
 class BaseExperimentDefinition(ABC):
@@ -207,12 +233,12 @@ class SimpleExperimentDefinition(BaseExperimentDefinition):
 
         Example::
 
-            from modelon.impact.client import Range
+            from modelon.impact.client import Range, Choices
 
             fmu = model.compile().wait()
             experiment_definition = fmu.new_experiment_definition(
-                custom_function).with_modifiers({'inertia1.J': 2,
-                'inertia2.J': Range(0.1, 0.5, 3)}, k=2, w=7)
+                custom_function).with_modifiers({'inertia1.J': Choices(0.1, 0.9),
+                'inertia2.J': Range(0.1, 0.5, 3)})
         """
         modifiers = {} if modifiers is None else modifiers
         modifiers_aggregate = {**modifiers, **modifiers_kwargs}

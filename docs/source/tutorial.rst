@@ -162,6 +162,21 @@ Here the ``Range()`` operator class is used to specify the ``start_value``, ``en
 The parametrization in the examples above would configure a set of three simulation cases for the fmu with ``3`` equidistant
 values set for the ``PI.k`` parameter, with a start value of ``10`` and an end value of ``100``.
 
+It is also possible to create multi-execution experiments with an explicit list of parameter values to sweep::
+
+   from modelon.impact.client import Choices
+
+   experiment_definition = experiment_definition.with_modifiers({'PI.k': Choices(10, 20, 30, 40)})
+
+Here the ``Choices()`` operator class is used to specify an explicit list of values for the parameter to sweep. The parametrization in the 
+examples above would configure a set of four simulation cases for the fmu with ``4`` choosen values for the ``PI.k`` parameter.
+
+It also possible to use a combination of range and choices operator to setup a batch run::
+
+   from modelon.impact.client import Choices
+
+   experiment_definition = experiment_definition.with_modifiers({'PI.k': Choices(10, 20),'PI.Ti.': Range(10, 100, 3)})
+
 Experiment extensions
 #####################
 The experiment extensions approach provides a more flexible and highly parametrizable way to create a multi-execution scenario.   
