@@ -47,11 +47,7 @@ class Client:
     _SUPPORTED_VERSION_RANGE = ">=1.8.0,<2.0.0"
 
     def __init__(
-        self,
-        url=None,
-        interactive=None,
-        credential_manager=None,
-        context=None,
+        self, url=None, interactive=None, credential_manager=None, context=None,
     ):
         if url is None:
             url = modelon.impact.client.configuration.get_client_url()
@@ -199,14 +195,12 @@ class Client:
             self._sal.custom_function,
         )
 
-    def upload_workspace(self, workspace_id, path_to_workspace):
+    def upload_workspace(self, path_to_workspace):
         """Uploads a Workspace
         Returns the workspace class object of the imported workspace.
 
         Parameters:
 
-            workspace_id --
-                The name of the workspace.
             path_to_workspace --
                 The path for the compressed workspace(.zip) to be uploaded.
 
@@ -219,7 +213,7 @@ class Client:
 
             client.upload_workspace('my_workspace', path_to_workspace)
         """
-        resp = self._sal.workspace.workspace_upload(workspace_id, path_to_workspace)
+        resp = self._sal.workspace.workspace_upload(path_to_workspace)
         return modelon.impact.client.entities.Workspace(
             resp["id"],
             self._sal.workspace,
