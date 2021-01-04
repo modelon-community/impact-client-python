@@ -1,7 +1,11 @@
+import logging
+
 from modelon.impact.client import entities
 from abc import ABC, abstractmethod
 from modelon.impact.client.options import ExecutionOptions
 from modelon.impact.client import exceptions
+
+logger = logging.getLogger(__name__)
 
 
 def _get_options(default_options, options):
@@ -262,13 +266,7 @@ class SimpleFMUExperimentDefinition(BaseExperimentDefinition):
         Parameters:
 
             modifiers --
-                A dictionary of variable modifiers. Could be used if
-                modifiers keys conflict with python identifiers or keywords.
-                Default: None.
-
-            modifiers_kwargs --
-                A keyworded, variable-length argument list of variable
-                modifiers.
+                A dictionary of variable modifiers.
 
         Example::
 
@@ -279,6 +277,12 @@ class SimpleFMUExperimentDefinition(BaseExperimentDefinition):
                 custom_function).with_modifiers({'inertia1.J': Choices(0.1, 0.9),
                 'inertia2.J': Range(0.1, 0.5, 3)})
         """
+        if modifiers_kwargs:
+            logger.warning(
+                "The argument 'modifier_kwargs' is deprecated and will be removed in a"
+                " future release of the Impact Client. Please specify a "
+                "dictionary of variable modifiers instead!"
+            )
         modifiers = {} if modifiers is None else modifiers
         modifiers_aggregate = {**modifiers, **modifiers_kwargs}
         new = SimpleFMUExperimentDefinition(
@@ -753,13 +757,7 @@ class SimpleExperimentExtension(BaseExperimentExtension):
         Parameters:
 
             modifiers --
-                A dictionary of variable modifiers. Could be used if
-                modifiers keys conflict with python identifiers or keywords.
-                Default: None.
-
-            modifiers_kwargs --
-                A keyworded, variable-length argument list of variable
-                modifiers.
+                A dictionary of variable modifiers.
 
         Example::
 
@@ -775,6 +773,12 @@ class SimpleExperimentExtension(BaseExperimentExtension):
             ).with_modifiers({'PI.k': 40})
 
         """
+        if modifiers_kwargs:
+            logger.warning(
+                "The argument 'modifier_kwargs' is deprecated and will be removed in a"
+                " future release of the Impact Client. Please specify a "
+                "dictionary of variable modifiers instead!"
+            )
         modifiers = {} if modifiers is None else modifiers
         modifiers_aggregate = {**modifiers, **modifiers_kwargs}
         new = SimpleExperimentExtension(
