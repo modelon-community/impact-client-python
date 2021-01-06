@@ -527,6 +527,29 @@ def get_case_results(sem_ver_check, mock_server_base):
 
 
 @pytest.fixture
+def get_case_artifact(sem_ver_check, mock_server_base):
+    binary = bytes(4)
+
+    return with_octet_stream_route(
+        mock_server_base,
+        'GET',
+        'api/workspaces/WS/experiments/pid_2009/cases/case_1/custom-artifacts/ABCD',
+        binary,
+        content_header={
+            'X-Powered-By': 'Express',
+            'content-type': 'application/octet-stream',
+            'content-disposition': 'attachment; filename="Modelica.Blocks.Examples.PID_Controller_2020-10-22_06-03.mat"',
+            'connection': 'close',
+            'date': 'Thu, 22 Oct 2020 06:03:46 GMT',
+            'server': '127.0.0.1',
+            'Content-Length': '540',
+            'ETag': 'W/"21c-YYNaLhSng67+inxuWx+DHndUdno"',
+            'Vary': 'Accept-Encoding',
+        },
+    )
+
+
+@pytest.fixture
 def get_case_trajectories(sem_ver_check, mock_server_base):
     json = [[1.0, 2.0, 7.0], [2.0, 3.0, 5.0]]
 
@@ -890,6 +913,7 @@ def experiment():
     }
     exp_service.case_get_log.return_value = "Successful Log"
     exp_service.case_result_get.return_value = (bytes(4), 'result.mat')
+    exp_service.case_artifact_get.return_value = (bytes(4), 'result.mat')
     exp_service.trajectories_get.return_value = [[[1, 2, 3, 4]], [[5, 2, 9, 4]]]
     exp_service.case_trajectories_get.return_value = [[1, 2, 3, 4], [5, 2, 9, 4]]
     return Experiment("Workspace", "Test", ws_service, exp_service)
@@ -913,6 +937,7 @@ def batch_experiment():
     }
     exp_service.case_get_log.return_value = "Successful Log"
     exp_service.case_result_get.return_value = (bytes(4), 'result.mat')
+    exp_service.case_artifact_get.return_value = (bytes(4), 'result.mat')
     exp_service.trajectories_get.return_value = [
         [[1, 2, 3, 4], [14, 4, 4, 74]],
         [[5, 2, 9, 4], [11, 22, 32, 44]],

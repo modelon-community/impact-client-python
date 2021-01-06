@@ -485,10 +485,7 @@ class Workspace:
 
 class _Parameter:
     _JSON_2_PY_TYPE = {
-        "Number": (
-            float,
-            int,
-        ),
+        "Number": (float, int,),
         "String": (str,),
         "Boolean": (bool,),
         "Enumeration": (str,),
@@ -531,10 +528,7 @@ class CustomFunction:
         self._parameter_data = parameter_data
         self._param_by_name = {
             p["name"]: _Parameter(
-                p["name"],
-                p["defaultValue"],
-                p["type"],
-                p.get("values", []),
+                p["name"], p["defaultValue"], p["type"], p.get("values", []),
             )
             for p in parameter_data
         }
@@ -1280,6 +1274,42 @@ class Case:
             self._workspace_sal,
             self._exp_sal,
         )
+
+    def get_artifact(self, artifact_id):
+        """
+        Returns the artifact stream and the file name for a finished case.
+
+        Parameters:
+
+            artifact_id --
+                The ID of the artifact.
+
+        Returns:
+
+            artifact --
+                The artifact byte stream.
+
+            filename --
+                The filename for the artifact. This name could be used to write the
+                artifact stream.
+
+        Raises:
+
+            OperationNotCompleteError if simulation process is in progress.
+            OperationFailureError if simulation process has failed or was cancelled.
+
+        Example::
+
+            result, file_name = case.get_artifact("ABCD")
+            with open(file_name, "wb") as f:
+                f.write(result)
+        """
+        _assert_successful_operation(self.is_successful(), self._case_id)
+        result, file_name = self._exp_sal.case_artifact_get(
+            self._workspace_id, self._exp_id, self._case_id, artifact_id
+        )
+
+        return result, file_name
 
 
 class Result(Mapping):
