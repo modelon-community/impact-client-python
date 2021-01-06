@@ -300,6 +300,17 @@ class TestExperimentService:
         assert data == b'\x00\x00\x00\x00'
         assert name == 'Modelica.Blocks.Examples.PID_Controller_2020-10-22_06-03.csv'
 
+    def test_get_case_artifact(self, get_case_artifact):
+        uri = modelon.impact.client.sal.service.URI(get_case_artifact.url)
+        service = modelon.impact.client.sal.service.Service(
+            uri=uri, context=get_case_artifact.context
+        )
+        data, name = service.experiment.case_artifact_get(
+            "WS", "pid_2009", "case_1", "ABCD"
+        )
+        assert data == b'\x00\x00\x00\x00'
+        assert name == 'Modelica.Blocks.Examples.PID_Controller_2020-10-22_06-03.mat'
+
     def test_case_get_trajectories(self, get_case_trajectories):
         uri = modelon.impact.client.sal.service.URI(get_case_trajectories.url)
         service = modelon.impact.client.sal.service.Service(

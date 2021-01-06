@@ -342,6 +342,8 @@ class TestCase:
         assert case.get_log() == "Successful Log"
         result, name = case.get_result()
         assert (result, name) == (b'\x00\x00\x00\x00', 'result.mat')
+        artifact, name = case.get_artifact('ABCD')
+        assert (artifact, name) == (b'\x00\x00\x00\x00', 'result.mat')
         assert case.is_successful()
         assert case.get_trajectories()['inertia.I'] == [1, 2, 3, 4]
 
@@ -352,6 +354,8 @@ class TestCase:
         assert case.get_log() == "Successful Log"
         result, name = case.get_result()
         assert (result, name) == (b'\x00\x00\x00\x00', 'result.mat')
+        artifact, name = case.get_artifact('ABCD')
+        assert (artifact, name) == (b'\x00\x00\x00\x00', 'result.mat')
         assert case.is_successful()
         assert case.get_trajectories()['inertia.I'] == [14, 4, 4, 74]
 

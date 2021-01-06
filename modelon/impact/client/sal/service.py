@@ -250,10 +250,8 @@ class ExperimentService:
             / f"api/workspaces/{workspace_id}/experiments/{experiment_id}/cases/"
             f"{case_id}/result"
         ).resolve()
-        result, headers = self._http_client.get_octet_stream(url)
-        d = headers["content-disposition"]
-        file_name = re.findall("filename=(.+)", d)[0].strip('"')
-        return result, file_name
+        resp = self._http_client.get_octet_response(url)
+        return resp.stream, resp.file_name
 
     def case_trajectories_get(self, workspace_id, experiment_id, case_id, variables):
         body = {"variable_names": variables}
@@ -263,6 +261,15 @@ class ExperimentService:
             f"{case_id}/trajectories"
         ).resolve()
         return self._http_client.post_json(url, body=body)
+
+    def case_artifact_get(self, workspace_id, experiment_id, case_id, artifact_id):
+        url = (
+            self._base_uri
+            / f"api/workspaces/{workspace_id}/experiments/{experiment_id}/cases/"
+            f"{case_id}/custom-artifacts/{artifact_id}"
+        ).resolve()
+        resp = self._http_client.get_octet_response(url)
+        return resp.stream, resp.file_name
 
 
 class CustomFunctionService:
@@ -328,10 +335,9 @@ class HTTPClient:
         request = RequestText(self._context, "GET", url)
         return request.execute().data
 
-    def get_octet_stream(self, url):
+    def get_octet_response(self, url):
         request = RequestOctetStream(self._context, "GET", url)
-        resp = request.execute()
-        return resp.data, resp.headers
+        return request.execute()
 
     def get_zip(self, url):
         request = RequestZip(self._context, "GET", url)
@@ -521,7 +527,7 @@ class OctetStreamResponse(Response):
         return "application/octet-stream" in self._resp_obj.headers.get("content-type")
 
     @property
-    def data(self):
+    def stream(self):
         if not self._resp_obj.ok:
             raise exceptions.HTTPError(self.error.message)
 
@@ -535,6 +541,11 @@ class OctetStreamResponse(Response):
     @property
     def headers(self):
         return self._resp_obj.headers
+
+    @property
+    def file_name(self):
+        d = self.headers["content-disposition"]
+        return re.findall("filename=(.+)", d)[0].strip('"')
 
 
 class ZIPResponse(Response):
