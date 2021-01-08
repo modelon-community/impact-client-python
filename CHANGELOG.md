@@ -1,3 +1,15 @@
+# [1.1.0-beta.5](https://github.com/modelon-community/impact-client-python/compare/v1.1.0-beta.4...v1.1.0-beta.5) (2021-01-08)
+
+
+### Bug Fixes
+
+* Added semantic versioning to the requirements. This was causing failure to build the docs for modelon.impact.client.client module. ([0b11416](https://github.com/modelon-community/impact-client-python/commit/0b114167aa8f9fcfbec0638ca4fa5f7a654087e5))
+
+
+### Features
+
+* Added support for choices operator ([3a2cfd0](https://github.com/modelon-community/impact-client-python/commit/3a2cfd0ab5f096bd1a2578958aad3cf3abb147eb))
+
 # [1.1.0-beta.4](https://github.com/modelon-community/impact-client-python/compare/v1.1.0-beta.3...v1.1.0-beta.4) (2020-10-23)
 
 
