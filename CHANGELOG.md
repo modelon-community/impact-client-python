@@ -1,3 +1,16 @@
+# [1.1.0-beta.6](https://github.com/modelon-community/impact-client-python/compare/v1.1.0-beta.5...v1.1.0-beta.6) (2021-01-11)
+
+
+### Bug Fixes
+
+* Added documentation for setting log level ([1850d22](https://github.com/modelon-community/impact-client-python/commit/1850d22bc741f7beff680f62871a798fafbbf69e))
+* Corrected the upload_workspace api ([16e9cc8](https://github.com/modelon-community/impact-client-python/commit/16e9cc84495f69c4491af406b7cbe8fc8125b20b))
+
+
+### Features
+
+* Added support for download result artifact ([e6b8108](https://github.com/modelon-community/impact-client-python/commit/e6b81083fd00207aca2d979b853868880ab81dc2))
+
 # [1.1.0-beta.5](https://github.com/modelon-community/impact-client-python/compare/v1.1.0-beta.4...v1.1.0-beta.5) (2021-01-08)
 
 
