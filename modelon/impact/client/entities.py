@@ -3,7 +3,11 @@ import tempfile
 import logging
 from modelon.impact.client import operations
 
-from modelon.impact.client.experiment_definition import SimpleExperimentDefinition
+from modelon.impact.client.experiment_definition import (
+    SimpleModelicaExperimentDefinition,
+    SimpleFMUExperimentDefinition,
+    assert_valid_args,
+)
 from collections.abc import Mapping
 from modelon.impact.client.options import ExecutionOptions
 from modelon.impact.client import exceptions
@@ -58,21 +62,6 @@ def _create_result_dict(variables, workspace_id, exp_id, case_id, exp_sal):
         variable: response[i][case_index - 1] for i, variable in enumerate(variables)
     }
     return data
-
-
-def _assert_valid_args(compiler_options, runtime_options):
-    if not isinstance(compiler_options, (ExecutionOptions, dict)):
-        raise TypeError(
-            "Compiler options object must either be a dictionary or an "
-            "instance of modelon.impact.client.options.ExecutionOptions class!"
-        )
-    if runtime_options is not None and not isinstance(
-        runtime_options, (ExecutionOptions, dict)
-    ):
-        raise TypeError(
-            "Runtime options object must either be a dictionary or an "
-            "instance of modelon.impact.client.options.ExecutionOptions class!"
-        )
 
 
 class ModelExecutableStatus(Enum):
@@ -426,7 +415,9 @@ class Workspace:
 
             definition --
                 An parametrized experiment definition class of type
-                modelon.impact.client.experiment_definition.SimpleExperimentDefinition.
+                modelon.impact.client.experiment_definition.SimpleModelicaExperimentDefinition
+                or
+                modelon.impact.client.experiment_definition.SimpleFMUExperimentDefinition.
 
         Returns:
 
@@ -437,13 +428,16 @@ class Workspace:
 
             workspace.create_experiment(definition)
         """
-        if isinstance(definition, SimpleExperimentDefinition):
+        if isinstance(definition, SimpleFMUExperimentDefinition):
+            definition = definition.to_dict()
+        elif isinstance(definition, SimpleModelicaExperimentDefinition):
             definition = definition.to_dict()
         elif not isinstance(definition, dict):
             raise TypeError(
-                "Definition object must either be a dictionary or an instance of "
+                "Definition object must either be a dictionary or an instance of either"
                 "modelon.impact.client.experiment_definition."
-                "SimpleExperimentDefinition class!"
+                "SimpleModelicaExperimentDefinition class or modelon.impact.client."
+                "experiment_definition.SimpleFMUExperimentDefinition.!"
             )
 
         resp = self._workspace_sal.experiment_create(self._workspace_id, definition)
@@ -462,8 +456,11 @@ class Workspace:
 
             definition --
                 An experiment definition class instance of
-                modelon.impact.client.experiment_definition.SimpleExperimentDefinition
-                or a dictionary object containing the definition.
+                modelon.impact.client.experiment_definition.SimpleFMUExperimentDefinition
+                or
+                modelon.impact.client.experiment_definition.SimpleModelicaExperimentDefinition
+                or
+                a dictionary object containing the definition.
 
         Returns:
 
@@ -661,7 +658,7 @@ class Model:
     def __init__(
         self, class_name, workspace_id, workspace_service=None, model_exe_service=None
     ):
-        self.class_name = class_name
+        self._class_name = class_name
         self._workspace_id = workspace_id
         self._workspace_sal = workspace_service
         self._model_exe_sal = model_exe_service
@@ -670,7 +667,12 @@ class Model:
         return f"Class name '{self.class_name}'"
 
     def __eq__(self, obj):
-        return isinstance(obj, Model) and obj.class_name == self.class_name
+        return isinstance(obj, Model) and obj._class_name == self._class_name
+
+    @property
+    def name(self):
+        """Class name"""
+        return self._class_name
 
     def compile(
         self,
@@ -731,7 +733,9 @@ class Model:
             model.compile(compiler_options, runtime_options).wait()
             model.compile({'c_compiler':'gcc'}).wait()
         """
-        _assert_valid_args(compiler_options, runtime_options)
+        assert_valid_args(
+            compiler_options=compiler_options, runtime_options=runtime_options
+        )
         compiler_options = (
             dict(compiler_options)
             if isinstance(compiler_options, ExecutionOptions)
@@ -749,7 +753,7 @@ class Model:
 
         body = {
             "input": {
-                "class_name": self.class_name,
+                "class_name": self._class_name,
                 "compiler_options": compiler_options,
                 "runtime_options": runtime_options,
                 "compiler_log_level": compiler_log_level,
@@ -780,6 +784,90 @@ class Model:
             self._model_exe_sal.compile_model(self._workspace_id, fmu_id),
             self._workspace_sal,
             self._model_exe_sal,
+        )
+
+    def new_experiment_definition(
+        self,
+        custom_function,
+        compiler_options=None,
+        fmi_target="me",
+        fmi_version="2.0",
+        platform="auto",
+        compiler_log_level="warning",
+        runtime_options=None,
+        solver_options=None,
+        simulation_options=None,
+        simulation_log_level="WARNING",
+    ):
+        """
+        Returns a new experiment definition using this Model.
+
+        Parameters:
+
+            custom_function --
+                The custom function to use for this experiment.
+
+            compiler_options --
+                An compilation options class instance of
+                modelon.impact.client.options.ExecutionOptions or
+                a dictionary object containing the compiler options.
+
+            fmi_target --
+                Compiler target. Possible values are 'me' and 'cs'. Default: 'me'.
+
+            fmi_version --
+                The FMI version. Valid options are '1.0' and '2.0'. Default: '2.0'.
+
+            platform --
+                Platform for FMU binary. Supported values are "auto", "win64", "win32"
+                or "linux64". Default: 'auto'.
+
+            compiler_log_level --
+                The logging for the compiler. Possible values are "error",
+                "warning", "info", "verbose" and "debug". Default: 'warning'.
+
+            runtime_options --
+                An runtime options class instance of
+                modelon.impact.client.options.ExecutionOptions or
+                a dictionary object containing the runtime options. Default: None.
+
+            solver_options --
+                The solver options to use for this experiment. By default the options
+                is set to None, which means the default options for the
+                custom_function input is used.
+
+            simulation_options --
+                The simulation_options to use for this experiment. By default the
+                options is set to None, which means the default options for the
+                custom_function input is used.
+
+            simulation_log_level --
+                Simulation log level for this experiment. Default is 'WARNING'.
+
+        Example::
+
+            model = workspace.get_model("Modelica.Blocks.Examples.PID_Controller")
+            dynamic = workspace.get_custom_function('dynamic')
+            solver_options = {'atol':1e-8}
+            simulation_options = dynamic.get_simulation_options().
+            with_values(ncp=500)
+            experiment_definition = model.new_experiment_definition(
+                dynamic, solver_options=solver_options,
+                simulation_options=simulation_options)
+            experiment = workspace.execute(experiment_definition).wait()
+        """
+        return SimpleModelicaExperimentDefinition(
+            model=self,
+            custom_function=custom_function,
+            compiler_options=compiler_options,
+            fmi_target=fmi_target,
+            fmi_version=fmi_version,
+            platform=platform,
+            compiler_log_level=compiler_log_level,
+            runtime_options=runtime_options,
+            solver_options=solver_options,
+            simulation_options=simulation_options,
+            simulation_log_level=simulation_log_level,
         )
 
 
@@ -942,7 +1030,7 @@ class ModelExecutable:
                 dynamic, solver_options, simulation_options)
             experiment = workspace.execute(experiment_definition).wait()
         """
-        return SimpleExperimentDefinition(
+        return SimpleFMUExperimentDefinition(
             self,
             custom_function,
             solver_options,

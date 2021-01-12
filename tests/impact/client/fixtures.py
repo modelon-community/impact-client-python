@@ -981,6 +981,13 @@ def fmu_with_modifiers():
 
 
 @pytest.fixture
+def model():
+    ws_service = unittest.mock.MagicMock()
+    model_exe_service = unittest.mock.MagicMock()
+    return Model('Test.PID', "test_ws", ws_service, model_exe_service)
+
+
+@pytest.fixture
 def fmu_compile_running():
     ws_service = unittest.mock.MagicMock()
     model_exe_service = unittest.mock.MagicMock()
