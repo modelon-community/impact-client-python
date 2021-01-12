@@ -4,10 +4,30 @@ from modelon.impact.client.options import ExecutionOptions
 from modelon.impact.client import exceptions
 
 
-def _assert_valid_args(fmu, custom_function, solver_options, simulation_options):
-    if not isinstance(fmu, entities.ModelExecutable):
-        raise TypeError("Fmu must be an instance of ModelExecutable class!")
-    if not isinstance(custom_function, entities.CustomFunction):
+def _get_options(default_options, options):
+    return (
+        dict(default_options())
+        if options is None
+        else dict(options)
+        if isinstance(options, ExecutionOptions)
+        else options
+    )
+
+
+def assert_valid_args(
+    model=None,
+    fmu=None,
+    custom_function=None,
+    solver_options=None,
+    simulation_options=None,
+    compiler_options=None,
+    runtime_options=None,
+):
+    if fmu and not isinstance(fmu, entities.ModelExecutable):
+        raise TypeError("FMU must be an instance of ModelExecutable class!")
+    if model and not isinstance(model, entities.Model):
+        raise TypeError("Model must be an instance of Model class!")
+    if custom_function and not isinstance(custom_function, entities.CustomFunction):
         raise TypeError("Custom_function must be an instance of CustomFunction class!")
     if solver_options is not None and not isinstance(
         solver_options, (ExecutionOptions, dict)
@@ -22,6 +42,20 @@ def _assert_valid_args(fmu, custom_function, solver_options, simulation_options)
         raise TypeError(
             "Simulation options must be an instance of ExecutionOptions class or"
             " a dictionary class object!"
+        )
+    if compiler_options is not None and not isinstance(
+        compiler_options, (ExecutionOptions, dict)
+    ):
+        raise TypeError(
+            "Compiler options object must either be a dictionary or an "
+            "instance of modelon.impact.client.options.ExecutionOptions class!"
+        )
+    if runtime_options is not None and not isinstance(
+        runtime_options, (ExecutionOptions, dict)
+    ):
+        raise TypeError(
+            "Runtime options object must either be a dictionary or an "
+            "instance of modelon.impact.client.options.ExecutionOptions class!"
         )
 
 
@@ -139,8 +173,15 @@ class BaseExperimentDefinition(ABC):
         """
         pass
 
+    @abstractmethod
+    def to_dict(self):
+        """
+        Returns the experiment definition as a dictionary.
+        """
+        pass
 
-class SimpleExperimentDefinition(BaseExperimentDefinition):
+
+class SimpleFMUExperimentDefinition(BaseExperimentDefinition):
     """
     A simple experiment definition class for defining experiements.
 
@@ -153,12 +194,12 @@ class SimpleExperimentDefinition(BaseExperimentDefinition):
             The custom function to use for this experiment.
 
         solver_options --
-            The solver options to use for this experiment. By default the options
+            The solver options to use for this experiment. By default, the options
             is set to None, which means the default options for the
             custom_function input is used.
 
         simulation_options --
-            The simulation_options to use for this experiment. By default the
+            The simulation_options to use for this experiment. By default, the
             options is set to None, which means the default options for the
             custom_function input is used.
 
@@ -184,24 +225,22 @@ class SimpleExperimentDefinition(BaseExperimentDefinition):
         simulation_options=None,
         simulation_log_level="WARNING",
     ):
-        _assert_valid_args(fmu, custom_function, solver_options, simulation_options)
+        assert_valid_args(
+            fmu=fmu,
+            custom_function=custom_function,
+            solver_options=solver_options,
+            simulation_options=simulation_options,
+        )
         _assert_successful_compilation(fmu)
         self.fmu = fmu
         self.custom_function = custom_function
-        self._solver_options = (
-            dict(custom_function.get_solver_options())
-            if solver_options is None
-            else dict(solver_options)
-            if isinstance(solver_options, ExecutionOptions)
-            else solver_options
+        self._solver_options = _get_options(
+            custom_function.get_solver_options, solver_options
         )
-        self._simulation_options = (
-            dict(custom_function.get_simulation_options())
-            if simulation_options is None
-            else dict(simulation_options)
-            if isinstance(simulation_options, ExecutionOptions)
-            else simulation_options
+        self._simulation_options = _get_options(
+            custom_function.get_simulation_options, simulation_options
         )
+
         self._simulation_log_level = simulation_log_level
         self.variable_modifiers = fmu.modifiers
         self.extensions = []
@@ -242,7 +281,7 @@ class SimpleExperimentDefinition(BaseExperimentDefinition):
         """
         modifiers = {} if modifiers is None else modifiers
         modifiers_aggregate = {**modifiers, **modifiers_kwargs}
-        new = SimpleExperimentDefinition(
+        new = SimpleFMUExperimentDefinition(
             self.fmu,
             self.custom_function,
             self._solver_options,
@@ -293,7 +332,7 @@ class SimpleExperimentDefinition(BaseExperimentDefinition):
         for extension in experiment_extensions:
             exp_ext.append(extension)
 
-        new = SimpleExperimentDefinition(
+        new = SimpleFMUExperimentDefinition(
             self.fmu,
             self.custom_function,
             self._solver_options,
@@ -366,6 +405,282 @@ class SimpleExperimentDefinition(BaseExperimentDefinition):
         }
 
 
+class SimpleModelicaExperimentDefinition(BaseExperimentDefinition):
+    """
+    A simple experiment definition class for defining experiements.
+
+    Parameters:
+
+        model --
+            The Model class object.
+
+        custom_function --
+            The custom function to use for this experiment.
+
+        compiler_options --
+            The compiler options to use for this experiment. By default the options
+            is set to None, which means the default options for the
+            custom_function input is used.
+
+        fmi_target --
+            Compiler target. Possible values are 'me' and 'cs'. Default: 'me'.
+
+        fmi_version --
+            The FMI version. Valid options are '1.0' and '2.0'. Default: '2.0'.
+
+        platform --
+            Platform for FMU binary. Supported values are "auto", "win64", "win32"
+            or "linux64". Default: 'auto'.
+
+        compiler_log_level --
+            The logging for the compiler. Possible values are "error",
+            "warning", "info", "verbose" and "debug". Default: 'warning'.
+
+        runtime_options --
+            The runtime options to use for this experiment. By default the options
+            is set to None, which means the default options for the
+            custom_function input is used.
+
+        solver_options --
+            The solver options to use for this experiment. By default the options
+            is set to None, which means the default options for the
+            custom_function input is used.
+
+        simulation_options --
+            The simulation options to use for this experiment. By default the
+            options is set to None, which means the default options for the
+            custom_function input is used.
+
+        simulation_log_level --
+            Simulation log level for this experiment. Default: 'WARNING'.
+
+    Examples::
+
+        model = workspace.get_model("Modelica.Blocks.Examples.PID_Controller")
+        simulation_options = custom_function.get_simulation_options()
+        .with_values(ncp=500)
+        solver_options = {'atol':1e-8}
+        simulate_def = model.new_experiment_definition(custom_function,
+        solver_options, simulation_options)
+        simulate_def.to_dict()
+    """
+
+    def __init__(
+        self,
+        model,
+        custom_function,
+        compiler_options=None,
+        fmi_target="me",
+        fmi_version="2.0",
+        platform="auto",
+        compiler_log_level="warning",
+        runtime_options=None,
+        solver_options=None,
+        simulation_options=None,
+        simulation_log_level="WARNING",
+    ):
+        assert_valid_args(
+            model=model,
+            custom_function=custom_function,
+            compiler_options=compiler_options,
+            runtime_options=runtime_options,
+            solver_options=solver_options,
+            simulation_options=simulation_options,
+        )
+        self.model = model
+        self.custom_function = custom_function
+        self._compiler_options = _get_options(
+            custom_function.get_compiler_options, compiler_options
+        )
+        self._runtime_options = _get_options(
+            custom_function.get_runtime_options, runtime_options
+        )
+        self._fmi_target = fmi_target
+        self._fmi_version = fmi_version
+        self._platform = platform
+        self._compiler_log_level = compiler_log_level
+        self._solver_options = _get_options(
+            custom_function.get_solver_options, solver_options
+        )
+        self._simulation_options = _get_options(
+            custom_function.get_simulation_options, simulation_options
+        )
+        self._simulation_log_level = simulation_log_level
+        self.variable_modifiers = {}
+        self.extensions = []
+
+    def validate(self):
+        raise NotImplementedError(
+            'Validation is not supported for SimpleModelicaExperimentDefinition class'
+        )
+
+    def with_modifiers(self, modifiers=None):
+        """Sets the modifiers parameters for an experiment.
+
+        Parameters:
+
+            modifiers --
+                A dictionary of variable modifiers. Could be used if
+                modifiers keys conflict with python identifiers or keywords.
+                Default: None.
+
+        Example::
+
+            from modelon.impact.client import Range, Choices
+
+            model = workspace.get_model("Modelica.Blocks.Examples.PID_Controller")
+            experiment_definition = model.new_experiment_definition(
+                custom_function).with_modifiers({'inertia1.J': Choices(0.1, 0.9),
+                'inertia2.J': Range(0.1, 0.5, 3)})
+        """
+        modifiers = {} if modifiers is None else modifiers
+        new = SimpleModelicaExperimentDefinition(
+            model=self.model,
+            custom_function=self.custom_function,
+            compiler_options=self._compiler_options,
+            fmi_target=self._fmi_target,
+            fmi_version=self._fmi_version,
+            platform=self._platform,
+            compiler_log_level=self._compiler_log_level,
+            runtime_options=self._runtime_options,
+            solver_options=self._solver_options,
+            simulation_options=self._simulation_options,
+            simulation_log_level=self._simulation_log_level,
+        )
+
+        for variable, value in modifiers.items():
+            new.variable_modifiers[variable] = (
+                str(value) if isinstance(value, Operator) else value
+            )
+        return new
+
+    def with_extensions(self, experiment_extensions):
+        """Sets up an experiment with multiple experiment extensions.
+
+        Parameters:
+
+            experiment_extensions --
+                "A list of experiment extension objects."
+                "Extension object must an instance of "
+                "modelon.impact.client.experiment_definition."
+                "SimpleExperimentExtension class."
+
+        Example::
+
+            model = workspace.get_model("Modelica.Blocks.Examples.PID_Controller")
+            experiment_definition = model.new_experiment_definition(custom_function).
+            with_extensions(
+                [
+                    SimpleExperimentExtension().with_modifiers({'PI.k': 20}),
+                    SimpleExperimentExtension().with_modifiers({'PI.k': 30}),
+                ]
+            )
+
+            experiment_definition = fmu.new_experiment_definition(custom_function).
+            with_extensions(
+                [
+                    SimpleExperimentExtension(
+                        parameter_modifiers={'start_time': 0.0, 'final_time': 2.0}
+                    ).with_modifiers({'PI.k': 20})
+                ]
+            )
+        """
+
+        _assert_valid_extensions(experiment_extensions)
+        exp_ext = []
+        for extension in experiment_extensions:
+            exp_ext.append(extension)
+
+        new = SimpleModelicaExperimentDefinition(
+            model=self.model,
+            custom_function=self.custom_function,
+            compiler_options=self._compiler_options,
+            fmi_target=self._fmi_target,
+            fmi_version=self._fmi_version,
+            platform=self._platform,
+            compiler_log_level=self._compiler_log_level,
+            runtime_options=self._runtime_options,
+            solver_options=self._solver_options,
+            simulation_options=self._simulation_options,
+            simulation_log_level=self._simulation_log_level,
+        )
+        new.variable_modifiers = self.variable_modifiers
+        new.extensions = self.extensions + exp_ext
+        return new
+
+    def with_cases(self, cases_modifiers):
+        """Sets up an experiment with multiple cases with different
+        variable modifiers.
+
+        Parameters:
+
+            cases_modifiers --
+                A list of variable modifier dictionaries.
+                Multiple dictionaries with variable modifiers could to added to create
+                multiple cases.
+
+        Example::
+
+            model = workspace.get_model("Modelica.Blocks.Examples.PID_Controller")
+            experiment_definition = model.new_experiment_definition(
+                custom_function).with_cases([{'PI.k': 20}, {'PI.k': 30}])
+        """
+        _assert_valid_case_modifiers(cases_modifiers)
+
+        extensions = [
+            SimpleExperimentExtension().with_modifiers(modifiers)
+            for modifiers in cases_modifiers
+        ]
+        return self.with_extensions(extensions)
+
+    def to_dict(self):
+        """Returns the experiment definition as a dictionary.
+
+        Returns:
+
+            definition_dict --
+                A dictionary containing the experiment definition.
+
+        Example::
+
+            model = workspace.get_model("Modelica.Blocks.Examples.PID_Controller")
+            simulation_options = custom_function.get_simulation_options()
+                .with_values(ncp=500)
+            solver_options = {'atol':1e-8}
+            simulate_def = model.new_experiment_definition(custom_function,
+            solver_options, simulation_options)
+            simulate_def.to_dict()
+        """
+
+        return {
+            "experiment": {
+                "version": 2,
+                "base": {
+                    "model": {
+                        "modelica": {
+                            "className": self.model.name,
+                            "compilerOptions": self._compiler_options,
+                            "runtimeOptions": self._runtime_options,
+                            "compilerLogLevel": self._compiler_log_level,
+                            "fmiTarget": self._fmi_target,
+                            "fmiVersion": self._fmi_version,
+                            "platform": self._platform,
+                        }
+                    },
+                    "modifiers": {"variables": self.variable_modifiers},
+                    "analysis": {
+                        "type": self.custom_function.name,
+                        "parameters": self.custom_function.parameter_values,
+                        "simulationOptions": self._simulation_options,
+                        "solverOptions": self._solver_options,
+                        "simulationLogLevel": self._simulation_log_level,
+                    },
+                },
+                "extensions": [ext.to_dict() for ext in self.extensions],
+            }
+        }
+
+
 class BaseExperimentExtension(ABC):
     """
     Base class for an experiment extension class.
@@ -384,17 +699,21 @@ class SimpleExperimentExtension(BaseExperimentExtension):
             the experiment definition will be used.
 
         solver_options --
-            The solver options to use for this experiment. By default, the solver
-            options is set to None, which means the options set in the experiment
-            definition will be used.
+            A solver options class instance of
+            modelon.impact.client.options.ExecutionOptions or
+            a dictionary object containing the solver options. By
+            default, the options is set to None, which means an empty dictionary
+            is passed in the experiment extension.
 
         simulation_options --
-            The simulation_options to use for this experiment. By default the simulation
-            options is set to None, which means the options set in the experiment
-            definition will be used.
+            A simulation options class instance of
+            modelon.impact.client.options.ExecutionOptions or
+            a dictionary object containing the simulation options. By
+            default, the options is set to None, which means an empty dictionary
+            is passed in the experiment extension.
 
         simulation_log_level --
-            Simulation log level for this experiment. Default is 'WARNING'.
+            Simulation log level for this experiment. Default: 'WARNING'.
 
     Examples::
 
@@ -423,20 +742,8 @@ class SimpleExperimentExtension(BaseExperimentExtension):
         self._parameter_modifiers = (
             {} if parameter_modifiers is None else parameter_modifiers
         )
-        self._solver_options = (
-            {}
-            if solver_options is None
-            else dict(solver_options)
-            if isinstance(solver_options, ExecutionOptions)
-            else solver_options
-        )
-        self._simulation_options = (
-            {}
-            if simulation_options is None
-            else dict(simulation_options)
-            if isinstance(simulation_options, ExecutionOptions)
-            else simulation_options
-        )
+        self._solver_options = _get_options(dict, solver_options)
+        self._simulation_options = _get_options(dict, simulation_options)
         self._simulation_log_level = simulation_log_level
         self.variable_modifiers = {}
 
