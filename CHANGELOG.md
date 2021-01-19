@@ -1,3 +1,10 @@
+# [1.1.0-beta.7](https://github.com/modelon-community/impact-client-python/compare/v1.1.0-beta.6...v1.1.0-beta.7) (2021-01-19)
+
+
+### Features
+
+* Added checks to use cached FMU if available ([4fcb616](https://github.com/modelon-community/impact-client-python/commit/4fcb6164667269c01c74339b05ec90923906487f))
+
 # [1.1.0-beta.6](https://github.com/modelon-community/impact-client-python/compare/v1.1.0-beta.5...v1.1.0-beta.6) (2021-01-11)
 
 
