@@ -1,3 +1,10 @@
+# [1.1.0-beta.8](https://github.com/modelon-community/impact-client-python/compare/v1.1.0-beta.7...v1.1.0-beta.8) (2021-01-19)
+
+
+### Features
+
+* Added support for modelica_class name based workflows ([0106196](https://github.com/modelon-community/impact-client-python/commit/01061960c6f63e421ee1f533e87f6e9c11f054d5))
+
 # [1.1.0-beta.7](https://github.com/modelon-community/impact-client-python/compare/v1.1.0-beta.6...v1.1.0-beta.7) (2021-01-19)
 
 
