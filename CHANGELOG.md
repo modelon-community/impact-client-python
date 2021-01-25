@@ -1,3 +1,10 @@
+# [1.1.0-beta.9](https://github.com/modelon-community/impact-client-python/compare/v1.1.0-beta.8...v1.1.0-beta.9) (2021-01-25)
+
+
+### Bug Fixes
+
+* Removed kwargs argument from docs as we only need to support 'qualified' variable names ([5cc63e3](https://github.com/modelon-community/impact-client-python/commit/5cc63e30b921a01770eff8bd354faf2bd4f1b874))
+
 # [1.1.0-beta.8](https://github.com/modelon-community/impact-client-python/compare/v1.1.0-beta.7...v1.1.0-beta.8) (2021-01-19)
 
 
