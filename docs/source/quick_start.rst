@@ -6,7 +6,10 @@ may be running remotely.  With sufficient login credentials and an API Key (see 
 Modelica models may be uploaded, compiled, and executed on a server.  The results can be either processed on the server
 with a custom function or downloaded to the client for further analysis.  
 
-A simple example of this functionality is::
+An analysis could be setup and executed using either the :ref:`FMU <1. FMU based workflow>` or a :ref:`Class name <2. Class name based workflow>` based workflow.
+The specific about the two workflows are discussed in more detail :ref:`here. <Analysis>`
+
+A simple example using the :ref:`FMU based workflow <1. FMU based workflow>` is shown below::
 
    from modelon.impact.client import Client
 
@@ -32,6 +35,31 @@ A simple example of this functionality is::
    plt.plot(res['time'], res['inertia1.phi'])
    plt.show()
 
+A simple example using the :ref:`Class name based workflow <2. Class name based workflow>` is shown below::
+
+   from modelon.impact.client import Client
+
+   client = Client(url=<impact-domain>)
+   workspace = client.create_workspace(<workspace-name>)
+
+   # Choose analysis type
+   dynamic = workspace.get_custom_function('dynamic')
+
+   # Get model class
+   model = workspace.get_model("Modelica.Blocks.Examples.PID_Controller")
+
+   # Execute experiment
+   experiment_definition = model.new_experiment_definition(dynamic)
+   exp = workspace.execute(experiment_definition).wait()
+
+   # Plot Trajectory
+   import matplotlib.pyplot as plt
+
+   case = exp.get_case('case_1')
+   res = case.get_trajectories()
+   plt.plot(res['time'], res['inertia1.phi'])
+   plt.show()
+
 An example of setting up and executing a series of simulations on a server and returning the plot trajectories::
 
    from modelon.impact.client import Client, Range
@@ -42,16 +70,11 @@ An example of setting up and executing a series of simulations on a server and r
    # Choose analysis type
    dynamic = workspace.get_custom_function('dynamic')
 
-   # Compile model
+   # Get model
    model = workspace.get_model("Modelica.Blocks.Examples.PID_Controller")
-   fmu = model.compile(
-      compiler_options=dynamic.get_compiler_options().with_values(
-         generate_html_diagnostics=True
-      )
-   ).wait()
 
    # Execute experiment
-   experiment_definition = fmu.new_experiment_definition(
+   experiment_definition = model.new_experiment_definition(
       dynamic.with_parameters(start_time=0.0, final_time=2.0),
       simulation_options=dynamic.get_simulation_options().with_values(ncp=500),
       solver_options={'atol': 1e-8},
@@ -72,9 +95,18 @@ An example of setting up and executing a series of simulations on a server and r
 
 A more flexible and customized way to define a series of simulations::
    
-   from modelon.impact.client import SimpleExperimentExtension
+   from modelon.impact.client import Client, SimpleExperimentExtension
    
-   experiment_definition = fmu.new_experiment_definition(
+   client = Client(url=<impact-domain>)
+   workspace = client.create_workspace(<workspace-name>)
+
+   # Choose analysis type
+   dynamic = workspace.get_custom_function('dynamic')
+
+   # Get model
+   model = workspace.get_model("Modelica.Blocks.Examples.PID_Controller")
+
+   experiment_definition = model.new_experiment_definition(
       dynamic.with_parameters(start_time=0.0, final_time=2.0),
       simulation_options=dynamic.get_simulation_options().with_values(ncp=500),
       solver_options={'atol': 1e-8},

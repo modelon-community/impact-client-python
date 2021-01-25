@@ -2,7 +2,7 @@ Tutorial
 ========
 
 This tutorial is intended to give a short introduction on how to use the Modelon Impact Client package to create a workspace, perform a dynamic
-simulation on a given model and plot the results. 
+simulation on a given model and plot the results.
 
 Initializing the client
 -----------------------
@@ -76,12 +76,36 @@ should be output by the client can be set by specifying the log level as shown i
 The log is printed to the standard output, normally the terminal window from which the compiler is invoked. The available log levels are 
 'INFO'(default), 'ERROR', 'WARNING', 'CRITICAL' and 'DEBUG'.
 
-Compile model
--------------
+Analysis
+--------
 
-Next, we can compile the model to an FMU for further analysis by calling the ``compile()`` method on the ``model``.
-The ``compile()`` method takes 1 mandatory argument(``compiler_options``) and 6 optional(``runtime_options``, ``compiler_log_level``, 
-``fmi_target``, ``fmi_version``, ``platform``) ones. 
+The model analysis can be setup in one of two workflows described below:
+
+   1. **FMU based workflow**: This workflow requires the user to compile the model to a model executable 
+   before setting up an experiment for it. This workflow is useful when the user intends to do all the 
+   computations with the FMUs in a notebook environment(i.e., no experimentation/computation in the Modelon 
+   IMPACT server). 
+
+   **Note:** Since the user works with the compiled FMUs in the workflow, modifiers added during the
+   experimentation step should contain only non-structural parameter modifiers. Any non-structural parameter change
+   would require a recompilation of the model.
+
+   2. **Class name based workflow**: This workflow allows the user to directly work with the model class object to setup
+   experiments for analysis. The compilation in this workflow is handled as a part of the execution step.
+   This workflow allows the users to skip the details of the compilation steps and focus on setting up the experiment
+   of interest. Also, this workflow doesn't impose any restrictions on the parameter modifiers that could be 
+   applied to the model. If a structural parameter is set as a modifier in a batch run, a recompilation is triggered automatically
+   by the client. 
+
+1. FMU based workflow
+########################
+
+1.1 Compiling the model
+***********************
+
+We can compile the model to an FMU for further analysis by calling the ``compile()`` method on the ``model``.
+The ``compile()`` method takes 1 mandatory argument(``compiler_options``) and 7 optional(``runtime_options``, ``compiler_options``, ``compiler_log_level``, 
+``fmi_target``, ``fmi_version``, ``platform``, ``force_compilation``) ones.
 
 We can fetch the default values for the mandotory ``compiler_options`` arument and the optional ``runtime_options`` from the 
 ``dynamic`` custom functions.::
@@ -114,25 +138,25 @@ If ``wait()`` is not called on the model an ``Operation`` object is returned and
 compilation. Calling the ``wait()`` method returns a ``ModelExecutable`` object which represents the now compiled model.
 
 
-Setting up an experiment
-------------------------
+1.2 Setting up an experiment
+****************************
 
-With the ``model`` now compiled as an FMU, we could use it to set up an experiment by defining a ``SimpleExperimentDefinition``
+With the ``model`` now compiled as an FMU, we could use it to set up an experiment by defining a ``SimpleFMUExperimentDefinition``
 class with our analysis specific parametrization.
 
-This could be done by either creating a ``SimpleExperimentDefinition`` class by passing the fmu and the ``dynamic`` custom
+This could be done by either creating a ``SimpleFMUExperimentDefinition`` class by passing the fmu and the ``dynamic`` custom
 function object::
 
-   from modelon.impact.client import SimpleExperimentDefinition
+   from modelon.impact.client import SimpleFMUExperimentDefinition
 
-   experiment_definition = SimpleExperimentDefinition(fmu, dynamic)
+   experiment_definition = SimpleFMUExperimentDefinition(fmu, dynamic)
 
 Or in an even simpler way by calling the ``new_experiment_definition()`` method on the fmu with the ``dynamic`` custom function
 object as an argument::
 
    experiment_definition = fmu.new_experiment_definition(dynamic)
 
-This would again return a ``SimpleExperimentDefinition`` class object
+This would again return a ``SimpleFMUExperimentDefinition`` class object.
 
 To override the default parameters for the ``dynamic`` simulation workflow, call the ``with_parameters()``
 method on the ``dynamic`` custom function class::
@@ -152,6 +176,49 @@ They can be set in a way similar to the compiler_options::
    solver_options = {'atol':1e-8}
    simulation_options = dynamic.get_simulation_options().with_values(ncp=500)
    experiment_definition = fmu.new_experiment_definition(dynamic.with_parameters(start_time=0.0, final_time=2.0),
+   solver_options, simulation_options)
+
+2. Class name based workflow
+############################
+
+2.1 Setting up an experiment
+****************************
+
+With the `Class name based workflow`, we could skip the compilation step and setup the experiment
+from the model directly.
+
+This could be done by either creating a SimpleModelicaExperimentDefinition class by passing the model 
+and the dynamic custom function object::
+
+   from modelon.impact.client import SimpleModelicaExperimentDefinition
+
+   experiment_definition = SimpleModelicaExperimentDefinition(model, dynamic)
+
+Or in an even simpler way by calling the ``new_experiment_definition()`` method on the model with the ``dynamic`` custom function
+object as an argument::
+
+   experiment_definition = model.new_experiment_definition(dynamic)
+
+This would again return a ``SimpleModelicaExperimentDefinition`` class object.
+
+To override the default parameters for the ``dynamic`` simulation workflow, call the ``with_parameters()``
+method on the ``dynamic`` custom function class::
+
+   experiment_definition = model.new_experiment_definition(dynamic.with_parameters(start_time=0.0, final_time=2.0))
+
+The default set of parameters available for the custom function can be viewed by calling the property ``parameter_values``::
+   
+   dynamic.parameter_values
+
+The ``new_experiment_definition()`` method takes the optional agruments ``solver_options``, ``simulation_options`` and 
+``simulation_log_level``. If the ``solver_options`` and ``simulation_options`` are not explictly defined, they default to the ``dynamic``
+custom function defaults.
+
+They can be set in a way similar to the compiler_options::
+
+   simulation_options = dynamic.get_simulation_options().with_values(ncp=500)
+   solver_options = {'atol':1e-8}
+   experiment_definition = model.new_experiment_definition(dynamic.with_parameters(start_time=0.0, final_time=2.0),
    solver_options, simulation_options)
 
 
