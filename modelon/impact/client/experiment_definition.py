@@ -429,8 +429,18 @@ class SimpleModelicaExperimentDefinition(BaseExperimentDefinition):
             The FMI version. Valid options are '1.0' and '2.0'. Default: '2.0'.
 
         platform --
-            Platform for FMU binary. Supported values are "auto", "win64", "win32"
-            or "linux64". Default: 'auto'.
+            Platform for FMU binary.The OS running the Impact server must match the
+            environment that runs the compiled FMU. This is necessary as the
+            binaries packaged with the FMU are based on the platform generating
+            the FMU. For example, if the Impact server is running Linux the binary
+            in the downloaded FMU is compiled for Linux. The downloaded FMU can
+            then not be simulated on Windows.
+            Supported options are:-
+                - 'auto': platform is selected automatically.
+                - "linux64": generate a 32 bit FMU.
+                - "win32": generate a 32 bit FMU.
+                - "win64": generate a 64 bit FMU
+            Default: 'auto'.
 
         compiler_log_level --
             The logging for the compiler. Possible values are "error",
