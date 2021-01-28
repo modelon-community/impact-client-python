@@ -159,7 +159,7 @@ class Choices(Operator):
     """
 
     def __init__(self, *values):
-        self.values = values
+        self.values = str(values).replace(',)', ')')
 
     def __str__(self):
         return f"choices{self.values}"
