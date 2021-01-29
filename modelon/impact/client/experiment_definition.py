@@ -162,7 +162,7 @@ class Choices(Operator):
         self.values = values
 
     def __str__(self):
-        return f"choices{self.values}"
+        return f"choices({', '.join(map(str, self.values))})"
 
 
 class BaseExperimentDefinition(ABC):
