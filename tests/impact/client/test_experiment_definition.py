@@ -61,6 +61,17 @@ class TestSimpleFMUExperimentDefinition:
             'v': 'choices(0.1, 0.5, 3)',
         }
 
+    def test_experiment_definition_with_choices_1_input_modifier(
+        self, fmu, custom_function_no_param
+    ):
+        definition = SimpleFMUExperimentDefinition(
+            fmu, custom_function=custom_function_no_param,
+        ).with_modifiers(v=Choices(0.1))
+        config = definition.to_dict()
+        assert config["experiment"]["base"]["modifiers"]["variables"] == {
+            'v': 'choices(0.1)',
+        }
+
     def test_experiment_definition_with_fmu_modifiers(
         self, fmu_with_modifiers, custom_function_no_param
     ):
