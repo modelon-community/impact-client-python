@@ -376,6 +376,8 @@ class TestCase:
         assert (artifact, name) == (b'\x00\x00\x00\x00', 'result.mat')
         assert case.is_successful()
         assert case.get_trajectories()['inertia.I'] == [1, 2, 3, 4]
+        fmu = case.get_fmu()
+        assert fmu.id == "modelica_fluid_examples_heatingsystem_20210130_114628_bbd91f1"
 
     def test_multiple_cases(self, batch_experiment):
         case = batch_experiment.get_case("case_2")

@@ -107,13 +107,13 @@ class Workspace:
         self,
         workspace_id,
         workspace_service=None,
-        model_exeutable=None,
+        model_exe_service=None,
         experiment_service=None,
         custom_function_service=None,
     ):
         self._workspace_id = workspace_id
         self._workspace_sal = workspace_service
-        self._model_exe_sal = model_exeutable
+        self._model_exe_sal = model_exe_service
         self._exp_sal = experiment_service
         self._custom_func_sal = custom_function_service
 
@@ -379,7 +379,12 @@ class Workspace:
         resp = self._workspace_sal.experiments_get(self._workspace_id)
         return [
             Experiment(
-                self._workspace_id, item["id"], self._workspace_sal, self._exp_sal, item
+                self._workspace_id,
+                item["id"],
+                self._workspace_sal,
+                self._model_exe_sal,
+                self._exp_sal,
+                item,
             )
             for item in resp["data"]["items"]
         ]
@@ -404,7 +409,12 @@ class Workspace:
         """
         resp = self._workspace_sal.experiment_get(self._workspace_id, experiment_id)
         return Experiment(
-            self._workspace_id, resp["id"], self._workspace_sal, self._exp_sal, resp
+            self._workspace_id,
+            resp["id"],
+            self._workspace_sal,
+            self._model_exe_sal,
+            self._exp_sal,
+            resp,
         )
 
     def create_experiment(self, definition):
@@ -445,6 +455,7 @@ class Workspace:
             self._workspace_id,
             resp["experiment_id"],
             self._workspace_sal,
+            self._model_exe_sal,
             self._exp_sal,
         )
 
@@ -479,6 +490,7 @@ class Workspace:
             self._workspace_id,
             self._exp_sal.experiment_execute(self._workspace_id, exp_id),
             self._workspace_sal,
+            self._model_exe_sal,
             self._exp_sal,
         )
 
@@ -1094,11 +1106,18 @@ class Experiment:
     """
 
     def __init__(
-        self, workspace_id, exp_id, workspace_service=None, exp_service=None, info=None
+        self,
+        workspace_id,
+        exp_id,
+        workspace_service=None,
+        model_exe_service=None,
+        exp_service=None,
+        info=None,
     ):
         self._workspace_id = workspace_id
         self._exp_id = exp_id
         self._workspace_sal = workspace_service
+        self._model_exe_sal = model_exe_service
         self._exp_sal = exp_service
         self._info = info
 
@@ -1189,6 +1208,7 @@ class Experiment:
                 self._workspace_id,
                 self._exp_id,
                 self._exp_sal,
+                self._model_exe_sal,
                 self._workspace_sal,
                 case,
             )
@@ -1219,6 +1239,7 @@ class Experiment:
             self._workspace_id,
             self._exp_id,
             self._exp_sal,
+            self._model_exe_sal,
             self._workspace_sal,
             resp,
         )
@@ -1289,6 +1310,7 @@ class Case:
         workspace_id,
         exp_id,
         exp_service=None,
+        model_exe_service=None,
         workspace_service=None,
         info=None,
     ):
@@ -1296,6 +1318,7 @@ class Case:
         self._workspace_id = workspace_id
         self._exp_id = exp_id
         self._exp_sal = exp_service
+        self._model_exe_sal = model_exe_service
         self._workspace_sal = workspace_service
         self._info = info
 
@@ -1450,6 +1473,27 @@ class Case:
 
         return result, file_name
 
+    def get_fmu(self):
+        """
+        Returns the ModelExecutable class object simulated for the case.
+
+        Returns:
+
+            FMU --
+                ModelExecutable class object.
+
+        Example::
+
+            case = experiment.get_case('case_1')
+            fmu = case.get_fmu(fmu_id)
+            fmus = set(case.get_fmu() for case in exp.get_cases())
+        """
+        fmu_id = self.info['input']['fmu_id']
+
+        return ModelExecutable(
+            self._workspace_id, fmu_id, self._workspace_sal, self._model_exe_sal
+        )
+
 
 class Result(Mapping):
     """
@@ -1457,7 +1501,7 @@ class Result(Mapping):
     """
 
     def __init__(
-        self, case_id, workspace_id, exp_id, workspace_service=None, exp_service=None
+        self, case_id, workspace_id, exp_id, workspace_service=None, exp_service=None,
     ):
         self._case_id = case_id
         self._workspace_id = workspace_id
@@ -1465,7 +1509,10 @@ class Result(Mapping):
         self._workspace_sal = workspace_service
         self._exp_sal = exp_service
         self._variables = Experiment(
-            self._workspace_id, self._exp_id, self._workspace_sal, self._exp_sal
+            self._workspace_id,
+            self._exp_id,
+            self._workspace_sal,
+            exp_service=self._exp_sal,
         ).get_variables()
 
     def __getitem__(self, key):

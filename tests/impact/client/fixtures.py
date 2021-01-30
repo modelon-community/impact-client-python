@@ -1018,6 +1018,7 @@ def fmu_compile_cancelled():
 @pytest.fixture
 def experiment():
     ws_service = unittest.mock.MagicMock()
+    model_exe_service = unittest.mock.MagicMock()
     exp_service = unittest.mock.MagicMock()
     ws_service.experiment_get.return_value = {
         "run_info": {"status": "done", "failed": 0, "successful": 1, "cancelled": 0}
@@ -1028,13 +1029,16 @@ def experiment():
     exp_service.case_get.return_value = {
         "id": "case_1",
         "run_info": {"status": "successful"},
+        "input": {
+            "fmu_id": "modelica_fluid_examples_heatingsystem_20210130_114628_bbd91f1"
+        },
     }
     exp_service.case_get_log.return_value = "Successful Log"
     exp_service.case_result_get.return_value = (bytes(4), 'result.mat')
     exp_service.case_artifact_get.return_value = (bytes(4), 'result.mat')
     exp_service.trajectories_get.return_value = [[[1, 2, 3, 4]], [[5, 2, 9, 4]]]
     exp_service.case_trajectories_get.return_value = [[1, 2, 3, 4], [5, 2, 9, 4]]
-    return Experiment("Workspace", "Test", ws_service, exp_service)
+    return Experiment("Workspace", "Test", ws_service, model_exe_service, exp_service)
 
 
 @pytest.fixture
@@ -1061,7 +1065,7 @@ def batch_experiment():
         [[5, 2, 9, 4], [11, 22, 32, 44]],
     ]
     exp_service.case_trajectories_get.return_value = [[14, 4, 4, 74], [11, 22, 32, 44]]
-    return Experiment("Workspace", "Test", ws_service, exp_service)
+    return Experiment("Workspace", "Test", ws_service, exp_service=exp_service)
 
 
 @pytest.fixture
@@ -1070,7 +1074,7 @@ def running_experiment():
     exp_service = unittest.mock.MagicMock()
     ws_service.experiment_get.return_value = {"run_info": {"status": "not_started"}}
     exp_service.execute_status.return_value = {"status": "running"}
-    return Experiment("Workspace", "Test", ws_service, exp_service)
+    return Experiment("Workspace", "Test", ws_service, exp_service=exp_service)
 
 
 @pytest.fixture
@@ -1089,7 +1093,7 @@ def failed_experiment():
     exp_service.result_variables_get.return_value = ["inertia.I", "time"]
     exp_service.trajectories_get.return_value = [[[1, 2, 3, 4]], [[5, 2, 9, 4]]]
     exp_service.case_trajectories_get.return_value = [[1, 2, 3, 4], [5, 2, 9, 4]]
-    return Experiment("Workspace", "Test", ws_service, exp_service)
+    return Experiment("Workspace", "Test", ws_service, exp_service=exp_service)
 
 
 @pytest.fixture
@@ -1107,4 +1111,5 @@ def cancelled_experiment():
     exp_service.cases_get.return_value = {"data": {"items": [{"id": "case_1"}]}}
     exp_service.case_get.return_value = {"id": "case_1"}
     exp_service.execute_status.return_value = {"status": "cancelled"}
-    return Experiment("Workspace", "Test", ws_service, exp_service)
+    return Experiment("Workspace", "Test", ws_service, exp_service=exp_service)
+
