@@ -1488,7 +1488,7 @@ class Case:
             fmu = case.get_fmu(fmu_id)
             fmus = set(case.get_fmu() for case in exp.get_cases())
         """
-        fmu_id = self.info['input']['fmu_id']
+        fmu_id = self.info["input"]["fmu_id"]
 
         return ModelExecutable(
             self._workspace_id, fmu_id, self._workspace_sal, self._model_exe_sal
