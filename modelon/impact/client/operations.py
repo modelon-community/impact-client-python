@@ -107,16 +107,18 @@ class Operation(ABC):
         start_t = time.time()
         while True:
             logger.info(f"{self.name} in progress! Status : {self.status().name}")
-            time.sleep(0.5)
             if self.status() == status:
                 logger.info(f"{self.name} completed! Status : {self.status().name}")
                 return self.data()
+
             current_t = time.time()
             if timeout and current_t - start_t > timeout:
                 raise exceptions.OperationTimeOutError(
                     f"Time exceeded the set timeout - {timeout}s! "
                     f"Present status of operation is {self.status().name}!"
                 )
+
+            time.sleep(0.5)
 
 
 class ModelExecutableOperation(Operation):
