@@ -676,7 +676,7 @@ class Model:
         self._model_exe_sal = model_exe_service
 
     def __repr__(self):
-        return f"Class name '{self.class_name}'"
+        return f"Class name '{self._class_name}'"
 
     def __eq__(self, obj):
         return isinstance(obj, Model) and obj._class_name == self._class_name
