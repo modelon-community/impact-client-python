@@ -80,6 +80,10 @@ class TestWorkspace:
         model = workspace.get_model("Modelica.Blocks.PID")
         assert model == Model("Modelica.Blocks.PID", workspace.id)
 
+    def test_model_repr(self, workspace):
+        model = Model("Modelica.Blocks.PID", workspace.id)
+        assert "Class name 'Modelica.Blocks.PID'" == model.__repr__()
+
     def test_get_fmus(self, workspace):
         fmus = workspace.get_fmus()
         assert fmus == [
