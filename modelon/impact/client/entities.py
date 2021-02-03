@@ -903,6 +903,22 @@ class Model:
         )
 
 
+class _ModelExecutableRunInfo:
+    def __init__(self, status, errors):
+        self._status = status
+        self._errors = errors
+
+    @property
+    def status(self):
+        """Status info for a Model-Executable"""
+        return self._status
+
+    @property
+    def errors(self):
+        """A list of errors. Is empty unless 'status' attribute is 'FAILED'"""
+        return self._errors
+
+
 class ModelExecutable:
     """
     Class containing ModelExecutable functionalities.
@@ -940,12 +956,25 @@ class ModelExecutable:
         """FMU modifiers"""
         return {} if self._modifiers is None else self._modifiers
 
-    @property
-    def info(self):
-        """Compilation information as a dictionary"""
+    def _get_info(self):
         if self._info is None:
             self._info = self._workspace_sal.fmu_get(self._workspace_id, self._fmu_id)
+
         return self._info
+
+    @property
+    def info(self):
+        """Deprecated, use 'run_info' attribute"""
+        logger.warning("This attribute is deprectated, use 'run_info' instead")
+        return self._get_info()
+
+    @property
+    def run_info(self):
+        """Compilation run information"""
+        run_info = self._get_info()["run_info"]
+        status = ModelExecutableStatus(run_info["status"])
+        errors = run_info.get("errors", [])
+        return _ModelExecutableRunInfo(status, errors)
 
     @property
     def metadata(self):
@@ -956,28 +985,18 @@ class ModelExecutable:
     def is_successful(self):
         """
         Returns True if the model has compiled successfully.
+        Use the 'run_info' attribute to get more info.
 
         Returns:
 
             True -> If model has compiled successfully.
-            False -> If compilation process has failed.
-
-        Raises:
-
-            OperationNotCompleteError if compilation process is in progress.
-            OperationFailureError if compilation process was cancelled.
+            False -> If compilation process has failed, is running or is cancelled.
 
         Example::
 
             fmu.is_successful()
         """
-        _assert_is_complete(
-            ModelExecutableStatus(self.info["run_info"]["status"]), "Compilation"
-        )
-        return (
-            ModelExecutableStatus(self.info["run_info"]["status"])
-            == ModelExecutableStatus.SUCCESSFUL
-        )
+        return self.run_info.status == ModelExecutableStatus.SUCCESSFUL
 
     def get_log(self):
         """
@@ -998,9 +1017,7 @@ class ModelExecutable:
             log = fmu.get_log()
             log.show()
         """
-        _assert_is_complete(
-            ModelExecutableStatus(self.info["run_info"]["status"]), "Compilation"
-        )
+        _assert_is_complete(self.run_info.status, "Compilation")
         return Log(self._model_exe_sal.compile_log(self._workspace_id, self._fmu_id))
 
     def get_settable_parameters(self):
@@ -1100,6 +1117,34 @@ class ModelExecutable:
         return fmu_path
 
 
+class _ExperimentRunInfo:
+    def __init__(self, status, failed, successful, cancelled):
+        self._status = status
+        self._failed = failed
+        self._successful = successful
+        self._cancelled = cancelled
+
+    @property
+    def status(self):
+        """Status info for an Experiment"""
+        return self._status
+
+    @property
+    def successful(self):
+        """Number of cases in experiment that are successful"""
+        return self._successful
+
+    @property
+    def failed(self):
+        """Number of cases in experiment thar have failed"""
+        return self._failed
+
+    @property
+    def cancelled(self):
+        """Number of cases in experiment that are cancelled"""
+        return self._cancelled
+
+
 class Experiment:
     """
     Class containing Experiment functionalities.
@@ -1132,38 +1177,46 @@ class Experiment:
         """Experiment id"""
         return self._exp_id
 
-    @property
-    def info(self):
-        """Experiment information as a dictionary"""
+    def _get_info(self):
         if self._info is None:
             self._info = self._workspace_sal.experiment_get(
                 self._workspace_id, self._exp_id
             )
+
         return self._info
+
+    @property
+    def run_info(self):
+        """Experiment run information"""
+        run_info = self._get_info()["run_info"]
+
+        status = ExperimentStatus(run_info["status"])
+        failed = run_info.get("failed", 0)
+        successful = run_info.get("successful", 0)
+        cancelled = run_info.get("cancelled", 0)
+        return _ExperimentRunInfo(status, failed, successful, cancelled)
+
+    @property
+    def info(self):
+        """Deprecated, use 'run_info' attribute"""
+        logger.warning("This attribute is deprectated, use 'run_info' instead")
+        return self._get_info()
 
     def is_successful(self):
         """
-        Returns True if the FMU has executed successfully.
+        Returns True if the Experiment has executed successfully.
+        Use the 'run_info' attribute to get more info.
 
         Returns:
 
             True -> If execution process has completed successfully.
-            False -> If execution process has failed.
-
-        Raises:
-
-            OperationNotCompleteError if simulation process is in progress.
-            OperationFailureError if simulation process was cancelled.
+            False -> If execution process has failed, is cancelled or still running.
 
         Example::
 
             experiment.is_successful()
         """
-        _assert_is_complete(
-            ExperimentStatus(self.info["run_info"]["status"]), "Simulation"
-        )
-        expected = {"status": "done", "failed": 0, "cancelled": 0}
-        return expected.items() <= self.info["run_info"].items()
+        return self.run_info.status == ExperimentStatus.DONE
 
     def get_variables(self):
         """
@@ -1183,9 +1236,7 @@ class Experiment:
 
             experiment.get_variables()
         """
-        _assert_is_complete(
-            ExperimentStatus(self.info["run_info"]["status"]), "Simulation"
-        )
+        _assert_is_complete(self.run_info.status, "Simulation")
         return self._exp_sal.result_variables_get(self._workspace_id, self._exp_id)
 
     def get_cases(self):
@@ -1277,9 +1328,7 @@ class Experiment:
                 "Please specify the list of result keys for the trajectories of "
                 "intrest!"
             )
-        _assert_is_complete(
-            ExperimentStatus(self.info["run_info"]["status"]), "Simulation"
-        )
+        _assert_is_complete(self.run_info.status, "Simulation")
         _assert_variable_in_result(variables, self.get_variables())
 
         response = self._exp_sal.trajectories_get(
@@ -1297,6 +1346,16 @@ class Experiment:
             }
             for j in case_nbrs
         }
+
+
+class _CaseRunInfo:
+    def __init__(self, status):
+        self._status = status
+
+    @property
+    def status(self):
+        """Status info for a Case"""
+        return self._status
 
 
 class Case:
@@ -1333,14 +1392,25 @@ class Case:
         """Case id"""
         return self._case_id
 
-    @property
-    def info(self):
-        """Case meta-data"""
+    def _get_info(self):
         if self._info is None:
             self._info = self._exp_sal.case_get(
                 self._workspace_id, self._exp_id, self._case_id
             )
+
         return self._info
+
+    @property
+    def info(self):
+        """Deprecated, use 'run_info' attribute"""
+        logger.warning("This attribute is deprectated, use 'run_info' instead")
+        return self._get_info()
+
+    @property
+    def run_info(self):
+        """Case run information"""
+        run_info = self._get_info()["run_info"]
+        return _CaseRunInfo(CaseStatus(run_info["status"]))
 
     def is_successful(self):
         """
@@ -1355,7 +1425,7 @@ class Case:
 
             case.is_successful()
         """
-        return CaseStatus(self.info["run_info"]["status"]) == CaseStatus.SUCCESSFUL
+        return self.run_info.status == CaseStatus.SUCCESSFUL
 
     def get_log(self):
         """
@@ -1428,7 +1498,7 @@ class Case:
             height = result['h']
             time = res['time']
         """
-        _assert_is_complete(CaseStatus(self.info["run_info"]["status"]), "Simulation")
+        _assert_is_complete(self.run_info.status, "Simulation")
         return Result(
             self._case_id,
             self._workspace_id,
@@ -1488,7 +1558,7 @@ class Case:
             fmu = case.get_fmu(fmu_id)
             fmus = set(case.get_fmu() for case in exp.get_cases())
         """
-        fmu_id = self.info["input"]["fmu_id"]
+        fmu_id = self._get_info()["input"]["fmu_id"]
 
         return ModelExecutable(
             self._workspace_id, fmu_id, self._workspace_sal, self._model_exe_sal
