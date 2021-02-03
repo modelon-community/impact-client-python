@@ -12,6 +12,9 @@ from modelon.impact.client.entities import (
     ModelExecutable,
     Experiment,
     Case,
+    ExperimentStatus,
+    ModelExecutableStatus,
+    CaseStatus,
 )
 from modelon.impact.client.operations import (
     ExperimentOperation,
@@ -210,46 +213,20 @@ class TestModelExecutable:
                 "iteration_variable_count": 2,
             }
         }
-        assert fmu.info == {
-            'id': 'workspace_pid_controller_20210113_131626_77c5174',
-            'input': {
-                'class_name': 'Workspace.PID_Controller',
-                'compiler_options': {'c_compiler': 'gcc'},
-                'runtime_options': {},
-                'compiler_log_level': 'w',
-                'fmi_target': 'me',
-                'fmi_version': '2.0',
-                'platform': 'auto',
-                'model_snapshot': '1610523986117',
-                'toolchain_version': '0.0.1',
-                'compiled_on_sys': 'win32',
-            },
-            'run_info': {
-                'status': 'successful',
-                'datetime_started': 1610523986193,
-                'errors': [],
-                'datetime_finished': 1610523990763,
-            },
-            'meta': {
-                'created_epoch': 1610523986,
-                'input_hash': 'f47e0d051a804eee3cde3e3d98da5f39',
-                'fmu_file': 'model.fmu',
-            },
-        }
+        assert fmu.run_info.status == ModelExecutableStatus.SUCCESSFUL
+        assert fmu.run_info.errors == []
 
     def test_compilation_running(self, fmu_compile_running):
-        assert fmu_compile_running.info["run_info"]["status"] == "not_started"
+        assert fmu_compile_running.run_info.status == ModelExecutableStatus.NOTSTARTED
         pytest.raises(exceptions.OperationNotCompleteError, fmu_compile_running.get_log)
         pytest.raises(
-            exceptions.OperationNotCompleteError,
+            exceptions.OperationFailureError,
             fmu_compile_running.get_settable_parameters,
         )
-        pytest.raises(
-            exceptions.OperationNotCompleteError, fmu_compile_running.is_successful
-        )
+        assert fmu_compile_running.is_successful() == False
 
     def test_compilation_failed(self, fmu_compile_failed):
-        assert fmu_compile_failed.info["run_info"]["status"] == "failed"
+        assert fmu_compile_failed.run_info.status == ModelExecutableStatus.FAILED
         assert not fmu_compile_failed.is_successful()
         assert fmu_compile_failed.get_log() == "Failed Log"
         pytest.raises(
@@ -258,10 +235,8 @@ class TestModelExecutable:
         )
 
     def test_compilation_cancelled(self, fmu_compile_cancelled):
-        assert fmu_compile_cancelled.info["run_info"]["status"] == "cancelled"
-        pytest.raises(
-            exceptions.OperationFailureError, fmu_compile_cancelled.is_successful
-        )
+        assert fmu_compile_cancelled.run_info.status == ModelExecutableStatus.CANCELLED
+        assert fmu_compile_cancelled.is_successful() == False
         pytest.raises(exceptions.OperationFailureError, fmu_compile_cancelled.get_log)
         pytest.raises(
             exceptions.OperationFailureError,
@@ -297,9 +272,10 @@ class TestExperiment:
     def test_execute_successful(self, experiment):
         assert experiment.id == "Test"
         assert experiment.is_successful()
-        assert experiment.info == {
-            "run_info": {"status": "done", "failed": 0, "successful": 1, "cancelled": 0}
-        }
+        assert experiment.run_info.status == ExperimentStatus.DONE
+        assert experiment.run_info.failed == 0
+        assert experiment.run_info.successful == 1
+        assert experiment.run_info.cancelled == 0
         assert experiment.get_variables() == ["inertia.I", "time"]
         assert experiment.get_cases() == [Case("case_1", "Workspace", "Test")]
         assert experiment.get_case("case_1") == Case("case_1", "Workspace", "Test")
@@ -309,9 +285,10 @@ class TestExperiment:
 
     def test_successful_batch_execute(self, batch_experiment):
         assert batch_experiment.is_successful()
-        assert batch_experiment.info == {
-            "run_info": {"status": "done", "failed": 0, "successful": 2, "cancelled": 0}
-        }
+        assert batch_experiment.run_info.status == ExperimentStatus.DONE
+        assert batch_experiment.run_info.failed == 0
+        assert batch_experiment.run_info.successful == 2
+        assert batch_experiment.run_info.cancelled == 0
         assert batch_experiment.get_variables() == ["inertia.I", "time"]
         assert batch_experiment.get_cases() == [
             Case("case_1", "Workspace", "Test"),
@@ -322,7 +299,7 @@ class TestExperiment:
         assert exp['case_2']['inertia.I'] == [14, 4, 4, 74]
 
     def test_running_execution(self, running_experiment):
-        assert running_experiment.info["run_info"]["status"] == "not_started"
+        assert running_experiment.run_info.status == ExperimentStatus.NOTSTARTED
         pytest.raises(
             exceptions.OperationNotCompleteError, running_experiment.get_variables
         )
@@ -332,26 +309,24 @@ class TestExperiment:
             ['inertia.I'],
         )
 
-    def test_failed_execution(self, failed_experiment):
-        assert failed_experiment.info["run_info"]["status"] == "done"
-        assert failed_experiment.get_cases() == [Case("case_1", "Workspace", "Test")]
-        assert failed_experiment.get_case("case_1") == Case(
+    def test_execution_with_failed_cases(self, experiment_with_failed_case):
+        assert experiment_with_failed_case.run_info.status == ExperimentStatus.DONE
+        assert experiment_with_failed_case.get_cases() == [Case("case_1", "Workspace", "Test")]
+        assert experiment_with_failed_case.get_case("case_1") == Case(
             "case_1", "Workspace", "Test"
         )
-        assert not failed_experiment.is_successful()
-        assert failed_experiment.get_trajectories(['inertia.I']) == {
+        assert experiment_with_failed_case.is_successful()
+        assert experiment_with_failed_case.get_trajectories(['inertia.I']) == {
             'case_1': {'inertia.I': [1, 2, 3, 4]}
         }
 
     def test_cancelled_execution(self, cancelled_experiment):
-        assert cancelled_experiment.info["run_info"]["status"] == "cancelled"
+        assert cancelled_experiment.run_info.status == ExperimentStatus.CANCELLED
         assert cancelled_experiment.get_cases() == [Case("case_1", "Workspace", "Test")]
         assert cancelled_experiment.get_case("case_1") == Case(
             "case_1", "Workspace", "Test"
         )
-        pytest.raises(
-            exceptions.OperationFailureError, cancelled_experiment.is_successful
-        )
+        assert False == cancelled_experiment.is_successful()
         pytest.raises(
             exceptions.OperationFailureError, cancelled_experiment.get_variables
         )
@@ -372,7 +347,7 @@ class TestCase:
     def test_case(self, experiment):
         case = experiment.get_case("case_1")
         assert case.id == "case_1"
-        assert case.info["run_info"]["status"] == "successful"
+        assert case.run_info.status == CaseStatus.SUCCESSFUL
         assert case.get_log() == "Successful Log"
         result, name = case.get_result()
         assert (result, name) == (b'\x00\x00\x00\x00', 'result.mat')
@@ -386,7 +361,7 @@ class TestCase:
     def test_multiple_cases(self, batch_experiment):
         case = batch_experiment.get_case("case_2")
         assert case.id == "case_2"
-        assert case.info["run_info"]["status"] == "successful"
+        assert case.run_info.status == CaseStatus.SUCCESSFUL
         assert case.get_log() == "Successful Log"
         result, name = case.get_result()
         assert (result, name) == (b'\x00\x00\x00\x00', 'result.mat')
@@ -395,16 +370,16 @@ class TestCase:
         assert case.is_successful()
         assert case.get_trajectories()['inertia.I'] == [14, 4, 4, 74]
 
-    def test_failed_case(self, failed_experiment):
-        failed_case = failed_experiment.get_case("case_2")
+    def test_failed_case(self, experiment_with_failed_case):
+        failed_case = experiment_with_failed_case.get_case("case_2")
         assert failed_case.id == "case_1"
-        assert failed_case.info["run_info"]["status"] == "failed"
+        assert failed_case.run_info.status == CaseStatus.FAILED
         assert not failed_case.is_successful()
         pytest.raises(exceptions.OperationFailureError, failed_case.get_result)
         assert failed_case.get_trajectories()["inertia.I"] == [1, 2, 3, 4]
 
-    def test_failed_execution_result(self, failed_experiment):
+    def test_failed_execution_result(self, experiment_with_failed_case):
         pytest.raises(
             exceptions.OperationFailureError,
-            failed_experiment.get_case("case_2").get_result,
+            experiment_with_failed_case.get_case("case_2").get_result,
         )

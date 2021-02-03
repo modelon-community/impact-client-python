@@ -1078,7 +1078,7 @@ def running_experiment():
 
 
 @pytest.fixture
-def failed_experiment():
+def experiment_with_failed_case():
     ws_service = unittest.mock.MagicMock()
     exp_service = unittest.mock.MagicMock()
     ws_service.experiment_get.return_value = {
