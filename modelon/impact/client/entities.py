@@ -85,6 +85,7 @@ class ExperimentStatus(Enum):
     NOTSTARTED = "not_started"
     CANCELLED = "cancelled"
     DONE = "done"
+    FAILED = "failed"
 
 
 class CaseStatus(Enum):
@@ -1118,8 +1119,9 @@ class ModelExecutable:
 
 
 class _ExperimentRunInfo:
-    def __init__(self, status, failed, successful, cancelled):
+    def __init__(self, status, errors, failed, successful, cancelled):
         self._status = status
+        self._errors = errors
         self._failed = failed
         self._successful = successful
         self._cancelled = cancelled
@@ -1128,6 +1130,11 @@ class _ExperimentRunInfo:
     def status(self):
         """Status info for an Experiment"""
         return self._status
+
+    @property
+    def errors(self):
+        """A list of errors. Is empty unless 'status' attribute is 'FAILED'"""
+        return self._errors
 
     @property
     def successful(self):
@@ -1191,10 +1198,11 @@ class Experiment:
         run_info = self._get_info()["run_info"]
 
         status = ExperimentStatus(run_info["status"])
+        errors = run_info.get("errors", [])
         failed = run_info.get("failed", 0)
         successful = run_info.get("successful", 0)
         cancelled = run_info.get("cancelled", 0)
-        return _ExperimentRunInfo(status, failed, successful, cancelled)
+        return _ExperimentRunInfo(status, errors, failed, successful, cancelled)
 
     @property
     def info(self):

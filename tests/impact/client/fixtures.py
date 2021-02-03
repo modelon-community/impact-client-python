@@ -1097,6 +1097,19 @@ def experiment_with_failed_case():
 
 
 @pytest.fixture
+def failed_experiment():
+    ws_service = unittest.mock.MagicMock()
+    exp_service = unittest.mock.MagicMock()
+    ws_service.experiment_get.return_value = {
+        "run_info": {"status": "failed", "failed": 0, "successful": 0, "cancelled": 0, 'errors': ['out of licenses', 'too large experiment']}
+    }
+    exp_service.execute_status.return_value = {"status": "done"}
+    exp_service.cases_get.return_value = {"data": {"items": []}}
+    exp_service.case_get.return_value = {}
+    return Experiment("Workspace", "Test", ws_service, exp_service)
+
+
+@pytest.fixture
 def cancelled_experiment():
     ws_service = unittest.mock.MagicMock()
     exp_service = unittest.mock.MagicMock()

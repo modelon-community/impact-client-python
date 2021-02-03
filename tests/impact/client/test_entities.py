@@ -273,6 +273,7 @@ class TestExperiment:
         assert experiment.id == "Test"
         assert experiment.is_successful()
         assert experiment.run_info.status == ExperimentStatus.DONE
+        assert experiment.run_info.errors == []
         assert experiment.run_info.failed == 0
         assert experiment.run_info.successful == 1
         assert experiment.run_info.cancelled == 0
@@ -308,6 +309,11 @@ class TestExperiment:
             running_experiment.get_trajectories,
             ['inertia.I'],
         )
+
+    def test_failed_execution(self, failed_experiment):
+        assert failed_experiment.run_info.status == ExperimentStatus.FAILED
+        assert failed_experiment.is_successful() == False
+        assert failed_experiment.run_info.errors == ['out of licenses', 'too large experiment']
 
     def test_execution_with_failed_cases(self, experiment_with_failed_case):
         assert experiment_with_failed_case.run_info.status == ExperimentStatus.DONE
