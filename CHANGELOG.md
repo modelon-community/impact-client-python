@@ -1,3 +1,10 @@
+# [1.1.0-beta.12](https://github.com/modelon-community/impact-client-python/compare/v1.1.0-beta.11...v1.1.0-beta.12) (2021-02-04)
+
+
+### Features
+
+* Added support for fetching fmus executed for a case ([#80](https://github.com/modelon-community/impact-client-python/issues/80)) ([9034ba8](https://github.com/modelon-community/impact-client-python/commit/9034ba832f734ab378dc1840f946f93000471f51))
+
 # [1.1.0-beta.11](https://github.com/modelon-community/impact-client-python/compare/v1.1.0-beta.10...v1.1.0-beta.11) (2021-01-29)
 
 
