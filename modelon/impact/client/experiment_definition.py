@@ -525,7 +525,7 @@ class SimpleModelicaExperimentDefinition(BaseExperimentDefinition):
 
     def validate(self):
         raise NotImplementedError(
-            'Validation is not supported for SimpleModelicaExperimentDefinition class'
+            "Validation is not supported for SimpleModelicaExperimentDefinition class"
         )
 
     def with_modifiers(self, modifiers=None):

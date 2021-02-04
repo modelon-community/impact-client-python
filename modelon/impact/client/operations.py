@@ -321,12 +321,18 @@ class ExperimentOperation(Operation):
     """
 
     def __init__(
-        self, workspace_id, exp_id, workspace_service=None, exp_service=None,
+        self,
+        workspace_id,
+        exp_id,
+        workspace_service=None,
+        model_exe_service=None,
+        exp_service=None,
     ):
         super().__init__()
         self._workspace_id = workspace_id
         self._exp_id = exp_id
         self._workspace_sal = workspace_service
+        self._model_exe_sal = model_exe_service
         self._exp_sal = exp_service
 
     def __repr__(self):
@@ -355,7 +361,11 @@ class ExperimentOperation(Operation):
                 An experiment class instance.
         """
         return entities.Experiment(
-            self._workspace_id, self._exp_id, self._workspace_sal, self._exp_sal
+            self._workspace_id,
+            self._exp_id,
+            self._workspace_sal,
+            self._model_exe_sal,
+            self._exp_sal,
         )
 
     def status(self):
