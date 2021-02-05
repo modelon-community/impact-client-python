@@ -1,3 +1,10 @@
+# [1.1.0-beta.14](https://github.com/modelon-community/impact-client-python/compare/v1.1.0-beta.13...v1.1.0-beta.14) (2021-02-05)
+
+
+### Bug Fixes
+
+* add _sal_custom_func to cloned workspace ([0389de5](https://github.com/modelon-community/impact-client-python/commit/0389de536b60a140291e19c8e9c2ab566b5b9d9c))
+
 # [1.1.0-beta.13](https://github.com/modelon-community/impact-client-python/compare/v1.1.0-beta.12...v1.1.0-beta.13) (2021-02-05)
 
 
