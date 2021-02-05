@@ -1,3 +1,16 @@
+# [1.1.0-beta.13](https://github.com/modelon-community/impact-client-python/compare/v1.1.0-beta.12...v1.1.0-beta.13) (2021-02-05)
+
+
+### Bug Fixes
+
+* __repr__ function does not throw attribute error ([083e195](https://github.com/modelon-community/impact-client-python/commit/083e1955c161cdf60d86c7ae65941e3bca8b0840))
+* added failure status for experiment and way to get errors ([368bcfe](https://github.com/modelon-community/impact-client-python/commit/368bcfec8920d65b18bc573636392657300a7da4))
+
+
+### Features
+
+* run_info attributes returs documented class objects, info ([f46b5ab](https://github.com/modelon-community/impact-client-python/commit/f46b5abcf43bd032b5b5592fff9cf2011e447e3e))
+
 # [1.1.0-beta.12](https://github.com/modelon-community/impact-client-python/compare/v1.1.0-beta.11...v1.1.0-beta.12) (2021-02-04)
 
 
