@@ -79,6 +79,11 @@ class TestWorkspace:
         clone = workspace.clone()
         assert clone == Workspace('MyClonedWorkspace')
 
+    def test_get_custom_function_from_clone(self, workspace):
+        clone = workspace.clone()
+        custom_function = clone.get_custom_function('dynamic')
+        assert 'dynamic' == custom_function.name
+
     def test_get_model(self, workspace):
         model = workspace.get_model("Modelica.Blocks.PID")
         assert model == Model("Modelica.Blocks.PID", workspace.id)

@@ -293,6 +293,7 @@ class Workspace:
             self._workspace_sal,
             self._model_exe_sal,
             self._exp_sal,
+            self._custom_func_sal,
         )
 
     def get_model(self, class_name):
