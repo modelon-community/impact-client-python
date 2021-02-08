@@ -7,7 +7,7 @@ simulation on a given model and plot the results.
 Initializing the client
 -----------------------
 
-Before we set up our workspace and execute our dynamic simulation workflow we need to initialize the 
+Before we set up our workspace and execute our dynamic simulation workflow we need to initialize the
 client with the impact domain. An API key is required to be autentiate our login to the client. Refer
 to the steps listed in the :doc:`Setup <setup>` section to configure an API key::
 
@@ -22,11 +22,12 @@ Once the client is initialized, we can either create a workspace::
 
    workspace = client.create_workspace(<workspace-name>)
 
-Or upload an existing workspace by specifying the path to the compressed workspace(.zip) to be uploaded and its name::
+Or upload an existing workspace by specifying the path to the compressed workspace(.zip) to be uploaded::
 
-   workspace = client.upload_workspace(<workspace-name>, <path_to_workspace>)
+   workspace = client.upload_workspace(<path_to_workspace>)
 
-This will return an instance of a ``Workspace`` class object.
+This will return an instance of a ``Workspace`` class object with the same name as the zip-file (and
+a number appended if another workspace with the same name already exists).
 
 Choosing analysis type
 ----------------------
@@ -42,7 +43,7 @@ We could fetch a list of available analysis methods and print them by executing:
    print(custom_functions)
 
 By default, there are three available custom functions shipped with Impact namely ``steady state``, ``dynamic`` and ``linearize``.
-It is also possible to create an analysis function for a specific need by following the documentation available in the 
+It is also possible to create an analysis function for a specific need by following the documentation available in the
 Help Center in Modelon Impact (located at <impact url>/help). For this tutorial, we will use the ``dynamic`` custom function::
 
    dynamic = workspace.get_custom_function('dynamic')
@@ -66,14 +67,14 @@ This will return an instance of a ``Model`` class object.
 Setting logging levels for analysis
 -----------------------------------
 
-The built-in python module, ``logging`` (https://docs.python.org/3.9/library/logging.html) is used by the client. The amount of logging that 
+The built-in python module, ``logging`` (https://docs.python.org/3.9/library/logging.html) is used by the client. The amount of logging that
 should be output by the client can be set by specifying the log level as shown in the code snippet.::
 
    import logging
 
    logging.getLogger('modelon.impact.client').setLevel(logging.ERROR)
 
-The log is printed to the standard output, normally the terminal window from which the compiler is invoked. The available log levels are 
+The log is printed to the standard output, normally the terminal window from which the compiler is invoked. The available log levels are
 'INFO'(default), 'ERROR', 'WARNING', 'CRITICAL' and 'DEBUG'.
 
 Analysis
@@ -81,10 +82,10 @@ Analysis
 
 The model analysis can be setup in one of two workflows described below:
 
-   1. **FMU based workflow**: This workflow requires the user to compile the model to a model executable 
-   before setting up an experiment for it. This workflow is useful when the user intends to do all the 
-   computations with the FMUs in a notebook environment(i.e., no experimentation/computation in the Modelon 
-   IMPACT server). 
+   1. **FMU based workflow**: This workflow requires the user to compile the model to a model executable
+   before setting up an experiment for it. This workflow is useful when the user intends to do all the
+   computations with the FMUs in a notebook environment(i.e., no experimentation/computation in the Modelon
+   IMPACT server).
 
    **Note:** Since the user works with the compiled FMUs in the workflow, modifiers added during the
    experimentation step should contain only non-structural parameter modifiers. Any non-structural parameter change
@@ -93,9 +94,9 @@ The model analysis can be setup in one of two workflows described below:
    2. **Class name based workflow**: This workflow allows the user to directly work with the model class object to setup
    experiments for analysis. The compilation in this workflow is handled as a part of the execution step.
    This workflow allows the users to skip the details of the compilation steps and focus on setting up the experiment
-   of interest. Also, this workflow doesn't impose any restrictions on the parameter modifiers that could be 
+   of interest. Also, this workflow doesn't impose any restrictions on the parameter modifiers that could be
    applied to the model. If a structural parameter is set as a modifier in a batch run, a recompilation is triggered automatically
-   by the client. 
+   by the client.
 
 1. FMU based workflow
 ########################
@@ -104,22 +105,22 @@ The model analysis can be setup in one of two workflows described below:
 ***********************
 
 We can compile the model to an FMU for further analysis by calling the ``compile()`` method on the ``model``.
-The ``compile()`` method takes 1 mandatory argument(``compiler_options``) and 7 optional(``runtime_options``, ``compiler_options``, ``compiler_log_level``, 
+The ``compile()`` method takes 1 mandatory argument(``compiler_options``) and 7 optional(``runtime_options``, ``compiler_options``, ``compiler_log_level``,
 ``fmi_target``, ``fmi_version``, ``platform``, ``force_compilation``) ones.
 
-We can fetch the default values for the mandotory ``compiler_options`` arument and the optional ``runtime_options`` from the 
+We can fetch the default values for the mandotory ``compiler_options`` arument and the optional ``runtime_options`` from the
 ``dynamic`` custom functions.::
 
    compiler_options = dynamic.get_compiler_options()
    runtime_options = dynamic.get_runtime_options()
 
 To view the default compiler options, the ``dict()`` method can be called on it::
-   
+
    dict(compiler_options)
 
-It is also possible to apend/modfiy the default options either by calling the ``with_values()`` method on the 
+It is also possible to apend/modfiy the default options either by calling the ``with_values()`` method on the
 ``compiler_options`` class object::
-   
+
    compiler_options_modified = compiler_options.with_values(c_compiler='gcc')
 
 Or creating a dictinary of the options::
@@ -134,7 +135,7 @@ With the options now defined we can pass them to the ``compile()`` method::
 **Note:**
 
 We have called the ``wait()`` method after the ``compile()`` method to ensure that the compilation process reaches completion.
-If ``wait()`` is not called on the model an ``Operation`` object is returned and ``is_completed`` can be used to check the status of the 
+If ``wait()`` is not called on the model an ``Operation`` object is returned and ``is_completed`` can be used to check the status of the
 compilation. Calling the ``wait()`` method returns a ``ModelExecutable`` object which represents the now compiled model.
 
 
@@ -164,10 +165,10 @@ method on the ``dynamic`` custom function class::
    experiment_definition = fmu.new_experiment_definition(dynamic.with_parameters(start_time=0.0, final_time=2.0))
 
 The default set of parameters available for the custom function can be viewed by calling the property ``parameter_values``::
-   
+
    dynamic.parameter_values
 
-The ``new_experiment_definition()`` method takes the optional agruments ``solver_options``, ``simulation_options`` and 
+The ``new_experiment_definition()`` method takes the optional agruments ``solver_options``, ``simulation_options`` and
 ``simulation_log_level``. If the ``solver_options`` and ``simulation_options`` are not explictly defined, they default to the ``dynamic``
 custom function defaults.
 
@@ -187,7 +188,7 @@ They can be set in a way similar to the compiler_options::
 With the `Class name based workflow`, we could skip the compilation step and setup the experiment
 from the model directly.
 
-This could be done by either creating a SimpleModelicaExperimentDefinition class by passing the model 
+This could be done by either creating a SimpleModelicaExperimentDefinition class by passing the model
 and the dynamic custom function object::
 
    from modelon.impact.client import SimpleModelicaExperimentDefinition
@@ -207,10 +208,10 @@ method on the ``dynamic`` custom function class::
    experiment_definition = model.new_experiment_definition(dynamic.with_parameters(start_time=0.0, final_time=2.0))
 
 The default set of parameters available for the custom function can be viewed by calling the property ``parameter_values``::
-   
+
    dynamic.parameter_values
 
-The ``new_experiment_definition()`` method takes the optional agruments ``solver_options``, ``simulation_options`` and 
+The ``new_experiment_definition()`` method takes the optional agruments ``solver_options``, ``simulation_options`` and
 ``simulation_log_level``. If the ``solver_options`` and ``simulation_options`` are not explictly defined, they default to the ``dynamic``
 custom function defaults.
 
@@ -225,13 +226,13 @@ They can be set in a way similar to the compiler_options::
 Setting up a series of simulations
 ----------------------------------
 
-Following either of the approaches listed below, the created ``experiment_definition`` can be modified to 
+Following either of the approaches listed below, the created ``experiment_definition`` can be modified to
 set up a series of simulations
 
- 
+
 Operators
 #########
-Operators can be used to create multi-execution experiments. Here is an example where a multi-execution 
+Operators can be used to create multi-execution experiments. Here is an example where a multi-execution
 experiment definition with 3 cases is created::
 
    from modelon.impact.client import Range
@@ -248,7 +249,7 @@ It is also possible to create multi-execution experiments with an explicit list 
 
    experiment_definition = experiment_definition.with_modifiers({'PI.k': Choices(10, 20, 30, 40)})
 
-Here the ``Choices()`` operator class is used to specify an explicit list of values for the parameter to sweep. The parametrization in the 
+Here the ``Choices()`` operator class is used to specify an explicit list of values for the parameter to sweep. The parametrization in the
 examples above would configure a set of four simulation cases for the fmu with ``4`` choosen values for the ``PI.k`` parameter.
 
 It also possible to use a combination of range and choices operator to setup a batch run::
@@ -259,7 +260,7 @@ It also possible to use a combination of range and choices operator to setup a b
 
 Experiment extensions
 #####################
-The experiment extensions approach provides a more flexible and highly parametrizable way to create a multi-execution scenario.   
+The experiment extensions approach provides a more flexible and highly parametrizable way to create a multi-execution scenario.
 The extensions could be defined by calling the ``with_extensions()`` method on the ``experiment_definition``
 class object with a list of ``SimpleExperimentExtension()`` classes as input. The ``SimpleExperimentExtension()`` could be parametrized
 with inputs such as the custom_function parameters, solver_options, simulation_options and simulation_log_level::
@@ -278,7 +279,7 @@ with inputs such as the custom_function parameters, solver_options, simulation_o
    )
 
 This would create two simulation cases with different solver and simulation settings. It is also possible to have different
-variable modifiers for each of these cases. This could be done by calling the ``with_modifiers()`` method on the 
+variable modifiers for each of these cases. This could be done by calling the ``with_modifiers()`` method on the
 ``SimpleExperimentExtension()`` class::
 
    experiment_extension_1 = experiment_extension_1.with_modifiers({'PI.k': 25})
@@ -294,22 +295,22 @@ class object::
 A simpler approach for parameterization also exists for scenarios where only variable modifiers are varied for setting up
 multi-execution cases. This could be done by calling the ``with_cases()`` method on the ``experiment_definition`` class object
 with the variable modifiers as inputs::
-   
+
    experiment_definition = experiment_definition.with_cases([{'PI.k': 20}, {'PI.k': 30}])
 
 **Note:**
 
 It is not supported to have both range operator and experiment extensions defined for an experiment. The simulation cases
-could only be set up with one of the two methods. However, it is allowed to call the  ``with_modifiers`` method on the 
+could only be set up with one of the two methods. However, it is allowed to call the  ``with_modifiers`` method on the
 ``experiment_definition`` class to specify variable to modify. The modified variable in such a scenario would be set in all
-the cases defined using the ``with_extensions()`` or ``with_cases()`` method calls. If the same variable modifier is 
+the cases defined using the ``with_extensions()`` or ``with_cases()`` method calls. If the same variable modifier is
 set in both ``experiment_definition`` and extensions, the one set in the extensions would gain precedence, overriding the former.
 
 
 Executing the experiment
 ------------------------
 
-The experiment definition set up can now be passed to the ``execute()`` function:: 
+The experiment definition set up can now be passed to the ``execute()`` function::
 
    exp = workspace.execute(experiment_definition).wait()
 
@@ -320,13 +321,13 @@ Plotting the results
 --------------------
 
 With the simulation completed now, we could now plot the result trajectories from the batch simulation we setup earlier.
-The ``Experiment`` class we got in our previous step has a set of three cases with trajectories for the three different parameter 
-values we specified for the ``PI.k`` parameter. To fetch the case trajectories for a given experiment the ``get_cases()``  
-method can be called on the experiment and further it could be checked if the cases did simulate successfully by calling 
-the ``is_successful()`` method on the case. The ``get_trajectories()`` function can be called on the individual ``case`` objects to 
+The ``Experiment`` class we got in our previous step has a set of three cases with trajectories for the three different parameter
+values we specified for the ``PI.k`` parameter. To fetch the case trajectories for a given experiment the ``get_cases()``
+method can be called on the experiment and further it could be checked if the cases did simulate successfully by calling
+the ``is_successful()`` method on the case. The ``get_trajectories()`` function can be called on the individual ``case`` objects to
 fetch the ``Result`` class object for that specific case.
 
-To plot the results, the variable names of interest could be passed as index variables on the ``Result`` class object:: 
+To plot the results, the variable names of interest could be passed as index variables on the ``Result`` class object::
 
    import matplotlib.pyplot as plt
 
