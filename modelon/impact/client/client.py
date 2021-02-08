@@ -211,7 +211,7 @@ class Client:
 
         Example::
 
-            client.upload_workspace('my_workspace', path_to_workspace)
+            client.upload_workspace(path_to_workspace)
         """
         resp = self._sal.workspace.workspace_upload(path_to_workspace)
         return modelon.impact.client.entities.Workspace(
