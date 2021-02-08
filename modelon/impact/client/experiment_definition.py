@@ -474,8 +474,11 @@ class SimpleModelicaExperimentDefinition(BaseExperimentDefinition):
         simulation_options = custom_function.get_simulation_options()
         .with_values(ncp=500)
         solver_options = {'atol':1e-8}
-        simulate_def = model.new_experiment_definition(custom_function,
-        solver_options, simulation_options)
+        simulate_def = model.new_experiment_definition(
+            custom_function,
+            solver_options=solver_options,
+            simulation_options=simulation_options
+        )
         simulate_def.to_dict()
     """
 
@@ -661,8 +664,11 @@ class SimpleModelicaExperimentDefinition(BaseExperimentDefinition):
             simulation_options = custom_function.get_simulation_options()
                 .with_values(ncp=500)
             solver_options = {'atol':1e-8}
-            simulate_def = model.new_experiment_definition(custom_function,
-            solver_options, simulation_options)
+            simulate_def = model.new_experiment_definition(
+                custom_function,
+                solver_options=solver_options,
+                simulation_options=simulation_options
+            )
             simulate_def.to_dict()
         """
 
@@ -735,8 +741,11 @@ class SimpleExperimentExtension(BaseExperimentExtension):
         simulation_options = custom_function.get_simulation_options()
         .with_values(ncp=500)
         solver_options = {'atol':1e-8}
-        simulate_def = fmu.new_experiment_definition(custom_function,
-        solver_options, simulation_options).with_modifiers({'inertia1.J': 2})
+        simulate_def = fmu.new_experiment_definition(
+            custom_function,
+            solver_options=solver_options,
+            simulation_options=simulation_options
+        ).with_modifiers({'inertia1.J': 2})
         simulate_ext = SimpleExperimentExtension(
         {'start_time': 0.0, 'final_time': 4.0},
         solver_options,
