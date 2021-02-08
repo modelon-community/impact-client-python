@@ -486,6 +486,7 @@ class SimpleModelicaExperimentDefinition(BaseExperimentDefinition):
         self,
         model,
         custom_function,
+        *,
         compiler_options=None,
         fmi_target="me",
         fmi_version="2.0",
