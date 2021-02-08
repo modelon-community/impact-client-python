@@ -1,3 +1,10 @@
+# [1.1.0-beta.16](https://github.com/modelon-community/impact-client-python/compare/v1.1.0-beta.15...v1.1.0-beta.16) (2021-02-08)
+
+
+### Bug Fixes
+
+* correct docs on model.new_experiment_definition ([#83](https://github.com/modelon-community/impact-client-python/issues/83)) ([b38da7c](https://github.com/modelon-community/impact-client-python/commit/b38da7c6be20d4e32c7045aa81ec9ee24568e57e))
+
 # [1.1.0-beta.15](https://github.com/modelon-community/impact-client-python/compare/v1.1.0-beta.14...v1.1.0-beta.15) (2021-02-08)
 
 
