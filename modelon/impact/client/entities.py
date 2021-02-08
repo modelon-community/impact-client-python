@@ -813,6 +813,7 @@ class Model:
     def new_experiment_definition(
         self,
         custom_function,
+        *,
         compiler_options=None,
         fmi_target="me",
         fmi_version="2.0",
@@ -886,8 +887,10 @@ class Model:
             simulation_options = dynamic.get_simulation_options().
             with_values(ncp=500)
             experiment_definition = model.new_experiment_definition(
-                dynamic, solver_options=solver_options,
-                simulation_options=simulation_options)
+                dynamic,
+                solver_options=solver_options,
+                simulation_options=simulation_options
+            )
             experiment = workspace.execute(experiment_definition).wait()
         """
         return SimpleModelicaExperimentDefinition(

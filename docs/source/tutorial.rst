@@ -219,8 +219,11 @@ They can be set in a way similar to the compiler_options::
 
    simulation_options = dynamic.get_simulation_options().with_values(ncp=500)
    solver_options = {'atol':1e-8}
-   experiment_definition = model.new_experiment_definition(dynamic.with_parameters(start_time=0.0, final_time=2.0),
-   solver_options, simulation_options)
+   experiment_definition = model.new_experiment_definition(
+       dynamic.with_parameters(start_time=0.0, final_time=2.0),
+       solver_options=solver_options,
+       simulation_options=simulation_options
+   )
 
 
 Setting up a series of simulations
