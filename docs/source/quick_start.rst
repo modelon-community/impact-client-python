@@ -4,10 +4,10 @@ Quick Start
 The python API enables the execution of workflows orchestrated on a client and executed on a Modelon Impact server, which
 may be running remotely.  With sufficient login credentials and an API Key (see :doc:`Setup <setup>`),
 Modelica models may be uploaded, compiled, and executed on a server.  The results can be either processed on the server
-with a custom function or downloaded to the client for further analysis.  
+with a custom function or downloaded to the client for further analysis.
 
-An analysis could be setup and executed using either the :ref:`FMU <1. FMU based workflow>` or a :ref:`Class name <2. Class name based workflow>` based workflow.
-The specific about the two workflows are discussed in more detail :ref:`here. <Analysis>`
+An analysis could be set up and executed using either the :ref:`FMU <1. FMU based workflow>` or a :ref:`Class name <2. Class name based workflow>` based workflow.
+The specifics of the two workflows are discussed in more detail :ref:`here. <Analysis>`
 
 A simple example using the :ref:`FMU based workflow <1. FMU based workflow>` is shown below::
 
@@ -100,9 +100,9 @@ An example of setting up and executing a series of simulations on a server and r
    plt.show()
 
 A more flexible and customized way to define a series of simulations::
-   
+
    from modelon.impact.client import Client, SimpleExperimentExtension
-   
+
    client = Client(url=<impact-domain>)
    workspace = client.create_workspace(<workspace-name>)
 
@@ -151,5 +151,5 @@ A workflow to fetch artifacts to do some analysis locally could be accomplished 
 **Note:**
 
 The OS running the Impact server must match the environment that runs the compiled FMU. This is necessary as the binaries
-packaged with the FMU are based on the platform generating the FMU. For example, if the Impact server is running Linux 
+packaged with the FMU are based on the platform generating the FMU. For example, if the Impact server is running Linux
 the binary in the downloaded FMU is compiled for Linux. The downloaded FMU can then not be simulated on Windows.
