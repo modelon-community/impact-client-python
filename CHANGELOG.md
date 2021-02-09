@@ -1,3 +1,10 @@
+# [1.1.0-beta.17](https://github.com/modelon-community/impact-client-python/compare/v1.1.0-beta.16...v1.1.0-beta.17) (2021-02-09)
+
+
+### Bug Fixes
+
+* Updated the metadata property to use the new POST /steady-state-metadata api ([#85](https://github.com/modelon-community/impact-client-python/issues/85)) ([9be7b4e](https://github.com/modelon-community/impact-client-python/commit/9be7b4eb0a22e03f7bdfdac7bf57510a042df8f5))
+
 # [1.1.0-beta.16](https://github.com/modelon-community/impact-client-python/compare/v1.1.0-beta.15...v1.1.0-beta.16) (2021-02-08)
 
 
