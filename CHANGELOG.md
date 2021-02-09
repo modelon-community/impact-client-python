@@ -1,3 +1,10 @@
+# [1.1.0-beta.18](https://github.com/modelon-community/impact-client-python/compare/v1.1.0-beta.17...v1.1.0-beta.18) (2021-02-09)
+
+
+### Bug Fixes
+
+* Made fmu.modifier method private ([dde8351](https://github.com/modelon-community/impact-client-python/commit/dde8351b832b7270383cfc070ff2ecfd4b57b6a2))
+
 # [1.1.0-beta.17](https://github.com/modelon-community/impact-client-python/compare/v1.1.0-beta.16...v1.1.0-beta.17) (2021-02-09)
 
 
