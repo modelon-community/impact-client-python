@@ -1,12 +1,19 @@
 import os
 import tempfile
+import logging
 from modelon.impact.client import operations
 
-from modelon.impact.client.experiment_definition import SimpleExperimentDefinition
+from modelon.impact.client.experiment_definition import (
+    SimpleModelicaExperimentDefinition,
+    SimpleFMUExperimentDefinition,
+    assert_valid_args,
+)
 from collections.abc import Mapping
 from modelon.impact.client.options import ExecutionOptions
 from modelon.impact.client import exceptions
 from enum import Enum
+
+logger = logging.getLogger(__name__)
 
 
 def _assert_successful_operation(is_successful, operation_name="Operation"):
@@ -57,21 +64,6 @@ def _create_result_dict(variables, workspace_id, exp_id, case_id, exp_sal):
     return data
 
 
-def _assert_valid_args(compiler_options, runtime_options):
-    if not isinstance(compiler_options, (ExecutionOptions, dict)):
-        raise TypeError(
-            "Compiler options object must either be a dictionary or an "
-            "instance of modelon.impact.client.options.ExecutionOptions class!"
-        )
-    if runtime_options is not None and not isinstance(
-        runtime_options, (ExecutionOptions, dict)
-    ):
-        raise TypeError(
-            "Runtime options object must either be a dictionary or an "
-            "instance of modelon.impact.client.options.ExecutionOptions class!"
-        )
-
-
 class ModelExecutableStatus(Enum):
     """
     Class representing an enumeration for the possible
@@ -93,6 +85,7 @@ class ExperimentStatus(Enum):
     NOTSTARTED = "not_started"
     CANCELLED = "cancelled"
     DONE = "done"
+    FAILED = "failed"
 
 
 class CaseStatus(Enum):
@@ -115,13 +108,13 @@ class Workspace:
         self,
         workspace_id,
         workspace_service=None,
-        model_exeutable=None,
+        model_exe_service=None,
         experiment_service=None,
         custom_function_service=None,
     ):
         self._workspace_id = workspace_id
         self._workspace_sal = workspace_service
-        self._model_exe_sal = model_exeutable
+        self._model_exe_sal = model_exe_service
         self._exp_sal = experiment_service
         self._custom_func_sal = custom_function_service
 
@@ -300,6 +293,7 @@ class Workspace:
             self._workspace_sal,
             self._model_exe_sal,
             self._exp_sal,
+            self._custom_func_sal,
         )
 
     def get_model(self, class_name):
@@ -387,7 +381,12 @@ class Workspace:
         resp = self._workspace_sal.experiments_get(self._workspace_id)
         return [
             Experiment(
-                self._workspace_id, item["id"], self._workspace_sal, self._exp_sal, item
+                self._workspace_id,
+                item["id"],
+                self._workspace_sal,
+                self._model_exe_sal,
+                self._exp_sal,
+                item,
             )
             for item in resp["data"]["items"]
         ]
@@ -412,7 +411,12 @@ class Workspace:
         """
         resp = self._workspace_sal.experiment_get(self._workspace_id, experiment_id)
         return Experiment(
-            self._workspace_id, resp["id"], self._workspace_sal, self._exp_sal, resp
+            self._workspace_id,
+            resp["id"],
+            self._workspace_sal,
+            self._model_exe_sal,
+            self._exp_sal,
+            resp,
         )
 
     def create_experiment(self, definition):
@@ -423,7 +427,9 @@ class Workspace:
 
             definition --
                 An parametrized experiment definition class of type
-                modelon.impact.client.experiment_definition.SimpleExperimentDefinition.
+                modelon.impact.client.experiment_definition.SimpleModelicaExperimentDefinition
+                or
+                modelon.impact.client.experiment_definition.SimpleFMUExperimentDefinition.
 
         Returns:
 
@@ -434,13 +440,16 @@ class Workspace:
 
             workspace.create_experiment(definition)
         """
-        if isinstance(definition, SimpleExperimentDefinition):
+        if isinstance(definition, SimpleFMUExperimentDefinition):
+            definition = definition.to_dict()
+        elif isinstance(definition, SimpleModelicaExperimentDefinition):
             definition = definition.to_dict()
         elif not isinstance(definition, dict):
             raise TypeError(
-                "Definition object must either be a dictionary or an instance of "
+                "Definition object must either be a dictionary or an instance of either"
                 "modelon.impact.client.experiment_definition."
-                "SimpleExperimentDefinition class!"
+                "SimpleModelicaExperimentDefinition class or modelon.impact.client."
+                "experiment_definition.SimpleFMUExperimentDefinition.!"
             )
 
         resp = self._workspace_sal.experiment_create(self._workspace_id, definition)
@@ -448,6 +457,7 @@ class Workspace:
             self._workspace_id,
             resp["experiment_id"],
             self._workspace_sal,
+            self._model_exe_sal,
             self._exp_sal,
         )
 
@@ -459,8 +469,11 @@ class Workspace:
 
             definition --
                 An experiment definition class instance of
-                modelon.impact.client.experiment_definition.SimpleExperimentDefinition
-                or a dictionary object containing the definition.
+                modelon.impact.client.experiment_definition.SimpleFMUExperimentDefinition
+                or
+                modelon.impact.client.experiment_definition.SimpleModelicaExperimentDefinition
+                or
+                a dictionary object containing the definition.
 
         Returns:
 
@@ -479,6 +492,7 @@ class Workspace:
             self._workspace_id,
             self._exp_sal.experiment_execute(self._workspace_id, exp_id),
             self._workspace_sal,
+            self._model_exe_sal,
             self._exp_sal,
         )
 
@@ -658,16 +672,21 @@ class Model:
     def __init__(
         self, class_name, workspace_id, workspace_service=None, model_exe_service=None
     ):
-        self.class_name = class_name
+        self._class_name = class_name
         self._workspace_id = workspace_id
         self._workspace_sal = workspace_service
         self._model_exe_sal = model_exe_service
 
     def __repr__(self):
-        return f"Class name '{self.class_name}'"
+        return f"Class name '{self._class_name}'"
 
     def __eq__(self, obj):
-        return isinstance(obj, Model) and obj.class_name == self.class_name
+        return isinstance(obj, Model) and obj._class_name == self._class_name
+
+    @property
+    def name(self):
+        """Class name"""
+        return self._class_name
 
     def compile(
         self,
@@ -677,6 +696,7 @@ class Model:
         fmi_target="me",
         fmi_version="2.0",
         platform="auto",
+        force_compilation=False,
     ):
         """Compiles the model to an FMU.
         Returns an modelon.impact.client.operations.ModelExecutableOperation class
@@ -705,8 +725,21 @@ class Model:
                 The FMI version. Valid options are '1.0' and '2.0'. Default: '2.0'.
 
             platform --
-                Platform for FMU binary. Supported values are "auto", "win64", "win32"
-                or "linux64". Default: 'auto'.
+                Platform for FMU binary.The OS running the Impact server must match the
+                environment that runs the compiled FMU. This is necessary as the
+                binaries packaged with the FMU are based on the platform generating
+                the FMU. For example, if the Impact server is running Linux the binary
+                in the downloaded FMU is compiled for Linux. The downloaded FMU can
+                then not be simulated on Windows.
+                Supported options are:-
+                    - 'auto': platform is selected automatically.
+                    - "linux64": generate a 32 bit FMU.
+                    - "win32": generate a 32 bit FMU.
+                    - "win64": generate a 64 bit FMU
+                Default: 'auto'.
+
+            force_compilation --
+                Force a model compilation.
 
         Returns:
 
@@ -724,7 +757,9 @@ class Model:
             model.compile(compiler_options, runtime_options).wait()
             model.compile({'c_compiler':'gcc'}).wait()
         """
-        _assert_valid_args(compiler_options, runtime_options)
+        assert_valid_args(
+            compiler_options=compiler_options, runtime_options=runtime_options
+        )
         compiler_options = (
             dict(compiler_options)
             if isinstance(compiler_options, ExecutionOptions)
@@ -742,7 +777,7 @@ class Model:
 
         body = {
             "input": {
-                "class_name": self.class_name,
+                "class_name": self._class_name,
                 "compiler_options": compiler_options,
                 "runtime_options": runtime_options,
                 "compiler_log_level": compiler_log_level,
@@ -751,12 +786,142 @@ class Model:
                 "platform": platform,
             }
         }
+        if not force_compilation:
+            fmu_id, modifiers = self._model_exe_sal.fmu_setup(
+                self._workspace_id, body, True
+            )
+            if fmu_id:
+                return operations.CachedModelExecutableOperation(
+                    self._workspace_id,
+                    fmu_id,
+                    self._workspace_sal,
+                    self._model_exe_sal,
+                    None,
+                    modifiers,
+                )
+
+        # No cached FMU, setup up a new one
+        fmu_id, _ = self._model_exe_sal.fmu_setup(self._workspace_id, body, False)
+
         return operations.ModelExecutableOperation(
             self._workspace_id,
-            self._model_exe_sal.compile_model(self._workspace_id, body),
+            self._model_exe_sal.compile_model(self._workspace_id, fmu_id),
             self._workspace_sal,
             self._model_exe_sal,
         )
+
+    def new_experiment_definition(
+        self,
+        custom_function,
+        *,
+        compiler_options=None,
+        fmi_target="me",
+        fmi_version="2.0",
+        platform="auto",
+        compiler_log_level="warning",
+        runtime_options=None,
+        solver_options=None,
+        simulation_options=None,
+        simulation_log_level="WARNING",
+    ):
+        """
+        Returns a new experiment definition using this Model.
+
+        Parameters:
+
+            custom_function --
+                The custom function to use for this experiment.
+
+            compiler_options --
+                An compilation options class instance of
+                modelon.impact.client.options.ExecutionOptions or
+                a dictionary object containing the compiler options.
+
+            fmi_target --
+                Compiler target. Possible values are 'me' and 'cs'. Default: 'me'.
+
+            fmi_version --
+                The FMI version. Valid options are '1.0' and '2.0'. Default: '2.0'.
+
+            platform --
+                Platform for FMU binary.The OS running the Impact server must match the
+                environment that runs the compiled FMU. This is necessary as the
+                binaries packaged with the FMU are based on the platform generating
+                the FMU. For example, if the Impact server is running Linux the binary
+                in the downloaded FMU is compiled for Linux. The downloaded FMU can
+                then not be simulated on Windows.
+                Supported options are:-
+                    - 'auto': platform is selected automatically.
+                    - "linux64": generate a 32 bit FMU.
+                    - "win32": generate a 32 bit FMU.
+                    - "win64": generate a 64 bit FMU
+                Default: 'auto'.
+
+            compiler_log_level --
+                The logging for the compiler. Possible values are "error",
+                "warning", "info", "verbose" and "debug". Default: 'warning'.
+
+            runtime_options --
+                An runtime options class instance of
+                modelon.impact.client.options.ExecutionOptions or
+                a dictionary object containing the runtime options. Default: None.
+
+            solver_options --
+                The solver options to use for this experiment. By default the options
+                is set to None, which means the default options for the
+                custom_function input is used.
+
+            simulation_options --
+                The simulation_options to use for this experiment. By default the
+                options is set to None, which means the default options for the
+                custom_function input is used.
+
+            simulation_log_level --
+                Simulation log level for this experiment. Default is 'WARNING'.
+
+        Example::
+
+            model = workspace.get_model("Modelica.Blocks.Examples.PID_Controller")
+            dynamic = workspace.get_custom_function('dynamic')
+            solver_options = {'atol':1e-8}
+            simulation_options = dynamic.get_simulation_options().
+            with_values(ncp=500)
+            experiment_definition = model.new_experiment_definition(
+                dynamic,
+                solver_options=solver_options,
+                simulation_options=simulation_options
+            )
+            experiment = workspace.execute(experiment_definition).wait()
+        """
+        return SimpleModelicaExperimentDefinition(
+            model=self,
+            custom_function=custom_function,
+            compiler_options=compiler_options,
+            fmi_target=fmi_target,
+            fmi_version=fmi_version,
+            platform=platform,
+            compiler_log_level=compiler_log_level,
+            runtime_options=runtime_options,
+            solver_options=solver_options,
+            simulation_options=simulation_options,
+            simulation_log_level=simulation_log_level,
+        )
+
+
+class _ModelExecutableRunInfo:
+    def __init__(self, status, errors):
+        self._status = status
+        self._errors = errors
+
+    @property
+    def status(self):
+        """Status info for a Model-Executable"""
+        return self._status
+
+    @property
+    def errors(self):
+        """A list of errors. Is empty unless 'status' attribute is 'FAILED'"""
+        return self._errors
 
 
 class ModelExecutable:
@@ -771,12 +936,14 @@ class ModelExecutable:
         workspace_service=None,
         model_exe_service=None,
         info=None,
+        modifiers=None,
     ):
         self._workspace_id = workspace_id
         self._fmu_id = fmu_id
         self._workspace_sal = workspace_service
         self._model_exe_sal = model_exe_service
         self._info = info
+        self._modifiers = modifiers
 
     def __repr__(self):
         return f"FMU with id '{self._fmu_id}'"
@@ -789,44 +956,54 @@ class ModelExecutable:
         """FMU id"""
         return self._fmu_id
 
-    @property
-    def info(self):
-        """Compilation information as a dictionary"""
+    def _variable_modifiers(self):
+        return {} if self._modifiers is None else self._modifiers
+
+    def _get_info(self):
         if self._info is None:
             self._info = self._workspace_sal.fmu_get(self._workspace_id, self._fmu_id)
+
         return self._info
 
     @property
+    def info(self):
+        """Deprecated, use 'run_info' attribute"""
+        logger.warning("This attribute is deprectated, use 'run_info' instead")
+        return self._get_info()
+
+    @property
+    def run_info(self):
+        """Compilation run information"""
+        run_info = self._get_info()["run_info"]
+        status = ModelExecutableStatus(run_info["status"])
+        errors = run_info.get("errors", [])
+        return _ModelExecutableRunInfo(status, errors)
+
+    @property
     def metadata(self):
-        """FMU metadata"""
+        """FMU metadata. Returns the 'iteration_variable_count' and 'residual_variable_count'
+            only for steady state model compiled as an FMU"""
         _assert_successful_operation(self.is_successful(), "Compilation")
-        return self._model_exe_sal.ss_fmu_metadata_get(self._workspace_id, self._fmu_id)
+        parameter_state = {"parameterState": self._variable_modifiers()}
+        return self._model_exe_sal.ss_fmu_metadata_get(
+            self._workspace_id, self._fmu_id, parameter_state
+        )
 
     def is_successful(self):
         """
         Returns True if the model has compiled successfully.
+        Use the 'run_info' attribute to get more info.
 
         Returns:
 
             True -> If model has compiled successfully.
-            False -> If compilation process has failed.
-
-        Raises:
-
-            OperationNotCompleteError if compilation process is in progress.
-            OperationFailureError if compilation process was cancelled.
+            False -> If compilation process has failed, is running or is cancelled.
 
         Example::
 
             fmu.is_successful()
         """
-        _assert_is_complete(
-            ModelExecutableStatus(self.info["run_info"]["status"]), "Compilation"
-        )
-        return (
-            ModelExecutableStatus(self.info["run_info"]["status"])
-            == ModelExecutableStatus.SUCCESSFUL
-        )
+        return self.run_info.status == ModelExecutableStatus.SUCCESSFUL
 
     def get_log(self):
         """
@@ -847,9 +1024,7 @@ class ModelExecutable:
             log = fmu.get_log()
             log.show()
         """
-        _assert_is_complete(
-            ModelExecutableStatus(self.info["run_info"]["status"]), "Compilation"
-        )
+        _assert_is_complete(self.run_info.status, "Compilation")
         return Log(self._model_exe_sal.compile_log(self._workspace_id, self._fmu_id))
 
     def get_settable_parameters(self):
@@ -911,7 +1086,7 @@ class ModelExecutable:
                 dynamic, solver_options, simulation_options)
             experiment = workspace.execute(experiment_definition).wait()
         """
-        return SimpleExperimentDefinition(
+        return SimpleFMUExperimentDefinition(
             self,
             custom_function,
             solver_options,
@@ -949,17 +1124,58 @@ class ModelExecutable:
         return fmu_path
 
 
+class _ExperimentRunInfo:
+    def __init__(self, status, errors, failed, successful, cancelled):
+        self._status = status
+        self._errors = errors
+        self._failed = failed
+        self._successful = successful
+        self._cancelled = cancelled
+
+    @property
+    def status(self):
+        """Status info for an Experiment"""
+        return self._status
+
+    @property
+    def errors(self):
+        """A list of errors. Is empty unless 'status' attribute is 'FAILED'"""
+        return self._errors
+
+    @property
+    def successful(self):
+        """Number of cases in experiment that are successful"""
+        return self._successful
+
+    @property
+    def failed(self):
+        """Number of cases in experiment thar have failed"""
+        return self._failed
+
+    @property
+    def cancelled(self):
+        """Number of cases in experiment that are cancelled"""
+        return self._cancelled
+
+
 class Experiment:
     """
     Class containing Experiment functionalities.
     """
 
     def __init__(
-        self, workspace_id, exp_id, workspace_service=None, exp_service=None, info=None
+        self,
+        workspace_id,
+        exp_id,
+        workspace_service=None,
+        model_exe_service=None,
+        exp_service=None,
+        info=None,
     ):
         self._workspace_id = workspace_id
         self._exp_id = exp_id
         self._workspace_sal = workspace_service
+        self._model_exe_sal = model_exe_service
         self._exp_sal = exp_service
         self._info = info
 
@@ -974,38 +1190,47 @@ class Experiment:
         """Experiment id"""
         return self._exp_id
 
-    @property
-    def info(self):
-        """Experiment information as a dictionary"""
+    def _get_info(self):
         if self._info is None:
             self._info = self._workspace_sal.experiment_get(
                 self._workspace_id, self._exp_id
             )
+
         return self._info
+
+    @property
+    def run_info(self):
+        """Experiment run information"""
+        run_info = self._get_info()["run_info"]
+
+        status = ExperimentStatus(run_info["status"])
+        errors = run_info.get("errors", [])
+        failed = run_info.get("failed", 0)
+        successful = run_info.get("successful", 0)
+        cancelled = run_info.get("cancelled", 0)
+        return _ExperimentRunInfo(status, errors, failed, successful, cancelled)
+
+    @property
+    def info(self):
+        """Deprecated, use 'run_info' attribute"""
+        logger.warning("This attribute is deprectated, use 'run_info' instead")
+        return self._get_info()
 
     def is_successful(self):
         """
-        Returns True if the FMU has executed successfully.
+        Returns True if the Experiment has executed successfully.
+        Use the 'run_info' attribute to get more info.
 
         Returns:
 
             True -> If execution process has completed successfully.
-            False -> If execution process has failed.
-
-        Raises:
-
-            OperationNotCompleteError if simulation process is in progress.
-            OperationFailureError if simulation process was cancelled.
+            False -> If execution process has failed, is cancelled or still running.
 
         Example::
 
             experiment.is_successful()
         """
-        _assert_is_complete(
-            ExperimentStatus(self.info["run_info"]["status"]), "Simulation"
-        )
-        expected = {"status": "done", "failed": 0, "cancelled": 0}
-        return expected.items() <= self.info["run_info"].items()
+        return self.run_info.status == ExperimentStatus.DONE
 
     def get_variables(self):
         """
@@ -1025,9 +1250,7 @@ class Experiment:
 
             experiment.get_variables()
         """
-        _assert_is_complete(
-            ExperimentStatus(self.info["run_info"]["status"]), "Simulation"
-        )
+        _assert_is_complete(self.run_info.status, "Simulation")
         return self._exp_sal.result_variables_get(self._workspace_id, self._exp_id)
 
     def get_cases(self):
@@ -1050,6 +1273,7 @@ class Experiment:
                 self._workspace_id,
                 self._exp_id,
                 self._exp_sal,
+                self._model_exe_sal,
                 self._workspace_sal,
                 case,
             )
@@ -1080,6 +1304,7 @@ class Experiment:
             self._workspace_id,
             self._exp_id,
             self._exp_sal,
+            self._model_exe_sal,
             self._workspace_sal,
             resp,
         )
@@ -1117,9 +1342,7 @@ class Experiment:
                 "Please specify the list of result keys for the trajectories of "
                 "intrest!"
             )
-        _assert_is_complete(
-            ExperimentStatus(self.info["run_info"]["status"]), "Simulation"
-        )
+        _assert_is_complete(self.run_info.status, "Simulation")
         _assert_variable_in_result(variables, self.get_variables())
 
         response = self._exp_sal.trajectories_get(
@@ -1139,6 +1362,16 @@ class Experiment:
         }
 
 
+class _CaseRunInfo:
+    def __init__(self, status):
+        self._status = status
+
+    @property
+    def status(self):
+        """Status info for a Case"""
+        return self._status
+
+
 class Case:
     """
     Class containing Case functionalities.
@@ -1150,6 +1383,7 @@ class Case:
         workspace_id,
         exp_id,
         exp_service=None,
+        model_exe_service=None,
         workspace_service=None,
         info=None,
     ):
@@ -1157,6 +1391,7 @@ class Case:
         self._workspace_id = workspace_id
         self._exp_id = exp_id
         self._exp_sal = exp_service
+        self._model_exe_sal = model_exe_service
         self._workspace_sal = workspace_service
         self._info = info
 
@@ -1171,14 +1406,25 @@ class Case:
         """Case id"""
         return self._case_id
 
-    @property
-    def info(self):
-        """Case meta-data"""
+    def _get_info(self):
         if self._info is None:
             self._info = self._exp_sal.case_get(
                 self._workspace_id, self._exp_id, self._case_id
             )
+
         return self._info
+
+    @property
+    def info(self):
+        """Deprecated, use 'run_info' attribute"""
+        logger.warning("This attribute is deprectated, use 'run_info' instead")
+        return self._get_info()
+
+    @property
+    def run_info(self):
+        """Case run information"""
+        run_info = self._get_info()["run_info"]
+        return _CaseRunInfo(CaseStatus(run_info["status"]))
 
     def is_successful(self):
         """
@@ -1193,7 +1439,7 @@ class Case:
 
             case.is_successful()
         """
-        return CaseStatus(self.info["run_info"]["status"]) == CaseStatus.SUCCESSFUL
+        return self.run_info.status == CaseStatus.SUCCESSFUL
 
     def get_log(self):
         """
@@ -1266,13 +1512,70 @@ class Case:
             height = result['h']
             time = res['time']
         """
-        _assert_is_complete(CaseStatus(self.info["run_info"]["status"]), "Simulation")
+        _assert_is_complete(self.run_info.status, "Simulation")
         return Result(
             self._case_id,
             self._workspace_id,
             self._exp_id,
             self._workspace_sal,
             self._exp_sal,
+        )
+
+    def get_artifact(self, artifact_id):
+        """
+        Returns the artifact stream and the file name for a finished case.
+
+        Parameters:
+
+            artifact_id --
+                The ID of the artifact.
+
+        Returns:
+
+            artifact --
+                The artifact byte stream.
+
+            filename --
+                The filename for the artifact. This name could be used to write the
+                artifact stream.
+
+        Raises:
+
+            OperationNotCompleteError if simulation process is in progress.
+            OperationFailureError if simulation process has failed or was cancelled.
+
+        Example::
+
+            result, file_name = case.get_artifact("ABCD")
+            with open(file_name, "wb") as f:
+                f.write(result)
+        """
+        _assert_successful_operation(self.is_successful(), self._case_id)
+        result, file_name = self._exp_sal.case_artifact_get(
+            self._workspace_id, self._exp_id, self._case_id, artifact_id
+        )
+
+        return result, file_name
+
+    def get_fmu(self):
+        """
+        Returns the ModelExecutable class object simulated for the case.
+
+        Returns:
+
+            FMU --
+                ModelExecutable class object.
+
+        Example::
+
+            case = experiment.get_case('case_1')
+            fmu = case.get_fmu(fmu_id)
+            fmus = set(case.get_fmu() for case in exp.get_cases())
+        """
+        fmu_id = self._get_info()["input"]["fmu_id"]
+
+        return ModelExecutable(
+            self._workspace_id, fmu_id, self._workspace_sal, self._model_exe_sal
         )
 
 
@@ -1282,7 +1585,7 @@ class Result(Mapping):
     """
 
     def __init__(
-        self, case_id, workspace_id, exp_id, workspace_service=None, exp_service=None
+        self, case_id, workspace_id, exp_id, workspace_service=None, exp_service=None,
     ):
         self._case_id = case_id
         self._workspace_id = workspace_id
@@ -1290,16 +1593,18 @@ class Result(Mapping):
         self._workspace_sal = workspace_service
         self._exp_sal = exp_service
         self._variables = Experiment(
-            self._workspace_id, self._exp_id, self._workspace_sal, self._exp_sal
+            self._workspace_id,
+            self._exp_id,
+            self._workspace_sal,
+            exp_service=self._exp_sal,
         ).get_variables()
 
     def __getitem__(self, key):
         _assert_variable_in_result([key], self._variables)
-        response = self._exp_sal.trajectories_get(
-            self._workspace_id, self._exp_id, [key]
+        response = self._exp_sal.case_trajectories_get(
+            self._workspace_id, self._exp_id, self._case_id, [key]
         )
-        case_index = int(self._case_id.split("_")[1])
-        return response[0][case_index - 1]
+        return response[0]
 
     def __iter__(self):
         data = _create_result_dict(

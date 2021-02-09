@@ -37,6 +37,7 @@ extensions = [
     'sphinx.ext.autosummary',
     "sphinx_rtd_theme",
     'sphinx_copybutton',
+    'sphinx.ext.autosectionlabel',
 ]
 
 add_module_names = False

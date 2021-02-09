@@ -165,8 +165,46 @@ class TestModelExecutbleService:
                 "platform": "win64",
             }
         }
-        service.model_executable.compile_model("WS", options)
-        assert model_compile.adapter.called
+        fmu_id, modifiers = service.model_executable.fmu_setup(
+            "WS", options, get_cached=False
+        )
+        assert fmu_id, modifiers == (None, {})
+        service.model_executable.compile_model("WS", fmu_id)
+        compile_call = model_compile.adapter.request_history
+        assert len(compile_call) == 2
+        assert "http://mock-impact.com/api/workspaces/WS/model-executables/"
+        "workspace_pid_controller_20090615_134530_as86g32/"
+        "compilation" == compile_call[1].url
+
+    def test_get_cached_fmu_id(self, get_cached_fmu_id):
+        uri = modelon.impact.client.sal.service.URI(get_cached_fmu_id.url)
+        service = modelon.impact.client.sal.service.Service(
+            uri=uri, context=get_cached_fmu_id.context
+        )
+        options = {
+            "input": {
+                "class_name": "Workspace.PID_Controller",
+                "compiler_options": {},
+                "runtime_options": {"log_level": 4},
+                "compiler_log_level": "warning",
+                "fmi_target": "me",
+                "fmi_version": "2.0",
+                "platform": "win64",
+            }
+        }
+        fmu_id, modifiers = service.model_executable.fmu_setup(
+            "WS", options, get_cached=True
+        )
+        cached_call = get_cached_fmu_id.adapter.request_history
+        assert fmu_id, modifiers == (
+            'workspace_pid_controller_20090615_134530_as86g32',
+            {},
+        )
+        assert len(cached_call) == 1
+        assert (
+            "http://mock-impact.com/api/workspaces/WS/model-executables?getCached=true"
+            == cached_call[0].url
+        )
 
     def test_get_compile_log(self, get_compile_log):
         uri = modelon.impact.client.sal.service.URI(get_compile_log.url)
@@ -210,7 +248,9 @@ class TestModelExecutbleService:
         service = modelon.impact.client.sal.service.Service(
             uri=uri, context=get_ss_fmu_metadata.context
         )
-        data = service.model_executable.ss_fmu_metadata_get("WS", "fmu_id")
+        data = service.model_executable.ss_fmu_metadata_get(
+            "WS", "fmu_id", parameter_state={"parameterState": {"x": 15}}
+        )
         assert data == {
             "steady_state": {
                 "residual_variable_count": 1,
@@ -238,9 +278,7 @@ class TestExperimentService:
             "finished_executions": 1,
             "total_executions": 2,
             "status": "running",
-            "progress": [
-                {"message": "Simulating at 1.0", "percentage": 1},
-            ],
+            "progress": [{"message": "Simulating at 1.0", "percentage": 1},],
         }
 
     def test_cancel_execute(self, cancel_execute):
@@ -267,7 +305,7 @@ class TestExperimentService:
         data = service.experiment.trajectories_get(
             "WS", "pid_2009", ["variable1", "variable2"]
         )
-        assert data == {"variable_names": ["variable1", "variable2"]}
+        assert data == [[[1.0, 1.0], [3.0, 3.0], [5.0, 5.0]]]
 
     def test_get_cases(self, get_cases):
         uri = modelon.impact.client.sal.service.URI(get_cases.url)
@@ -300,6 +338,28 @@ class TestExperimentService:
         )
         data, name = service.experiment.case_result_get("WS", "pid_2009", "case_1")
         assert data == b'\x00\x00\x00\x00'
+        assert name == 'Modelica.Blocks.Examples.PID_Controller_2020-10-22_06-03.csv'
+
+    def test_get_case_artifact(self, get_case_artifact):
+        uri = modelon.impact.client.sal.service.URI(get_case_artifact.url)
+        service = modelon.impact.client.sal.service.Service(
+            uri=uri, context=get_case_artifact.context
+        )
+        data, name = service.experiment.case_artifact_get(
+            "WS", "pid_2009", "case_1", "ABCD"
+        )
+        assert data == b'\x00\x00\x00\x00'
+        assert name == 'Modelica.Blocks.Examples.PID_Controller_2020-10-22_06-03.mat'
+
+    def test_case_get_trajectories(self, get_case_trajectories):
+        uri = modelon.impact.client.sal.service.URI(get_case_trajectories.url)
+        service = modelon.impact.client.sal.service.Service(
+            uri=uri, context=get_case_trajectories.context
+        )
+        data = service.experiment.case_trajectories_get(
+            "WS", "pid_2009", "case_1", ["variable1", "variable2"]
+        )
+        assert data == [[1.0, 2.0, 7.0], [2.0, 3.0, 5.0]]
 
 
 class TestCustomFunctionService:

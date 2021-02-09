@@ -37,9 +37,7 @@ def with_exception(mock_server_base, method, url, exce):
 
 def with_json_route_no_resp(mock_server_base, method, url, status_code=200):
     mock_server_base.adapter.register_uri(
-        method,
-        f'{mock_server_base.url}/{url}',
-        status_code=status_code,
+        method, f'{mock_server_base.url}/{url}', status_code=status_code,
     )
     return mock_server_base
 
@@ -71,18 +69,22 @@ def with_text_route(mock_server_base, method, url, text_response, status_code=20
 
 
 def with_octet_stream_route(
-    mock_server_base, method, url, octet_response, status_code=200
+    mock_server_base, method, url, octet_response, status_code=200, content_header=None
 ):
     content = octet_response
-    content_header = {
-        'content-type': 'application/octet-stream',
-        'content-disposition': 'attachment; '
-        'filename="BouncingBall_2020-09-01_14-33_case_1.mat"',
-        'connection': 'close',
-        'date': 'Tue, 01 Sep 2020 14:33:56 GMT',
-        'server': '127.0.0.1',
-        'Transfer-Encoding': 'chunked',
-    }
+    content_header = (
+        {
+            'content-type': 'application/octet-stream',
+            'content-disposition': 'attachment; '
+            'filename="BouncingBall_2020-09-01_14-33_case_1.mat"',
+            'connection': 'close',
+            'date': 'Tue, 01 Sep 2020 14:33:56 GMT',
+            'server': '127.0.0.1',
+            'Transfer-Encoding': 'chunked',
+        }
+        if content_header is None
+        else content_header
+    )
     mock_server_base.adapter.register_uri(
         method,
         f'{mock_server_base.url}/{url}',
@@ -119,7 +121,7 @@ def api_get_metadata(mock_server_base):
 
 @pytest.fixture
 def sem_ver_check(mock_server_base):
-    json = {"version": "1.4.1"}
+    json = {"version": "1.8.0"}
 
     return with_json_route(mock_server_base, 'GET', 'api/', json)
 
@@ -324,6 +326,21 @@ def experiment_create(sem_ver_check, mock_server_base):
 
 
 @pytest.fixture
+def no_cached_fmu_id(mock_server_base):
+    json = {
+        "id": None,
+        "parameters": {},
+    }
+
+    return with_json_route(
+        mock_server_base,
+        'POST',
+        'api/workspaces/WS/model-executables?getCached=true',
+        json,
+    )
+
+
+@pytest.fixture
 def get_fmu_id(mock_server_base):
     json = {
         "id": "workspace_pid_controller_20090615_134530_as86g32",
@@ -336,13 +353,28 @@ def get_fmu_id(mock_server_base):
 
 
 @pytest.fixture
-def model_compile(get_fmu_id, mock_server_base):
+def model_compile(get_fmu_id, no_cached_fmu_id, mock_server_base):
 
     return with_json_route_no_resp(
         mock_server_base,
         'POST',
         'api/workspaces/WS/model-executables/'
         'workspace_pid_controller_20090615_134530_as86g32/compilation',
+    )
+
+
+@pytest.fixture
+def get_cached_fmu_id(mock_server_base):
+    json = {
+        "id": "workspace_pid_controller_20090615_134530_as86g32",
+        "parameters": {},
+    }
+
+    return with_json_route(
+        mock_server_base,
+        'POST',
+        'api/workspaces/WS/model-executables?getCached=true',
+        json,
     )
 
 
@@ -405,7 +437,7 @@ def get_ss_fmu_metadata(sem_ver_check, mock_server_base):
 
     return with_json_route(
         mock_server_base,
-        'GET',
+        'POST',
         'api/workspaces/WS/model-executables/fmu_id/steady-state-metadata',
         json,
     )
@@ -458,7 +490,7 @@ def get_result_variables(sem_ver_check, mock_server_base):
 
 @pytest.fixture
 def get_trajectories(sem_ver_check, mock_server_base):
-    json = {"variable_names": ["variable1", "variable2"]}
+    json = [[[1.0, 1.0], [3.0, 3.0], [5.0, 5.0]]]
 
     return with_json_route(
         mock_server_base,
@@ -510,6 +542,52 @@ def get_case_results(sem_ver_check, mock_server_base):
         'GET',
         'api/workspaces/WS/experiments/pid_2009/cases/case_1/result',
         binary,
+        content_header={
+            'X-Powered-By': 'Express',
+            'content-type': 'application/octet-stream',
+            'content-disposition': 'attachment; filename="Modelica.Blocks.Examples.PID_Controller_2020-10-22_06-03.csv"',
+            'connection': 'close',
+            'date': 'Thu, 22 Oct 2020 06:03:46 GMT',
+            'server': '127.0.0.1',
+            'Content-Length': '540',
+            'ETag': 'W/"21c-YYNaLhSng67+inxuWx+DHndUdno"',
+            'Vary': 'Accept-Encoding',
+        },
+    )
+
+
+@pytest.fixture
+def get_case_artifact(sem_ver_check, mock_server_base):
+    binary = bytes(4)
+
+    return with_octet_stream_route(
+        mock_server_base,
+        'GET',
+        'api/workspaces/WS/experiments/pid_2009/cases/case_1/custom-artifacts/ABCD',
+        binary,
+        content_header={
+            'X-Powered-By': 'Express',
+            'content-type': 'application/octet-stream',
+            'content-disposition': 'attachment; filename="Modelica.Blocks.Examples.PID_Controller_2020-10-22_06-03.mat"',
+            'connection': 'close',
+            'date': 'Thu, 22 Oct 2020 06:03:46 GMT',
+            'server': '127.0.0.1',
+            'Content-Length': '540',
+            'ETag': 'W/"21c-YYNaLhSng67+inxuWx+DHndUdno"',
+            'Vary': 'Accept-Encoding',
+        },
+    )
+
+
+@pytest.fixture
+def get_case_trajectories(sem_ver_check, mock_server_base):
+    json = [[1.0, 2.0, 7.0], [2.0, 3.0, 5.0]]
+
+    return with_json_route(
+        mock_server_base,
+        'POST',
+        'api/workspaces/WS/experiments/pid_2009/cases/case_1/trajectories',
+        json,
     )
 
 
@@ -638,11 +716,7 @@ def workspace_execute_running():
     ws_service.experiment_execute.return_value = 'test_exp'
     exp_service.experiment_execute.return_value = "pid_2009"
     exp_service.execute_status.return_value = {"status": "running"}
-    return Workspace(
-        'AwesomeWorkspace',
-        ws_service,
-        experiment_service=exp_service,
-    )
+    return Workspace('AwesomeWorkspace', ws_service, experiment_service=exp_service)
 
 
 @pytest.fixture
@@ -653,11 +727,7 @@ def workspace_execute_cancelled():
     ws_service.experiment_execute.return_value = 'test_exp'
     exp_service.experiment_execute.return_value = "pid_2009"
     exp_service.execute_status.return_value = {"status": "cancelled"}
-    return Workspace(
-        'AwesomeWorkspace',
-        ws_service,
-        experiment_service=exp_service,
-    )
+    return Workspace('AwesomeWorkspace', ws_service, experiment_service=exp_service)
 
 
 @pytest.fixture
@@ -703,7 +773,17 @@ def custom_function_no_param():
 def model_compiled():
     ws_service = unittest.mock.MagicMock()
     model_exe_service = unittest.mock.MagicMock()
+    model_exe_service.fmu_setup.return_value = (None, {})
     model_exe_service.compile_model.return_value = 'test_pid_fmu_id'
+    model_exe_service.compile_status.return_value = {"status": "done"}
+    return Model('Test.PID', "test_ws", ws_service, model_exe_service)
+
+
+@pytest.fixture
+def model_cached():
+    ws_service = unittest.mock.MagicMock()
+    model_exe_service = unittest.mock.MagicMock()
+    model_exe_service.fmu_setup.return_value = ('test_pid_fmu_id', {})
     model_exe_service.compile_status.return_value = {"status": "done"}
     return Model('Test.PID', "test_ws", ws_service, model_exe_service)
 
@@ -712,6 +792,7 @@ def model_compiled():
 def model_compiling():
     ws_service = unittest.mock.MagicMock()
     model_exe_service = unittest.mock.MagicMock()
+    model_exe_service.fmu_setup.return_value = (None, {})
     model_exe_service.compile_model.return_value = 'test_pid_fmu_id'
     model_exe_service.compile_status.return_value = {"status": "running"}
     return Model('Test.PID', "test_ws", ws_service, model_exe_service)
@@ -721,6 +802,7 @@ def model_compiling():
 def model_compile_cancelled():
     ws_service = unittest.mock.MagicMock()
     model_exe_service = unittest.mock.MagicMock()
+    model_exe_service.fmu_setup.return_value = (None, {})
     model_exe_service.compile_model.return_value = 'test_pid_fmu_id'
     model_exe_service.compile_status.return_value = {"status": "cancelled"}
     return Model('Test.PID', "test_ws", ws_service, model_exe_service)
@@ -818,15 +900,91 @@ def solver_options():
 def fmu():
     ws_service = unittest.mock.MagicMock()
     model_exe_service = unittest.mock.MagicMock()
-    ws_service.fmu_get.return_value = {"run_info": {"status": "successful"}}
+    ws_service.fmu_get.return_value = {
+        'id': 'workspace_pid_controller_20210113_131626_77c5174',
+        'input': {
+            'class_name': 'Workspace.PID_Controller',
+            'compiler_options': {'c_compiler': 'gcc'},
+            'runtime_options': {},
+            'compiler_log_level': 'w',
+            'fmi_target': 'me',
+            'fmi_version': '2.0',
+            'platform': 'auto',
+            'model_snapshot': '1610523986117',
+            'toolchain_version': '0.0.1',
+            'compiled_on_sys': 'win32',
+        },
+        'run_info': {
+            'status': 'successful',
+            'datetime_started': 1610523986193,
+            'errors': [],
+            'datetime_finished': 1610523990763,
+        },
+        'meta': {
+            'created_epoch': 1610523986,
+            'input_hash': 'f47e0d051a804eee3cde3e3d98da5f39',
+            'fmu_file': 'model.fmu',
+        },
+    }
     ws_service.fmu_download.return_value = b'\x00\x00\x00\x00'
     model_exe_service.compile_status.return_value = {"status": "done"}
     model_exe_service.settable_parameters_get.return_value = ['h0', 'v']
     model_exe_service.compile_log.return_value = "Successful Log"
+    model_exe_service.fmu_setup.return_value = ('test_pid_fmu_id', {})
     model_exe_service.ss_fmu_metadata_get.return_value = {
         "steady_state": {"residual_variable_count": 1, "iteration_variable_count": 2}
     }
     return ModelExecutable("Workspace", "Test", ws_service, model_exe_service)
+
+
+@pytest.fixture
+def fmu_with_modifiers():
+    ws_service = unittest.mock.MagicMock()
+    model_exe_service = unittest.mock.MagicMock()
+    ws_service.fmu_get.return_value = {
+        'id': 'workspace_pid_controller_20210113_131626_77c5174',
+        'input': {
+            'class_name': 'Workspace.PID_Controller',
+            'compiler_options': {'c_compiler': 'gcc'},
+            'runtime_options': {},
+            'compiler_log_level': 'w',
+            'fmi_target': 'me',
+            'fmi_version': '2.0',
+            'platform': 'auto',
+            'model_snapshot': '1610523986117',
+            'toolchain_version': '0.0.1',
+            'compiled_on_sys': 'win32',
+        },
+        'run_info': {
+            'status': 'successful',
+            'datetime_started': 1610523986193,
+            'errors': [],
+            'datetime_finished': 1610523990763,
+        },
+        'meta': {
+            'created_epoch': 1610523986,
+            'input_hash': 'f47e0d051a804eee3cde3e3d98da5f39',
+            'fmu_file': 'model.fmu',
+        },
+    }
+    ws_service.fmu_download.return_value = b'\x00\x00\x00\x00'
+    model_exe_service.compile_status.return_value = {"status": "done"}
+    model_exe_service.settable_parameters_get.return_value = ['h0', 'v']
+    model_exe_service.compile_log.return_value = "Successful Log"
+    model_exe_service.fmu_setup.return_value = ('test_pid_fmu_id', {'PI.K': 20})
+    model_exe_service.ss_fmu_metadata_get.return_value = {
+        "steady_state": {"residual_variable_count": 1, "iteration_variable_count": 2}
+    }
+    return ModelExecutable(
+        "Workspace", "Test", ws_service, model_exe_service, modifiers={'PI.K': 20}
+    )
+
+
+@pytest.fixture
+def model():
+    ws_service = unittest.mock.MagicMock()
+    model_exe_service = unittest.mock.MagicMock()
+    return Model('Test.PID', "test_ws", ws_service, model_exe_service)
 
 
 @pytest.fixture
@@ -860,6 +1018,7 @@ def fmu_compile_cancelled():
 @pytest.fixture
 def experiment():
     ws_service = unittest.mock.MagicMock()
+    model_exe_service = unittest.mock.MagicMock()
     exp_service = unittest.mock.MagicMock()
     ws_service.experiment_get.return_value = {
         "run_info": {"status": "done", "failed": 0, "successful": 1, "cancelled": 0}
@@ -870,11 +1029,16 @@ def experiment():
     exp_service.case_get.return_value = {
         "id": "case_1",
         "run_info": {"status": "successful"},
+        "input": {
+            "fmu_id": "modelica_fluid_examples_heatingsystem_20210130_114628_bbd91f1"
+        },
     }
     exp_service.case_get_log.return_value = "Successful Log"
     exp_service.case_result_get.return_value = (bytes(4), 'result.mat')
+    exp_service.case_artifact_get.return_value = (bytes(4), 'result.mat')
     exp_service.trajectories_get.return_value = [[[1, 2, 3, 4]], [[5, 2, 9, 4]]]
-    return Experiment("Workspace", "Test", ws_service, exp_service)
+    exp_service.case_trajectories_get.return_value = [[1, 2, 3, 4], [5, 2, 9, 4]]
+    return Experiment("Workspace", "Test", ws_service, model_exe_service, exp_service)
 
 
 @pytest.fixture
@@ -895,11 +1059,13 @@ def batch_experiment():
     }
     exp_service.case_get_log.return_value = "Successful Log"
     exp_service.case_result_get.return_value = (bytes(4), 'result.mat')
+    exp_service.case_artifact_get.return_value = (bytes(4), 'result.mat')
     exp_service.trajectories_get.return_value = [
         [[1, 2, 3, 4], [14, 4, 4, 74]],
         [[5, 2, 9, 4], [11, 22, 32, 44]],
     ]
-    return Experiment("Workspace", "Test", ws_service, exp_service)
+    exp_service.case_trajectories_get.return_value = [[14, 4, 4, 74], [11, 22, 32, 44]]
+    return Experiment("Workspace", "Test", ws_service, exp_service=exp_service)
 
 
 @pytest.fixture
@@ -908,11 +1074,11 @@ def running_experiment():
     exp_service = unittest.mock.MagicMock()
     ws_service.experiment_get.return_value = {"run_info": {"status": "not_started"}}
     exp_service.execute_status.return_value = {"status": "running"}
-    return Experiment("Workspace", "Test", ws_service, exp_service)
+    return Experiment("Workspace", "Test", ws_service, exp_service=exp_service)
 
 
 @pytest.fixture
-def failed_experiment():
+def experiment_with_failed_case():
     ws_service = unittest.mock.MagicMock()
     exp_service = unittest.mock.MagicMock()
     ws_service.experiment_get.return_value = {
@@ -926,6 +1092,20 @@ def failed_experiment():
     }
     exp_service.result_variables_get.return_value = ["inertia.I", "time"]
     exp_service.trajectories_get.return_value = [[[1, 2, 3, 4]], [[5, 2, 9, 4]]]
+    exp_service.case_trajectories_get.return_value = [[1, 2, 3, 4], [5, 2, 9, 4]]
+    return Experiment("Workspace", "Test", ws_service, exp_service=exp_service)
+
+
+@pytest.fixture
+def failed_experiment():
+    ws_service = unittest.mock.MagicMock()
+    exp_service = unittest.mock.MagicMock()
+    ws_service.experiment_get.return_value = {
+        "run_info": {"status": "failed", "failed": 0, "successful": 0, "cancelled": 0, 'errors': ['out of licenses', 'too large experiment']}
+    }
+    exp_service.execute_status.return_value = {"status": "done"}
+    exp_service.cases_get.return_value = {"data": {"items": []}}
+    exp_service.case_get.return_value = {}
     return Experiment("Workspace", "Test", ws_service, exp_service)
 
 
@@ -944,4 +1124,5 @@ def cancelled_experiment():
     exp_service.cases_get.return_value = {"data": {"items": [{"id": "case_1"}]}}
     exp_service.case_get.return_value = {"id": "case_1"}
     exp_service.execute_status.return_value = {"status": "cancelled"}
-    return Experiment("Workspace", "Test", ws_service, exp_service)
+    return Experiment("Workspace", "Test", ws_service, exp_service=exp_service)
+

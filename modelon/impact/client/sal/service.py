@@ -104,14 +104,18 @@ class WorkspaceService:
 
     def experiments_get(self, workspace_id):
         url = (self._base_uri / f"api/workspaces/{workspace_id}/experiments").resolve()
-        return self._http_client.get_json(url)
+        return self._http_client.get_json(
+            url, headers={"Accept": "application/vnd.impact.experiment.v2+json"}
+        )
 
     def experiment_get(self, workspace_id, experiment_id):
         url = (
             self._base_uri
             / f"api/workspaces/{workspace_id}/experiments/{experiment_id}"
         ).resolve()
-        return self._http_client.get_json(url)
+        return self._http_client.get_json(
+            url, headers={"Accept": "application/vnd.impact.experiment.v2+json"}
+        )
 
     def experiment_create(self, workspace_id, definition):
         url = (self._base_uri / f"api/workspaces/{workspace_id}/experiments").resolve()
@@ -123,25 +127,27 @@ class ModelExecutableService:
         self._base_uri = uri
         self._http_client = HTTPClient
 
-    def _fmu_setup(self, workspace_id, options):
+    def fmu_setup(self, workspace_id, options, get_cached):
         url = (
             self._base_uri / f"api/workspaces/{workspace_id}/model-executables"
+            f"?getCached={'true' if get_cached else 'false'}"
         ).resolve()
-        return self._http_client.post_json(url, body=options)["id"]
+        resp = self._http_client.post_json(url, body=options)
+        return resp["id"], resp["parameters"]
 
-    def compile_model(self, workspace_id, options):
-        fmuId = self._fmu_setup(workspace_id, options)
+    def compile_model(self, workspace_id, fmu_id):
         url = (
             self._base_uri
-            / f"api/workspaces/{workspace_id}/model-executables/{fmuId}/compilation"
+            / f"api/workspaces/{workspace_id}/model-executables/{fmu_id}/compilation"
         ).resolve()
         self._http_client.post_json_no_response_body(url)
-        return fmuId
+        return fmu_id
 
-    def compile_log(self, workspace_id, fmuId):
+    def compile_log(self, workspace_id, fmu_id):
         url = (
             self._base_uri
-            / f"api/workspaces/{workspace_id}/model-executables/{fmuId}/compilation/log"
+            / f"api/workspaces/{workspace_id}/model-executables/{fmu_id}/compilation/"
+            "log"
         ).resolve()
         return self._http_client.get_text(url)
 
@@ -167,12 +173,12 @@ class ModelExecutableService:
         ).resolve()
         return self._http_client.get_json(url)
 
-    def ss_fmu_metadata_get(self, workspace_id, fmu_id):
+    def ss_fmu_metadata_get(self, workspace_id, fmu_id, parameter_state):
         url = (
             self._base_uri / f"api/workspaces/{workspace_id}/model-executables/{fmu_id}"
             "/steady-state-metadata"
         ).resolve()
-        return self._http_client.get_json(url)
+        return self._http_client.post_json(url, body=parameter_state)
 
 
 class ExperimentService:
@@ -246,10 +252,26 @@ class ExperimentService:
             / f"api/workspaces/{workspace_id}/experiments/{experiment_id}/cases/"
             f"{case_id}/result"
         ).resolve()
-        result, headers = self._http_client.get_octet_stream(url)
-        d = headers["content-disposition"]
-        file_name = re.findall("filename=(.+)", d)[0]
-        return result, file_name
+        resp = self._http_client.get_octet_response(url)
+        return resp.stream, resp.file_name
+
+    def case_trajectories_get(self, workspace_id, experiment_id, case_id, variables):
+        body = {"variable_names": variables}
+        url = (
+            self._base_uri
+            / f"api/workspaces/{workspace_id}/experiments/{experiment_id}/cases/"
+            f"{case_id}/trajectories"
+        ).resolve()
+        return self._http_client.post_json(url, body=body)
+
+    def case_artifact_get(self, workspace_id, experiment_id, case_id, artifact_id):
+        url = (
+            self._base_uri
+            / f"api/workspaces/{workspace_id}/experiments/{experiment_id}/cases/"
+            f"{case_id}/custom-artifacts/{artifact_id}"
+        ).resolve()
+        resp = self._http_client.get_octet_response(url)
+        return resp.stream, resp.file_name
 
 
 class CustomFunctionService:
@@ -307,18 +329,17 @@ class HTTPClient:
     def __init__(self, context=None):
         self._context = context if context else Context()
 
-    def get_json(self, url):
-        request = RequestJSON(self._context, "GET", url)
+    def get_json(self, url, headers=None):
+        request = RequestJSON(self._context, "GET", url, headers=headers)
         return request.execute().data
 
     def get_text(self, url):
         request = RequestText(self._context, "GET", url)
         return request.execute().data
 
-    def get_octet_stream(self, url):
+    def get_octet_response(self, url):
         request = RequestOctetStream(self._context, "GET", url)
-        resp = request.execute()
-        return resp.data, resp.headers
+        return request.execute()
 
     def get_zip(self, url):
         request = RequestZip(self._context, "GET", url)
@@ -360,13 +381,16 @@ class URI:
 
 
 class Request:
-    def __init__(self, context, method, url, request_type, body=None, files=None):
+    def __init__(
+        self, context, method, url, request_type, body=None, files=None, headers=None
+    ):
         self.context = context
         self.method = method
         self.url = url
         self.body = body
         self.files = files
         self.request_type = request_type
+        self.headers = headers
 
     def execute(self, check_return=True):
         try:
@@ -376,7 +400,7 @@ class Request:
                     self.url, json=self.body, files=self.files
                 )
             elif self.method == "GET":
-                resp = self.context.session.get(self.url)
+                resp = self.context.session.get(self.url, headers=self.headers)
             elif self.method == "DELETE":
                 resp = self.context.session.delete(self.url, json=self.body)
             else:
@@ -399,23 +423,25 @@ class Request:
 
 
 class RequestJSON(Request):
-    def __init__(self, context, method, url, body=None, files=None):
-        super().__init__(context, method, url, JSONResponse, body, files)
+    def __init__(self, context, method, url, body=None, files=None, headers=None):
+        super().__init__(context, method, url, JSONResponse, body, files, headers)
 
 
 class RequestZip(Request):
-    def __init__(self, context, method, url, body=None, files=None):
-        super().__init__(context, method, url, ZIPResponse, body, files)
+    def __init__(self, context, method, url, body=None, files=None, headers=None):
+        super().__init__(context, method, url, ZIPResponse, body, files, headers)
 
 
 class RequestText(Request):
-    def __init__(self, context, method, url, body=None, files=None):
-        super().__init__(context, method, url, TextResponse, body, files)
+    def __init__(self, context, method, url, body=None, files=None, headers=None):
+        super().__init__(context, method, url, TextResponse, body, files, headers)
 
 
 class RequestOctetStream(Request):
-    def __init__(self, context, method, url, body=None, files=None):
-        super().__init__(context, method, url, OctetStreamResponse, body, files)
+    def __init__(self, context, method, url, body=None, files=None, headers=None):
+        super().__init__(
+            context, method, url, OctetStreamResponse, body, files, headers
+        )
 
 
 class Context:
@@ -503,7 +529,7 @@ class OctetStreamResponse(Response):
         return "application/octet-stream" in self._resp_obj.headers.get("content-type")
 
     @property
-    def data(self):
+    def stream(self):
         if not self._resp_obj.ok:
             raise exceptions.HTTPError(self.error.message)
 
@@ -517,6 +543,11 @@ class OctetStreamResponse(Response):
     @property
     def headers(self):
         return self._resp_obj.headers
+
+    @property
+    def file_name(self):
+        d = self.headers["content-disposition"]
+        return re.findall("filename=(.+)", d)[0].strip('"')
 
 
 class ZIPResponse(Response):
