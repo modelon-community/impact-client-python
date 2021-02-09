@@ -437,7 +437,7 @@ def get_ss_fmu_metadata(sem_ver_check, mock_server_base):
 
     return with_json_route(
         mock_server_base,
-        'GET',
+        'POST',
         'api/workspaces/WS/model-executables/fmu_id/steady-state-metadata',
         json,
     )
