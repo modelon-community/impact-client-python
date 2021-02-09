@@ -246,7 +246,7 @@ class SimpleFMUExperimentDefinition(BaseExperimentDefinition):
         )
 
         self._simulation_log_level = simulation_log_level
-        self.variable_modifiers = fmu.modifiers
+        self.variable_modifiers = fmu._variable_modifiers()
         self.extensions = []
 
     def validate(self):
