@@ -52,10 +52,13 @@ A simple example using the :ref:`Class name based workflow <2. Class name based 
    experiment_definition = model.new_experiment_definition(dynamic)
    exp = workspace.execute(experiment_definition).wait()
 
+   # Getting the simulated FMU object from the case object
+   case = exp.get_case('case_1')
+   fmu = case.get_fmu(fmu_id)
+
    # Plot Trajectory
    import matplotlib.pyplot as plt
 
-   case = exp.get_case('case_1')
    res = case.get_trajectories()
    plt.plot(res['time'], res['inertia1.phi'])
    plt.show()
@@ -80,6 +83,9 @@ An example of setting up and executing a series of simulations on a server and r
       solver_options={'atol': 1e-8},
    ).with_modifiers({'inertia1.J': 2, 'PI.k': Range(10, 100, 3)})
    exp = workspace.execute(experiment_definition).wait()
+
+   # Getting a set of simulated FMU objects from the cases
+   fmus = set(case.get_fmu() for case in exp.get_cases())
 
    # Plot Trajectory
    import matplotlib.pyplot as plt
