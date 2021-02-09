@@ -956,9 +956,7 @@ class ModelExecutable:
         """FMU id"""
         return self._fmu_id
 
-    @property
-    def modifiers(self):
-        """FMU modifiers"""
+    def _variable_modifiers(self):
         return {} if self._modifiers is None else self._modifiers
 
     def _get_info(self):
@@ -986,7 +984,7 @@ class ModelExecutable:
         """FMU metadata. Returns the 'iteration_variable_count' and 'residual_variable_count'
             only for steady state model compiled as an FMU"""
         _assert_successful_operation(self.is_successful(), "Compilation")
-        parameter_state = {"parameterState": self.modifiers}
+        parameter_state = {"parameterState": self._variable_modifiers()}
         return self._model_exe_sal.ss_fmu_metadata_get(
             self._workspace_id, self._fmu_id, parameter_state
         )
