@@ -983,9 +983,13 @@ class ModelExecutable:
 
     @property
     def metadata(self):
-        """FMU metadata"""
+        """FMU metadata. Returns the 'iteration_variable_count' and 'residual_variable_count'
+            only for steady state model compiled as an FMU"""
         _assert_successful_operation(self.is_successful(), "Compilation")
-        return self._model_exe_sal.ss_fmu_metadata_get(self._workspace_id, self._fmu_id)
+        parameter_state = {"parameterState": self.modifiers}
+        return self._model_exe_sal.ss_fmu_metadata_get(
+            self._workspace_id, self._fmu_id, parameter_state
+        )
 
     def is_successful(self):
         """

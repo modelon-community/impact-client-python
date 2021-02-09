@@ -248,7 +248,9 @@ class TestModelExecutbleService:
         service = modelon.impact.client.sal.service.Service(
             uri=uri, context=get_ss_fmu_metadata.context
         )
-        data = service.model_executable.ss_fmu_metadata_get("WS", "fmu_id")
+        data = service.model_executable.ss_fmu_metadata_get(
+            "WS", "fmu_id", parameter_state={"parameterState": {"x": 15}}
+        )
         assert data == {
             "steady_state": {
                 "residual_variable_count": 1,

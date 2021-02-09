@@ -173,12 +173,12 @@ class ModelExecutableService:
         ).resolve()
         return self._http_client.get_json(url)
 
-    def ss_fmu_metadata_get(self, workspace_id, fmu_id):
+    def ss_fmu_metadata_get(self, workspace_id, fmu_id, parameter_state):
         url = (
             self._base_uri / f"api/workspaces/{workspace_id}/model-executables/{fmu_id}"
             "/steady-state-metadata"
         ).resolve()
-        return self._http_client.get_json(url)
+        return self._http_client.post_json(url, body=parameter_state)
 
 
 class ExperimentService:
