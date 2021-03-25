@@ -25,9 +25,19 @@ class Client:
             'http://localhost:8080/'.
 
         interactive --
-            True, if running an interactive python shell. Defaults to the value
-            specified by env variable 'MODELON_IMPACT_CLIENT_INTERACTIVE' if set else
-            False.
+            If True the client will prompt for an API key if no other login information
+            can be found. An API key entered for this prompt will be saved to disk
+            and re-used next time the Client is instantiated. If False no prompt will
+            be given if no other login information can be found and login will be done
+            as if no API key was given (anonymous login).
+
+            For scripts and notebooks that are running interactively by a user in
+            a shell it is recommended to use interactive=True. For scripts or
+            applications that are automated or for other reasons won't have a user
+            ready to enter an API key it is recommended to use interactive=False.
+
+            Default is False. It is possible to change the default value through
+            the environment variable 'MODELON_IMPACT_CLIENT_INTERACTIVE'.
 
         credential_manager --
             Help class for managing credentials for the Impact server. Default is None
