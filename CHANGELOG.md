@@ -1,3 +1,10 @@
+## [1.1.1](https://github.com/modelon-community/impact-client-python/compare/v1.1.0...v1.1.1) (2021-03-26)
+
+
+### Bug Fixes
+
+* clarification on 'interactive' argument in client docstring ([0b3e1da](https://github.com/modelon-community/impact-client-python/commit/0b3e1da8b01d65e7b0ef4b29d628d368885dd5fa))
+
 # [1.1.0](https://github.com/modelon-community/impact-client-python/compare/v1.0.0...v1.1.0) (2021-02-09)
 
 
