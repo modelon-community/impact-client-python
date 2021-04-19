@@ -397,8 +397,8 @@ class Workspace:
 
         Parameters:
 
-            class_name --
-                The modelica class path of the model.
+            experiment_id --
+                The ID of the experiment.
 
         Returns:
 
