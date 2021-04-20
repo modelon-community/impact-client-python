@@ -1,3 +1,10 @@
+## [1.1.2](https://github.com/modelon-community/impact-client-python/compare/v1.1.1...v1.1.2) (2021-04-20)
+
+
+### Bug Fixes
+
+* Corrected docs for get_experiment() ([97491be](https://github.com/modelon-community/impact-client-python/commit/97491bec50d369fcbd9f26512b872e1bb13a36c0))
+
 ## [1.1.1](https://github.com/modelon-community/impact-client-python/compare/v1.1.0...v1.1.1) (2021-03-26)
 
 
