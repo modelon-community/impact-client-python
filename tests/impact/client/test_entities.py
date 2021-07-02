@@ -272,6 +272,10 @@ class TestModelExecutable:
         resp = fmu.download()
         assert resp == t
 
+    def test_can_be_put_uniquely_in_set(self, fmu):
+        fmu_set = set([fmu, fmu])
+        assert len(fmu_set) == 1
+
 
 class TestExperiment:
     def test_execute_successful(self, experiment):

@@ -951,6 +951,9 @@ class ModelExecutable:
     def __eq__(self, obj):
         return isinstance(obj, ModelExecutable) and obj._fmu_id == self._fmu_id
 
+    def __hash__(self) -> int:
+        return self._fmu_id.__hash__()
+
     @property
     def id(self):
         """FMU id"""
