@@ -1027,6 +1027,15 @@ class ModelExecutable:
         _assert_is_complete(self.run_info.status, "Compilation")
         return Log(self._model_exe_sal.compile_log(self._workspace_id, self._fmu_id))
 
+    def delete(self):
+        """Deletes an FMU.
+
+        Example::
+
+            fmu.delete()
+        """
+        self._model_exe_sal.fmu_delete(self._workspace_id, self._fmu_id)
+
     def get_settable_parameters(self):
         """
         Returns a list of settable parameters for the FMU.
@@ -1360,6 +1369,15 @@ class Experiment:
             }
             for j in case_nbrs
         }
+
+    def delete(self):
+        """Deletes an experiment.
+
+        Example::
+
+            experiment.delete()
+        """
+        self._exp_sal.experiment_delete(self._workspace_id, self._exp_id)
 
 
 class _CaseRunInfo:
