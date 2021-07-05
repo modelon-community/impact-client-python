@@ -258,6 +258,14 @@ class TestModelExecutbleService:
             }
         }
 
+    def test_delete_fmu(self, delete_fmu):
+        uri = modelon.impact.client.sal.service.URI(delete_fmu.url)
+        service = modelon.impact.client.sal.service.Service(
+            uri=uri, context=delete_fmu.context
+        )
+        service.model_executable.fmu_delete('WS', "fmu_id")
+        assert delete_fmu.adapter.called
+
 
 class TestExperimentService:
     def test_model_execute(self, experiment_execute):
@@ -267,6 +275,14 @@ class TestExperimentService:
         )
         service.experiment.experiment_execute("WS", "pid_2009")
         assert experiment_execute.adapter.called
+
+    def test_delete_experiment(self, delete_experiment):
+        uri = modelon.impact.client.sal.service.URI(delete_experiment.url)
+        service = modelon.impact.client.sal.service.Service(
+            uri=uri, context=delete_experiment.context
+        )
+        service.experiment.experiment_delete("WS", "pid_2009")
+        assert delete_experiment.adapter.called
 
     def test_get_experiment_status(self, experiment_status):
         uri = modelon.impact.client.sal.service.URI(experiment_status.url)
@@ -278,7 +294,7 @@ class TestExperimentService:
             "finished_executions": 1,
             "total_executions": 2,
             "status": "running",
-            "progress": [{"message": "Simulating at 1.0", "percentage": 1},],
+            "progress": [{"message": "Simulating at 1.0", "percentage": 1}],
         }
 
     def test_cancel_execute(self, cancel_execute):
