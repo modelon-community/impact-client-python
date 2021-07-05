@@ -151,6 +151,12 @@ class ModelExecutableService:
         ).resolve()
         return self._http_client.get_text(url)
 
+    def fmu_delete(self, workspace_id, fmu_id):
+        url = (
+            self._base_uri / f"api/workspaces/{workspace_id}/model-executables/{fmu_id}"
+        ).resolve()
+        self._http_client.delete_json(url)
+
     def compile_status(self, workspace_id, fmu_id):
         url = (
             self._base_uri
@@ -193,6 +199,12 @@ class ExperimentService:
         ).resolve()
         self._http_client.post_json_no_response_body(url)
         return exp_id
+
+    def experiment_delete(self, workspace_id, exp_id):
+        url = (
+            self._base_uri / f"api/workspaces/{workspace_id}/experiments/{exp_id}"
+        ).resolve()
+        self._http_client.delete_json(url)
 
     def execute_status(self, workspace_id, experiment_id):
         url = (

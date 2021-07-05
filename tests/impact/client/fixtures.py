@@ -444,10 +444,26 @@ def get_ss_fmu_metadata(sem_ver_check, mock_server_base):
 
 
 @pytest.fixture
+def delete_fmu(sem_ver_check, mock_server_base):
+
+    return with_json_route_no_resp(
+        mock_server_base, 'DELETE', 'api/workspaces/WS/model-executables/fmu_id'
+    )
+
+
+@pytest.fixture
 def experiment_execute(sem_ver_check, mock_server_base):
 
     return with_json_route_no_resp(
         mock_server_base, 'POST', 'api/workspaces/WS/experiments/pid_2009/execution'
+    )
+
+
+@pytest.fixture
+def delete_experiment(sem_ver_check, mock_server_base):
+
+    return with_json_route_no_resp(
+        mock_server_base, 'DELETE', 'api/workspaces/WS/experiments/pid_2009'
     )
 
 
@@ -1101,7 +1117,13 @@ def failed_experiment():
     ws_service = unittest.mock.MagicMock()
     exp_service = unittest.mock.MagicMock()
     ws_service.experiment_get.return_value = {
-        "run_info": {"status": "failed", "failed": 0, "successful": 0, "cancelled": 0, 'errors': ['out of licenses', 'too large experiment']}
+        "run_info": {
+            "status": "failed",
+            "failed": 0,
+            "successful": 0,
+            "cancelled": 0,
+            'errors': ['out of licenses', 'too large experiment'],
+        }
     }
     exp_service.execute_status.return_value = {"status": "done"}
     exp_service.cases_get.return_value = {"data": {"items": []}}
@@ -1125,4 +1147,3 @@ def cancelled_experiment():
     exp_service.case_get.return_value = {"id": "case_1"}
     exp_service.execute_status.return_value = {"status": "cancelled"}
     return Experiment("Workspace", "Test", ws_service, exp_service=exp_service)
-
