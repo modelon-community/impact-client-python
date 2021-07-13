@@ -1,3 +1,15 @@
+# [1.2.0-beta.1](https://github.com/modelon-community/impact-client-python/compare/v1.1.2...v1.2.0-beta.1) (2021-07-13)
+
+
+### Bug Fixes
+
+* exmple creating set of all FMUs does now works ([53ff423](https://github.com/modelon-community/impact-client-python/commit/53ff423f40b10701ada533563df8a683eaff4076))
+
+
+### Features
+
+* Added API support for deleting fmus and experiments ([d1affd8](https://github.com/modelon-community/impact-client-python/commit/d1affd879744677d1b7283f49a348a3a043442ec))
+
 ## [1.1.2](https://github.com/modelon-community/impact-client-python/compare/v1.1.1...v1.1.2) (2021-04-20)
 
 
