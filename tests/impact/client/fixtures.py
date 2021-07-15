@@ -1056,6 +1056,42 @@ def experiment():
 
 
 @pytest.fixture
+def batch_experiment_with_case_filter():
+    ws_service = unittest.mock.MagicMock()
+    model_exe_service = unittest.mock.MagicMock()
+    exp_service = unittest.mock.MagicMock()
+    ws_service.experiment_get.return_value = {
+        "run_info": {
+            "status": "done",
+            "failed": 0,
+            "successful": 1,
+            "cancelled": 0,
+            "not_started": 3,
+        }
+    }
+    exp_service.experiment_execute.return_value = "pid_2009"
+    exp_service.execute_status.return_value = {"status": "done"}
+    exp_service.cases_get.return_value = {
+        "data": {
+            "items": [
+                {"id": "case_1"},
+                {"id": "case_2"},
+                {"id": "case_3"},
+                {"id": "case_4"},
+            ]
+        }
+    }
+    exp_service.case_get.return_value = {
+        "id": "case_3",
+        "run_info": {"status": "successful"},
+        "input": {
+            "fmu_id": "modelica_fluid_examples_heatingsystem_20210130_114628_bbd91f1"
+        },
+    }
+    ExperimentWithService = collections.namedtuple('ExperimentWithService', ['experiment', 'exp_service'])
+    return ExperimentWithService(Experiment("Workspace", "Test", ws_service, model_exe_service, exp_service), exp_service)
+
+@pytest.fixture
 def batch_experiment():
     ws_service = unittest.mock.MagicMock()
     exp_service = unittest.mock.MagicMock()

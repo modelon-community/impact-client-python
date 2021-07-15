@@ -97,6 +97,7 @@ class CaseStatus(Enum):
     SUCCESSFUL = "successful"
     FAILED = "failed"
     CANCELLED = "cancelled"
+    NOT_STARTED = "not_started"
 
 
 class Workspace:
@@ -1137,12 +1138,13 @@ class ModelExecutable:
 
 
 class _ExperimentRunInfo:
-    def __init__(self, status, errors, failed, successful, cancelled):
+    def __init__(self, status, errors, failed, successful, cancelled, not_started):
         self._status = status
         self._errors = errors
         self._failed = failed
         self._successful = successful
         self._cancelled = cancelled
+        self._not_started = not_started
 
     @property
     def status(self):
@@ -1168,6 +1170,11 @@ class _ExperimentRunInfo:
     def cancelled(self):
         """Number of cases in experiment that are cancelled"""
         return self._cancelled
+
+    @property
+    def not_started(self):
+        """Number of cases in experiment that have not yet started"""
+        return self._not_started
 
 
 class Experiment:
@@ -1220,7 +1227,10 @@ class Experiment:
         failed = run_info.get("failed", 0)
         successful = run_info.get("successful", 0)
         cancelled = run_info.get("cancelled", 0)
-        return _ExperimentRunInfo(status, errors, failed, successful, cancelled)
+        not_started = run_info.get("not_started", 0)
+        return _ExperimentRunInfo(
+            status, errors, failed, successful, cancelled, not_started
+        )
 
     @property
     def info(self):
@@ -1228,9 +1238,14 @@ class Experiment:
         logger.warning("This attribute is deprectated, use 'run_info' instead")
         return self._get_info()
 
-    def execute(self):
+    def execute(self, with_cases=None):
         """Exceutes an experiment.
         Returns an modelon.impact.client.operations.ExperimentOperation class object.
+
+        Parameters:
+
+            with_cases --
+                A list of cases objects to execute.
 
         Returns:
 
@@ -1243,10 +1258,17 @@ class Experiment:
             experiment_ops.cancel()
             experiment_ops.status()
             experiment_ops.wait()
+
+            generate_cases = experiment.execute(with_cases=[]).wait()
+            cases_to_execute =  generate_cases.get_case('case_2')
+            experiment = experiment.execute(with_cases=[cases_to_execute]).wait()
         """
+        case_ids = [case.id for case in with_cases] if with_cases is not None else None
         return operations.ExperimentOperation(
             self._workspace_id,
-            self._exp_sal.experiment_execute(self._workspace_id, self._exp_id),
+            self._exp_sal.experiment_execute(
+                self._workspace_id, self._exp_id, case_ids
+            ),
             self._workspace_sal,
             self._model_exe_sal,
             self._exp_sal,
