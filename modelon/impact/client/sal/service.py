@@ -192,12 +192,13 @@ class ExperimentService:
         self._base_uri = uri
         self._http_client = HTTPClient
 
-    def experiment_execute(self, workspace_id, exp_id):
+    def experiment_execute(self, workspace_id, exp_id, case_ids=None):
+        body = {"includeCases": {"ids": case_ids}} if case_ids is not None else None
         url = (
             self._base_uri
             / f"api/workspaces/{workspace_id}/experiments/{exp_id}/execution"
         ).resolve()
-        self._http_client.post_json_no_response_body(url)
+        self._http_client.post_json_no_response_body(url, body=body)
         return exp_id
 
     def experiment_delete(self, workspace_id, exp_id):

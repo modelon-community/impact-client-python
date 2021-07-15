@@ -2,6 +2,7 @@ import modelon.impact.client.sal.service
 import pytest
 import os
 import tempfile
+import unittest.mock as mock
 import modelon.impact.client.options
 from modelon.impact.client import exceptions
 
@@ -282,6 +283,23 @@ class TestExperiment:
         exp = experiment.execute()
         assert exp == ExperimentOperation('AwesomeWorkspace', 'pid_2009')
 
+    def test_execute_with_case_filter(self, batch_experiment_with_case_filter):
+        experiment = batch_experiment_with_case_filter.experiment
+        exp_sal = batch_experiment_with_case_filter.exp_service
+        case_generated = experiment.execute(with_cases=[]).wait()
+        exp_sal.experiment_execute.assert_has_calls(
+            [mock.call('Workspace', 'Test', [])]
+        )
+        case_to_execute = case_generated.get_cases()[2]
+        result = experiment.execute(with_cases=[case_to_execute]).wait()
+        exp_sal.experiment_execute.assert_has_calls(
+            [mock.call('Workspace', 'Test', ["case_3"])]
+        )
+        assert result == Experiment('AwesomeWorkspace', 'pid_2009')
+        assert result.run_info.successful == 1
+        assert result.run_info.not_started == 3
+        assert experiment.get_case('case_3').is_successful()
+
     def test_execute_successful(self, experiment):
         assert experiment.id == "Test"
         assert experiment.is_successful()
@@ -290,6 +308,7 @@ class TestExperiment:
         assert experiment.run_info.failed == 0
         assert experiment.run_info.successful == 1
         assert experiment.run_info.cancelled == 0
+        assert experiment.run_info.not_started == 0
         assert experiment.get_variables() == ["inertia.I", "time"]
         assert experiment.get_cases() == [Case("case_1", "Workspace", "Test")]
         assert experiment.get_case("case_1") == Case("case_1", "Workspace", "Test")
@@ -303,6 +322,7 @@ class TestExperiment:
         assert batch_experiment.run_info.failed == 0
         assert batch_experiment.run_info.successful == 2
         assert batch_experiment.run_info.cancelled == 0
+        assert batch_experiment.run_info.not_started == 0
         assert batch_experiment.get_variables() == ["inertia.I", "time"]
         assert batch_experiment.get_cases() == [
             Case("case_1", "Workspace", "Test"),
