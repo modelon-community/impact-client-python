@@ -276,6 +276,17 @@ class TestExperimentService:
         service.experiment.experiment_execute("WS", "pid_2009")
         assert experiment_execute.adapter.called
 
+    def test_model_execute_with_case_filter(self, experiment_execute):
+        uri = modelon.impact.client.sal.service.URI(experiment_execute.url)
+        service = modelon.impact.client.sal.service.Service(
+            uri=uri, context=experiment_execute.context
+        )
+        service.experiment.experiment_execute("WS", "pid_2009", case_ids=['case_1'])
+        assert experiment_execute.adapter.called
+        assert experiment_execute.adapter.request_history[0].json() == {
+            'includeCases': {'ids': ['case_1']}
+        }
+
     def test_delete_experiment(self, delete_experiment):
         uri = modelon.impact.client.sal.service.URI(delete_experiment.url)
         service = modelon.impact.client.sal.service.Service(
