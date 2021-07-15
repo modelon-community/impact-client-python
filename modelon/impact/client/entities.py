@@ -1228,6 +1228,30 @@ class Experiment:
         logger.warning("This attribute is deprectated, use 'run_info' instead")
         return self._get_info()
 
+    def execute(self):
+        """Exceutes an experiment.
+        Returns an modelon.impact.client.operations.ExperimentOperation class object.
+
+        Returns:
+
+            experiment_ops --
+                An modelon.impact.client.operations.ExperimentOperation class object.
+
+        Example::
+            experiment = workspace.create_experiment(experiment_definition)
+            experiment_ops = experiment.execute()
+            experiment_ops.cancel()
+            experiment_ops.status()
+            experiment_ops.wait()
+        """
+        return operations.ExperimentOperation(
+            self._workspace_id,
+            self._exp_sal.experiment_execute(self._workspace_id, self._exp_id),
+            self._workspace_sal,
+            self._model_exe_sal,
+            self._exp_sal,
+        )
+
     def is_successful(self):
         """
         Returns True if the Experiment has executed successfully.
