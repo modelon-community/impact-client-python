@@ -1,3 +1,10 @@
+# [1.2.0-beta.2](https://github.com/modelon-community/impact-client-python/compare/v1.2.0-beta.1...v1.2.0-beta.2) (2021-07-15)
+
+
+### Features
+
+* Support for executing a created experiment ([76f2a32](https://github.com/modelon-community/impact-client-python/commit/76f2a32872f2a85f2a9790fe4f49064448d2a285))
+
 # [1.2.0-beta.1](https://github.com/modelon-community/impact-client-python/compare/v1.1.2...v1.2.0-beta.1) (2021-07-13)
 
 
