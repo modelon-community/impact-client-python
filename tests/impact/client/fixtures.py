@@ -688,7 +688,6 @@ def workspace():
     custom_function_service = unittest.mock.MagicMock()
     exp_service = unittest.mock.MagicMock()
     ws_service.experiment_create.return_value = {"experiment_id": "pid_2009"}
-    ws_service.experiment_execute.return_value = 'test_exp'
     ws_service.library_import.return_value = {
         "name": "Single",
         "uses": {"Modelica": {"version": "3.2.2"}},
@@ -729,7 +728,6 @@ def workspace_execute_running():
     ws_service = unittest.mock.MagicMock()
     exp_service = unittest.mock.MagicMock()
     ws_service.experiment_create.return_value = {"experiment_id": "pid_2009"}
-    ws_service.experiment_execute.return_value = 'test_exp'
     exp_service.experiment_execute.return_value = "pid_2009"
     exp_service.execute_status.return_value = {"status": "running"}
     return Workspace('AwesomeWorkspace', ws_service, experiment_service=exp_service)
@@ -740,7 +738,6 @@ def workspace_execute_cancelled():
     ws_service = unittest.mock.MagicMock()
     exp_service = unittest.mock.MagicMock()
     ws_service.experiment_create.return_value = {"experiment_id": "pid_2009"}
-    ws_service.experiment_execute.return_value = 'test_exp'
     exp_service.experiment_execute.return_value = "pid_2009"
     exp_service.execute_status.return_value = {"status": "cancelled"}
     return Workspace('AwesomeWorkspace', ws_service, experiment_service=exp_service)
@@ -1039,6 +1036,7 @@ def experiment():
     ws_service.experiment_get.return_value = {
         "run_info": {"status": "done", "failed": 0, "successful": 1, "cancelled": 0}
     }
+    exp_service.experiment_execute.return_value = "pid_2009"
     exp_service.execute_status.return_value = {"status": "done"}
     exp_service.result_variables_get.return_value = ["inertia.I", "time"]
     exp_service.cases_get.return_value = {"data": {"items": [{"id": "case_1"}]}}

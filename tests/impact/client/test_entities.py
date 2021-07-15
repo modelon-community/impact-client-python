@@ -278,6 +278,10 @@ class TestModelExecutable:
 
 
 class TestExperiment:
+    def test_execute(self, experiment):
+        exp = experiment.execute()
+        assert exp == ExperimentOperation('AwesomeWorkspace', 'pid_2009')
+
     def test_execute_successful(self, experiment):
         assert experiment.id == "Test"
         assert experiment.is_successful()
@@ -322,11 +326,16 @@ class TestExperiment:
     def test_failed_execution(self, failed_experiment):
         assert failed_experiment.run_info.status == ExperimentStatus.FAILED
         assert failed_experiment.is_successful() == False
-        assert failed_experiment.run_info.errors == ['out of licenses', 'too large experiment']
+        assert failed_experiment.run_info.errors == [
+            'out of licenses',
+            'too large experiment',
+        ]
 
     def test_execution_with_failed_cases(self, experiment_with_failed_case):
         assert experiment_with_failed_case.run_info.status == ExperimentStatus.DONE
-        assert experiment_with_failed_case.get_cases() == [Case("case_1", "Workspace", "Test")]
+        assert experiment_with_failed_case.get_cases() == [
+            Case("case_1", "Workspace", "Test")
+        ]
         assert experiment_with_failed_case.get_case("case_1") == Case(
             "case_1", "Workspace", "Test"
         )
