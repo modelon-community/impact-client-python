@@ -538,6 +538,14 @@ def get_case(sem_ver_check, mock_server_base):
 
 
 @pytest.fixture
+def put_case(sem_ver_check, mock_server_base):
+
+    return with_json_route_no_resp(
+        mock_server_base, 'PUT', 'api/workspaces/WS/experiments/pid_2009/cases/case_1',
+    )
+
+
+@pytest.fixture
 def get_case_log(sem_ver_check, mock_server_base):
     text = "Simulation log.."
 
@@ -1044,7 +1052,18 @@ def experiment():
         "id": "case_1",
         "run_info": {"status": "successful"},
         "input": {
-            "fmu_id": "modelica_fluid_examples_heatingsystem_20210130_114628_bbd91f1"
+            "fmu_id": "modelica_fluid_examples_heatingsystem_20210130_114628_bbd91f1",
+            "analysis": {
+                "analysis_function": "dynamic",
+                "parameters": {"start_time": 0, "final_time": 1},
+                "simulation_options": {},
+                "solver_options": {},
+                "simulation_log_level": "NOTHING",
+            },
+            "parametrization": {},
+            "structural_parametrization": {},
+            "fmu_base_parametrization": {},
+            "initialize_from_case": "",
         },
     }
     exp_service.case_get_log.return_value = "Successful Log"
@@ -1052,7 +1071,33 @@ def experiment():
     exp_service.case_artifact_get.return_value = (bytes(4), 'result.mat')
     exp_service.trajectories_get.return_value = [[[1, 2, 3, 4]], [[5, 2, 9, 4]]]
     exp_service.case_trajectories_get.return_value = [[1, 2, 3, 4], [5, 2, 9, 4]]
-    return Experiment("Workspace", "Test", ws_service, model_exe_service, exp_service)
+    ExperimentWithService = collections.namedtuple(
+        'ExperimentWithService', ['experiment', 'exp_service']
+    )
+    return ExperimentWithService(
+        Experiment("Workspace", "Test", ws_service, model_exe_service, exp_service),
+        exp_service,
+    )
+
+
+@pytest.fixture
+def experiment_running():
+    ws_service = unittest.mock.MagicMock()
+    exp_service = unittest.mock.MagicMock()
+    exp_service.experiment_execute.return_value = "pid_2009"
+    exp_service.case_get.return_value = {"id": "case_1"}
+    exp_service.execute_status.return_value = {"status": "running"}
+    return Experiment("Workspace", "Test", ws_service, exp_service=exp_service)
+
+
+@pytest.fixture
+def experiment_cancelled():
+    ws_service = unittest.mock.MagicMock()
+    exp_service = unittest.mock.MagicMock()
+    exp_service.experiment_execute.return_value = "pid_2009"
+    exp_service.case_get.return_value = {"id": "case_1"}
+    exp_service.execute_status.return_value = {"status": "cancelled"}
+    return Experiment("Workspace", "Test", ws_service, exp_service=exp_service)
 
 
 @pytest.fixture
@@ -1088,8 +1133,14 @@ def batch_experiment_with_case_filter():
             "fmu_id": "modelica_fluid_examples_heatingsystem_20210130_114628_bbd91f1"
         },
     }
-    ExperimentWithService = collections.namedtuple('ExperimentWithService', ['experiment', 'exp_service'])
-    return ExperimentWithService(Experiment("Workspace", "Test", ws_service, model_exe_service, exp_service), exp_service)
+    ExperimentWithService = collections.namedtuple(
+        'ExperimentWithService', ['experiment', 'exp_service']
+    )
+    return ExperimentWithService(
+        Experiment("Workspace", "Test", ws_service, model_exe_service, exp_service),
+        exp_service,
+    )
+
 
 @pytest.fixture
 def batch_experiment():

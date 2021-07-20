@@ -251,6 +251,14 @@ class ExperimentService:
         ).resolve()
         return self._http_client.get_json(url)
 
+    def case_put(self, workspace_id, experiment_id, case_id, case_data):
+        url = (
+            self._base_uri
+            / f"api/workspaces/{workspace_id}/experiments/{experiment_id}/cases/"
+            f"{case_id}"
+        ).resolve()
+        return self._http_client.put_json(url, body=case_data)
+
     def case_get_log(self, workspace_id, experiment_id, case_id):
         url = (
             self._base_uri
@@ -368,6 +376,9 @@ class HTTPClient:
     def delete_json(self, url, body=None):
         RequestJSON(self._context, "DELETE", url, body).execute()
 
+    def put_json(self, url, body=None):
+        RequestJSON(self._context, "PUT", url, body).execute()
+
 
 class URI:
     def __init__(self, content):
@@ -414,6 +425,10 @@ class Request:
                 )
             elif self.method == "GET":
                 resp = self.context.session.get(self.url, headers=self.headers)
+            elif self.method == "PUT":
+                resp = self.context.session.put(
+                    self.url, json=self.body, headers=self.headers
+                )
             elif self.method == "DELETE":
                 resp = self.context.session.delete(self.url, json=self.body)
             else:
