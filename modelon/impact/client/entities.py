@@ -1439,6 +1439,89 @@ class _CaseRunInfo:
         return self._status
 
 
+class _CaseAnalysis:
+    def __init__(self, analysis):
+        self._analysis = analysis
+
+    @property
+    def analysis_function(self):
+        return self._analysis['analysis_function']
+
+    @analysis_function.setter
+    def analysis_function(self, analysis_function):
+        self._analysis['analysis_function'] = analysis_function
+
+    @property
+    def parameters(self):
+        return self._analysis['parameters']
+
+    @parameters.setter
+    def parameters(self, parameters):
+        self._analysis['parameters'] = parameters
+
+    @property
+    def simulation_options(self):
+        return self._analysis['simulation_options']
+
+    @simulation_options.setter
+    def simulation_options(self, simulation_options):
+        self._analysis['simulation_options'] = simulation_options
+
+    @property
+    def solver_options(self):
+        return self._analysis['solver_options']
+
+    @solver_options.setter
+    def solver_options(self, solver_options):
+        self._analysis['solver_options'] = solver_options
+
+    @property
+    def simulation_log_level(self):
+        return self._analysis['simulation_log_level']
+
+    @simulation_log_level.setter
+    def simulation_log_level(self, simulation_log_level):
+        self._analysis['simulation_log_level'] = simulation_log_level
+
+
+class _CaseInput:
+    def __init__(self, data):
+        self._data = data
+        self.analysis = _CaseAnalysis(data['input']['analysis'])
+
+    @property
+    def parametrization(self):
+        return self._data['input']['parametrization']
+
+    @parametrization.setter
+    def parametrization(self, parameterization):
+        self._data['input']['parametrization'] = parameterization
+
+    @property
+    def fmu_id(self):
+        return self._data['input']['fmu_id']
+
+    @fmu_id.setter
+    def fmu_id(self, fmu_id):
+        self._data['input']['fmu_id'] = fmu_id
+
+    @property
+    def structural_parametrization(self):
+        return self._data['input']['structural_parametrization']
+
+    @structural_parametrization.setter
+    def structural_parametrization(self, structural_parametrization):
+        self._data['input']['structural_parametrization'] = structural_parametrization
+
+    @property
+    def fmu_base_parametrization(self):
+        return self._data['input']['fmu_base_parametrization']
+
+    @fmu_base_parametrization.setter
+    def fmu_base_parametrization(self, fmu_base_parametrization):
+        self._data['input']['fmu_base_parametrization'] = fmu_base_parametrization
+
+
 class Case:
     """
     Class containing Case functionalities.
@@ -1492,6 +1575,11 @@ class Case:
         """Case run information"""
         run_info = self._get_info()["run_info"]
         return _CaseRunInfo(CaseStatus(run_info["status"]))
+
+    @property
+    def input(self):
+        """Case input"""
+        return _CaseInput(self._get_info())
 
     def is_successful(self):
         """
@@ -1639,10 +1727,44 @@ class Case:
             fmu = case.get_fmu(fmu_id)
             fmus = set(case.get_fmu() for case in exp.get_cases())
         """
-        fmu_id = self._get_info()["input"]["fmu_id"]
+        fmu_id = self.input.fmu_id
 
         return ModelExecutable(
             self._workspace_id, fmu_id, self._workspace_sal, self._model_exe_sal
+        )
+
+    def update(self):
+        self._exp_sal.case_put(
+            self._workspace_id, self._exp_id, self._case_id, self._info
+        )
+
+    def execute(self):
+        """Exceutes a case.
+        Returns an modelon.impact.client.operations.CaseOperation class object.
+
+        Returns:
+
+            case_ops --
+                An modelon.impact.client.operations.CaseOperation class object.
+
+        Example::
+            case = experiment.get_case('case_1')
+            case.input.parametrization = {'PI.k': 120}
+            case.update()
+            case_ops = case.execute()
+            case_ops.cancel()
+            case_ops.status()
+            case_ops.wait()
+        """
+        return operations.CaseOperation(
+            self._workspace_id,
+            self._exp_sal.experiment_execute(
+                self._workspace_id, self._exp_id, [self._case_id]
+            ),
+            self._case_id,
+            self._workspace_sal,
+            self._model_exe_sal,
+            self._exp_sal,
         )
 
 
