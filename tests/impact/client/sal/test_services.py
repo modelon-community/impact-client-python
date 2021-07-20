@@ -350,6 +350,14 @@ class TestExperimentService:
         data = service.experiment.case_get("WS", "pid_2009", "case_1")
         assert data == {"id": "case_1"}
 
+    def test_put_case(self, put_case):
+        uri = modelon.impact.client.sal.service.URI(put_case.url)
+        service = modelon.impact.client.sal.service.Service(
+            uri=uri, context=put_case.context
+        )
+        service.experiment.case_put("WS", "pid_2009", "case_1", {})
+        assert put_case.adapter.called
+
     def test_get_case_log(self, get_case_log):
         uri = modelon.impact.client.sal.service.URI(get_case_log.url)
         service = modelon.impact.client.sal.service.Service(

@@ -229,7 +229,7 @@ class TestModelExecutable:
             exceptions.OperationFailureError,
             fmu_compile_running.get_settable_parameters,
         )
-        assert fmu_compile_running.is_successful() == False
+        assert not fmu_compile_running.is_successful()
 
     def test_compilation_failed(self, fmu_compile_failed):
         assert fmu_compile_failed.run_info.status == ModelExecutableStatus.FAILED
@@ -242,7 +242,7 @@ class TestModelExecutable:
 
     def test_compilation_cancelled(self, fmu_compile_cancelled):
         assert fmu_compile_cancelled.run_info.status == ModelExecutableStatus.CANCELLED
-        assert fmu_compile_cancelled.is_successful() == False
+        assert not fmu_compile_cancelled.is_successful()
         pytest.raises(exceptions.OperationFailureError, fmu_compile_cancelled.get_log)
         pytest.raises(
             exceptions.OperationFailureError,
@@ -280,7 +280,7 @@ class TestModelExecutable:
 
 class TestExperiment:
     def test_execute(self, experiment):
-        exp = experiment.execute()
+        exp = experiment.experiment.execute()
         assert exp == ExperimentOperation('AwesomeWorkspace', 'pid_2009')
 
     def test_execute_with_case_filter(self, batch_experiment_with_case_filter):
@@ -301,6 +301,7 @@ class TestExperiment:
         assert experiment.get_case('case_3').is_successful()
 
     def test_execute_successful(self, experiment):
+        experiment = experiment.experiment
         assert experiment.id == "Test"
         assert experiment.is_successful()
         assert experiment.run_info.status == ExperimentStatus.DONE
@@ -345,7 +346,7 @@ class TestExperiment:
 
     def test_failed_execution(self, failed_experiment):
         assert failed_experiment.run_info.status == ExperimentStatus.FAILED
-        assert failed_experiment.is_successful() == False
+        assert not failed_experiment.is_successful()
         assert failed_experiment.run_info.errors == [
             'out of licenses',
             'too large experiment',
@@ -370,7 +371,7 @@ class TestExperiment:
         assert cancelled_experiment.get_case("case_1") == Case(
             "case_1", "Workspace", "Test"
         )
-        assert False == cancelled_experiment.is_successful()
+        assert not cancelled_experiment.is_successful()
         pytest.raises(
             exceptions.OperationFailureError, cancelled_experiment.get_variables
         )
@@ -381,15 +382,15 @@ class TestExperiment:
         )
 
     def test_exp_trajectories_non_list_entry(self, experiment):
-        pytest.raises(TypeError, experiment.get_trajectories, 'hh')
+        pytest.raises(TypeError, experiment.experiment.get_trajectories, 'hh')
 
     def test_exp_trajectories_invalid_keys(self, experiment):
-        pytest.raises(ValueError, experiment.get_trajectories, ['s'])
+        pytest.raises(ValueError, experiment.experiment.get_trajectories, ['s'])
 
 
 class TestCase:
     def test_case(self, experiment):
-        case = experiment.get_case("case_1")
+        case = experiment.experiment.get_case("case_1")
         assert case.id == "case_1"
         assert case.run_info.status == CaseStatus.SUCCESSFUL
         assert case.get_log() == "Successful Log"
@@ -427,3 +428,68 @@ class TestCase:
             exceptions.OperationFailureError,
             experiment_with_failed_case.get_case("case_2").get_result,
         )
+
+    def test_case_update(self, experiment):
+        exp = experiment.experiment
+        exp_sal = experiment.exp_service
+
+        case = exp.get_case("case_1")
+        case.input.parametrization = {'PI.k': 120}
+        case.input.analysis.simulation_options = {'ncp': 600}
+        case.input.analysis.solver_options = {'atol': 1e-8}
+        case.input.analysis.simulation_log_level = "DEBUG"
+        case.input.analysis.parameters = {"start_time": 1, "final_time": 2e5}
+        case.update()
+        exp_sal.case_put.assert_has_calls(
+            [
+                mock.call(
+                    'Workspace',
+                    'Test',
+                    'case_1',
+                    {
+                        'id': 'case_1',
+                        'run_info': {'status': 'successful'},
+                        'input': {
+                            'fmu_id': 'modelica_fluid_examples_heatingsystem_20210130_114628_bbd91f1',
+                            'analysis': {
+                                'analysis_function': 'dynamic',
+                                'parameters': {'start_time': 1, 'final_time': 200000.0},
+                                'simulation_options': {'ncp': 600},
+                                'solver_options': {'atol': 1e-08},
+                                'simulation_log_level': 'DEBUG',
+                            },
+                            'parametrization': {'PI.k': 120},
+                            'structural_parametrization': {},
+                            'fmu_base_parametrization': {},
+                            'initialize_from_case': '',
+                        },
+                    },
+                )
+            ]
+        )
+        result = case.execute().wait()
+        assert result == Case('case_1', 'AwesomeWorkspace', 'pid_2009')
+
+    def test_case_input(self, experiment):
+        exp = experiment.experiment
+
+        case = exp.get_case("case_1")
+        case.input.analysis.analysis_function = "something"
+        case.input.analysis.parameters = {"start_time": 0, "final_time": 90}
+        case.input.analysis.simulation_options = {'ncp': 600}
+        case.input.analysis.solver_options = {'atol': 1e-8}
+        case.input.analysis.simulation_log_level = "DEBUG"
+        case.input.parametrization = {'PI.k': 120}
+        case.input.fmu_id = "modelica_fluid_examples_12345"
+        case.input.structural_parametrization = {'PI.something': 150}
+        case.input.fmu_base_parametrization = {'something': 109}
+
+        assert case.input.analysis.analysis_function == "something"
+        assert case.input.analysis.parameters == {"start_time": 0, "final_time": 90}
+        assert case.input.analysis.simulation_options == {'ncp': 600}
+        assert case.input.analysis.solver_options == {'atol': 1e-8}
+        assert case.input.analysis.simulation_log_level == "DEBUG"
+        assert case.input.parametrization == {'PI.k': 120}
+        assert case.input.fmu_id == "modelica_fluid_examples_12345"
+        assert case.input.structural_parametrization == {'PI.something': 150}
+        assert case.input.fmu_base_parametrization == {'something': 109}
