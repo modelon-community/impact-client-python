@@ -1,3 +1,10 @@
+# [1.2.0-beta.4](https://github.com/modelon-community/impact-client-python/compare/v1.2.0-beta.3...v1.2.0-beta.4) (2021-07-21)
+
+
+### Features
+
+* Added support to update and execute cases ([bd5467c](https://github.com/modelon-community/impact-client-python/commit/bd5467ca0310b62eef4e1d21d4cbd03881efee1c))
+
 # [1.2.0-beta.3](https://github.com/modelon-community/impact-client-python/compare/v1.2.0-beta.2...v1.2.0-beta.3) (2021-07-16)
 
 
