@@ -207,6 +207,12 @@ class ExperimentService:
         ).resolve()
         self._http_client.delete_json(url)
 
+    def experiment_set_label(self, workspace_id, exp_id, label):
+        url = (
+            self._base_uri / f"api/workspaces/{workspace_id}/experiments/{exp_id}"
+        ).resolve()
+        return self._http_client.put_json(url, body={"label": label})
+
     def execute_status(self, workspace_id, experiment_id):
         url = (
             self._base_uri

@@ -1428,6 +1428,15 @@ class Experiment:
         """
         self._exp_sal.experiment_delete(self._workspace_id, self._exp_id)
 
+    def set_label(self, label):
+        """Sets a label for an experiment.
+
+        Example::
+
+            experiment.set_label(label)
+        """
+        self._exp_sal.experiment_set_label(self._workspace_id, self._exp_id, label)
+
 
 class _CaseRunInfo:
     def __init__(self, status):

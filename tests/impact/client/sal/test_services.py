@@ -287,6 +287,17 @@ class TestExperimentService:
             'includeCases': {'ids': ['case_1']}
         }
 
+    def test_set_label_for_experiment(self, set_experiment_label):
+        uri = modelon.impact.client.sal.service.URI(set_experiment_label.url)
+        service = modelon.impact.client.sal.service.Service(
+            uri=uri, context=set_experiment_label.context
+        )
+        service.experiment.experiment_set_label("WS", "pid_2009", "Label")
+        assert set_experiment_label.adapter.called
+        assert set_experiment_label.adapter.request_history[0].json() == {
+            'label': "Label"
+        }
+
     def test_delete_experiment(self, delete_experiment):
         uri = modelon.impact.client.sal.service.URI(delete_experiment.url)
         service = modelon.impact.client.sal.service.Service(
