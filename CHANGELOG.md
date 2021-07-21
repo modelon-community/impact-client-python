@@ -1,3 +1,10 @@
+# [1.2.0-beta.5](https://github.com/modelon-community/impact-client-python/compare/v1.2.0-beta.4...v1.2.0-beta.5) (2021-07-21)
+
+
+### Features
+
+* Added support to set labels for experiment ([b6bdebb](https://github.com/modelon-community/impact-client-python/commit/b6bdebb434a4f9cf81782639a1b049593c9c3fd0))
+
 # [1.2.0-beta.4](https://github.com/modelon-community/impact-client-python/compare/v1.2.0-beta.3...v1.2.0-beta.4) (2021-07-21)
 
 
