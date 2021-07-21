@@ -470,6 +470,14 @@ class TestCase:
         result = case.execute().wait()
         assert result == Case('case_1', 'AwesomeWorkspace', 'pid_2009')
 
+    def test_set_case_label(self, experiment):
+        exp = experiment.experiment
+        exp_sal = experiment.exp_service
+        exp.set_label('Label')
+        exp_sal.experiment_set_label.assert_has_calls(
+            [mock.call('Workspace', 'Test', 'Label')]
+        )
+
     def test_case_input(self, experiment):
         exp = experiment.experiment
 

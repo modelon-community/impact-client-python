@@ -460,6 +460,14 @@ def experiment_execute(sem_ver_check, mock_server_base):
 
 
 @pytest.fixture
+def set_experiment_label(sem_ver_check, mock_server_base):
+
+    return with_json_route_no_resp(
+        mock_server_base, 'PUT', 'api/workspaces/WS/experiments/pid_2009'
+    )
+
+
+@pytest.fixture
 def delete_experiment(sem_ver_check, mock_server_base):
 
     return with_json_route_no_resp(
