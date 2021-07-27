@@ -1,3 +1,10 @@
+# [1.2.0-beta.6](https://github.com/modelon-community/impact-client-python/compare/v1.2.0-beta.5...v1.2.0-beta.6) (2021-07-27)
+
+
+### Bug Fixes
+
+* experiment.is_successful() method now returns true only if all cases pass successfuly ([252a69b](https://github.com/modelon-community/impact-client-python/commit/252a69be254b8d0355e73327b308faad516a3e1b))
+
 # [1.2.0-beta.5](https://github.com/modelon-community/impact-client-python/compare/v1.2.0-beta.4...v1.2.0-beta.5) (2021-07-21)
 
 
