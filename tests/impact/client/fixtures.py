@@ -1178,6 +1178,34 @@ def batch_experiment():
 
 
 @pytest.fixture
+def batch_experiment_some_successful():
+    ws_service = unittest.mock.MagicMock()
+    exp_service = unittest.mock.MagicMock()
+    ws_service.experiment_get.return_value = {
+        "run_info": {
+            "status": "done",
+            "failed": 1,
+            "successful": 2,
+            "cancelled": 0,
+            "not_started": 1,
+        }
+    }
+    exp_service.execute_status.return_value = {"status": "done"}
+    exp_service.result_variables_get.return_value = ["inertia.I", "time"]
+    exp_service.cases_get.return_value = {
+        "data": {
+            "items": [
+                {"id": "case_1"},
+                {"id": "case_2"},
+                {"id": "case_3"},
+                {"id": "case_4"},
+            ]
+        }
+    }
+    return Experiment("Workspace", "Test", ws_service, exp_service=exp_service)
+
+
+@pytest.fixture
 def running_experiment():
     ws_service = unittest.mock.MagicMock()
     exp_service = unittest.mock.MagicMock()

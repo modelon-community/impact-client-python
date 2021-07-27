@@ -333,8 +333,23 @@ class TestExperiment:
         assert exp['case_1']['inertia.I'] == [1, 2, 3, 4]
         assert exp['case_2']['inertia.I'] == [14, 4, 4, 74]
 
+    def test_some_successful_batch_execute(self, batch_experiment_some_successful):
+        assert not batch_experiment_some_successful.is_successful()
+        assert batch_experiment_some_successful.run_info.status == ExperimentStatus.DONE
+        assert batch_experiment_some_successful.run_info.failed == 1
+        assert batch_experiment_some_successful.run_info.successful == 2
+        assert batch_experiment_some_successful.run_info.cancelled == 0
+        assert batch_experiment_some_successful.run_info.not_started == 1
+        assert batch_experiment_some_successful.get_cases() == [
+            Case("case_1", "Workspace", "Test"),
+            Case("case_2", "Workspace", "Test"),
+            Case("case_3", "Workspace", "Test"),
+            Case("case_4", "Workspace", "Test"),
+        ]
+
     def test_running_execution(self, running_experiment):
         assert running_experiment.run_info.status == ExperimentStatus.NOTSTARTED
+        assert not running_experiment.is_successful()
         pytest.raises(
             exceptions.OperationNotCompleteError, running_experiment.get_variables
         )
@@ -360,7 +375,7 @@ class TestExperiment:
         assert experiment_with_failed_case.get_case("case_1") == Case(
             "case_1", "Workspace", "Test"
         )
-        assert experiment_with_failed_case.is_successful()
+        assert not experiment_with_failed_case.is_successful()
         assert experiment_with_failed_case.get_trajectories(['inertia.I']) == {
             'case_1': {'inertia.I': [1, 2, 3, 4]}
         }
