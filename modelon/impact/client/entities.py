@@ -1288,7 +1288,12 @@ class Experiment:
 
             experiment.is_successful()
         """
-        return self.run_info.status == ExperimentStatus.DONE
+        return (
+            self.run_info.status == ExperimentStatus.DONE
+            and self.run_info.failed == 0
+            and self.run_info.cancelled == 0
+            and self.run_info.not_started == 0
+        )
 
     def get_variables(self):
         """
