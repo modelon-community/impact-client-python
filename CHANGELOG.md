@@ -1,3 +1,10 @@
+# [1.2.0-beta.7](https://github.com/modelon-community/impact-client-python/compare/v1.2.0-beta.6...v1.2.0-beta.7) (2021-08-01)
+
+
+### Bug Fixes
+
+* not started status not checked for successful experiment ([d655d7c](https://github.com/modelon-community/impact-client-python/commit/d655d7cf1b46240c7cf675458e39de1abe79f1ef))
+
 # [1.2.0-beta.6](https://github.com/modelon-community/impact-client-python/compare/v1.2.0-beta.5...v1.2.0-beta.6) (2021-07-27)
 
 
