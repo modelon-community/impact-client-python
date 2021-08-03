@@ -444,7 +444,7 @@ class TestCase:
             experiment_with_failed_case.get_case("case_2").get_result,
         )
 
-    def test_case_update(self, experiment):
+    def test_case_update(self, experiment, batch_experiment):
         exp = experiment.experiment
         exp_sal = experiment.exp_service
 
@@ -454,6 +454,8 @@ class TestCase:
         case.input.analysis.solver_options = {'atol': 1e-8}
         case.input.analysis.simulation_log_level = "DEBUG"
         case.input.analysis.parameters = {"start_time": 1, "final_time": 2e5}
+        case_2 = batch_experiment.get_case('case_2')
+        case.initialize_from_case = case_2
         case.update()
         exp_sal.case_put.assert_has_calls(
             [
@@ -476,7 +478,10 @@ class TestCase:
                             'parametrization': {'PI.k': 120},
                             'structural_parametrization': {},
                             'fmu_base_parametrization': {},
-                            'initialize_from_case': '',
+                            'initialize_from_case': {
+                                'experimentId': 'Test',
+                                'caseId': 'case_2',
+                            },
                         },
                     },
                 )

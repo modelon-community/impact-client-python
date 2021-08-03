@@ -295,6 +295,29 @@ class TestSimpleModelicaExperimentDefinition:
             'v': 'choices(0.1, 0.5, 3)',
         }
 
+    def test_experiment_definition_initialize_from_experiment(
+        self, model, custom_function_no_param, experiment
+    ):
+        experiment = experiment.experiment
+        definition = SimpleModelicaExperimentDefinition(
+            model, custom_function=custom_function_no_param,
+        ).initialize_from(experiment)
+        config = definition.to_dict()
+        assert config["experiment"]["base"]["modifiers"]["initializeFrom"] == 'Test'
+
+    def test_experiment_definition_initialize_from_case(
+        self, model, custom_function_no_param, experiment
+    ):
+        case_1 = experiment.experiment.get_case('case_1')
+        definition = SimpleModelicaExperimentDefinition(
+            model, custom_function=custom_function_no_param,
+        ).initialize_from(case_1)
+        config = definition.to_dict()
+        assert config["experiment"]["base"]["modifiers"]["initializeFromCase"] == {
+            'experimentId': 'Test',
+            'caseId': 'case_1',
+        }
+
     def test_experiment_definition_with_extensions(
         self, model, custom_function_no_param
     ):
@@ -308,6 +331,53 @@ class TestSimpleModelicaExperimentDefinition:
             {"modifiers": {"variables": {"p": 2}}},
             {
                 "modifiers": {"variables": {"p": 3}},
+                "analysis": {"parameters": {'final_time': 10}},
+            },
+        ]
+
+    def test_experiment_definition_with_extensions_initialize_from_experiment(
+        self, model, custom_function_no_param, experiment
+    ):
+        experiment = experiment.experiment
+        ext1 = SimpleExperimentExtension().with_modifiers(p=2)
+        ext2 = (
+            SimpleExperimentExtension({'final_time': 10})
+            .with_modifiers(p=3)
+            .initialize_from(experiment)
+        )
+        definition = SimpleModelicaExperimentDefinition(
+            model, custom_function=custom_function_no_param,
+        ).with_extensions([ext1, ext2])
+        config = definition.to_dict()
+        assert config["experiment"]["extensions"] == [
+            {"modifiers": {"variables": {"p": 2}}},
+            {
+                "modifiers": {'initializeFrom': 'Test', "variables": {"p": 3}},
+                "analysis": {"parameters": {'final_time': 10}},
+            },
+        ]
+
+    def test_experiment_definition_with_extensions_initialize_from_case(
+        self, model, custom_function_no_param, experiment
+    ):
+        case_1 = experiment.experiment.get_case('case_1')
+        ext1 = SimpleExperimentExtension().with_modifiers(p=2)
+        ext2 = (
+            SimpleExperimentExtension({'final_time': 10})
+            .with_modifiers(p=3)
+            .initialize_from(case_1)
+        )
+        definition = SimpleModelicaExperimentDefinition(
+            model, custom_function=custom_function_no_param,
+        ).with_extensions([ext1, ext2])
+        config = definition.to_dict()
+        assert config["experiment"]["extensions"] == [
+            {"modifiers": {"variables": {"p": 2}}},
+            {
+                "modifiers": {
+                    'initializeFromCase': {'experimentId': 'Test', 'caseId': 'case_1'},
+                    "variables": {"p": 3},
+                },
                 "analysis": {"parameters": {'final_time': 10}},
             },
         ]

@@ -1569,11 +1569,15 @@ class Case:
         """Case id"""
         return self._case_id
 
+    @property
+    def experiment_id(self):
+        """Experiment id"""
+        return self._exp_id
+
     def _get_info(self):
-        if self._info is None:
-            self._info = self._exp_sal.case_get(
-                self._workspace_id, self._exp_id, self._case_id
-            )
+        self._info = self._exp_sal.case_get(
+            self._workspace_id, self._exp_id, self._case_id
+        )
 
         return self._info
 
@@ -1592,7 +1596,38 @@ class Case:
     @property
     def input(self):
         """Case input"""
-        return _CaseInput(self._get_info())
+        return _CaseInput(self._info)
+
+    @property
+    def initialize_from_case(self):
+        init_from_dict = self._info['input'].get('initialize_from_case')
+        if init_from_dict is None:
+            return None
+
+        experiment_id = init_from_dict.get('experimentId')
+        case_id = init_from_dict.get('caseId')
+
+        resp = self._exp_sal.case_get(self._workspace_id, experiment_id, case_id)
+        return Case(
+            resp["id"],
+            self._workspace_id,
+            experiment_id,
+            self._exp_sal,
+            self._model_exe_sal,
+            self._workspace_sal,
+            resp,
+        )
+
+    @initialize_from_case.setter
+    def initialize_from_case(self, case):
+        if not isinstance(case, Case):
+            raise TypeError(
+                "The value must be an instance of modelon.impact.client.entities.Case"
+            )
+        self._info['input']['initialize_from_case'] = {
+            'experimentId': case.experiment_id,
+            'caseId': case.id,
+        }
 
     def is_successful(self):
         """

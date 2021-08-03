@@ -63,6 +63,27 @@ def assert_valid_args(
         )
 
 
+def _validate_and_set_initialize_from(entitiy, definition):
+    if isinstance(entitiy, entities.Experiment):
+        if len(entitiy.get_cases()) > 1:
+            raise ValueError(
+                "Cannot initialize from an experiment result containing multiple"
+                " cases! Please specify a case object instead."
+            )
+        definition.initialize_from_experiment = entitiy.id
+    elif isinstance(entitiy, entities.Case):
+        definition.initialize_from_case = {
+            'experimentId': entitiy.experiment_id,
+            'caseId': entitiy.id,
+        }
+    else:
+        raise TypeError(
+            "The entitiy argument be an instance of "
+            "modelon.impact.client.entities.Case or "
+            "modelon.impact.client.entities.Experiment!"
+        )
+
+
 def _assert_successful_compilation(fmu):
     if not fmu.is_successful():
         raise exceptions.OperationFailureError(
@@ -248,6 +269,8 @@ class SimpleFMUExperimentDefinition(BaseExperimentDefinition):
         self._simulation_log_level = simulation_log_level
         self.variable_modifiers = fmu._variable_modifiers()
         self.extensions = []
+        self.initialize_from_experiment = None
+        self.initialize_from_case = None
 
     def validate(self):
         add = set(self.variable_modifiers.keys()) - set(
@@ -390,7 +413,7 @@ class SimpleFMUExperimentDefinition(BaseExperimentDefinition):
             solver_options, simulation_options)
             simulate_def.to_dict()
         """
-        return {
+        exp_dict = {
             "experiment": {
                 "version": 2,
                 "base": {
@@ -407,6 +430,49 @@ class SimpleFMUExperimentDefinition(BaseExperimentDefinition):
                 "extensions": [ext.to_dict() for ext in self.extensions],
             }
         }
+        if self.initialize_from_experiment:
+            exp_dict["experiment"]["base"]['modifiers'][
+                "initializeFrom"
+            ] = self.initialize_from_experiment
+        elif self.initialize_from_case:
+            exp_dict["experiment"]["base"]['modifiers'][
+                "initializeFromCase"
+            ] = self.initialize_from_case
+        return exp_dict
+
+    def initialize_from(self, entitiy):
+        """Sets the experiment or case to initialize from for an experiment.
+
+        Parameters:
+
+            entitiy --
+                "An instance of modelon.impact.client.entities.Case or "
+                "modelon.impact.client.entities.Experiment."
+
+        Example::
+
+            experiment = workspace.get_experiment(experiment_id)
+            fmu = model.compile().wait()
+            experiment_definition = fmu.new_experiment_definition(custom_function).
+            initialize_from(experiment)
+
+            experiment = workspace.get_experiment(experiment_id)
+            case = experiment.get_case('case_1')
+            fmu = model.compile().wait()
+            experiment_definition = fmu.new_experiment_definition(custom_function).
+            initialize_from(case)
+        """
+        new = SimpleFMUExperimentDefinition(
+            self.fmu,
+            self.custom_function,
+            self._solver_options,
+            self._simulation_options,
+            self._simulation_log_level,
+        )
+        _validate_and_set_initialize_from(entitiy, new)
+        new.variable_modifiers = self.variable_modifiers
+        new.extensions = self.extensions
+        return new
 
 
 class SimpleModelicaExperimentDefinition(BaseExperimentDefinition):
@@ -526,6 +592,8 @@ class SimpleModelicaExperimentDefinition(BaseExperimentDefinition):
         self._simulation_log_level = simulation_log_level
         self.variable_modifiers = {}
         self.extensions = []
+        self.initialize_from_experiment = None
+        self.initialize_from_case = None
 
     def validate(self):
         raise NotImplementedError(
@@ -570,6 +638,44 @@ class SimpleModelicaExperimentDefinition(BaseExperimentDefinition):
             new.variable_modifiers[variable] = (
                 str(value) if isinstance(value, Operator) else value
             )
+        return new
+
+    def initialize_from(self, entitiy):
+        """Sets the experiment or case to initialize from for an experiment.
+
+        Parameters:
+
+            entitiy --
+                "An instance of modelon.impact.client.entities.Case or "
+                "modelon.impact.client.entities.Experiment."
+
+        Example::
+
+            experiment = workspace.get_experiment(experiment_id)
+            experiment_definition = model.new_experiment_definition(custom_function).
+            initialize_from(experiment)
+
+            experiment = workspace.get_experiment(experiment_id)
+            case = experiment.get_case('case_1')
+            experiment_definition = model.new_experiment_definition(custom_function).
+            initialize_from(case)
+        """
+        new = SimpleModelicaExperimentDefinition(
+            model=self.model,
+            custom_function=self.custom_function,
+            compiler_options=self._compiler_options,
+            fmi_target=self._fmi_target,
+            fmi_version=self._fmi_version,
+            platform=self._platform,
+            compiler_log_level=self._compiler_log_level,
+            runtime_options=self._runtime_options,
+            solver_options=self._solver_options,
+            simulation_options=self._simulation_options,
+            simulation_log_level=self._simulation_log_level,
+        )
+        _validate_and_set_initialize_from(entitiy, new)
+        new.variable_modifiers = self.variable_modifiers
+        new.extensions = self.extensions
         return new
 
     def with_extensions(self, experiment_extensions):
@@ -624,6 +730,8 @@ class SimpleModelicaExperimentDefinition(BaseExperimentDefinition):
         )
         new.variable_modifiers = self.variable_modifiers
         new.extensions = self.extensions + exp_ext
+        new.initialize_from_experiment = self.initialize_from_experiment
+        new.initialize_from_case = self.initialize_from_case
         return new
 
     def with_cases(self, cases_modifiers):
@@ -673,7 +781,7 @@ class SimpleModelicaExperimentDefinition(BaseExperimentDefinition):
             simulate_def.to_dict()
         """
 
-        return {
+        exp_dict = {
             "experiment": {
                 "version": 2,
                 "base": {
@@ -700,6 +808,15 @@ class SimpleModelicaExperimentDefinition(BaseExperimentDefinition):
                 "extensions": [ext.to_dict() for ext in self.extensions],
             }
         }
+        if self.initialize_from_experiment:
+            exp_dict["experiment"]["base"]['modifiers'][
+                "initializeFrom"
+            ] = self.initialize_from_experiment
+        elif self.initialize_from_case:
+            exp_dict["experiment"]["base"]['modifiers'][
+                "initializeFromCase"
+            ] = self.initialize_from_case
+        return exp_dict
 
 
 class BaseExperimentExtension(ABC):
@@ -770,6 +887,8 @@ class SimpleExperimentExtension(BaseExperimentExtension):
         self._simulation_options = _get_options(dict, simulation_options)
         self._simulation_log_level = simulation_log_level
         self.variable_modifiers = {}
+        self.initialize_from_experiment = None
+        self.initialize_from_case = None
 
     def with_modifiers(self, modifiers=None, **modifiers_kwargs):
         """Sets the modifiers variables for an experiment extension.
@@ -781,7 +900,6 @@ class SimpleExperimentExtension(BaseExperimentExtension):
 
         Example::
 
-            fmu = model.compile().wait()
             simulation_options = custom_function.get_simulation_options()
             .with_values(ncp=500)
             solver_options = {'atol':1e-8}
@@ -815,6 +933,33 @@ class SimpleExperimentExtension(BaseExperimentExtension):
                     " in the experiment"
                 )
             new.variable_modifiers[variable] = value
+        return new
+
+    def initialize_from(self, entity):
+        """Sets the experiment or case to initialize from for an experiment extension.
+
+        Parameters:
+
+            entitiy --
+                "An instance of modelon.impact.client.entities.Case or "
+                "modelon.impact.client.entities.Experiment."
+
+        Example::
+            experiment = workspace.get_experiment(experiment_id)
+            simulate_ext = SimpleExperimentExtension().initialize_from(experiment)
+
+            experiment = workspace.get_experiment(experiment_id)
+            case = experiment.get_case('case_1')
+            simulate_ext = SimpleExperimentExtension().initialize_from(case)
+        """
+        new = SimpleExperimentExtension(
+            self._parameter_modifiers,
+            self._solver_options,
+            self._simulation_options,
+            self._simulation_log_level,
+        )
+        _validate_and_set_initialize_from(entity, new)
+        new.variable_modifiers = self.variable_modifiers
         return new
 
     def to_dict(self):
@@ -857,5 +1002,11 @@ class SimpleExperimentExtension(BaseExperimentExtension):
         if self._simulation_log_level:
             ext_dict.setdefault("analysis", {})
             ext_dict["analysis"]["simulationLogLevel"] = self._simulation_log_level
+
+        if self.initialize_from_experiment:
+            ext_dict['modifiers']["initializeFrom"] = self.initialize_from_experiment
+
+        elif self.initialize_from_case:
+            ext_dict['modifiers']["initializeFromCase"] = self.initialize_from_case
 
         return ext_dict
