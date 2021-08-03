@@ -1,3 +1,10 @@
+# [1.2.0-beta.8](https://github.com/modelon-community/impact-client-python/compare/v1.2.0-beta.7...v1.2.0-beta.8) (2021-08-03)
+
+
+### Features
+
+* Added support for initializing from case and experiment ([d104e6a](https://github.com/modelon-community/impact-client-python/commit/d104e6a9fe6b8086cdc4f5a1df5d40562fbcc75c))
+
 # [1.2.0-beta.7](https://github.com/modelon-community/impact-client-python/compare/v1.2.0-beta.6...v1.2.0-beta.7) (2021-08-01)
 
 
