@@ -127,7 +127,11 @@ class ModelExecutableOperation(Operation):
     """
 
     def __init__(
-        self, workspace_id, fmu_id, workspace_service=None, model_exe_service=None,
+        self,
+        workspace_id,
+        fmu_id,
+        workspace_service=None,
+        model_exe_service=None,
     ):
         super().__init__()
         self._workspace_id = workspace_id
@@ -161,7 +165,10 @@ class ModelExecutableOperation(Operation):
                 A model_executable class instance.
         """
         return entities.ModelExecutable(
-            self._workspace_id, self._fmu_id, self._workspace_sal, self._model_exe_sal,
+            self._workspace_id,
+            self._fmu_id,
+            self._workspace_sal,
+            self._model_exe_sal,
         )
 
     def status(self):

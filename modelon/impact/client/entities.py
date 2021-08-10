@@ -14,6 +14,7 @@ from modelon.impact.client import exceptions
 from enum import Enum
 
 logger = logging.getLogger(__name__)
+logging.basicConfig(level=logging.INFO)
 
 
 def _assert_successful_operation(is_successful, operation_name="Operation"):
@@ -207,6 +208,98 @@ class Workspace:
             workspace.upload_model_library('C:/B.mol')
         """
         self._workspace_sal.library_import(self._workspace_id, path_to_lib)
+
+    def upload_fmu(
+        self,
+        fmu_path,
+        library_path,
+        class_name=None,
+        overwrite=False,
+        include_patterns=None,
+        exclude_patterns=None,
+        top_level_inputs=None,
+        step_size=0.0,
+    ):
+        """Uploads a FMU to the workspace.
+
+        Parameters:
+
+            fmu_path --
+                The path for the FMU to be imported.
+
+            library_path --
+                The library identifier, '{name} {version}' or '{name}' if version is
+                missing.
+
+            class_name --
+                Qualified name of generated class. By default, 'class_name' is
+                set to the name of the library followed by a name based
+                on the filename of the imported FMU.
+
+            overwrite --
+                Determines if any already existing files should be overwritten.
+                Default: False.
+
+            include_patterns, exclude_patterns --
+                Specifies what variables from the FMU to include and/or exclude in the
+                wrapper model. These two arguments are patterns or lists of patterns as
+                the same kind as the argument 'filter' for the function
+                'get_model_variables' in PyFMI. If both 'include_patterns' and
+                'exclude_patterns' are given, then all variables that matches
+                'include_patterns' but does not match 'exclude_patterns' are included.
+                Derivatives and variables with a leading underscore in the name are
+                always excluded.
+                Default value: None (which means to include all the variables).
+
+            top_level_inputs --
+                Specify what inputs that should be kept as inputs, i.e. with or without
+                the input keyword. The argument is a pattern similar to the arguments
+                include_patterns and exclude_patterns. Example: If
+                top_level_inputs = 'my_inputs*', then all input variables matching the
+                pattern 'my_inputs*' will be generated as inputs, and all other inputs
+                not matching the pattern as model variables. If top_level_inputs = '',
+                then no input is imported as an input.
+                Default value: None (which means all inputs are kept as inputs)
+                Type: str or a list of strings
+
+            step_size --
+                Specify what value to set for the parameter for step size in the
+                generated model. By default the parameter is set to zero, which
+                inturn means that the step size will be set during simulation based
+                on simulation properties such as the time interval.
+                This can also be manually set to any real non-negative number.
+                The value of the step size parameter can also be set via the function
+                set_step_size, which must be invoked before importing the model.
+                Default value: 0.0 (which during simulation is set according to the
+                description above).
+                Type: number
+
+        Example::
+
+            workspace.upload_fmu('C:/A.fmu',"Workspace")
+            workspace.upload_fmu('C:/B.fmu',"Workspace",class_name="Workspace.Model")
+        """
+        resp = self._workspace_sal.fmu_import(
+            self._workspace_id,
+            fmu_path,
+            library_path,
+            class_name,
+            overwrite,
+            include_patterns,
+            exclude_patterns,
+            top_level_inputs,
+            step_size=step_size,
+        )
+
+        if resp["importWarnings"]:
+            logger.warning(f"Import Warnings: {'. '.join(resp['importWarnings'])}")
+
+        return Model(
+            resp['fmuClassPath'],
+            self._workspace_id,
+            self._workspace_sal,
+            self._model_exe_sal,
+        )
 
     def lock(self):
         """Locks the workspace to the user.
@@ -500,7 +593,10 @@ class Workspace:
 
 class _Parameter:
     _JSON_2_PY_TYPE = {
-        "Number": (float, int,),
+        "Number": (
+            float,
+            int,
+        ),
         "String": (str,),
         "Boolean": (bool,),
         "Enumeration": (str,),
@@ -543,7 +639,10 @@ class CustomFunction:
         self._parameter_data = parameter_data
         self._param_by_name = {
             p["name"]: _Parameter(
-                p["name"], p["defaultValue"], p["type"], p.get("values", []),
+                p["name"],
+                p["defaultValue"],
+                p["type"],
+                p.get("values", []),
             )
             for p in parameter_data
         }
@@ -986,7 +1085,7 @@ class ModelExecutable:
     @property
     def metadata(self):
         """FMU metadata. Returns the 'iteration_variable_count' and 'residual_variable_count'
-            only for steady state model compiled as an FMU"""
+        only for steady state model compiled as an FMU"""
         _assert_successful_operation(self.is_successful(), "Compilation")
         parameter_state = {"parameterState": self._variable_modifiers()}
         return self._model_exe_sal.ss_fmu_metadata_get(
@@ -1822,7 +1921,12 @@ class Result(Mapping):
     """
 
     def __init__(
-        self, case_id, workspace_id, exp_id, workspace_service=None, exp_service=None,
+        self,
+        case_id,
+        workspace_id,
+        exp_id,
+        workspace_service=None,
+        exp_service=None,
     ):
         self._case_id = case_id
         self._workspace_id = workspace_id
