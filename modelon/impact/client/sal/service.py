@@ -1,4 +1,6 @@
 import sys
+import os
+import json
 import re
 import logging
 import requests
@@ -54,6 +56,44 @@ class WorkspaceService:
         url = (self._base_uri / f"api/workspaces/{workspace_id}/libraries").resolve()
         with open(path_to_lib, "rb") as f:
             self._http_client.post_json(url, files={"file": f})
+
+    def fmu_import(
+        self,
+        workspace_id,
+        fmu_path,
+        library,
+        class_name=None,
+        overwrite=False,
+        include_patterns=None,
+        exclude_patterns=None,
+        top_level_inputs=None,
+        step_size=0.0,
+    ):
+        url = (
+            self._base_uri / f"api/workspaces/{workspace_id}/libraries/{library}/models"
+        ).resolve()
+        default_class_name = ".".join(
+            [library, os.path.split(fmu_path)[-1].strip('.fmu')]
+        )
+        options = {
+            "className": class_name if class_name else default_class_name,
+            "overwrite": overwrite,
+            "stepSize": step_size,
+        }
+
+        if include_patterns:
+            options["includePatterns"] = include_patterns
+        if exclude_patterns:
+            options["excludePatterns"] = exclude_patterns
+        if top_level_inputs:
+            options["topLevelInputs"] = top_level_inputs
+
+        with open(fmu_path, "rb") as f:
+            multipart_form_data = {
+                'file': f,
+                'options': json.dumps(options),
+            }
+            return self._http_client.post_json(url, files=multipart_form_data)
 
     def workspace_upload(self, path_to_workspace):
         url = (self._base_uri / "api/workspaces").resolve()

@@ -53,6 +53,15 @@ class TestWorkspace:
         )
         assert 'POST' == import_call.method
 
+    def test_import_fmu(self, workspace_ops, import_fmu):
+        workspace_ops.upload_fmu(SINGLE_FILE_LIBRARY_PATH, "Workspace")
+        import_fmu_call = import_fmu.adapter.request_history[3]
+        assert (
+            'http://mock-impact.com/api/workspaces/AwesomeWorkspace/libraries/Workspace/models'
+            == import_fmu_call.url
+        )
+        assert 'POST' == import_fmu_call.method
+
     def test_lock(self, workspace_ops, lock_workspace):
         workspace_ops.lock()
         lock_call = lock_workspace.adapter.request_history[3]

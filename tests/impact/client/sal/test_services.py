@@ -66,6 +66,22 @@ class TestWorkspaceService:
         data = service.workspace.workspace_upload(TEST_WORKSPACE_PATH)
         assert data == {'id': 'newWorkspace'}
 
+    def test_fmu_upload(self, import_fmu):
+        uri = modelon.impact.client.sal.service.URI(import_fmu.url)
+        service = modelon.impact.client.sal.service.Service(
+            uri=uri, context=import_fmu.context
+        )
+        data = service.workspace.fmu_import(
+            "AwesomeWorkspace", TEST_WORKSPACE_PATH, "Workspace"
+        )
+        assert data == {
+            "fmuClassPath": "Workspace.PID_Controller.Model",
+            "importWarnings": [
+                "Specified argument for 'top_level_inputs=['a']' does not match any variable"
+            ],
+            "library": {"id": "Workspace", "uses": {}, "name": "Workspace"},
+        }
+
     def test_workspace_download(self, download_workspace):
         uri = modelon.impact.client.sal.service.URI(download_workspace.url)
         service = modelon.impact.client.sal.service.Service(
