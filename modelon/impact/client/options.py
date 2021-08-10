@@ -15,7 +15,10 @@ class ExecutionOptions(Mapping):
     """
 
     def __init__(
-        self, values, custom_function_name, custom_function_service=None,
+        self,
+        values,
+        custom_function_name,
+        custom_function_service=None,
     ):
         self._values = values
         self._name = custom_function_name
@@ -51,5 +54,8 @@ class ExecutionOptions(Mapping):
             sol_opts = custom_function.get_solver_options().with_values(rtol=1e-7)
             sim_opts = custom_function.get_simulation_options().with_values(ncp=500)
         """
-        values = _set_options(self._values, **modified,)
+        values = _set_options(
+            self._values,
+            **modified,
+        )
         return ExecutionOptions(values, self._name, self._custom_func_sal)

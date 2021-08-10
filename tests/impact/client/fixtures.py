@@ -216,6 +216,24 @@ def import_lib(sem_ver_check, mock_server_base):
 
 
 @pytest.fixture
+def import_fmu(sem_ver_check, mock_server_base):
+    json = {
+        "fmuClassPath": "Workspace.PID_Controller.Model",
+        "importWarnings": [
+            "Specified argument for 'top_level_inputs=['a']' does not match any variable"
+        ],
+        "library": {"id": "Workspace", "uses": {}, "name": "Workspace"},
+    }
+
+    return with_json_route(
+        mock_server_base,
+        'POST',
+        'api/workspaces/AwesomeWorkspace/libraries/Workspace/models',
+        json,
+    )
+
+
+@pytest.fixture
 def upload_workspace(sem_ver_check, mock_server_base):
     json = {'id': 'newWorkspace'}
 
