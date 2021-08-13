@@ -1,3 +1,10 @@
+# [1.2.0-beta.9](https://github.com/modelon-community/impact-client-python/compare/v1.2.0-beta.8...v1.2.0-beta.9) (2021-08-13)
+
+
+### Features
+
+* Added support for FMU import ([0351ecf](https://github.com/modelon-community/impact-client-python/commit/0351ecf08f9bc4bad0549c27e5e4acbbb7cab06e))
+
 # [1.2.0-beta.8](https://github.com/modelon-community/impact-client-python/compare/v1.2.0-beta.7...v1.2.0-beta.8) (2021-08-03)
 
 
