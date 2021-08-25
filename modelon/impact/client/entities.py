@@ -1532,11 +1532,11 @@ class Experiment:
         self._exp_sal.experiment_delete(self._workspace_id, self._exp_id)
 
     def set_label(self, label):
-        """Sets a label for an experiment.
+        """Sets a label (string) for an experiment to distinguish it.
 
         Example::
 
-            experiment.set_label(label)
+            experiment.set_label("Engine run with Oil type B")
         """
         self._exp_sal.experiment_set_label(self._workspace_id, self._exp_id, label)
 
