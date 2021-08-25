@@ -121,7 +121,7 @@ def api_get_metadata(mock_server_base):
 
 @pytest.fixture
 def sem_ver_check(mock_server_base):
-    json = {"version": "1.8.0"}
+    json = {"version": "1.17.0"}
 
     return with_json_route(mock_server_base, 'GET', 'api/', json)
 
