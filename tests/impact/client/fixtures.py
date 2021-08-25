@@ -13,6 +13,7 @@ from modelon.impact.client.entities import (
 )
 
 MockedServer = collections.namedtuple('MockedServer', ['url', 'context', 'adapter'])
+ExperimentMock = collections.namedtuple('ExperimentMock', ['entity', 'service'])
 
 
 def with_json_route(mock_server_base, method, url, json_response, status_code=200):
@@ -1097,10 +1098,7 @@ def experiment():
     exp_service.case_artifact_get.return_value = (bytes(4), 'result.mat')
     exp_service.trajectories_get.return_value = [[[1, 2, 3, 4]], [[5, 2, 9, 4]]]
     exp_service.case_trajectories_get.return_value = [[1, 2, 3, 4], [5, 2, 9, 4]]
-    ExperimentWithService = collections.namedtuple(
-        'ExperimentWithService', ['experiment', 'exp_service']
-    )
-    return ExperimentWithService(
+    return ExperimentMock(
         Experiment("Workspace", "Test", ws_service, model_exe_service, exp_service),
         exp_service,
     )
@@ -1159,10 +1157,7 @@ def batch_experiment_with_case_filter():
             "fmu_id": "modelica_fluid_examples_heatingsystem_20210130_114628_bbd91f1"
         },
     }
-    ExperimentWithService = collections.namedtuple(
-        'ExperimentWithService', ['experiment', 'exp_service']
-    )
-    return ExperimentWithService(
+    return ExperimentMock(
         Experiment("Workspace", "Test", ws_service, model_exe_service, exp_service),
         exp_service,
     )
