@@ -289,12 +289,12 @@ class TestModelExecutable:
 
 class TestExperiment:
     def test_execute(self, experiment):
-        exp = experiment.experiment.execute()
+        exp = experiment.entity.execute()
         assert exp == ExperimentOperation('AwesomeWorkspace', 'pid_2009')
 
     def test_execute_with_case_filter(self, batch_experiment_with_case_filter):
-        experiment = batch_experiment_with_case_filter.experiment
-        exp_sal = batch_experiment_with_case_filter.exp_service
+        experiment = batch_experiment_with_case_filter.entity
+        exp_sal = batch_experiment_with_case_filter.service
         case_generated = experiment.execute(with_cases=[]).wait()
         exp_sal.experiment_execute.assert_has_calls(
             [mock.call('Workspace', 'Test', [])]
@@ -310,7 +310,7 @@ class TestExperiment:
         assert experiment.get_case('case_3').is_successful()
 
     def test_execute_successful(self, experiment):
-        experiment = experiment.experiment
+        experiment = experiment.entity
         assert experiment.id == "Test"
         assert experiment.is_successful()
         assert experiment.run_info.status == ExperimentStatus.DONE
@@ -406,15 +406,15 @@ class TestExperiment:
         )
 
     def test_exp_trajectories_non_list_entry(self, experiment):
-        pytest.raises(TypeError, experiment.experiment.get_trajectories, 'hh')
+        pytest.raises(TypeError, experiment.entity.get_trajectories, 'hh')
 
     def test_exp_trajectories_invalid_keys(self, experiment):
-        pytest.raises(ValueError, experiment.experiment.get_trajectories, ['s'])
+        pytest.raises(ValueError, experiment.entity.get_trajectories, ['s'])
 
 
 class TestCase:
     def test_case(self, experiment):
-        case = experiment.experiment.get_case("case_1")
+        case = experiment.entity.get_case("case_1")
         assert case.id == "case_1"
         assert case.run_info.status == CaseStatus.SUCCESSFUL
         assert case.get_log() == "Successful Log"
@@ -454,8 +454,8 @@ class TestCase:
         )
 
     def test_case_update(self, experiment, batch_experiment):
-        exp = experiment.experiment
-        exp_sal = experiment.exp_service
+        exp = experiment.entity
+        exp_sal = experiment.service
 
         case = exp.get_case("case_1")
         case.input.parametrization = {'PI.k': 120}
@@ -500,15 +500,15 @@ class TestCase:
         assert result == Case('case_1', 'AwesomeWorkspace', 'pid_2009')
 
     def test_set_case_label(self, experiment):
-        exp = experiment.experiment
-        exp_sal = experiment.exp_service
+        exp = experiment.entity
+        exp_sal = experiment.service
         exp.set_label('Label')
         exp_sal.experiment_set_label.assert_has_calls(
             [mock.call('Workspace', 'Test', 'Label')]
         )
 
     def test_case_input(self, experiment):
-        exp = experiment.experiment
+        exp = experiment.entity
 
         case = exp.get_case("case_1")
         case.input.analysis.analysis_function = "something"

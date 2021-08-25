@@ -127,7 +127,7 @@ class TestCaseOperation:
     def test_execute_wait_done(
         self, experiment,
     ):
-        case = experiment.experiment.get_case('case_1')
+        case = experiment.entity.get_case('case_1')
         case_ops = case.execute()
         assert case_ops.id == "case_1"
         assert case_ops.status() == Status.DONE
@@ -135,7 +135,7 @@ class TestCaseOperation:
         assert case_ops.wait() == Case('case_1', 'Workspace', 'Test', 'pid_2009')
 
     def test_execute_wait_cancel_timeout(self, experiment):
-        case = experiment.experiment.get_case('case_1')
+        case = experiment.entity.get_case('case_1')
         case_ops = case.execute()
         assert case_ops.id == "case_1"
         assert case_ops.status() == Status.DONE

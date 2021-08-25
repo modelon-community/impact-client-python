@@ -298,7 +298,7 @@ class TestSimpleModelicaExperimentDefinition:
     def test_experiment_definition_initialize_from_experiment(
         self, model, custom_function_no_param, experiment
     ):
-        experiment = experiment.experiment
+        experiment = experiment.entity
         definition = SimpleModelicaExperimentDefinition(
             model, custom_function=custom_function_no_param,
         ).initialize_from(experiment)
@@ -308,7 +308,7 @@ class TestSimpleModelicaExperimentDefinition:
     def test_experiment_definition_initialize_from_case(
         self, model, custom_function_no_param, experiment
     ):
-        case_1 = experiment.experiment.get_case('case_1')
+        case_1 = experiment.entity.get_case('case_1')
         definition = SimpleModelicaExperimentDefinition(
             model, custom_function=custom_function_no_param,
         ).initialize_from(case_1)
@@ -338,7 +338,7 @@ class TestSimpleModelicaExperimentDefinition:
     def test_experiment_definition_with_extensions_initialize_from_experiment(
         self, model, custom_function_no_param, experiment
     ):
-        experiment = experiment.experiment
+        experiment = experiment.entity
         ext1 = SimpleExperimentExtension().with_modifiers(p=2)
         ext2 = (
             SimpleExperimentExtension({'final_time': 10})
@@ -360,7 +360,7 @@ class TestSimpleModelicaExperimentDefinition:
     def test_experiment_definition_with_extensions_initialize_from_case(
         self, model, custom_function_no_param, experiment
     ):
-        case_1 = experiment.experiment.get_case('case_1')
+        case_1 = experiment.entity.get_case('case_1')
         ext1 = SimpleExperimentExtension().with_modifiers(p=2)
         ext2 = (
             SimpleExperimentExtension({'final_time': 10})
