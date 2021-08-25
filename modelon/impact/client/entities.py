@@ -1566,10 +1566,6 @@ class _CaseAnalysis:
         """The name of the custom function"""
         return self._analysis['analysis_function']
 
-    @analysis_function.setter
-    def analysis_function(self, analysis_function):
-        self._analysis['analysis_function'] = analysis_function
-
     @property
     def parameters(self):
         """Parameters to the custom function
@@ -1640,10 +1636,6 @@ class _CaseInput:
         """Reference ID to the compiled model used running the case."""
         return self._data['input']['fmu_id']
 
-    @fmu_id.setter
-    def fmu_id(self, fmu_id):
-        self._data['input']['fmu_id'] = fmu_id
-
     @property
     def structural_parametrization(self):
         """
@@ -1653,10 +1645,6 @@ class _CaseInput:
         """
         return self._data['input']['structural_parametrization']
 
-    @structural_parametrization.setter
-    def structural_parametrization(self, structural_parametrization):
-        self._data['input']['structural_parametrization'] = structural_parametrization
-
     @property
     def fmu_base_parametrization(self):
         """
@@ -1665,11 +1653,6 @@ class _CaseInput:
         caching to reuse the FMU.
         """
         return self._data['input']['fmu_base_parametrization']
-
-    @fmu_base_parametrization.setter
-    def fmu_base_parametrization(self, fmu_base_parametrization):
-        self._data['input']['fmu_base_parametrization'] = fmu_base_parametrization
-
 
 class Case:
     """
@@ -1731,7 +1714,19 @@ class Case:
 
     @property
     def input(self):
-        """Case input"""
+        """Case input attributes
+
+           Example::
+
+            case.input.analysis.parameters = {'start_time': 0, 'final_time': 90}
+            case.input.analysis.simulation_options = {'ncp': 600}
+            case.input.analysis.solver_options = {'atol': 1e-8}
+            case.input.parametrization = {'PI.k': 120}
+            case.update()
+
+            help(case.input.analysis) # See help for attribute
+            dir(case.input) # See nested attributes
+        """
         return _CaseInput(self._info)
 
     @property
