@@ -1459,15 +1459,15 @@ class Experiment:
 
             experiment.get_case('case_1')
         """
-        resp = self._exp_sal.case_get(self._workspace_id, self._exp_id, case_id)
+        case_data = self._exp_sal.case_get(self._workspace_id, self._exp_id, case_id)
         return Case(
-            resp["id"],
+            case_data["id"],
             self._workspace_id,
             self._exp_id,
             self._exp_sal,
             self._model_exe_sal,
             self._workspace_sal,
-            resp,
+            case_data,
         )
 
     def get_trajectories(self, variables):
@@ -1694,22 +1694,18 @@ class Case:
         return self._exp_id
 
     def _get_info(self):
-        self._info = self._exp_sal.case_get(
-            self._workspace_id, self._exp_id, self._case_id
-        )
-
         return self._info
 
     @property
     def info(self):
         """Deprecated, use 'run_info' attribute"""
         logger.warning("This attribute is deprectated, use 'run_info' instead")
-        return self._get_info()
+        return self._info
 
     @property
     def run_info(self):
         """Case run information"""
-        run_info = self._get_info()["run_info"]
+        run_info = self._info["run_info"]
         return _CaseRunInfo(CaseStatus(run_info["status"]))
 
     @property
@@ -1738,15 +1734,15 @@ class Case:
         experiment_id = init_from_dict.get('experimentId')
         case_id = init_from_dict.get('caseId')
 
-        resp = self._exp_sal.case_get(self._workspace_id, experiment_id, case_id)
+        case_data = self._exp_sal.case_get(self._workspace_id, experiment_id, case_id)
         return Case(
-            resp["id"],
+            case_data["id"],
             self._workspace_id,
             experiment_id,
             self._exp_sal,
             self._model_exe_sal,
             self._workspace_sal,
-            resp,
+            case_data,
         )
 
     @initialize_from_case.setter

@@ -454,6 +454,7 @@ class CaseOperation(Operation):
             experiment --
                 An Case class instance.
         """
+        case_data = self._exp_sal.case_get(self._workspace_id, self._exp_id, self._case_id)
         return entities.Case(
             self._case_id,
             self._workspace_id,
@@ -461,6 +462,7 @@ class CaseOperation(Operation):
             self._exp_sal,
             self._model_exe_sal,
             self._workspace_sal,
+            case_data,
         )
 
     def status(self):
