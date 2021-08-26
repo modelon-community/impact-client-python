@@ -7,7 +7,6 @@ from modelon.impact.client import exceptions
 from enum import Enum
 
 logger = logging.getLogger(__name__)
-logging.basicConfig(level=logging.INFO)
 
 
 class Status(Enum):

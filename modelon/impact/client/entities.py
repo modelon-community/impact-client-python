@@ -14,7 +14,6 @@ from modelon.impact.client import exceptions
 from enum import Enum
 
 logger = logging.getLogger(__name__)
-logging.basicConfig(level=logging.INFO)
 
 
 def _assert_successful_operation(is_successful, operation_name="Operation"):
