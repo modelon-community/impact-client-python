@@ -1542,21 +1542,28 @@ class Experiment:
 
 
 class _CaseRunInfo:
+    """
+    Class containing Case run info.
+    """
     def __init__(self, status):
         self._status = status
 
     @property
     def status(self):
-        """Status info for a Case"""
+        """Status info for a Case, its type is CaseStatus."""
         return self._status
 
 
 class _CaseAnalysis:
+    """
+    Class containing Case analysis configuration.
+    """
     def __init__(self, analysis):
         self._analysis = analysis
 
     @property
     def analysis_function(self):
+        """The name of the custom function"""
         return self._analysis['analysis_function']
 
     @analysis_function.setter
@@ -1565,6 +1572,14 @@ class _CaseAnalysis:
 
     @property
     def parameters(self):
+        """Parameters to the custom function
+
+        Example::
+            {
+                "start_time": 0,
+                "final_time": 1
+            }
+        """
         return self._analysis['parameters']
 
     @parameters.setter
@@ -1573,6 +1588,7 @@ class _CaseAnalysis:
 
     @property
     def simulation_options(self):
+        """Key-value pairs of simulation options"""
         return self._analysis['simulation_options']
 
     @simulation_options.setter
@@ -1581,6 +1597,7 @@ class _CaseAnalysis:
 
     @property
     def solver_options(self):
+        """Key-value pairs of solver options"""
         return self._analysis['solver_options']
 
     @solver_options.setter
@@ -1589,6 +1606,7 @@ class _CaseAnalysis:
 
     @property
     def simulation_log_level(self):
+        """The simulation log level"""
         return self._analysis['simulation_log_level']
 
     @simulation_log_level.setter
@@ -1597,12 +1615,20 @@ class _CaseAnalysis:
 
 
 class _CaseInput:
+    """
+    Class containing Case input
+    """
+
     def __init__(self, data):
         self._data = data
         self.analysis = _CaseAnalysis(data['input']['analysis'])
 
     @property
     def parametrization(self):
+        """
+        Parameterization of the case, a list of key value pairs where key
+        is variable name and value is the value to use for that variable.
+        """
         return self._data['input']['parametrization']
 
     @parametrization.setter
@@ -1611,6 +1637,7 @@ class _CaseInput:
 
     @property
     def fmu_id(self):
+        """Reference ID to the compiled model used running the case."""
         return self._data['input']['fmu_id']
 
     @fmu_id.setter
@@ -1619,6 +1646,11 @@ class _CaseInput:
 
     @property
     def structural_parametrization(self):
+        """
+        Structural parameterization of the case, a list of key value pairs where
+        key is variable name and value is the value to use for that variable.
+        These are values that cannot be applied to the FMU/Model after compilation.
+        """
         return self._data['input']['structural_parametrization']
 
     @structural_parametrization.setter
@@ -1627,6 +1659,11 @@ class _CaseInput:
 
     @property
     def fmu_base_parametrization(self):
+        """
+        This is some base parametrization that must be applied to the FMU for
+        it to be valid running this case. It often comes as a result from of
+        caching to reuse the FMU.
+        """
         return self._data['input']['fmu_base_parametrization']
 
     @fmu_base_parametrization.setter
