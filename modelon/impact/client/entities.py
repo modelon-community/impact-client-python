@@ -1375,7 +1375,7 @@ class Experiment:
 
     def is_successful(self):
         """
-        Returns True if the Experiment has executed successfully.
+        Returns True if the Experiment is done and no cases has failed.
         Use the 'run_info' attribute to get more info.
 
         Returns:
