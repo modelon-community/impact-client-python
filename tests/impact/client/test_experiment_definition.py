@@ -303,7 +303,7 @@ class TestSimpleModelicaExperimentDefinition:
             model, custom_function=custom_function_no_param,
         ).initialize_from(experiment)
         config = definition.to_dict()
-        assert config["experiment"]["base"]["modifiers"]["initializeFrom"] == 'Test'
+        assert config["experiment"]["base"]["modifiers"]["initializeFrom"] == experiment.id
 
     def test_experiment_definition_initialize_from_case(
         self, model, custom_function_no_param, experiment
@@ -314,8 +314,8 @@ class TestSimpleModelicaExperimentDefinition:
         ).initialize_from(case_1)
         config = definition.to_dict()
         assert config["experiment"]["base"]["modifiers"]["initializeFromCase"] == {
-            'experimentId': 'Test',
-            'caseId': 'case_1',
+            "experimentId": case_1.experiment_id,
+            "caseId": case_1.id
         }
 
     def test_experiment_definition_with_extensions(
@@ -352,7 +352,7 @@ class TestSimpleModelicaExperimentDefinition:
         assert config["experiment"]["extensions"] == [
             {"modifiers": {"variables": {"p": 2}}},
             {
-                "modifiers": {'initializeFrom': 'Test', "variables": {"p": 3}},
+                "modifiers": {'initializeFrom': experiment.id, "variables": {"p": 3}},
                 "analysis": {"parameters": {'final_time': 10}},
             },
         ]
@@ -375,7 +375,10 @@ class TestSimpleModelicaExperimentDefinition:
             {"modifiers": {"variables": {"p": 2}}},
             {
                 "modifiers": {
-                    'initializeFromCase': {'experimentId': 'Test', 'caseId': 'case_1'},
+                    "initializeFromCase": {
+                        "experimentId": case_1.experiment_id,
+                        "caseId": case_1.id,
+                    },
                     "variables": {"p": 3},
                 },
                 "analysis": {"parameters": {'final_time': 10}},
