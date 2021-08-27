@@ -458,9 +458,9 @@ class CaseOperation(Operation):
             self._case_id,
             self._workspace_id,
             self._exp_id,
-            self._workspace_sal,
-            self._model_exe_sal,
             self._exp_sal,
+            self._model_exe_sal,
+            self._workspace_sal,
         )
 
     def status(self):
