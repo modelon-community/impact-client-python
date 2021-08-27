@@ -6,8 +6,8 @@ RUN pip install -U pip
 
 # update 
 RUN apt-get update && apt-get install -y curl apt-utils
-RUN curl -sL https://deb.nodesource.com/setup_10.x | bash
-RUN apt-get install -y nodejs npm
+RUN curl -sL https://deb.nodesource.com/setup_12.x | bash
+RUN apt-get install -y nodejs
 RUN node -v
 RUN npm -v
 
