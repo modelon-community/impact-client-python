@@ -89,6 +89,13 @@
 
 * correct order of arguments for creating case ([0941c51](https://github.com/modelon-community/impact-client-python/commit/0941c51220a268b109f5eddbdd018cd83b55ed3b))
 
+# [1.2.0-beta.10](https://github.com/modelon-community/impact-client-python/compare/v1.2.0-beta.9...v1.2.0-beta.10) (2021-08-27)
+
+
+### Bug Fixes
+
+* correct order of arguments for creating case ([0941c51](https://github.com/modelon-community/impact-client-python/commit/0941c51220a268b109f5eddbdd018cd83b55ed3b))
+
 # [1.2.0-beta.9](https://github.com/modelon-community/impact-client-python/compare/v1.2.0-beta.8...v1.2.0-beta.9) (2021-08-13)
 
 
