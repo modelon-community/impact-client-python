@@ -1,4 +1,4 @@
-.PHONY: build shell test test-watch lint wheel publish set-permissions
+.PHONY: build coverage shell test test-watch lint wheel publish set-permissions
 USER_ID := `id -u`
 GROUP_ID := `id -g`
 
@@ -26,6 +26,9 @@ endef
 
 build:
 	docker build -t modelon-impact-client-build:latest .
+
+coverage:
+	$(call _run, poetry run pytest --cov-report=html:htmlcov --cov-report=term --cov=modelon)
 
 shell:
 	$(call _run_it, /bin/bash)
