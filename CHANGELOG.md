@@ -1,3 +1,10 @@
+# [1.2.0-beta.11](https://github.com/modelon-community/impact-client-python/compare/v1.2.0-beta.10...v1.2.0-beta.11) (2021-08-27)
+
+
+### Bug Fixes
+
+* initialize_from assignments ([7fc376d](https://github.com/modelon-community/impact-client-python/commit/7fc376d7eb376c27e7086a0ab3313e46571f2a04))
+
 # [1.2.0-beta.10](https://github.com/modelon-community/impact-client-python/compare/v1.2.0-beta.9...v1.2.0-beta.10) (2021-08-27)
 
 
