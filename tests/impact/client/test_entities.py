@@ -511,22 +511,14 @@ class TestCase:
         exp = experiment.experiment
 
         case = exp.get_case("case_1")
-        case.input.analysis.analysis_function = "something"
         case.input.analysis.parameters = {"start_time": 0, "final_time": 90}
         case.input.analysis.simulation_options = {'ncp': 600}
         case.input.analysis.solver_options = {'atol': 1e-8}
         case.input.analysis.simulation_log_level = "DEBUG"
         case.input.parametrization = {'PI.k': 120}
-        case.input.fmu_id = "modelica_fluid_examples_12345"
-        case.input.structural_parametrization = {'PI.something': 150}
-        case.input.fmu_base_parametrization = {'something': 109}
 
-        assert case.input.analysis.analysis_function == "something"
         assert case.input.analysis.parameters == {"start_time": 0, "final_time": 90}
         assert case.input.analysis.simulation_options == {'ncp': 600}
         assert case.input.analysis.solver_options == {'atol': 1e-8}
         assert case.input.analysis.simulation_log_level == "DEBUG"
         assert case.input.parametrization == {'PI.k': 120}
-        assert case.input.fmu_id == "modelica_fluid_examples_12345"
-        assert case.input.structural_parametrization == {'PI.something': 150}
-        assert case.input.fmu_base_parametrization == {'something': 109}
