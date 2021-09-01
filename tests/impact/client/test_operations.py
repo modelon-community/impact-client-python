@@ -1,12 +1,20 @@
 import pytest
 from modelon.impact.client import exceptions
 
-from modelon.impact.client.entities import Case, ModelExecutable, Experiment
+from modelon.impact.client.entities import (
+    Case,
+    ModelExecutable,
+    Experiment,
+    ExternalResult,
+)
 from modelon.impact.client.operations import (
+    ExternalResultUploadOperation,
     Status,
+    AsyncOperationStatus,
     CachedModelExecutableOperation,
     ModelExecutableOperation,
 )
+from unittest import mock
 from tests.impact.client.fixtures import *
 
 
@@ -169,3 +177,28 @@ class TestCaseOperation:
         assert case.id == "case_1"
         assert case.status() == Status.CANCELLED
         pytest.raises(exceptions.OperationTimeOutError, case.wait, 1e-10, Status.DONE)
+
+
+class TestExternalResultUploadOperation:
+    def test_result_upload_ops(
+        self, workspace_ops, upload_result, upload_result_status_ready
+    ):
+        with mock.patch("builtins.open", mock.mock_open()) as mock_file:
+            result_ops = workspace_ops.upload_result("test.mat", "Workspace")
+            mock_file.assert_called_with("test.mat", "rb")
+        assert isinstance(result_ops, ExternalResultUploadOperation)
+        assert result_ops.id == '2f036b9fab6f45c788cc466da327cc78workspace'
+        assert result_ops.status() == AsyncOperationStatus.READY
+        assert result_ops.status().done()
+        assert result_ops.wait() == ExternalResult(
+            '2f036b9fab6f45c788cc466da327cc78workspace'
+        )
+        pytest.raises(NotImplementedError, result_ops.cancel)
+
+    def test_execute_wait_timeout(
+        self, workspace_ops, upload_result, upload_result_status_running
+    ):
+        with mock.patch("builtins.open", mock.mock_open()) as mock_file:
+            result_ops = workspace_ops.upload_result("test.mat", "Workspace")
+            mock_file.assert_called_with("test.mat", "rb")
+        pytest.raises(exceptions.OperationTimeOutError, result_ops.wait, 1)

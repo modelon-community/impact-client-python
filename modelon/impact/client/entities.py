@@ -208,6 +208,33 @@ class Workspace:
         """
         self._workspace_sal.library_import(self._workspace_id, path_to_lib)
 
+    def upload_result(self, path_to_result, label=None, description=None):
+        """Uploads a '.mat' result file to the workspace.
+
+        Parameters:
+
+            path_to_result --
+                The path for the result file to be imported.
+
+            label --
+                The label of the result file. Default: None.
+
+            description --
+                The description of the result file. Default: None.
+
+        Example::
+
+            workspace.upload_result('C:/A.mat')
+            workspace.upload_result('C:/B.mat', label = "result_for_PID.mat",
+            description = "This is a result file for PID controller")
+        """
+        resp = self._workspace_sal.result_upload(
+            self._workspace_id, path_to_result, label=label, description=description
+        )
+        return operations.ExternalResultUploadOperation(
+            resp["data"]["id"], self._workspace_sal
+        )
+
     def upload_fmu(
         self,
         fmu_path,
@@ -592,10 +619,7 @@ class Workspace:
 
 class _Parameter:
     _JSON_2_PY_TYPE = {
-        "Number": (
-            float,
-            int,
-        ),
+        "Number": (float, int,),
         "String": (str,),
         "Boolean": (bool,),
         "Enumeration": (str,),
@@ -638,10 +662,7 @@ class CustomFunction:
         self._parameter_data = parameter_data
         self._param_by_name = {
             p["name"]: _Parameter(
-                p["name"],
-                p["defaultValue"],
-                p["type"],
-                p.get("values", []),
+                p["name"], p["defaultValue"], p["type"], p.get("values", []),
             )
             for p in parameter_data
         }
@@ -1544,6 +1565,7 @@ class _CaseRunInfo:
     """
     Class containing Case run info.
     """
+
     def __init__(self, status):
         self._status = status
 
@@ -1553,10 +1575,43 @@ class _CaseRunInfo:
         return self._status
 
 
+class _ExternalResultMetaData:
+    """
+    Class containing external result metadata.
+    """
+
+    def __init__(self, id, name, description, workspace_id):
+        self._id = id
+        self._name = name
+        self._description = description
+        self._workspace_id = workspace_id
+
+    @property
+    def id(self):
+        """Result id"""
+        return self._id
+
+    @property
+    def name(self):
+        """Label for result"""
+        return self._name
+
+    @property
+    def description(self):
+        """Description of the result"""
+        return self._description
+
+    @property
+    def workspace_id(self):
+        """Name of workspace"""
+        return self._workspace_id
+
+
 class _CaseAnalysis:
     """
     Class containing Case analysis configuration.
     """
+
     def __init__(self, analysis):
         self._analysis = analysis
 
@@ -1652,6 +1707,7 @@ class _CaseInput:
         caching to reuse the FMU.
         """
         return self._data['input']['fmu_base_parametrization']
+
 
 class Case:
     """
@@ -1945,12 +2001,7 @@ class Result(Mapping):
     """
 
     def __init__(
-        self,
-        case_id,
-        workspace_id,
-        exp_id,
-        workspace_service=None,
-        exp_service=None,
+        self, case_id, workspace_id, exp_id, workspace_service=None, exp_service=None,
     ):
         self._case_id = case_id
         self._workspace_id = workspace_id
@@ -1986,6 +2037,42 @@ class Result(Mapping):
 
     def keys(self):
         return self._variables
+
+
+class ExternalResult:
+    """
+    Class containing  external result.
+    """
+
+    def __init__(self, result_id, workspace_service=None):
+        self._result_id = result_id
+        self._workspace_sal = workspace_service
+
+    def __repr__(self):
+        return f"Result id '{self._result_id}'"
+
+    def __eq__(self, obj):
+        return isinstance(obj, ExternalResult) and obj._result_id == self._result_id
+
+    @property
+    def id(self):
+        """Result id"""
+        return self._result_id
+
+    @property
+    def metadata(self):
+        """External result metadata."""
+        upload_meta = self._workspace_sal.get_uploaded_result_meta(self._result_id)[
+            "data"
+        ]
+        id = upload_meta.get("id")
+        name = upload_meta.get("name")
+        description = upload_meta.get("description")
+        workspace_id = upload_meta.get("workspaceId")
+        return _ExternalResultMetaData(id, name, description, workspace_id)
+
+    def delete(self):
+        self._workspace_sal.delete_uploaded_result(self._result_id)
 
 
 class Log(str):
