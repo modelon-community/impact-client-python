@@ -54,7 +54,10 @@ class TestWorkspace:
         assert 'POST' == import_call.method
 
     def test_import_fmu(self, workspace_ops, import_fmu):
-        workspace_ops.upload_fmu(SINGLE_FILE_LIBRARY_PATH, "Workspace")
+        with mock.patch("builtins.open", mock.mock_open()) as mock_file:
+            workspace_ops.upload_fmu("test.fmu", "Workspace")
+            mock_file.assert_called_with("test.fmu", "rb")
+
         import_fmu_call = import_fmu.adapter.request_history[3]
         assert (
             'http://mock-impact.com/api/workspaces/AwesomeWorkspace/libraries/Workspace/models'

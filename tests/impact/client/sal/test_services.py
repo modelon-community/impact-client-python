@@ -2,6 +2,7 @@ import pytest
 import modelon.impact.client.sal.service
 import modelon.impact.client.sal.exceptions
 from tests.files.paths import SINGLE_FILE_LIBRARY_PATH, TEST_WORKSPACE_PATH
+from unittest.mock import patch, mock_open
 from tests.impact.client.fixtures import *
 
 
@@ -71,9 +72,12 @@ class TestWorkspaceService:
         service = modelon.impact.client.sal.service.Service(
             uri=uri, context=import_fmu.context
         )
-        data = service.workspace.fmu_import(
-            "AwesomeWorkspace", TEST_WORKSPACE_PATH, "Workspace"
-        )
+        with patch("builtins.open", mock_open()) as mock_file:
+            data = service.workspace.fmu_import(
+                "AwesomeWorkspace", "test.fmu", "Workspace"
+            )
+            mock_file.assert_called_with("test.fmu", "rb")
+
         assert data == {
             "fmuClassPath": "Workspace.PID_Controller.Model",
             "importWarnings": [
