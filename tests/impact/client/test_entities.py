@@ -65,6 +65,34 @@ class TestWorkspace:
         )
         assert 'POST' == import_fmu_call.method
 
+    def test_upload_result(
+        self,
+        workspace_ops,
+        upload_result,
+        upload_result_status_ready,
+        upload_result_meta,
+    ):
+        with mock.patch("builtins.open", mock.mock_open()) as mock_file:
+            result = workspace_ops.upload_result("test.mat", "Workspace").wait()
+            mock_file.assert_called_with("test.mat", "rb")
+
+        upload_result_call = upload_result.adapter.request_history[3]
+        assert 'http://mock-impact.com/api/uploads/results' == upload_result_call.url
+        assert 'POST' == upload_result_call.method
+
+        upload_result_status_call = upload_result.adapter.request_history[4]
+        assert (
+            'http://mock-impact.com/api/uploads/results/2f036b9fab6f45c788cc466da327cc78workspace'
+            == upload_result_status_call.url
+        )
+        assert 'GET' == upload_result_status_call.method
+        meta = result.metadata
+        assert meta.id == "2f036b9fab6f45c788cc466da327cc78workspace"
+        assert meta.name == "result_for_PID"
+        assert meta.description == "This is a result file for PID controller"
+        assert meta.workspace_id == "workspace"
+        assert result.id == "2f036b9fab6f45c788cc466da327cc78workspace"
+
     def test_lock(self, workspace_ops, lock_workspace):
         workspace_ops.lock()
         lock_call = lock_workspace.adapter.request_history[3]

@@ -2,7 +2,7 @@ import pytest
 import modelon.impact.client.sal.service
 import modelon.impact.client.sal.exceptions
 from tests.files.paths import SINGLE_FILE_LIBRARY_PATH, TEST_WORKSPACE_PATH
-from unittest.mock import patch, mock_open
+import unittest.mock as mock
 from tests.impact.client.fixtures import *
 
 
@@ -67,12 +67,78 @@ class TestWorkspaceService:
         data = service.workspace.workspace_upload(TEST_WORKSPACE_PATH)
         assert data == {'id': 'newWorkspace'}
 
+    def test_result_upload(self, upload_result):
+        uri = modelon.impact.client.sal.service.URI(upload_result.url)
+        service = modelon.impact.client.sal.service.Service(
+            uri=uri, context=upload_result.context
+        )
+        with mock.patch("builtins.open", mock.mock_open()) as mock_file:
+            data = service.workspace.result_upload("AwesomeWorkspace", "test.mat")
+            mock_file.assert_called_with("test.mat", "rb")
+
+        assert data == {
+            "data": {
+                "id": "2f036b9fab6f45c788cc466da327cc78workspace",
+                "status": "ready",
+                "error": "None",
+            }
+        }
+
+    def test_result_upload_status(self, upload_result_status_ready):
+        uri = modelon.impact.client.sal.service.URI(upload_result_status_ready.url)
+        service = modelon.impact.client.sal.service.Service(
+            uri=uri, context=upload_result_status_ready.context
+        )
+        data = service.workspace.get_result_upload_status(
+            "2f036b9fab6f45c788cc466da327cc78workspace"
+        )
+
+        assert data == {
+            "data": {
+                "id": "2f036b9fab6f45c788cc466da327cc78workspace",
+                "status": "ready",
+                "data": {
+                    "resourceUri": "api/external-result/2f036b9fab6f45c788cc466da327cc78workspace"
+                },
+                "error": "None",
+            }
+        }
+
+    def test_result_upload_meta(self, upload_result_meta):
+        uri = modelon.impact.client.sal.service.URI(upload_result_meta.url)
+        service = modelon.impact.client.sal.service.Service(
+            uri=uri, context=upload_result_meta.context
+        )
+        data = service.workspace.get_uploaded_result_meta(
+            "2f036b9fab6f45c788cc466da327cc78workspace"
+        )
+
+        assert data == {
+            "data": {
+                "id": "2f036b9fab6f45c788cc466da327cc78workspace",
+                "createdAt": "2021-09-02T08:26:49.612000",
+                "name": "result_for_PID",
+                "description": "This is a result file for PID controller",
+                "workspaceId": "workspace",
+            }
+        }
+
+    def test_delete_result_upload(self, upload_result_delete):
+        uri = modelon.impact.client.sal.service.URI(upload_result_delete.url)
+        service = modelon.impact.client.sal.service.Service(
+            uri=uri, context=upload_result_delete.context
+        )
+        service.workspace.delete_uploaded_result(
+            "2f036b9fab6f45c788cc466da327cc78workspace"
+        )
+        assert upload_result_delete.adapter.called
+
     def test_fmu_upload(self, import_fmu):
         uri = modelon.impact.client.sal.service.URI(import_fmu.url)
         service = modelon.impact.client.sal.service.Service(
             uri=uri, context=import_fmu.context
         )
-        with patch("builtins.open", mock_open()) as mock_file:
+        with mock.patch("builtins.open", mock.mock_open()) as mock_file:
             data = service.workspace.fmu_import(
                 "AwesomeWorkspace", "test.fmu", "Workspace"
             )

@@ -1,3 +1,4 @@
+import enum
 import time
 import logging
 from modelon.impact.client import entities
@@ -9,6 +10,7 @@ from enum import Enum
 logger = logging.getLogger(__name__)
 
 
+@enum.unique
 class Status(Enum):
     """
     Class representing an enumeration for the possible
@@ -22,9 +24,23 @@ class Status(Enum):
     DONE = "done"
 
 
-class Operation(ABC):
+@enum.unique
+class AsyncOperationStatus(Enum):
     """
-    Abstract operation class containing base functionality.
+    Defines all states for import
+    """
+
+    RUNNING = 'running'
+    READY = 'ready'
+    ERROR = 'error'
+
+    def done(self):
+        return self in [AsyncOperationStatus.READY, AsyncOperationStatus.ERROR]
+
+
+class BaseOperation(ABC):
+    """
+    Abstract base operation class.
     """
 
     @abstractmethod
@@ -55,6 +71,64 @@ class Operation(ABC):
         Name of the operation.
         """
         pass
+
+    @abstractmethod
+    def wait(self, timeout):
+        """
+        Waits for the operation to finish.
+        """
+        pass
+
+
+class AsyncOperation(BaseOperation):
+    """
+    File operation class containing base functionality.
+    """
+
+    def wait(self, timeout=None):
+        """Waits until the operation completes.
+        Returns the operation class instance if operation completes.
+
+        Parameters:
+
+            timeout --
+                Time to wait in seconds for achieving the status. By default
+                the timeout is set to 'None', which signifies an infinite time
+                to wait until the status is achieved.
+
+        Returns:
+
+            Operation class instance if operation completes.
+
+        Raises:
+
+            OperationTimeOutError if time exceeds set timeout.
+
+        Example::
+
+            workspace.upload_result('C:/A.mat').wait(timeout = 120)
+        """
+        start_t = time.time()
+        while True:
+            logger.info(f"{self.name} in progress! Status : {self.status().name}")
+            if self.status().done():
+                logger.info(f"{self.name} completed! Status : {self.status().name}")
+                return self.data()
+
+            current_t = time.time()
+            if timeout and current_t - start_t > timeout:
+                raise exceptions.OperationTimeOutError(
+                    f"Time exceeded the set timeout - {timeout}s! "
+                    f"Present status of operation is {self.status().name}!"
+                )
+
+            time.sleep(0.5)
+
+
+class ExecutionOperation(BaseOperation):
+    """
+    Execution operation class containing base functionality.
+    """
 
     def is_complete(self):
         """
@@ -120,17 +194,13 @@ class Operation(ABC):
             time.sleep(0.5)
 
 
-class ModelExecutableOperation(Operation):
+class ModelExecutableOperation(ExecutionOperation):
     """
     An operation class for the modelon.impact.client.entities.ModelExecutable class.
     """
 
     def __init__(
-        self,
-        workspace_id,
-        fmu_id,
-        workspace_service=None,
-        model_exe_service=None,
+        self, workspace_id, fmu_id, workspace_service=None, model_exe_service=None,
     ):
         super().__init__()
         self._workspace_id = workspace_id
@@ -164,10 +234,7 @@ class ModelExecutableOperation(Operation):
                 A model_executable class instance.
         """
         return entities.ModelExecutable(
-            self._workspace_id,
-            self._fmu_id,
-            self._workspace_sal,
-            self._model_exe_sal,
+            self._workspace_id, self._fmu_id, self._workspace_sal, self._model_exe_sal,
         )
 
     def status(self):
@@ -202,7 +269,7 @@ class ModelExecutableOperation(Operation):
         self._model_exe_sal.compile_cancel(self._workspace_id, self._fmu_id)
 
 
-class CachedModelExecutableOperation(Operation):
+class CachedModelExecutableOperation(ExecutionOperation):
     """
     An operation class for a cached modelon.impact.client.entities.ModelExecutable
     class.
@@ -323,7 +390,7 @@ class CachedModelExecutableOperation(Operation):
         return self.data()
 
 
-class ExperimentOperation(Operation):
+class ExperimentOperation(ExecutionOperation):
     """
     An operation class for the modelon.impact.client.entities.Experiment class.
     """
@@ -406,7 +473,7 @@ class ExperimentOperation(Operation):
         self._exp_sal.execute_cancel(self._workspace_id, self._exp_id)
 
 
-class CaseOperation(Operation):
+class CaseOperation(ExecutionOperation):
     """
     An operation class for the modelon.impact.client.entities.Case class.
     """
@@ -492,3 +559,68 @@ class CaseOperation(Operation):
             case.execute().cancel()
         """
         self._exp_sal.execute_cancel(self._workspace_id, self._exp_id)
+
+
+class ExternalResultUploadOperation(AsyncOperation):
+    """
+    An operation class for the modelon.impact.client.entities.ExternalResult class.
+    """
+
+    def __init__(self, result_id, workspace_service=None):
+        super().__init__()
+        self._result_id = result_id
+        self._workspace_sal = workspace_service
+
+    def __repr__(self):
+        return f"Result upload operations for id '{self._result_id}'"
+
+    def __eq__(self, obj):
+        return (
+            isinstance(obj, ExternalResultUploadOperation)
+            and obj._result_id == self._result_id
+        )
+
+    @property
+    def id(self):
+        """Result id"""
+        return self._result_id
+
+    @property
+    def name(self):
+        """Return the name of operation"""
+        return "Result upload"
+
+    def cancel(self):
+        raise NotImplementedError('Cancel is not supported for this operation')
+
+    def data(self):
+        """
+        Returns a new ExternalResult class instance.
+
+        Returns:
+
+            external_result --
+                A ExternalResult class instance.
+        """
+        return entities.ExternalResult(self._result_id, self._workspace_sal)
+
+    def status(self):
+        """
+        Returns the upload status as an enumeration.
+
+        Returns:
+
+            upload_status --
+                The AsyncOperationStatus enum. The status can have the enum values
+                AsyncOperationStatus.READY, AsyncOperationStatus.RUNNING or
+                AsyncOperationStatus.ERROR
+
+        Example::
+
+            workspace.upload_result('C:/A.mat').status()
+        """
+        return AsyncOperationStatus(
+            self._workspace_sal.get_result_upload_status(self._result_id)["data"][
+                "status"
+            ]
+        )

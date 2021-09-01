@@ -235,6 +235,89 @@ def import_fmu(sem_ver_check, mock_server_base):
 
 
 @pytest.fixture
+def upload_result(sem_ver_check, mock_server_base):
+    json = {
+        "data": {
+            "id": "2f036b9fab6f45c788cc466da327cc78workspace",
+            "status": "ready",
+            "error": "None",
+        }
+    }
+
+    return with_json_route(mock_server_base, 'POST', 'api/uploads/results', json)
+
+
+@pytest.fixture
+def upload_result_status_ready(sem_ver_check, mock_server_base):
+    json = {
+        "data": {
+            "id": "2f036b9fab6f45c788cc466da327cc78workspace",
+            "status": "ready",
+            "data": {
+                "resourceUri": "api/external-result/2f036b9fab6f45c788cc466da327cc78workspace"
+            },
+            "error": "None",
+        }
+    }
+    return with_json_route(
+        mock_server_base,
+        'GET',
+        'api/uploads/results/2f036b9fab6f45c788cc466da327cc78workspace',
+        json,
+    )
+
+
+@pytest.fixture
+def upload_result_status_running(sem_ver_check, mock_server_base):
+    json = {
+        "data": {
+            "id": "2f036b9fab6f45c788cc466da327cc78workspace",
+            "status": "running",
+            "data": {
+                "resourceUri": "api/external-result/2f036b9fab6f45c788cc466da327cc78workspace"
+            },
+            "error": "None",
+        }
+    }
+
+    return with_json_route(
+        mock_server_base,
+        'GET',
+        'api/uploads/results/2f036b9fab6f45c788cc466da327cc78workspace',
+        json,
+    )
+
+
+@pytest.fixture
+def upload_result_meta(sem_ver_check, mock_server_base):
+    json = {
+        "data": {
+            "id": "2f036b9fab6f45c788cc466da327cc78workspace",
+            "createdAt": "2021-09-02T08:26:49.612000",
+            "name": "result_for_PID",
+            "description": "This is a result file for PID controller",
+            "workspaceId": "workspace",
+        }
+    }
+
+    return with_json_route(
+        mock_server_base,
+        'GET',
+        'api/external-result/2f036b9fab6f45c788cc466da327cc78workspace',
+        json,
+    )
+
+
+@pytest.fixture
+def upload_result_delete(sem_ver_check, mock_server_base):
+    return with_json_route_no_resp(
+        mock_server_base,
+        'DELETE',
+        'api/external-result/2f036b9fab6f45c788cc466da327cc78workspace',
+    )
+
+
+@pytest.fixture
 def upload_workspace(sem_ver_check, mock_server_base):
     json = {'id': 'newWorkspace'}
 

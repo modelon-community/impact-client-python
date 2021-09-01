@@ -100,6 +100,32 @@ class WorkspaceService:
         with open(path_to_workspace, "rb") as f:
             return self._http_client.post_json(url, files={"file": f})
 
+    def result_upload(self, workspace_id, path_to_result, label=None, description=None):
+        url = (self._base_uri / "api/uploads/results").resolve()
+        options = {
+            "name": label if label else os.path.basename(path_to_result),
+            "description": description if description else "",
+            "context": {"workspaceId": workspace_id},
+        }
+        with open(path_to_result, "rb") as f:
+            multipart_form_data = {
+                'file': f,
+                'options': json.dumps(options),
+            }
+            return self._http_client.post_json(url, files=multipart_form_data)
+
+    def get_result_upload_status(self, upload_id):
+        url = (self._base_uri / f"api/uploads/results/{upload_id}").resolve()
+        return self._http_client.get_json(url)
+
+    def get_uploaded_result_meta(self, upload_id):
+        url = (self._base_uri / f"api/external-result/{upload_id}").resolve()
+        return self._http_client.get_json(url)
+
+    def delete_uploaded_result(self, upload_id):
+        url = (self._base_uri / f"api/external-result/{upload_id}").resolve()
+        return self._http_client.delete_json(url)
+
     def _workspace_get_export_id(self, workspace_id, options):
         url = (self._base_uri / f"api/workspaces/{workspace_id}/exports").resolve()
         return self._http_client.post_json(url, body=options)["export_id"]
