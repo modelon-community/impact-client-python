@@ -1,3 +1,4 @@
+from modelon.impact.client import entities
 import modelon.impact.client.sal.service
 import pytest
 import os
@@ -529,6 +530,44 @@ class TestCase:
         )
         result = case.execute().wait()
         assert result == Case('case_1', 'AwesomeWorkspace', 'pid_2009')
+
+    def test_case_initialize_from_external_result(self, experiment):
+        result = entities.ExternalResult('upload_id')
+        case = experiment.entity.get_case("case_1")
+        case.initialize_from_external_result = result
+        case.update()
+        assert case.initialize_from_external_result == result
+        exp_sal = experiment.service
+        exp_sal.case_put.assert_has_calls(
+            [
+                mock.call(
+                    'Workspace',
+                    'Test',
+                    'case_1',
+                    {
+                        'id': 'case_1',
+                        'run_info': {'status': 'successful'},
+                        'input': {
+                            'fmu_id': 'modelica_fluid_examples_heatingsystem_20210130_114628_bbd91f1',
+                            'analysis': {
+                                'analysis_function': 'dynamic',
+                                'parameters': {'start_time': 0, 'final_time': 1},
+                                'simulation_options': {},
+                                'solver_options': {},
+                                'simulation_log_level': 'NOTHING',
+                            },
+                            'parametrization': {},
+                            'structural_parametrization': {},
+                            'fmu_base_parametrization': {},
+                            'initialize_from_case': '',
+                            'initialize_from_external_result': {
+                                'uploadId': 'upload_id'
+                            },
+                        },
+                    },
+                )
+            ]
+        )
 
     def test_set_case_label(self, experiment):
         exp = experiment.entity

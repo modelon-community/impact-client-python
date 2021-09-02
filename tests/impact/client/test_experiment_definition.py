@@ -1,3 +1,5 @@
+from unittest import mock
+from modelon.impact.client import entities
 from modelon.impact.client import (
     SimpleFMUExperimentDefinition,
     SimpleModelicaExperimentDefinition,
@@ -295,6 +297,27 @@ class TestSimpleModelicaExperimentDefinition:
             'v': 'choices(0.1, 0.5, 3)',
         }
 
+    def test_experiment_definition_initialize_from_result(
+        self,
+        model,
+        custom_function_no_param,
+        workspace_ops,
+        upload_result,
+        upload_result_status_ready,
+    ):
+        with mock.patch("builtins.open", mock.mock_open()) as mock_file:
+            result = workspace_ops.upload_result("test.mat", "Workspace").wait()
+            mock_file.assert_called_with("test.mat", "rb")
+
+        definition = SimpleModelicaExperimentDefinition(
+            model, custom_function=custom_function_no_param,
+        ).initialize_from(result)
+        config = definition.to_dict()
+        assert (
+            config["experiment"]["base"]["modifiers"]["initializeFromExternalResult"]
+            == result.id
+        )
+
     def test_experiment_definition_initialize_from_experiment(
         self, model, custom_function_no_param, experiment
     ):
@@ -303,7 +326,9 @@ class TestSimpleModelicaExperimentDefinition:
             model, custom_function=custom_function_no_param,
         ).initialize_from(experiment)
         config = definition.to_dict()
-        assert config["experiment"]["base"]["modifiers"]["initializeFrom"] == experiment.id
+        assert (
+            config["experiment"]["base"]["modifiers"]["initializeFrom"] == experiment.id
+        )
 
     def test_experiment_definition_initialize_from_case(
         self, model, custom_function_no_param, experiment
@@ -315,7 +340,7 @@ class TestSimpleModelicaExperimentDefinition:
         config = definition.to_dict()
         assert config["experiment"]["base"]["modifiers"]["initializeFromCase"] == {
             "experimentId": case_1.experiment_id,
-            "caseId": case_1.id
+            "caseId": case_1.id,
         }
 
     def test_experiment_definition_with_extensions(
@@ -334,6 +359,10 @@ class TestSimpleModelicaExperimentDefinition:
                 "analysis": {"parameters": {'final_time': 10}},
             },
         ]
+
+    def test_experiment_definition_with_extensions_initialize_from_result(self):
+        ext = SimpleExperimentExtension()
+        pytest.raises(TypeError, ext.initialize_from, entities.Result)
 
     def test_experiment_definition_with_extensions_initialize_from_experiment(
         self, model, custom_function_no_param, experiment
