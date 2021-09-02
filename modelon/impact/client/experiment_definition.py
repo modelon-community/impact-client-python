@@ -80,11 +80,14 @@ def _validate_and_set_initialize_from(entity, definition):
         definition.initialize_from_experiment = entity
     elif isinstance(entity, entities.Case):
         definition.initialize_from_case = entity
+    elif isinstance(entity, entities.ExternalResult):
+        definition.initialize_from_external_result = entity
     else:
         raise TypeError(
             "The entity argument be an instance of "
             "modelon.impact.client.entities.Case or "
-            "modelon.impact.client.entities.Experiment!"
+            "modelon.impact.client.entities.Experiment or "
+            "modelon.impact.client.entities.ExternalResultUploadOperation!"
         )
 
 
@@ -275,6 +278,7 @@ class SimpleFMUExperimentDefinition(BaseExperimentDefinition):
         self.extensions = []
         self.initialize_from_experiment = None
         self.initialize_from_case = None
+        self.initialize_from_external_result = None
 
     def validate(self):
         add = set(self.variable_modifiers.keys()) - set(
@@ -442,6 +446,10 @@ class SimpleFMUExperimentDefinition(BaseExperimentDefinition):
             exp_dict["experiment"]["base"]["modifiers"][
                 "initializeFromCase"
             ] = _case_to_identifier_dict(self.initialize_from_case)
+        elif self.initialize_from_external_result:
+            exp_dict["experiment"]["base"]["modifiers"][
+                "initializeFromExternalResult"
+            ] = self.initialize_from_external_result.id
         return exp_dict
 
     def initialize_from(self, entity):
@@ -465,6 +473,11 @@ class SimpleFMUExperimentDefinition(BaseExperimentDefinition):
             fmu = model.compile().wait()
             experiment_definition = fmu.new_experiment_definition(custom_function).
             initialize_from(case)
+
+            result = workspace.upload_result('C:/A.mat').wait()
+            fmu = model.compile().wait()
+            experiment_definition = fmu.new_experiment_definition(custom_function).
+            initialize_from(result)
         """
         new = SimpleFMUExperimentDefinition(
             self.fmu,
@@ -598,6 +611,7 @@ class SimpleModelicaExperimentDefinition(BaseExperimentDefinition):
         self.extensions = []
         self.initialize_from_experiment = None
         self.initialize_from_case = None
+        self.initialize_from_external_result = None
 
     def validate(self):
         raise NotImplementedError(
@@ -663,6 +677,10 @@ class SimpleModelicaExperimentDefinition(BaseExperimentDefinition):
             case = experiment.get_case('case_1')
             experiment_definition = model.new_experiment_definition(custom_function).
             initialize_from(case)
+
+            result = workspace.upload_result('C:/A.mat').wait()
+            experiment_definition = model.new_experiment_definition(custom_function).
+            initialize_from(result)
         """
         new = SimpleModelicaExperimentDefinition(
             model=self.model,
@@ -736,6 +754,7 @@ class SimpleModelicaExperimentDefinition(BaseExperimentDefinition):
         new.extensions = self.extensions + exp_ext
         new.initialize_from_experiment = self.initialize_from_experiment
         new.initialize_from_case = self.initialize_from_case
+        new.initialize_from_external_result = self.initialize_from_external_result
         return new
 
     def with_cases(self, cases_modifiers):
@@ -820,6 +839,10 @@ class SimpleModelicaExperimentDefinition(BaseExperimentDefinition):
             exp_dict["experiment"]["base"]["modifiers"][
                 "initializeFromCase"
             ] = _case_to_identifier_dict(self.initialize_from_case)
+        elif self.initialize_from_external_result:
+            exp_dict["experiment"]["base"]["modifiers"][
+                "initializeFromExternalResult"
+            ] = self.initialize_from_external_result.id
         return exp_dict
 
 
@@ -962,6 +985,12 @@ class SimpleExperimentExtension(BaseExperimentExtension):
             self._simulation_options,
             self._simulation_log_level,
         )
+        if isinstance(entity, entities.ExternalResult):
+            raise TypeError(
+                "It is not supported to specify initialize from external result for "
+                "experiment extensions"
+            )
+
         _validate_and_set_initialize_from(entity, new)
         new.variable_modifiers = self.variable_modifiers
         return new
