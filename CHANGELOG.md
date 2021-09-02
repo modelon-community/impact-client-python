@@ -1,3 +1,10 @@
+# [1.2.0-beta.13](https://github.com/modelon-community/impact-client-python/compare/v1.2.0-beta.12...v1.2.0-beta.13) (2021-09-02)
+
+
+### Bug Fixes
+
+* Using a mock file to emulate fmu import test ([ee8125d](https://github.com/modelon-community/impact-client-python/commit/ee8125def1f32a53661e77b10f7e1796e141d097))
+
 # [1.2.0-beta.12](https://github.com/modelon-community/impact-client-python/compare/v1.2.0-beta.11...v1.2.0-beta.12) (2021-09-02)
 
 
