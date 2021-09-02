@@ -1,3 +1,11 @@
+# [1.2.0-beta.12](https://github.com/modelon-community/impact-client-python/compare/v1.2.0-beta.11...v1.2.0-beta.12) (2021-09-02)
+
+
+### Bug Fixes
+
+* better documentation for setting a label for an experiment ([3cb46a0](https://github.com/modelon-community/impact-client-python/commit/3cb46a074e5fbd0ef85adcf2928328cdcd499704))
+* make sure only newer versions of the API with needed features are used ([13d4673](https://github.com/modelon-community/impact-client-python/commit/13d46730dcf2300677ab72b4cc1c34d29e9f66ee))
+
 # [1.2.0-beta.11](https://github.com/modelon-community/impact-client-python/compare/v1.2.0-beta.10...v1.2.0-beta.11) (2021-08-27)
 
 
