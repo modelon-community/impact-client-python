@@ -1808,6 +1808,26 @@ class Case:
             'caseId': case.id,
         }
 
+    @property
+    def initialize_from_external_result(self):
+        init_from_dict = self._info['input'].get('initialize_from_external_result')
+
+        if init_from_dict is None:
+            return None
+
+        result_id = init_from_dict.get('uploadId')
+
+        return ExternalResult(result_id, self._workspace_sal)
+
+    @initialize_from_external_result.setter
+    def initialize_from_external_result(self, result):
+        if not isinstance(result, ExternalResult):
+            raise TypeError(
+                "The value must be an instance of "
+                "modelon.impact.client.entities.ExternalResult"
+            )
+        self._info['input']['initialize_from_external_result'] = {"uploadId": result.id}
+
     def is_successful(self):
         """
         Returns True if a case has completed successfully.
