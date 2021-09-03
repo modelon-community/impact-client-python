@@ -1692,9 +1692,6 @@ class Case:
         """Experiment id"""
         return self._exp_id
 
-    def _get_info(self):
-        return self._info
-
     @property
     def info(self):
         """Deprecated, use 'run_info' attribute"""
