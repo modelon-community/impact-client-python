@@ -1,3 +1,17 @@
+# [1.2.0-beta.14](https://github.com/modelon-community/impact-client-python/compare/v1.2.0-beta.13...v1.2.0-beta.14) (2021-09-03)
+
+
+### Bug Fixes
+
+* clarification on documentation ([2a16655](https://github.com/modelon-community/impact-client-python/commit/2a166552c29f692d9960971aaf0191d676fa7731))
+* removing configuration of log level in modules ([8f2ede3](https://github.com/modelon-community/impact-client-python/commit/8f2ede388bb497512f5feb3e4cb44f48097bd1ce))
+* removing unused code ([153d1e9](https://github.com/modelon-community/impact-client-python/commit/153d1e92b4b6d7ae5265d4477386980322f60d5d))
+
+
+### Features
+
+* case data is only fetched for cases when created ([ee37d53](https://github.com/modelon-community/impact-client-python/commit/ee37d53d3db21a073c62c84b610082536f0b8949))
+
 # [1.2.0-beta.13](https://github.com/modelon-community/impact-client-python/compare/v1.2.0-beta.12...v1.2.0-beta.13) (2021-09-02)
 
 
