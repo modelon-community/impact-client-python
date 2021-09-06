@@ -520,7 +520,9 @@ class CaseOperation(ExecutionOperation):
             experiment --
                 An Case class instance.
         """
-        case_data = self._exp_sal.case_get(self._workspace_id, self._exp_id, self._case_id)
+        case_data = self._exp_sal.case_get(
+            self._workspace_id, self._exp_id, self._case_id
+        )
         return entities.Case(
             self._case_id,
             self._workspace_id,
