@@ -444,6 +444,17 @@ class TestExperiment:
         pytest.raises(ValueError, experiment.entity.get_trajectories, ['s'])
 
 
+
+def get_case_put_json_input(mock_method_call):
+    (args, _) = tuple(mock_method_call)
+    (_, _, _, put_json_input) = args
+    return put_json_input
+
+
+def get_case_put_call_consistent_value(mock_method_call):
+    json = get_case_put_json_input(mock_method_call)
+    return json['run_info']['consistent']
+
 class TestCase:
     def test_case(self, experiment):
         case = experiment.entity.get_case("case_1")
@@ -506,7 +517,7 @@ class TestCase:
                     'case_1',
                     {
                         'id': 'case_1',
-                        'run_info': {'status': 'successful'},
+                        'run_info': {'status': 'successful', 'consistent': True},
                         'input': {
                             'fmu_id': 'modelica_fluid_examples_heatingsystem_20210130_114628_bbd91f1',
                             'analysis': {
@@ -531,12 +542,25 @@ class TestCase:
         result = case.execute().wait()
         assert result == Case('case_1', 'AwesomeWorkspace', 'pid_2009')
 
+    def test_case_update_second_time_should_call_with_consistent_false(self, experiment):
+        exp = experiment.entity
+        exp_sal = experiment.service
+
+        case = exp.get_case("case_1")
+        case.input.parametrization = {'PI.k': 120}
+        case.update()
+        case.update()
+        case_put_calls = exp_sal.case_put.call_args_list
+        assert len(case_put_calls) == 2
+        assert get_case_put_call_consistent_value(case_put_calls[0]) is True
+        assert get_case_put_call_consistent_value(case_put_calls[1]) is False
+
     def test_case_initialize_from_external_result(self, experiment):
         result = entities.ExternalResult('upload_id')
         case = experiment.entity.get_case("case_1")
         case.initialize_from_external_result = result
-        case.update()
         assert case.initialize_from_external_result == result
+        case.update()
         exp_sal = experiment.service
         exp_sal.case_put.assert_has_calls(
             [
@@ -546,7 +570,7 @@ class TestCase:
                     'case_1',
                     {
                         'id': 'case_1',
-                        'run_info': {'status': 'successful'},
+                        'run_info': {'status': 'successful', 'consistent': True},
                         'input': {
                             'fmu_id': 'modelica_fluid_examples_heatingsystem_20210130_114628_bbd91f1',
                             'analysis': {
