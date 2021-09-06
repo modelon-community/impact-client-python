@@ -40,7 +40,7 @@ test-watch:
 	$(call _run_it, poetry run pytest-watch -- -vv)
 
 lint:
-	$(call _run,  bash -c "poetry run black modelon && poetry run flake8 modelon && poetry run mypy modelon")
+	$(call _run,  bash -c "poetry run black -S modelon && poetry run flake8 modelon && poetry run mypy modelon")
 
 wheel:
 	$(call _run,  poetry build -f wheel)
