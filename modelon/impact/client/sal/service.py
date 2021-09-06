@@ -103,10 +103,12 @@ class WorkspaceService:
     def result_upload(self, workspace_id, path_to_result, label=None, description=None):
         url = (self._base_uri / "api/uploads/results").resolve()
         options = {
-            "name": label if label else os.path.basename(path_to_result),
-            "description": description if description else "",
             "context": {"workspaceId": workspace_id},
         }
+        if label:
+            options["name"] = label
+        if description:
+            options["description"] = description
         with open(path_to_result, "rb") as f:
             multipart_form_data = {
                 'file': f,
