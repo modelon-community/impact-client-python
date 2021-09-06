@@ -1,3 +1,11 @@
+# [1.2.0-beta.15](https://github.com/modelon-community/impact-client-python/compare/v1.2.0-beta.14...v1.2.0-beta.15) (2021-09-06)
+
+
+### Features
+
+* Added support for external result file upload ([8a08702](https://github.com/modelon-community/impact-client-python/commit/8a0870202c5609733b2f262d11603347b34a3c6c))
+* Added support for initializing from external result ([851ba1f](https://github.com/modelon-community/impact-client-python/commit/851ba1f65e0dc71b8a766737da9b0142f55babdc))
+
 # [1.2.0-beta.14](https://github.com/modelon-community/impact-client-python/compare/v1.2.0-beta.13...v1.2.0-beta.14) (2021-09-03)
 
 
