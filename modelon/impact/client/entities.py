@@ -1981,7 +1981,7 @@ class Case:
         )
 
     def update(self):
-        self._exp_sal.case_put(
+        self._info = self._exp_sal.case_put(
             self._workspace_id, self._exp_id, self._case_id, self._info
         )
 
