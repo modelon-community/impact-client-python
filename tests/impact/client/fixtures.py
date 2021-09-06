@@ -1,4 +1,5 @@
 import collections
+import copy
 import unittest.mock
 import pytest
 import requests
@@ -649,9 +650,10 @@ def get_case(sem_ver_check, mock_server_base):
 
 @pytest.fixture
 def put_case(sem_ver_check, mock_server_base):
+    json = {"id": "case_1"}
 
-    return with_json_route_no_resp(
-        mock_server_base, 'PUT', 'api/workspaces/WS/experiments/pid_2009/cases/case_1',
+    return with_json_route(
+        mock_server_base, 'PUT', 'api/workspaces/WS/experiments/pid_2009/cases/case_1', json
     )
 
 
@@ -1158,9 +1160,9 @@ def experiment():
     exp_service.execute_status.return_value = {"status": "done"}
     exp_service.result_variables_get.return_value = ["inertia.I", "time"]
     exp_service.cases_get.return_value = {"data": {"items": [{"id": "case_1"}]}}
-    exp_service.case_get.return_value = {
+    case_get_data = {
         "id": "case_1",
-        "run_info": {"status": "successful"},
+        "run_info": {"status": "successful", "consistent": True},
         "input": {
             "fmu_id": "modelica_fluid_examples_heatingsystem_20210130_114628_bbd91f1",
             "analysis": {
@@ -1176,6 +1178,11 @@ def experiment():
             "initialize_from_case": "",
         },
     }
+    case_put_return = copy.deepcopy(case_get_data)
+    case_put_return['run_info']['consistent'] = False
+    
+    exp_service.case_get.return_value = case_get_data
+    exp_service.case_put.return_value = case_put_return
     exp_service.case_get_log.return_value = "Successful Log"
     exp_service.case_result_get.return_value = (bytes(4), 'result.mat')
     exp_service.case_artifact_get.return_value = (bytes(4), 'result.mat')
