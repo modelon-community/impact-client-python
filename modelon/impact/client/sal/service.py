@@ -279,7 +279,7 @@ class ExperimentService:
         url = (
             self._base_uri / f"api/workspaces/{workspace_id}/experiments/{exp_id}"
         ).resolve()
-        return self._http_client.put_json_no_responsoe_body(url, body={"label": label})
+        return self._http_client.put_json_no_response_body(url, body={"label": label})
 
     def execute_status(self, workspace_id, experiment_id):
         url = (
@@ -450,7 +450,7 @@ class HTTPClient:
     def delete_json(self, url, body=None):
         RequestJSON(self._context, "DELETE", url, body).execute()
 
-    def put_json_no_responsoe_body(self, url, body=None):
+    def put_json_no_response_body(self, url, body=None):
         RequestJSON(self._context, "PUT", url, body).execute()
 
     def put_json(self, url, body=None):
