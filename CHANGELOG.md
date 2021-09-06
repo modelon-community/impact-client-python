@@ -1,3 +1,10 @@
+# [1.2.0-beta.16](https://github.com/modelon-community/impact-client-python/compare/v1.2.0-beta.15...v1.2.0-beta.16) (2021-09-06)
+
+
+### Bug Fixes
+
+* Modified label and description to defaults ([c639f23](https://github.com/modelon-community/impact-client-python/commit/c639f235cd8ffb16be91871f9f3b34fd0b0928d7))
+
 # [1.2.0-beta.15](https://github.com/modelon-community/impact-client-python/compare/v1.2.0-beta.14...v1.2.0-beta.15) (2021-09-06)
 
 
