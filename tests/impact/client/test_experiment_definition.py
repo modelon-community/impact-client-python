@@ -343,6 +343,36 @@ class TestSimpleModelicaExperimentDefinition:
             "caseId": case_1.id,
         }
 
+    def test_experiment_definition_initialize_from_multiple_entities(
+        self, model, custom_function_no_param, experiment
+    ):
+        experiment = experiment.entity
+        definition = SimpleModelicaExperimentDefinition(
+            model, custom_function=custom_function_no_param,
+        ).initialize_from(experiment)
+
+        # Reinitializing with case entity
+        case_to_init = entities.Case('Case_2', 'ws_id', 'exp_id')
+        err_str = "An experiment can only be initialized from one entity. "
+        with pytest.raises(Exception) as err:
+            definition = definition.initialize_from(case_to_init)
+        assert (
+            str(err.value)
+            == err_str
+            + "Experiment is configured to initialize from Experiment with id 'Test' "
+            + "and Case with id 'Case_2'"
+        )
+
+        # Reinitializing with external result entity
+        result_to_init = entities.ExternalResult('result_id')
+        with pytest.raises(Exception) as err:
+            definition = definition.initialize_from(result_to_init)
+        assert str(err.value) == (
+            err_str
+            + "Experiment is configured to initialize from Experiment with id 'Test' "
+            + "and Result id 'result_id'"
+        )
+
     def test_experiment_definition_with_extensions(
         self, model, custom_function_no_param
     ):
@@ -413,6 +443,23 @@ class TestSimpleModelicaExperimentDefinition:
                 "analysis": {"parameters": {'final_time': 10}},
             },
         ]
+
+    def test_experiment_definition_with_extensions_initialize_from_multiple_entities(
+        self, model, custom_function_no_param, experiment
+    ):
+        experiment = experiment.entity
+        case_1 = experiment.get_case('case_1')
+        ext1 = (
+            SimpleExperimentExtension({'final_time': 10})
+            .with_modifiers(p=3)
+            .initialize_from(case_1)
+        )
+
+        # Reinitializing with experiment entity
+        expected_err = "An experiment can only be initialized from one entity. Experiment is configured to initialize from Experiment with id 'Test' and Case with id 'case_1'"
+        with pytest.raises(Exception) as err:
+            ext1 = ext1.initialize_from(experiment)
+        assert str(err.value) == expected_err
 
     def test_experiment_definition_with_cases(self, model, custom_function_no_param):
         definition = SimpleModelicaExperimentDefinition(

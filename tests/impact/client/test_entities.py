@@ -444,7 +444,6 @@ class TestExperiment:
         pytest.raises(ValueError, experiment.entity.get_trajectories, ['s'])
 
 
-
 def get_case_put_json_input(mock_method_call):
     (args, _) = tuple(mock_method_call)
     (_, _, _, put_json_input) = args
@@ -454,6 +453,7 @@ def get_case_put_json_input(mock_method_call):
 def get_case_put_call_consistent_value(mock_method_call):
     json = get_case_put_json_input(mock_method_call)
     return json['run_info']['consistent']
+
 
 class TestCase:
     def test_case(self, experiment):
@@ -535,6 +535,7 @@ class TestCase:
                                 'experimentId': 'Test',
                                 'caseId': 'case_2',
                             },
+                            "initialize_from_external_result": None,
                         },
                     },
                 )
@@ -543,7 +544,9 @@ class TestCase:
         result = case.execute().wait()
         assert result == Case('case_1', 'AwesomeWorkspace', 'pid_2009')
 
-    def test_case_update_second_time_should_call_with_consistent_false(self, experiment):
+    def test_case_update_second_time_should_call_with_consistent_false(
+        self, experiment
+    ):
         exp = experiment.entity
         exp_sal = experiment.service
 
@@ -584,7 +587,7 @@ class TestCase:
                             'parametrization': {},
                             'structural_parametrization': {},
                             'fmu_base_parametrization': {},
-                            'initialize_from_case': '',
+                            'initialize_from_case': None,
                             'initialize_from_external_result': {
                                 'uploadId': 'upload_id'
                             },
@@ -592,6 +595,34 @@ class TestCase:
                     },
                 )
             ]
+        )
+
+    def test_reinitiazlizing_result_initialized_case_from_case(self, experiment):
+        result = entities.ExternalResult('upload_id')
+        case_to_init = entities.Case('Case_2', 'ws_id', 'exp_id')
+        case = experiment.entity.get_case("case_1")
+        case.initialize_from_external_result = result
+        with pytest.raises(Exception) as err:
+            case.initialize_from_case = case_to_init
+        assert (
+            str(err.value) == "A case cannot use both 'initialize_from_case' and "
+            "'initialize_from_external_result' to specify what to initialize from! "
+            "To resolve this, set the 'initialize_from_external_result' attribute "
+            "to None and re-try."
+        )
+
+    def test_reinitiazlizing_case_initialized_case_from_result(self, experiment):
+        result = entities.ExternalResult('upload_id')
+        case_to_init = entities.Case('Case_2', 'ws_id', 'exp_id')
+        case = experiment.entity.get_case("case_1")
+        case.initialize_from_case = case_to_init
+        with pytest.raises(Exception) as err:
+            case.initialize_from_external_result = result
+        assert (
+            str(err.value) == "A case cannot use both 'initialize_from_case' and "
+            "'initialize_from_external_result' to specify what to initialize from! "
+            "To resolve this, set the 'initialize_from_case' attribute "
+            "to None and re-try."
         )
 
     def test_set_case_label(self, experiment):

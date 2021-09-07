@@ -1175,7 +1175,8 @@ def experiment():
             "parametrization": {},
             "structural_parametrization": {},
             "fmu_base_parametrization": {},
-            "initialize_from_case": "",
+            "initialize_from_case": None,
+            "initialize_from_external_result": None,
         },
     }
     case_put_return = copy.deepcopy(case_get_data)
