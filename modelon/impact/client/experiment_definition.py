@@ -25,6 +25,15 @@ def _case_to_identifier_dict(case):
     }
 
 
+def _assert_unique_exp_initialization(*initializing_from):
+    initializing_from = [entity for entity in initializing_from if entity is not None]
+    if len(initializing_from) > 1:
+        raise ValueError(
+            "An experiment can only be initialized from one entity. Experiment is "
+            f"configured to initialize from {' and '.join(map(str, initializing_from))}"
+        )
+
+
 def assert_valid_args(
     model=None,
     fmu=None,
@@ -486,9 +495,18 @@ class SimpleFMUExperimentDefinition(BaseExperimentDefinition):
             self._simulation_options,
             self._simulation_log_level,
         )
+        new.initialize_from_experiment = self.initialize_from_experiment
+        new.initialize_from_case = self.initialize_from_case
+        new.initialize_from_external_result = self.initialize_from_external_result
         _validate_and_set_initialize_from(entity, new)
+        _assert_unique_exp_initialization(
+            new.initialize_from_experiment,
+            new.initialize_from_case,
+            new.initialize_from_external_result,
+        )
         new.variable_modifiers = self.variable_modifiers
         new.extensions = self.extensions
+
         return new
 
 
@@ -695,7 +713,15 @@ class SimpleModelicaExperimentDefinition(BaseExperimentDefinition):
             simulation_options=self._simulation_options,
             simulation_log_level=self._simulation_log_level,
         )
+        new.initialize_from_experiment = self.initialize_from_experiment
+        new.initialize_from_case = self.initialize_from_case
+        new.initialize_from_external_result = self.initialize_from_external_result
         _validate_and_set_initialize_from(entity, new)
+        _assert_unique_exp_initialization(
+            new.initialize_from_experiment,
+            new.initialize_from_case,
+            new.initialize_from_external_result,
+        )
         new.variable_modifiers = self.variable_modifiers
         new.extensions = self.extensions
         return new
@@ -991,7 +1017,12 @@ class SimpleExperimentExtension(BaseExperimentExtension):
                 "experiment extensions"
             )
 
+        new.initialize_from_experiment = self.initialize_from_experiment
+        new.initialize_from_case = self.initialize_from_case
         _validate_and_set_initialize_from(entity, new)
+        _assert_unique_exp_initialization(
+            new.initialize_from_experiment, new.initialize_from_case,
+        )
         new.variable_modifiers = self.variable_modifiers
         return new
 

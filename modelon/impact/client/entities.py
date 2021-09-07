@@ -1810,6 +1810,7 @@ class Case:
             raise TypeError(
                 "The value must be an instance of modelon.impact.client.entities.Case"
             )
+        self._assert_unique_case_initialization('initialize_from_external_result')
         self._info['input']['initialize_from_case'] = {
             'experimentId': case.experiment_id,
             'caseId': case.id,
@@ -1833,6 +1834,7 @@ class Case:
                 "The value must be an instance of "
                 "modelon.impact.client.entities.ExternalResult"
             )
+        self._assert_unique_case_initialization('initialize_from_case')
         self._info['input']['initialize_from_external_result'] = {"uploadId": result.id}
 
     def is_successful(self):
@@ -2020,6 +2022,15 @@ class Case:
             self._model_exe_sal,
             self._exp_sal,
         )
+
+    def _assert_unique_case_initialization(self, unsupported_init):
+        if self._info['input'][unsupported_init]:
+            raise ValueError(
+                "A case cannot use both 'initialize_from_case' and "
+                "'initialize_from_external_result' to specify what to initialize from! "
+                f"To resolve this, set the '{unsupported_init}' attribute "
+                "to None and re-try."
+            )
 
 
 class Result(Mapping):
