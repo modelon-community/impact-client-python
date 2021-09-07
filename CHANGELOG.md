@@ -1,3 +1,10 @@
+# [1.2.0-beta.18](https://github.com/modelon-community/impact-client-python/compare/v1.2.0-beta.17...v1.2.0-beta.18) (2021-09-07)
+
+
+### Features
+
+* possible to check if a case is consistent ([33d2b52](https://github.com/modelon-community/impact-client-python/commit/33d2b52fec8258127bcc1e60e0b6a8ea749df829))
+
 # [1.2.0-beta.17](https://github.com/modelon-community/impact-client-python/compare/v1.2.0-beta.16...v1.2.0-beta.17) (2021-09-07)
 
 
