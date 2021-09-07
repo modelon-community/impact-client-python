@@ -460,6 +460,7 @@ class TestCase:
         case = experiment.entity.get_case("case_1")
         assert case.id == "case_1"
         assert case.run_info.status == CaseStatus.SUCCESSFUL
+        assert case.run_info.consistent is True
         assert case.get_log() == "Successful Log"
         result, name = case.get_result()
         assert (result, name) == (b'\x00\x00\x00\x00', 'result.mat')

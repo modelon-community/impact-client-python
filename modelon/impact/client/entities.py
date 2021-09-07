@@ -1566,13 +1566,20 @@ class _CaseRunInfo:
     Class containing Case run info.
     """
 
-    def __init__(self, status):
+    def __init__(self, status, consistent):
         self._status = status
+        self._consistent = consistent
 
     @property
     def status(self):
         """Status info for a Case, its type is CaseStatus."""
         return self._status
+
+    @property
+    def consistent(self):
+        """True if the case has not been updated since it was executed,
+        false otherwise."""
+        return self._consistent
 
 
 class _ExternalResultMetaData:
@@ -1758,7 +1765,7 @@ class Case:
     def run_info(self):
         """Case run information"""
         run_info = self._info["run_info"]
-        return _CaseRunInfo(CaseStatus(run_info["status"]))
+        return _CaseRunInfo(CaseStatus(run_info["status"]), run_info["consistent"])
 
     @property
     def input(self):
