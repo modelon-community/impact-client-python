@@ -1,3 +1,11 @@
+# [1.2.0-beta.17](https://github.com/modelon-community/impact-client-python/compare/v1.2.0-beta.16...v1.2.0-beta.17) (2021-09-07)
+
+
+### Bug Fixes
+
+* case update will get server changes ([3230ad5](https://github.com/modelon-community/impact-client-python/commit/3230ad5af16c8afd188cc14792698ba109ad50be))
+* spelling ([9642222](https://github.com/modelon-community/impact-client-python/commit/96422229ca04387d97b4f35ff6024cac3944ff8c))
+
 # [1.2.0-beta.16](https://github.com/modelon-community/impact-client-python/compare/v1.2.0-beta.15...v1.2.0-beta.16) (2021-09-06)
 
 
