@@ -1242,7 +1242,7 @@ def batch_experiment_with_case_filter():
     }
     exp_service.case_get.return_value = {
         "id": "case_3",
-        "run_info": {"status": "successful"},
+        "run_info": {"status": "successful", "consistent": True},
         "input": {
             "fmu_id": "modelica_fluid_examples_heatingsystem_20210130_114628_bbd91f1"
         },
@@ -1267,7 +1267,7 @@ def batch_experiment():
     }
     exp_service.case_get.return_value = {
         "id": "case_2",
-        "run_info": {"status": "successful"},
+        "run_info": {"status": "successful", "consistent": True},
     }
     exp_service.case_get_log.return_value = "Successful Log"
     exp_service.case_result_get.return_value = (bytes(4), 'result.mat')
@@ -1328,7 +1328,7 @@ def experiment_with_failed_case():
     exp_service.cases_get.return_value = {"data": {"items": [{"id": "case_1"}]}}
     exp_service.case_get.return_value = {
         "id": "case_1",
-        "run_info": {"status": "failed"},
+        "run_info": {"status": "failed", "consistent": True},
     }
     exp_service.result_variables_get.return_value = ["inertia.I", "time"]
     exp_service.trajectories_get.return_value = [[[1, 2, 3, 4]], [[5, 2, 9, 4]]]
@@ -1369,5 +1369,5 @@ def cancelled_experiment():
     }
     exp_service.cases_get.return_value = {"data": {"items": [{"id": "case_1"}]}}
     exp_service.case_get.return_value = {"id": "case_1"}
-    exp_service.execute_status.return_value = {"status": "cancelled"}
+    exp_service.execute_status.return_value = {"status": "cancelled", "consistent": True}
     return Experiment("Workspace", "Test", ws_service, exp_service=exp_service)
