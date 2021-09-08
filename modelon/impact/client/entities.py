@@ -626,10 +626,14 @@ class _Parameter:
     }
 
     def __init__(self, name, value, value_type, valid_values):
-        self.name = name
+        self._name = name
         self._value = value
         self._value_type = value_type
         self._valid_values = valid_values
+
+    @property
+    def name(self):
+        return self._name
 
     @property
     def value(self):
@@ -639,12 +643,12 @@ class _Parameter:
     def value(self, value):
         if not isinstance(value, self._JSON_2_PY_TYPE[self._value_type]):
             raise ValueError(
-                f"Cannot set {self.name} to {value}, its type is {self._value_type}"
+                f"Cannot set {self._name} to {value}, its type is {self._value_type}"
             )
 
         if self._value_type == "Enumeration" and value not in self._valid_values:
             raise ValueError(
-                f"Cannot set enumeration '{self.name}' to '{value}', "
+                f"Cannot set enumeration '{self._name}' to '{value}', "
                 f"must be one of {self._valid_values}"
             )
 
@@ -657,7 +661,7 @@ class CustomFunction:
     """
 
     def __init__(self, workspace_id, name, parameter_data, custom_function_service):
-        self.name = name
+        self._name = name
         self._workspace_id = workspace_id
         self._parameter_data = parameter_data
         self._param_by_name = {
@@ -669,10 +673,15 @@ class CustomFunction:
         self._custom_func_sal = custom_function_service
 
     def __repr__(self):
-        return f"Custom function '{self.name}'"
+        return f"Custom function '{self._name}'"
 
     def __eq__(self, obj):
-        return isinstance(obj, CustomFunction) and obj.name == self.name
+        return isinstance(obj, CustomFunction) and obj._name == self._name
+
+    @property
+    def name(self):
+        "Custom function name"
+        return self._name
 
     def with_parameters(self, **modified):
         """Sets/updates the custom_function parameters for an experiment.
@@ -688,12 +697,12 @@ class CustomFunction:
             custom_function.with_parameters(start_time=0.0, final_time=2.0)
         """
         new = CustomFunction(
-            self._workspace_id, self.name, self._parameter_data, self._custom_func_sal
+            self._workspace_id, self._name, self._parameter_data, self._custom_func_sal
         )
         for name, value in modified.items():
             if name not in new._param_by_name:
                 raise ValueError(
-                    f"The custom function '{self.name}' "
+                    f"The custom function '{self._name}' "
                     f"does not have a parameter '{name}'"
                 )
 
@@ -722,9 +731,9 @@ class CustomFunction:
             opts_2 = opts.with_values(c_compiler='gcc')
         """
         options = self._custom_func_sal.custom_function_options_get(
-            self._workspace_id, self.name
+            self._workspace_id, self._name
         )
-        return ExecutionOptions(options["compiler"], self.name, self._custom_func_sal)
+        return ExecutionOptions(options["compiler"], self._name, self._custom_func_sal)
 
     def get_runtime_options(self):
         """
@@ -741,9 +750,9 @@ class CustomFunction:
             opts_2 = opts.with_values(cs_solver=0)
         """
         options = self._custom_func_sal.custom_function_options_get(
-            self._workspace_id, self.name
+            self._workspace_id, self._name
         )
-        return ExecutionOptions(options["runtime"], self.name, self._custom_func_sal)
+        return ExecutionOptions(options["runtime"], self._name, self._custom_func_sal)
 
     def get_solver_options(self):
         """
@@ -760,9 +769,9 @@ class CustomFunction:
             opts_2 = opts.with_values(rtol=1e-7)
         """
         options = self._custom_func_sal.custom_function_options_get(
-            self._workspace_id, self.name
+            self._workspace_id, self._name
         )
-        return ExecutionOptions(options["solver"], self.name, self._custom_func_sal)
+        return ExecutionOptions(options["solver"], self._name, self._custom_func_sal)
 
     def get_simulation_options(self):
         """
@@ -779,9 +788,11 @@ class CustomFunction:
             opts_2 = opts.with_values(ncp=500)
         """
         options = self._custom_func_sal.custom_function_options_get(
-            self._workspace_id, self.name
+            self._workspace_id, self._name
         )
-        return ExecutionOptions(options["simulation"], self.name, self._custom_func_sal)
+        return ExecutionOptions(
+            options["simulation"], self._name, self._custom_func_sal
+        )
 
 
 class Model:

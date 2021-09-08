@@ -70,8 +70,8 @@ class Client:
                 modelon.impact.client.credential_manager.CredentialManager()
             )
 
-        self.uri = modelon.impact.client.sal.service.URI(url)
-        self._sal = modelon.impact.client.sal.service.Service(self.uri, context)
+        self._uri = modelon.impact.client.sal.service.URI(url)
+        self._sal = modelon.impact.client.sal.service.Service(self._uri, context)
         self._credentials = credential_manager
         self._api_key = None
 
@@ -94,7 +94,7 @@ class Client:
             version = self._sal.api_get_metadata()["version"]
         except modelon.impact.client.sal.exceptions.CommunicationError as exce:
             raise modelon.impact.client.sal.exceptions.NoResponseFetchVersionError(
-                f"No response from url {self.uri}, "
+                f"No response from url {self._uri}, "
                 "please verify that the URL is correct"
             ) from exce
 

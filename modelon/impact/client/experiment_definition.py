@@ -86,11 +86,11 @@ def _validate_and_set_initialize_from(entity, definition):
                 "Cannot initialize from an experiment result containing multiple"
                 " cases! Please specify a case object instead."
             )
-        definition.initialize_from_experiment = entity
+        definition._initialize_from_experiment = entity
     elif isinstance(entity, entities.Case):
-        definition.initialize_from_case = entity
+        definition._initialize_from_case = entity
     elif isinstance(entity, entities.ExternalResult):
-        definition.initialize_from_external_result = entity
+        definition._initialize_from_external_result = entity
     else:
         raise TypeError(
             "The entity argument be an instance of "
@@ -273,8 +273,8 @@ class SimpleFMUExperimentDefinition(BaseExperimentDefinition):
             simulation_options=simulation_options,
         )
         _assert_successful_compilation(fmu)
-        self.fmu = fmu
-        self.custom_function = custom_function
+        self._fmu = fmu
+        self._custom_function = custom_function
         self._solver_options = _get_options(
             custom_function.get_solver_options, solver_options
         )
@@ -283,15 +283,15 @@ class SimpleFMUExperimentDefinition(BaseExperimentDefinition):
         )
 
         self._simulation_log_level = simulation_log_level
-        self.variable_modifiers = fmu._variable_modifiers()
-        self.extensions = []
-        self.initialize_from_experiment = None
-        self.initialize_from_case = None
-        self.initialize_from_external_result = None
+        self._variable_modifiers = fmu._variable_modifiers()
+        self._extensions = []
+        self._initialize_from_experiment = None
+        self._initialize_from_case = None
+        self._initialize_from_external_result = None
 
     def validate(self):
-        add = set(self.variable_modifiers.keys()) - set(
-            self.fmu.get_settable_parameters()
+        add = set(self._variable_modifiers.keys()) - set(
+            self._fmu.get_settable_parameters()
         )
         if add:
             raise KeyError(
@@ -326,15 +326,15 @@ class SimpleFMUExperimentDefinition(BaseExperimentDefinition):
         modifiers = {} if modifiers is None else modifiers
         modifiers_aggregate = {**modifiers, **modifiers_kwargs}
         new = SimpleFMUExperimentDefinition(
-            self.fmu,
-            self.custom_function,
+            self._fmu,
+            self._custom_function,
             self._solver_options,
             self._simulation_options,
             self._simulation_log_level,
         )
 
         for variable, value in modifiers_aggregate.items():
-            new.variable_modifiers[variable] = (
+            new._variable_modifiers[variable] = (
                 str(value) if isinstance(value, Operator) else value
             )
         return new
@@ -377,14 +377,14 @@ class SimpleFMUExperimentDefinition(BaseExperimentDefinition):
             exp_ext.append(extension)
 
         new = SimpleFMUExperimentDefinition(
-            self.fmu,
-            self.custom_function,
+            self._fmu,
+            self._custom_function,
             self._solver_options,
             self._simulation_options,
             self._simulation_log_level,
         )
-        new.variable_modifiers = self.variable_modifiers
-        new.extensions = self.extensions + exp_ext
+        new._variable_modifiers = self._variable_modifiers
+        new._extensions = self._extensions + exp_ext
         return new
 
     def with_cases(self, cases_modifiers):
@@ -434,31 +434,31 @@ class SimpleFMUExperimentDefinition(BaseExperimentDefinition):
             "experiment": {
                 "version": 2,
                 "base": {
-                    "model": {"fmu": {"id": self.fmu.id}},
-                    "modifiers": {"variables": self.variable_modifiers},
+                    "model": {"fmu": {"id": self._fmu.id}},
+                    "modifiers": {"variables": self._variable_modifiers},
                     "analysis": {
-                        "type": self.custom_function.name,
-                        "parameters": self.custom_function.parameter_values,
+                        "type": self._custom_function.name,
+                        "parameters": self._custom_function.parameter_values,
                         "simulationOptions": self._simulation_options,
                         "solverOptions": self._solver_options,
                         "simulationLogLevel": self._simulation_log_level,
                     },
                 },
-                "extensions": [ext.to_dict() for ext in self.extensions],
+                "extensions": [ext.to_dict() for ext in self._extensions],
             }
         }
-        if self.initialize_from_experiment:
+        if self._initialize_from_experiment:
             exp_dict["experiment"]["base"]["modifiers"][
                 "initializeFrom"
-            ] = self.initialize_from_experiment.id
-        elif self.initialize_from_case:
+            ] = self._initialize_from_experiment.id
+        elif self._initialize_from_case:
             exp_dict["experiment"]["base"]["modifiers"][
                 "initializeFromCase"
-            ] = _case_to_identifier_dict(self.initialize_from_case)
-        elif self.initialize_from_external_result:
+            ] = _case_to_identifier_dict(self._initialize_from_case)
+        elif self._initialize_from_external_result:
             exp_dict["experiment"]["base"]["modifiers"][
                 "initializeFromExternalResult"
-            ] = self.initialize_from_external_result.id
+            ] = self._initialize_from_external_result.id
         return exp_dict
 
     def initialize_from(self, entity):
@@ -489,23 +489,23 @@ class SimpleFMUExperimentDefinition(BaseExperimentDefinition):
             initialize_from(result)
         """
         new = SimpleFMUExperimentDefinition(
-            self.fmu,
-            self.custom_function,
+            self._fmu,
+            self._custom_function,
             self._solver_options,
             self._simulation_options,
             self._simulation_log_level,
         )
-        new.initialize_from_experiment = self.initialize_from_experiment
-        new.initialize_from_case = self.initialize_from_case
-        new.initialize_from_external_result = self.initialize_from_external_result
+        new._initialize_from_experiment = self._initialize_from_experiment
+        new._initialize_from_case = self._initialize_from_case
+        new._initialize_from_external_result = self._initialize_from_external_result
         _validate_and_set_initialize_from(entity, new)
         _assert_unique_exp_initialization(
-            new.initialize_from_experiment,
-            new.initialize_from_case,
-            new.initialize_from_external_result,
+            new._initialize_from_experiment,
+            new._initialize_from_case,
+            new._initialize_from_external_result,
         )
-        new.variable_modifiers = self.variable_modifiers
-        new.extensions = self.extensions
+        new._variable_modifiers = self._variable_modifiers
+        new._extensions = self._extensions
 
         return new
 
@@ -606,8 +606,8 @@ class SimpleModelicaExperimentDefinition(BaseExperimentDefinition):
             solver_options=solver_options,
             simulation_options=simulation_options,
         )
-        self.model = model
-        self.custom_function = custom_function
+        self._model = model
+        self._custom_function = custom_function
         self._compiler_options = _get_options(
             custom_function.get_compiler_options, compiler_options
         )
@@ -625,11 +625,11 @@ class SimpleModelicaExperimentDefinition(BaseExperimentDefinition):
             custom_function.get_simulation_options, simulation_options
         )
         self._simulation_log_level = simulation_log_level
-        self.variable_modifiers = {}
-        self.extensions = []
-        self.initialize_from_experiment = None
-        self.initialize_from_case = None
-        self.initialize_from_external_result = None
+        self._variable_modifiers = {}
+        self._extensions = []
+        self._initialize_from_experiment = None
+        self._initialize_from_case = None
+        self._initialize_from_external_result = None
 
     def validate(self):
         raise NotImplementedError(
@@ -657,8 +657,8 @@ class SimpleModelicaExperimentDefinition(BaseExperimentDefinition):
         """
         modifiers = {} if modifiers is None else modifiers
         new = SimpleModelicaExperimentDefinition(
-            model=self.model,
-            custom_function=self.custom_function,
+            model=self._model,
+            custom_function=self._custom_function,
             compiler_options=self._compiler_options,
             fmi_target=self._fmi_target,
             fmi_version=self._fmi_version,
@@ -671,7 +671,7 @@ class SimpleModelicaExperimentDefinition(BaseExperimentDefinition):
         )
 
         for variable, value in modifiers.items():
-            new.variable_modifiers[variable] = (
+            new._variable_modifiers[variable] = (
                 str(value) if isinstance(value, Operator) else value
             )
         return new
@@ -701,8 +701,8 @@ class SimpleModelicaExperimentDefinition(BaseExperimentDefinition):
             initialize_from(result)
         """
         new = SimpleModelicaExperimentDefinition(
-            model=self.model,
-            custom_function=self.custom_function,
+            model=self._model,
+            custom_function=self._custom_function,
             compiler_options=self._compiler_options,
             fmi_target=self._fmi_target,
             fmi_version=self._fmi_version,
@@ -713,17 +713,17 @@ class SimpleModelicaExperimentDefinition(BaseExperimentDefinition):
             simulation_options=self._simulation_options,
             simulation_log_level=self._simulation_log_level,
         )
-        new.initialize_from_experiment = self.initialize_from_experiment
-        new.initialize_from_case = self.initialize_from_case
-        new.initialize_from_external_result = self.initialize_from_external_result
+        new._initialize_from_experiment = self._initialize_from_experiment
+        new._initialize_from_case = self._initialize_from_case
+        new._initialize_from_external_result = self._initialize_from_external_result
         _validate_and_set_initialize_from(entity, new)
         _assert_unique_exp_initialization(
-            new.initialize_from_experiment,
-            new.initialize_from_case,
-            new.initialize_from_external_result,
+            new._initialize_from_experiment,
+            new._initialize_from_case,
+            new._initialize_from_external_result,
         )
-        new.variable_modifiers = self.variable_modifiers
-        new.extensions = self.extensions
+        new._variable_modifiers = self._variable_modifiers
+        new._extensions = self._extensions
         return new
 
     def with_extensions(self, experiment_extensions):
@@ -764,8 +764,8 @@ class SimpleModelicaExperimentDefinition(BaseExperimentDefinition):
             exp_ext.append(extension)
 
         new = SimpleModelicaExperimentDefinition(
-            model=self.model,
-            custom_function=self.custom_function,
+            model=self._model,
+            custom_function=self._custom_function,
             compiler_options=self._compiler_options,
             fmi_target=self._fmi_target,
             fmi_version=self._fmi_version,
@@ -776,11 +776,11 @@ class SimpleModelicaExperimentDefinition(BaseExperimentDefinition):
             simulation_options=self._simulation_options,
             simulation_log_level=self._simulation_log_level,
         )
-        new.variable_modifiers = self.variable_modifiers
-        new.extensions = self.extensions + exp_ext
-        new.initialize_from_experiment = self.initialize_from_experiment
-        new.initialize_from_case = self.initialize_from_case
-        new.initialize_from_external_result = self.initialize_from_external_result
+        new._variable_modifiers = self._variable_modifiers
+        new._extensions = self._extensions + exp_ext
+        new._initialize_from_experiment = self._initialize_from_experiment
+        new._initialize_from_case = self._initialize_from_case
+        new._initialize_from_external_result = self._initialize_from_external_result
         return new
 
     def with_cases(self, cases_modifiers):
@@ -836,7 +836,7 @@ class SimpleModelicaExperimentDefinition(BaseExperimentDefinition):
                 "base": {
                     "model": {
                         "modelica": {
-                            "className": self.model.name,
+                            "className": self._model.name,
                             "compilerOptions": self._compiler_options,
                             "runtimeOptions": self._runtime_options,
                             "compilerLogLevel": self._compiler_log_level,
@@ -845,30 +845,30 @@ class SimpleModelicaExperimentDefinition(BaseExperimentDefinition):
                             "platform": self._platform,
                         }
                     },
-                    "modifiers": {"variables": self.variable_modifiers},
+                    "modifiers": {"variables": self._variable_modifiers},
                     "analysis": {
-                        "type": self.custom_function.name,
-                        "parameters": self.custom_function.parameter_values,
+                        "type": self._custom_function.name,
+                        "parameters": self._custom_function.parameter_values,
                         "simulationOptions": self._simulation_options,
                         "solverOptions": self._solver_options,
                         "simulationLogLevel": self._simulation_log_level,
                     },
                 },
-                "extensions": [ext.to_dict() for ext in self.extensions],
+                "extensions": [ext.to_dict() for ext in self._extensions],
             }
         }
-        if self.initialize_from_experiment:
+        if self._initialize_from_experiment:
             exp_dict["experiment"]["base"]["modifiers"][
                 "initializeFrom"
-            ] = self.initialize_from_experiment.id
-        elif self.initialize_from_case:
+            ] = self._initialize_from_experiment.id
+        elif self._initialize_from_case:
             exp_dict["experiment"]["base"]["modifiers"][
                 "initializeFromCase"
-            ] = _case_to_identifier_dict(self.initialize_from_case)
-        elif self.initialize_from_external_result:
+            ] = _case_to_identifier_dict(self._initialize_from_case)
+        elif self._initialize_from_external_result:
             exp_dict["experiment"]["base"]["modifiers"][
                 "initializeFromExternalResult"
-            ] = self.initialize_from_external_result.id
+            ] = self._initialize_from_external_result.id
         return exp_dict
 
 
@@ -939,9 +939,9 @@ class SimpleExperimentExtension(BaseExperimentExtension):
         self._solver_options = _get_options(dict, solver_options)
         self._simulation_options = _get_options(dict, simulation_options)
         self._simulation_log_level = simulation_log_level
-        self.variable_modifiers = {}
-        self.initialize_from_experiment = None
-        self.initialize_from_case = None
+        self._variable_modifiers = {}
+        self._initialize_from_experiment = None
+        self._initialize_from_case = None
 
     def with_modifiers(self, modifiers=None, **modifiers_kwargs):
         """Sets the modifiers variables for an experiment extension.
@@ -985,7 +985,7 @@ class SimpleExperimentExtension(BaseExperimentExtension):
                     "Range operator is not supported when using extentions"
                     " in the experiment"
                 )
-            new.variable_modifiers[variable] = value
+            new._variable_modifiers[variable] = value
         return new
 
     def initialize_from(self, entity):
@@ -1017,13 +1017,13 @@ class SimpleExperimentExtension(BaseExperimentExtension):
                 "experiment extensions"
             )
 
-        new.initialize_from_experiment = self.initialize_from_experiment
-        new.initialize_from_case = self.initialize_from_case
+        new._initialize_from_experiment = self._initialize_from_experiment
+        new._initialize_from_case = self._initialize_from_case
         _validate_and_set_initialize_from(entity, new)
         _assert_unique_exp_initialization(
-            new.initialize_from_experiment, new.initialize_from_case,
+            new._initialize_from_experiment, new._initialize_from_case,
         )
-        new.variable_modifiers = self.variable_modifiers
+        new._variable_modifiers = self._variable_modifiers
         return new
 
     def to_dict(self):
@@ -1048,8 +1048,8 @@ class SimpleExperimentExtension(BaseExperimentExtension):
             simulate_ext.to_dict()
         """
         ext_dict = {}
-        if self.variable_modifiers:
-            ext_dict["modifiers"] = {"variables": self.variable_modifiers}
+        if self._variable_modifiers:
+            ext_dict["modifiers"] = {"variables": self._variable_modifiers}
 
         if self._parameter_modifiers:
             ext_dict.setdefault("analysis", {})
@@ -1067,11 +1067,13 @@ class SimpleExperimentExtension(BaseExperimentExtension):
             ext_dict.setdefault("analysis", {})
             ext_dict["analysis"]["simulationLogLevel"] = self._simulation_log_level
 
-        if self.initialize_from_experiment:
-            ext_dict["modifiers"]["initializeFrom"] = self.initialize_from_experiment.id
+        if self._initialize_from_experiment:
+            ext_dict["modifiers"][
+                "initializeFrom"
+            ] = self._initialize_from_experiment.id
 
-        elif self.initialize_from_case:
+        elif self._initialize_from_case:
             ext_dict["modifiers"]["initializeFromCase"] = _case_to_identifier_dict(
-                self.initialize_from_case
+                self._initialize_from_case
             )
         return ext_dict
