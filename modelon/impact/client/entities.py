@@ -1689,7 +1689,10 @@ class _CaseInput:
 
     def __init__(self, data):
         self._data = data
-        self.analysis = _CaseAnalysis(data['input']['analysis'])
+
+    @property
+    def analysis(self):
+        return _CaseAnalysis(self._data['input']['analysis'])
 
     @property
     def parametrization(self):
