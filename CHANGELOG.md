@@ -1,3 +1,11 @@
+# [1.2.0-beta.20](https://github.com/modelon-community/impact-client-python/compare/v1.2.0-beta.19...v1.2.0-beta.20) (2021-09-08)
+
+
+### Bug Fixes
+
+* Appended underscore for init attributes ([3117c59](https://github.com/modelon-community/impact-client-python/commit/3117c59c7e31bc48b04b1e87e03ea18ddbca5274))
+* Corrected analysis to be a property ([fbb196a](https://github.com/modelon-community/impact-client-python/commit/fbb196a471c2d2e9f1c0e90b3a129c6aa90dbdf0))
+
 # [1.2.0-beta.19](https://github.com/modelon-community/impact-client-python/compare/v1.2.0-beta.18...v1.2.0-beta.19) (2021-09-08)
 
 
