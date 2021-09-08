@@ -1,3 +1,10 @@
+# [1.2.0-beta.19](https://github.com/modelon-community/impact-client-python/compare/v1.2.0-beta.18...v1.2.0-beta.19) (2021-09-08)
+
+
+### Bug Fixes
+
+* Assert reinitialization with multiple entities ([8f0d44d](https://github.com/modelon-community/impact-client-python/commit/8f0d44d5c11bbb1bbe08839a6ba8aa600da1b711))
+
 # [1.2.0-beta.18](https://github.com/modelon-community/impact-client-python/compare/v1.2.0-beta.17...v1.2.0-beta.18) (2021-09-07)
 
 
