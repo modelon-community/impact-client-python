@@ -533,22 +533,6 @@ class TestCustomFunctionService:
         data = service.custom_function.custom_function_options_get('WS', 'cust_func')
         assert data == {"compiler": {"generate_html_diagnostics": True}}
 
-    def test_set_custom_function_set_options(self, set_custom_function_options):
-        uri = modelon.impact.client.sal.service.URI(set_custom_function_options.url)
-        service = modelon.impact.client.sal.service.Service(
-            uri=uri, context=set_custom_function_options.context
-        )
-        service.custom_function.custom_function_options_set('WS', 'cust_func', {})
-        assert set_custom_function_options.adapter.called
-
-    def test_del_custom_function_options(self, del_custom_function_options):
-        uri = modelon.impact.client.sal.service.URI(del_custom_function_options.url)
-        service = modelon.impact.client.sal.service.Service(
-            uri=uri, context=del_custom_function_options.context
-        )
-        service.custom_function.custom_function_options_delete('WS', 'cust_func', {})
-        assert del_custom_function_options.adapter.called
-
 
 class TestHTTPClient:
     def test_get_json_error(self, get_with_error):

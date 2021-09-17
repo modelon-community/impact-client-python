@@ -769,24 +769,6 @@ def get_custom_function_options(sem_ver_check, mock_server_base):
     )
 
 
-@pytest.fixture
-def set_custom_function_options(sem_ver_check, mock_server_base):
-
-    return with_json_route_no_resp(
-        mock_server_base, 'POST', 'api/workspaces/WS/custom-functions/cust_func/options'
-    )
-
-
-@pytest.fixture
-def del_custom_function_options(sem_ver_check, mock_server_base):
-
-    return with_json_route_no_resp(
-        mock_server_base,
-        'DELETE',
-        'api/workspaces/WS/custom-functions/cust_func/options',
-    )
-
-
 def _custom_function_parameter_list():
     return [
         {'name': 'p1', 'defaultValue': 1.0, 'type': 'Number'},
@@ -1181,7 +1163,7 @@ def experiment():
     }
     case_put_return = copy.deepcopy(case_get_data)
     case_put_return['run_info']['consistent'] = False
-    
+
     exp_service.case_get.return_value = case_get_data
     exp_service.case_put.return_value = case_put_return
     exp_service.case_get_log.return_value = "Successful Log"
