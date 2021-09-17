@@ -403,22 +403,6 @@ class CustomFunctionService:
         ).resolve()
         return self._http_client.get_json(url)
 
-    def custom_function_options_set(self, workspace_id, custom_function, options):
-        url = (
-            self._base_uri
-            / f"api/workspaces/{workspace_id}/custom-functions/{custom_function}"
-            "/options"
-        ).resolve()
-        self._http_client.post_json_no_response_body(url, body=options)
-
-    def custom_function_options_delete(self, workspace_id, custom_function, options):
-        url = (
-            self._base_uri
-            / f"api/workspaces/{workspace_id}/custom-functions/{custom_function}"
-            "/options"
-        ).resolve()
-        self._http_client.delete_json(url, body=options)
-
 
 class HTTPClient:
     def __init__(self, context=None):
