@@ -1368,7 +1368,7 @@ class Experiment:
         logger.warning("This attribute is deprectated, use 'run_info' instead")
         return self._get_info()
 
-    def execute(self, with_cases=None):
+    def execute(self, with_cases=None, sync_case_changes=True):
         """Exceutes an experiment.
         Returns an modelon.impact.client.operations.ExperimentOperation class object.
 
@@ -1376,6 +1376,9 @@ class Experiment:
 
             with_cases --
                 A list of cases objects to execute.
+            sync_case_changes --
+                Boolean specifying if to sync the cases given with the 'with_cases' argument
+                against the server before executing the experiment. Default is True.
 
         Returns:
 
@@ -1393,6 +1396,10 @@ class Experiment:
             cases_to_execute =  generate_cases.get_case('case_2')
             experiment = experiment.execute(with_cases=[cases_to_execute]).wait()
         """
+        if sync_case_changes and with_cases is not None:
+            for case in with_cases:
+                case.sync()
+
         case_ids = [case.id for case in with_cases] if with_cases is not None else None
         return operations.ExperimentOperation(
             self._workspace_id,
@@ -2015,9 +2022,16 @@ class Case:
             self._workspace_id, self._exp_id, self._case_id, self._info
         )
 
-    def execute(self):
+    def execute(self, sync_case_changes=True):
         """Exceutes a case.
         Returns an modelon.impact.client.operations.CaseOperation class object.
+
+        Parameters:
+
+            sync_case_changes --
+                Boolean specifying if to sync case changes against the server
+                before executing the case. Default is True.
+
 
         Returns:
 
@@ -2033,6 +2047,9 @@ class Case:
             case_ops.status()
             case_ops.wait()
         """
+        if sync_case_changes:
+            self.sync()
+
         return operations.CaseOperation(
             self._workspace_id,
             self._exp_sal.experiment_execute(

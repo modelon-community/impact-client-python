@@ -1211,7 +1211,7 @@ def batch_experiment_with_case_filter():
             "not_started": 3,
         }
     }
-    exp_service.experiment_execute.return_value = "pid_2009"
+    exp_service.experiment_execute.return_value = "Experiment"
     exp_service.execute_status.return_value = {"status": "done"}
     exp_service.cases_get.return_value = {
         "data": {
@@ -1231,7 +1231,7 @@ def batch_experiment_with_case_filter():
         },
     }
     return ExperimentMock(
-        Experiment("Workspace", "Test", ws_service, model_exe_service, exp_service),
+        Experiment("Workspace", "Experiment", ws_service, model_exe_service, exp_service),
         exp_service,
     )
 
