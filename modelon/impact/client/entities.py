@@ -1377,8 +1377,9 @@ class Experiment:
             with_cases --
                 A list of cases objects to execute.
             sync_case_changes --
-                Boolean specifying if to sync the cases given with the 'with_cases' argument
-                against the server before executing the experiment. Default is True.
+                Boolean specifying if to sync the cases given with the 'with_cases'
+                argument against the server before executing the experiment.
+                Default is True.
 
         Returns:
 
@@ -1595,7 +1596,7 @@ class _CaseRunInfo:
 
     @property
     def consistent(self):
-        """True if the case has not been updated since it was executed,
+        """True if the case has not been synced since it was executed,
         false otherwise."""
         return self._consistent
 
