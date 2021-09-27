@@ -579,7 +579,7 @@ class TestCase:
         exp_sal.case_put.assert_not_called()
         assert result == Case('case_1', 'AwesomeWorkspace', 'pid_2009')
 
-    def test_case_update_second_time_should_call_with_consistent_false(
+    def test_case_sync_second_time_should_call_with_consistent_false(
         self, experiment
     ):
         exp = experiment.entity
