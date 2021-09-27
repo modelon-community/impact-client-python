@@ -329,17 +329,34 @@ class TestExperiment:
         exp_sal = batch_experiment_with_case_filter.service
         case_generated = experiment.execute(with_cases=[]).wait()
         exp_sal.experiment_execute.assert_has_calls(
-            [mock.call('Workspace', 'Test', [])]
+            [mock.call('Workspace', 'Experiment', [])]
         )
+        exp_sal.case_put.assert_not_called()
+
         case_to_execute = case_generated.get_cases()[2]
         result = experiment.execute(with_cases=[case_to_execute]).wait()
         exp_sal.experiment_execute.assert_has_calls(
-            [mock.call('Workspace', 'Test', ["case_3"])]
+            [mock.call('Workspace', 'Experiment', ["case_3"])]
         )
-        assert result == Experiment('AwesomeWorkspace', 'pid_2009')
+        exp_sal.case_put.assert_has_calls(
+            [mock.call('Workspace', 'Experiment', "case_3", mock.ANY)]
+        )
+
+        assert result == Experiment('AwesomeWorkspace', 'Experiment')
         assert result.run_info.successful == 1
         assert result.run_info.not_started == 3
         assert experiment.get_case('case_3').is_successful()
+
+    def test_execute_with_case_filter_no_sync(self, batch_experiment_with_case_filter):
+        experiment = batch_experiment_with_case_filter.entity
+        exp_sal = batch_experiment_with_case_filter.service
+        case_generated = experiment.execute(with_cases=[]).wait()
+        case_to_execute = case_generated.get_cases()[2]
+        result = experiment.execute(with_cases=[case_to_execute], sync_case_changes=False).wait()
+        exp_sal.experiment_execute.assert_has_calls(
+            [mock.call('Workspace', 'Experiment', ["case_3"])]
+        )
+        exp_sal.case_put.assert_not_called()
 
     def test_execute_successful(self, experiment):
         experiment = experiment.entity
@@ -367,8 +384,8 @@ class TestExperiment:
         assert batch_experiment.run_info.not_started == 0
         assert batch_experiment.get_variables() == ["inertia.I", "time"]
         assert batch_experiment.get_cases() == [
-            Case("case_1", "Workspace", "Test"),
-            Case("case_2", "Workspace", "Test"),
+            Case("case_1", "Workspace", "Experiment"),
+            Case("case_2", "Workspace", "Experiment"),
         ]
         exp = batch_experiment.get_trajectories(['inertia.I'])
         assert exp['case_1']['inertia.I'] == [1, 2, 3, 4]
@@ -382,10 +399,10 @@ class TestExperiment:
         assert batch_experiment_some_successful.run_info.cancelled == 0
         assert batch_experiment_some_successful.run_info.not_started == 1
         assert batch_experiment_some_successful.get_cases() == [
-            Case("case_1", "Workspace", "Test"),
-            Case("case_2", "Workspace", "Test"),
-            Case("case_3", "Workspace", "Test"),
-            Case("case_4", "Workspace", "Test"),
+            Case("case_1", "Workspace", "Experiment"),
+            Case("case_2", "Workspace", "Experiment"),
+            Case("case_3", "Workspace", "Experiment"),
+            Case("case_4", "Workspace", "Experiment"),
         ]
 
     def test_running_execution(self, running_experiment):
@@ -411,10 +428,10 @@ class TestExperiment:
     def test_execution_with_failed_cases(self, experiment_with_failed_case):
         assert experiment_with_failed_case.run_info.status == ExperimentStatus.DONE
         assert experiment_with_failed_case.get_cases() == [
-            Case("case_1", "Workspace", "Test")
+            Case("case_1", "Workspace", "Experiment")
         ]
         assert experiment_with_failed_case.get_case("case_1") == Case(
-            "case_1", "Workspace", "Test"
+            "case_1", "Workspace", "Experiment"
         )
         assert not experiment_with_failed_case.is_successful()
         assert experiment_with_failed_case.get_trajectories(['inertia.I']) == {
@@ -425,7 +442,7 @@ class TestExperiment:
         assert cancelled_experiment.run_info.status == ExperimentStatus.CANCELLED
         assert cancelled_experiment.get_cases() == [Case("case_1", "Workspace", "Test")]
         assert cancelled_experiment.get_case("case_1") == Case(
-            "case_1", "Workspace", "Test"
+            "case_1", "Workspace", "Experiment"
         )
         assert not cancelled_experiment.is_successful()
         pytest.raises(
@@ -542,6 +559,24 @@ class TestCase:
             ]
         )
         result = case.execute().wait()
+        assert result == Case('case_1', 'AwesomeWorkspace', 'pid_2009')
+
+    def test_case_execute_with_no_sync(self, experiment):
+        exp = experiment.entity
+        exp_sal = experiment.service
+
+        case = exp.get_case("case_1")
+        result = case.execute(sync_case_changes=True).wait()
+        exp_sal.case_put.assert_called_once()
+        assert result == Case('case_1', 'AwesomeWorkspace', 'pid_2009')
+
+    def test_case_execute_with_auto_sync(self, experiment):
+        exp = experiment.entity
+        exp_sal = experiment.service
+
+        case = exp.get_case("case_1")
+        result = case.execute(sync_case_changes=False).wait()
+        exp_sal.case_put.assert_not_called()
         assert result == Case('case_1', 'AwesomeWorkspace', 'pid_2009')
 
     def test_case_update_second_time_should_call_with_consistent_false(
