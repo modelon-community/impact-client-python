@@ -1791,7 +1791,7 @@ class Case:
             case.input.analysis.simulation_options = {'ncp': 600}
             case.input.analysis.solver_options = {'atol': 1e-8}
             case.input.parametrization = {'PI.k': 120}
-            case.update()
+            case.sync()
 
             help(case.input.analysis) # See help for attribute
             dir(case.input) # See nested attributes
@@ -2003,7 +2003,14 @@ class Case:
             self._workspace_id, fmu_id, self._workspace_sal, self._model_exe_sal
         )
 
-    def update(self):
+    def sync(self):
+        """Sync case state against server, pushing any changes that has been
+        done to the object client side.
+
+        Example::
+            case.input.parametrization = {'PI.k': 120}
+            case.sync()
+        """
         self._info = self._exp_sal.case_put(
             self._workspace_id, self._exp_id, self._case_id, self._info
         )
@@ -2020,7 +2027,7 @@ class Case:
         Example::
             case = experiment.get_case('case_1')
             case.input.parametrization = {'PI.k': 120}
-            case.update()
+            case.sync()
             case_ops = case.execute()
             case_ops.cancel()
             case_ops.status()
