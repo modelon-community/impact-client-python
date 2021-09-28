@@ -1,3 +1,17 @@
+# [1.2.0-beta.21](https://github.com/modelon-community/impact-client-python/compare/v1.2.0-beta.20...v1.2.0-beta.21) (2021-09-28)
+
+
+### Bug Fixes
+
+* changing the method name from updat to sync ([ead2710](https://github.com/modelon-community/impact-client-python/commit/ead2710bbd83d7d371d94d671c69d3ee91ce3667))
+* removing some old 'update' references ([1728c32](https://github.com/modelon-community/impact-client-python/commit/1728c3225a5b06253761b93f0fe8320210fdaa81))
+* update node version to one that work with latest semantic-release ([40935ad](https://github.com/modelon-community/impact-client-python/commit/40935adf68d58a3874c4397e2273dd5eef6af82c))
+
+
+### Features
+
+* sync changes automatically for cases when executing them ([c96873e](https://github.com/modelon-community/impact-client-python/commit/c96873e09b0f0125099834c3e7f870d6528e8c4c))
+
 # [1.2.0-beta.20](https://github.com/modelon-community/impact-client-python/compare/v1.2.0-beta.19...v1.2.0-beta.20) (2021-09-08)
 
 
