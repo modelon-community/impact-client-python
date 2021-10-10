@@ -347,12 +347,20 @@ class TestExperiment:
         assert result.run_info.not_started == 3
         assert experiment.get_case('case_3').is_successful()
 
+    def test_get_cases_label(self, batch_experiment_with_case_filter):
+        experiment = batch_experiment_with_case_filter.entity
+        cases = experiment.get_cases_with_label('Cruise operating point')
+        assert cases == [
+            Case("case_2", "Workspace", "Test"),
+            Case("case_4", "Workspace", "Test"),
+        ]
+
     def test_execute_with_case_filter_no_sync(self, batch_experiment_with_case_filter):
         experiment = batch_experiment_with_case_filter.entity
         exp_sal = batch_experiment_with_case_filter.service
         case_generated = experiment.execute(with_cases=[]).wait()
         case_to_execute = case_generated.get_cases()[2]
-        result = experiment.execute(with_cases=[case_to_execute], sync_case_changes=False).wait()
+        experiment.execute(with_cases=[case_to_execute], sync_case_changes=False).wait()
         exp_sal.experiment_execute.assert_has_calls(
             [mock.call('Workspace', 'Experiment', ["case_3"])]
         )
@@ -524,6 +532,7 @@ class TestCase:
         case.input.analysis.solver_options = {'atol': 1e-8}
         case.input.analysis.simulation_log_level = "DEBUG"
         case.input.analysis.parameters = {"start_time": 1, "final_time": 2e5}
+        case.meta.label = "Cruise operating condition"
         case_2 = batch_experiment.get_case('case_2')
         case.initialize_from_case = case_2
         case.sync()
@@ -554,6 +563,7 @@ class TestCase:
                             },
                             "initialize_from_external_result": None,
                         },
+                        "meta": {'label': 'Cruise operating condition'},
                     },
                 )
             ]
@@ -579,9 +589,7 @@ class TestCase:
         exp_sal.case_put.assert_not_called()
         assert result == Case('case_1', 'AwesomeWorkspace', 'pid_2009')
 
-    def test_case_sync_second_time_should_call_with_consistent_false(
-        self, experiment
-    ):
+    def test_case_sync_second_time_should_call_with_consistent_false(self, experiment):
         exp = experiment.entity
         exp_sal = experiment.service
 
@@ -627,6 +635,7 @@ class TestCase:
                                 'uploadId': 'upload_id'
                             },
                         },
+                        "meta": {"label": "Cruise operating point"},
                     },
                 )
             ]
