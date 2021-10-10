@@ -1509,6 +1509,26 @@ class Experiment:
             case_data,
         )
 
+    def get_cases_with_label(self, case_label):
+        """
+        Returns a list of case objects for an experiment with the label.
+
+        Parameters:
+
+            case_label --
+                The case_label for the case.
+
+        Returns:
+
+            cases --
+                An list of case objects.
+
+        Example::
+
+            experiment.get_cases_with_label('Cruise condition')
+        """
+        return [case for case in self.get_cases() if case.meta.label == case_label]
+
     def get_trajectories(self, variables):
         """
         Returns a dictionary containing the result trajectories
@@ -1690,6 +1710,24 @@ class _CaseAnalysis:
         self._analysis['simulation_log_level'] = simulation_log_level
 
 
+class _CaseMeta:
+    """
+    Class containing Case meta
+    """
+
+    def __init__(self, data):
+        self._data = data
+
+    @property
+    def label(self):
+        """Label for the case."""
+        return self._data['label']
+
+    @label.setter
+    def label(self, label):
+        self._data['label'] = label
+
+
 class _CaseInput:
     """
     Class containing Case input
@@ -1700,7 +1738,7 @@ class _CaseInput:
 
     @property
     def analysis(self):
-        return _CaseAnalysis(self._data['input']['analysis'])
+        return _CaseAnalysis(self._data['analysis'])
 
     @property
     def parametrization(self):
@@ -1708,16 +1746,16 @@ class _CaseInput:
         Parameterization of the case, a list of key value pairs where key
         is variable name and value is the value to use for that variable.
         """
-        return self._data['input']['parametrization']
+        return self._data['parametrization']
 
     @parametrization.setter
     def parametrization(self, parameterization):
-        self._data['input']['parametrization'] = parameterization
+        self._data['parametrization'] = parameterization
 
     @property
     def fmu_id(self):
         """Reference ID to the compiled model used running the case."""
-        return self._data['input']['fmu_id']
+        return self._data['fmu_id']
 
     @property
     def structural_parametrization(self):
@@ -1726,7 +1764,7 @@ class _CaseInput:
         key is variable name and value is the value to use for that variable.
         These are values that cannot be applied to the FMU/Model after compilation.
         """
-        return self._data['input']['structural_parametrization']
+        return self._data['structural_parametrization']
 
     @property
     def fmu_base_parametrization(self):
@@ -1735,7 +1773,7 @@ class _CaseInput:
         it to be valid running this case. It often comes as a result from of
         caching to reuse the FMU.
         """
-        return self._data['input']['fmu_base_parametrization']
+        return self._data['fmu_base_parametrization']
 
 
 class Case:
@@ -1804,7 +1842,21 @@ class Case:
             help(case.input.analysis) # See help for attribute
             dir(case.input) # See nested attributes
         """
-        return _CaseInput(self._info)
+        return _CaseInput(self._info['input'])
+
+    @property
+    def meta(self):
+        """Case meta attributes
+
+           Example::
+
+            case.meta.label = 'Cruise condition'
+            case.sync()
+
+            help(case.meta) # See help for attribute
+            dir(case.input) # See nested attributes
+        """
+        return _CaseMeta(self._info['meta'])
 
     @property
     def initialize_from_case(self):

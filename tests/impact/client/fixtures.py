@@ -123,7 +123,7 @@ def api_get_metadata(mock_server_base):
 
 @pytest.fixture
 def sem_ver_check(mock_server_base):
-    json = {"version": "1.17.0"}
+    json = {"version": "1.18.0"}
 
     return with_json_route(mock_server_base, 'GET', 'api/', json)
 
@@ -653,7 +653,10 @@ def put_case(sem_ver_check, mock_server_base):
     json = {"id": "case_1"}
 
     return with_json_route(
-        mock_server_base, 'PUT', 'api/workspaces/WS/experiments/pid_2009/cases/case_1', json
+        mock_server_base,
+        'PUT',
+        'api/workspaces/WS/experiments/pid_2009/cases/case_1',
+        json,
     )
 
 
@@ -1160,6 +1163,7 @@ def experiment():
             "initialize_from_case": None,
             "initialize_from_external_result": None,
         },
+        "meta": {"label": "Cruise operating point"},
     }
     case_put_return = copy.deepcopy(case_get_data)
     case_put_return['run_info']['consistent'] = False
@@ -1216,10 +1220,10 @@ def batch_experiment_with_case_filter():
     exp_service.cases_get.return_value = {
         "data": {
             "items": [
-                {"id": "case_1"},
-                {"id": "case_2"},
-                {"id": "case_3"},
-                {"id": "case_4"},
+                {"id": "case_1", "meta": {"label": None}},
+                {"id": "case_2", "meta": {"label": "Cruise operating point"}},
+                {"id": "case_3", "meta": {"label": None}},
+                {"id": "case_4", "meta": {"label": "Cruise operating point"}},
             ]
         }
     }
@@ -1231,7 +1235,9 @@ def batch_experiment_with_case_filter():
         },
     }
     return ExperimentMock(
-        Experiment("Workspace", "Experiment", ws_service, model_exe_service, exp_service),
+        Experiment(
+            "Workspace", "Experiment", ws_service, model_exe_service, exp_service
+        ),
         exp_service,
     )
 
@@ -1352,5 +1358,8 @@ def cancelled_experiment():
     }
     exp_service.cases_get.return_value = {"data": {"items": [{"id": "case_1"}]}}
     exp_service.case_get.return_value = {"id": "case_1"}
-    exp_service.execute_status.return_value = {"status": "cancelled", "consistent": True}
+    exp_service.execute_status.return_value = {
+        "status": "cancelled",
+        "consistent": True,
+    }
     return Experiment("Workspace", "Test", ws_service, exp_service=exp_service)

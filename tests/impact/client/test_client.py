@@ -61,7 +61,7 @@ def test_semantic_version_error(semantic_version_error):
         )
     assert (
         "Version '3.1.0' of the HTTP REST API is not supported, must be in the "
-        "range '>=1.17.0,<2.0.0'! Updgrade or downgrade this package to a version"
+        "range '>=1.18.0,<2.0.0'! Updgrade or downgrade this package to a version"
         " that supports version '3.1.0' of the HTTP REST API." in str(excinfo.value)
     )
 
@@ -98,8 +98,7 @@ def test_client_login_api_key_missing(sem_ver_check):
     )
 
     assert_login_called(
-        adapter=sem_ver_check.adapter,
-        body={},
+        adapter=sem_ver_check.adapter, body={},
     )
 
 
