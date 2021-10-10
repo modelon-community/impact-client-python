@@ -332,7 +332,10 @@ class SimpleFMUExperimentDefinition(BaseExperimentDefinition):
             self._simulation_options,
             self._simulation_log_level,
         )
-
+        new._initialize_from_experiment = self._initialize_from_experiment
+        new._initialize_from_case = self._initialize_from_case
+        new._initialize_from_external_result = self._initialize_from_external_result
+        new._extensions = self._extensions
         for variable, value in modifiers_aggregate.items():
             new._variable_modifiers[variable] = (
                 str(value) if isinstance(value, Operator) else value
@@ -385,6 +388,10 @@ class SimpleFMUExperimentDefinition(BaseExperimentDefinition):
         )
         new._variable_modifiers = self._variable_modifiers
         new._extensions = self._extensions + exp_ext
+        new._initialize_from_experiment = self._initialize_from_experiment
+        new._initialize_from_case = self._initialize_from_case
+        new._initialize_from_external_result = self._initialize_from_external_result
+
         return new
 
     def with_cases(self, cases_modifiers):
@@ -669,7 +676,10 @@ class SimpleModelicaExperimentDefinition(BaseExperimentDefinition):
             simulation_options=self._simulation_options,
             simulation_log_level=self._simulation_log_level,
         )
-
+        new._initialize_from_experiment = self._initialize_from_experiment
+        new._initialize_from_case = self._initialize_from_case
+        new._initialize_from_external_result = self._initialize_from_external_result
+        new._extensions = self._extensions
         for variable, value in modifiers.items():
             new._variable_modifiers[variable] = (
                 str(value) if isinstance(value, Operator) else value
@@ -942,6 +952,7 @@ class SimpleExperimentExtension(BaseExperimentExtension):
         self._variable_modifiers = {}
         self._initialize_from_experiment = None
         self._initialize_from_case = None
+        self._case_label = None
 
     def with_modifiers(self, modifiers=None, **modifiers_kwargs):
         """Sets the modifiers variables for an experiment extension.
@@ -978,7 +989,9 @@ class SimpleExperimentExtension(BaseExperimentExtension):
             self._simulation_options,
             self._simulation_log_level,
         )
-
+        new._initialize_from_experiment = self._initialize_from_experiment
+        new._initialize_from_case = self._initialize_from_case
+        new._case_label = self._case_label
         for variable, value in modifiers_aggregate.items():
             if isinstance(value, Operator):
                 raise ValueError(
@@ -986,6 +999,40 @@ class SimpleExperimentExtension(BaseExperimentExtension):
                     " in the experiment"
                 )
             new._variable_modifiers[variable] = value
+        return new
+
+    def with_case_label(self, case_label):
+        """Sets the case label for an experiment extension.
+
+        Parameters:
+
+            case_label --
+                A case label string.
+
+        Example::
+
+            simulation_options = custom_function.get_simulation_options()
+            .with_values(ncp=500)
+            solver_options = {'atol':1e-8}
+            simulate_ext = SimpleExperimentExtension().with_case_label(
+            'Cruise condition')
+            simulate_ext = SimpleExperimentExtension(
+            {'start_time': 0.0, 'final_time': 4.0},
+            solver_options,
+            simulation_options
+            ).with_case_label('Cruise condition')
+        """
+        new = SimpleExperimentExtension(
+            self._parameter_modifiers,
+            self._solver_options,
+            self._simulation_options,
+            self._simulation_log_level,
+        )
+        new._initialize_from_experiment = self._initialize_from_experiment
+        new._initialize_from_case = self._initialize_from_case
+        new._variable_modifiers = self._variable_modifiers
+        new._case_label = case_label
+
         return new
 
     def initialize_from(self, entity):
@@ -1024,6 +1071,7 @@ class SimpleExperimentExtension(BaseExperimentExtension):
             new._initialize_from_experiment, new._initialize_from_case,
         )
         new._variable_modifiers = self._variable_modifiers
+        new._case_label = self._case_label
         return new
 
     def to_dict(self):
@@ -1076,4 +1124,7 @@ class SimpleExperimentExtension(BaseExperimentExtension):
             ext_dict["modifiers"]["initializeFromCase"] = _case_to_identifier_dict(
                 self._initialize_from_case
             )
+        if self._case_label:
+            ext_dict["caseData"] = [{"label": self._case_label}]
+
         return ext_dict
