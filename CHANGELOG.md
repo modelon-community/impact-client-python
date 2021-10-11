@@ -1,3 +1,10 @@
+# [1.2.0-beta.22](https://github.com/modelon-community/impact-client-python/compare/v1.2.0-beta.21...v1.2.0-beta.22) (2021-10-11)
+
+
+### Features
+
+* Added possibility to specify and update label ([29f2aa9](https://github.com/modelon-community/impact-client-python/commit/29f2aa9a4758efed2d7874de2892a5946f2ee95e))
+
 # [1.2.0-beta.21](https://github.com/modelon-community/impact-client-python/compare/v1.2.0-beta.20...v1.2.0-beta.21) (2021-09-28)
 
 
