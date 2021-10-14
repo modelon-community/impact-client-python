@@ -108,10 +108,10 @@ class Client:
 
     def _authenticate_against_api(self, interactive):
 
-        if self._api_key is None:
+        if not self._api_key:
             self._api_key = self._credentials.get_key(interactive=interactive)
 
-        if self._api_key is None:
+        if not self._api_key:
             logger.warning(
                 "No API key could be found, will log in as anonymous user. "
                 "Permissions may be limited"
@@ -121,7 +121,7 @@ class Client:
             login_data = {"secretKey": self._api_key}
 
         self._sal.api_login(login_data)
-        if interactive:
+        if self._api_key and interactive:
             # Save the api_key for next time if
             # running interactively and login was successfuly
             self._credentials.write_key_to_file(self._api_key)
