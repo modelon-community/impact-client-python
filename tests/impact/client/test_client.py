@@ -156,3 +156,17 @@ def test_client_login_fail_lets_user_enter_new_key(_, login_fails):
     )
 
     cred_manager.get_key_from_prompt.assert_called()
+
+
+def test_client_login_api_key_empty_string_anon_login_and_dont_save_key(sem_ver_check):
+    cred_manager = unittest.mock.MagicMock()
+    cred_manager.get_key.return_value = ''
+    modelon.impact.client.Client(
+        url=sem_ver_check.url,
+        context=sem_ver_check.context,
+        credential_manager=cred_manager,
+        interactive=True,
+    )
+
+    assert_login_called(adapter=sem_ver_check.adapter, body={})
+    cred_manager.write_key_to_file.assert_not_called()
