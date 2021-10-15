@@ -1,3 +1,10 @@
+# [1.2.0-beta.23](https://github.com/modelon-community/impact-client-python/compare/v1.2.0-beta.22...v1.2.0-beta.23) (2021-10-15)
+
+
+### Bug Fixes
+
+* given empty string as API key, do anon login and don't save key ([f9567e2](https://github.com/modelon-community/impact-client-python/commit/f9567e2ca5bcaadb924556a6802aeb17775e1a06))
+
 # [1.2.0-beta.22](https://github.com/modelon-community/impact-client-python/compare/v1.2.0-beta.21...v1.2.0-beta.22) (2021-10-11)
 
 
