@@ -82,7 +82,8 @@ class Client:
         except modelon.impact.client.sal.exceptions.HTTPError:
             if interactive:
                 logger.warning(
-                    "The provided API key is not valid, please enter a new key"
+                    "The provided Modelon Impact API key is not valid, "
+                    "please enter a new key"
                 )
                 self._api_key = self._credentials.get_key_from_prompt()
                 self._authenticate_against_api(interactive)
@@ -113,8 +114,8 @@ class Client:
 
         if not self._api_key:
             logger.warning(
-                "No Modelon Impact API key could be found, will log in as anonymous user. "
-                "Permissions may be limited"
+                "No Modelon Impact API key could be found, "
+                "will log in as anonymous user. Permissions may be limited"
             )
             login_data = {}
         else:
