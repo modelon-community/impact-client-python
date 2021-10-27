@@ -1,6 +1,8 @@
 FROM python:3.7
 
-WORKDIR /opt/app
+# Do not run as root
+RUN adduser dev
+WORKDIR /home/dev
 
 RUN pip install -U pip
 
@@ -15,13 +17,19 @@ RUN npm -v
 RUN npm i -g semantic-release @semantic-release/commit-analyzer @semantic-release/git @semantic-release/exec \
       @semantic-release/changelog @semantic-release/release-notes-generator
 
+USER dev
+
 # install poetry to container
-RUN curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python
-ENV PATH /root/.poetry/bin:$PATH
+ENV POETRY_HOME /home/dev/poetry
+ENV POETRY_VIRTUALENVS_PATH /home/dev/poetry-virtualenvs
+ENV POETRY_CACHE_DIR /home/dev/poetry-cache
+RUN curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/install-poetry.py | python -
+ENV PATH $POETRY_HOME/bin:$PATH
 
 # build project env
-COPY ./pyproject.toml /opt/app/pyproject.toml
-COPY ./poetry.lock /opt/app/poetry.lock
-COPY ./modelon/__init__.py /opt/app/modelon/__init__.py
-COPY ./README.md /opt/app/README.md
+WORKDIR /home/dev/src
+COPY ./pyproject.toml pyproject.toml
+COPY ./poetry.lock poetry.lock
+COPY ./modelon/__init__.py modelon/__init__.py
+COPY ./README.md README.md
 RUN poetry install
