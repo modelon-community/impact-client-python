@@ -113,7 +113,7 @@ class Client:
 
         if not self._api_key:
             logger.warning(
-                "No API key could be found, will log in as anonymous user. "
+                "No Modelon Impact API key could be found, will log in as anonymous user. "
                 "Permissions may be limited"
             )
             login_data = {}
