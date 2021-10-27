@@ -4,12 +4,22 @@ from getpass import getpass
 
 
 class CredentialManager:
+    def __init__(
+        self,
+        file_id="api.key",
+        env_name="MODELON_IMPACT_CLIENT_API_KEY",
+        interactive_help_text="Enter Modelon Impact API key:",
+    ):
+        self._file_id = file_id
+        self._env_name = env_name
+        self._interactive_help_text = interactive_help_text
+
     def get_key_from_env(self):
-        return os.environ.get("MODELON_IMPACT_CLIENT_API_KEY")
+        return os.environ.get(self._env_name)
 
     def _cred_file(self):
         home_dir = os.path.expanduser("~")
-        return os.path.join(home_dir, ".impact", "api.key")
+        return os.path.join(home_dir, ".impact", self._file_id)
 
     def get_key_from_file(self):
         credentials_file = self._cred_file()
@@ -20,7 +30,7 @@ class CredentialManager:
             return credentials.read().strip()
 
     def get_key_from_prompt(self):
-        return getpass("Enter API key:")
+        return getpass(self._interactive_help_text)
 
     def write_key_to_file(self, api_key):
         credentials_file = self._cred_file()
