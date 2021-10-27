@@ -1,6 +1,9 @@
 import os
+import logging
 
 from getpass import getpass
+
+logger = logging.getLogger(__name__)
 
 
 class CredentialManager:
@@ -30,7 +33,13 @@ class CredentialManager:
             return credentials.read().strip()
 
     def get_key_from_prompt(self):
-        return getpass(self._interactive_help_text)
+        key = getpass(self._interactive_help_text)
+        if key == '\x16':
+            # This is a getpass Windows bug...
+            logger.error("Does not support Ctrl+V on Windows")
+            return self.get_key_from_prompt()
+
+        return key
 
     def write_key_to_file(self, api_key):
         credentials_file = self._cred_file()
