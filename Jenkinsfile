@@ -5,7 +5,6 @@ node('docker'){
   }
 
   stage ('test') {
-    sh 'make lint'
     sh 'make test'
   }
 
