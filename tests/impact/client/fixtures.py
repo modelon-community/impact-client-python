@@ -17,9 +17,12 @@ MockedServer = collections.namedtuple('MockedServer', ['url', 'context', 'adapte
 ExperimentMock = collections.namedtuple('ExperimentMock', ['entity', 'service'])
 
 
-def with_json_route(mock_server_base, method, url, json_response, status_code=200):
+def with_json_route(
+    mock_server_base, method, url, json_response, status_code=200, extra_headers=None
+):
+    extra_headers = extra_headers or {}
     json = json_response
-    json_header = {'content-type': 'application/json'}
+    json_header = {'content-type': 'application/json', **extra_headers}
     mock_server_base.adapter.register_uri(
         method,
         f'{mock_server_base.url}/{url}',
@@ -133,6 +136,34 @@ def login_fails(mock_server_base):
     json = {'error': {'message': 'no authroization', 'code': 123}}
 
     return with_json_route(mock_server_base, 'POST', 'api/login', json, 401)
+
+
+@pytest.fixture
+def jupyterhub_api(mock_server_base):
+    jupyter_api_json = {"version": "1.3.0"}
+    jupyter_user_json = {'name': 'user-name', 'server': 'ok'}
+    impact_api_json = {"version": "1.99.99"}
+
+    mock_server = with_json_route(
+        mock_server_base,
+        'GET',
+        'api/',
+        jupyter_api_json,
+        extra_headers={'x-jupyterhub-version': '1.3.0'},
+    )
+    mock_server = with_json_route(
+        mock_server,
+        'GET',
+        'hub/api/authorizations/token/secret-token',
+        jupyter_user_json,
+    )
+    mock_server = with_json_route(
+        mock_server, 'GET', 'user/user-name/impact/api/', impact_api_json
+    )
+    mock_server = with_json_route(
+        mock_server, 'POST', 'user/user-name/impact/api/login', {}
+    )
+    return mock_server
 
 
 @pytest.fixture
