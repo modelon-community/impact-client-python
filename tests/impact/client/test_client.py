@@ -170,3 +170,19 @@ def test_empty_api_key_when_login_then_anon_login_and_dont_save_key(sem_ver_chec
 
     assert_login_called(adapter=sem_ver_check.adapter, body={})
     cred_manager.write_key_to_file.assert_not_called()
+
+
+def test_client_connect_against_jupyterhub_can_authorize(jupyterhub_api):
+    cred_manager = unittest.mock.MagicMock()
+    cred_manager.get_key.return_value = None
+    jupyterhub_cred_manager = unittest.mock.MagicMock()
+    jupyterhub_cred_manager.get_key.return_value = 'secret-token'
+
+    client = modelon.impact.client.Client(
+        url=jupyterhub_api.url,
+        context=jupyterhub_api.context,
+        credential_manager=cred_manager,
+        interactive=True,
+        jupyterhub_credential_manager=jupyterhub_cred_manager,
+    )
+    jupyterhub_cred_manager.write_key_to_file.assert_called_with('secret-token')

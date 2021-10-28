@@ -37,37 +37,42 @@ class JupyterUser:
         return jupyterhub_uri / f'user/{self.id}/impact'
 
 
-def get_user_data(uri, context):
-    auth_token_url = (uri / f'hub/api/authorizations/token/{context.token}').resolve()
+class JupyterHubService:
+    @classmethod
+    def get_user_data(cls, uri, context):
+        auth_token_url = (
+            uri / f'hub/api/authorizations/token/{context.token}'
+        ).resolve()
 
-    try:
-        user_respons = context.session.get(auth_token_url)
-    except requests.exceptions.RequestException as e:
-        raise exceptions.NotAJupyterHubUrl(
-            f"Did not get a response from {uri}, is the URL correct?"
-        ) from e
-
-    if not user_respons.ok:
-        if user_respons.status_code == 403:
-            raise exceptions.JupyterHubAuthrizationError(
-                "Could not authorize against JupyterHub, is the token correct?"
-            )
-        elif user_respons.status_code == 404:
+        try:
+            user_respons = context.session.get(auth_token_url)
+        except requests.exceptions.RequestException as e:
             raise exceptions.NotAJupyterHubUrl(
-                f"Missing resource '{auth_token_url}'. Possible errors are "
-                f"that the URL '{uri}' don't points to a JupyterHub or "
-                "that the user of the API key as been deleted."
-            )
-        else:
-            raise exceptions.UnknownJupyterHubError(
-                "Something went wrong calling JupyterHub. Got the response "
-                f"'{user_respons}' with content '{user_respons.content}'"
-            )
+                f"Did not get a response from {uri}, is the URL correct?"
+            ) from e
 
-    try:
-        user_data = user_respons.json()
-        return JupyterUser(user_data['name'], user_data['server'])
-    except (KeyError, json.decoder.JSONDecodeError) as e:
-        raise exceptions.NotAJupyterHubUrl(
-            f"User response data is not correct, is the URL '{uri}' for a JupyterHub?"
-        ) from e
+        if not user_respons.ok:
+            if user_respons.status_code == 403:
+                raise exceptions.JupyterHubAuthrizationError(
+                    "Could not authorize against JupyterHub, is the token correct?"
+                )
+            elif user_respons.status_code == 404:
+                raise exceptions.NotAJupyterHubUrl(
+                    f"Missing resource '{auth_token_url}'. Possible errors are "
+                    f"that the URL '{uri}' don't points to a JupyterHub or "
+                    "that the user of the API key as been deleted."
+                )
+            else:
+                raise exceptions.UnknownJupyterHubError(
+                    "Something went wrong calling JupyterHub. Got the response "
+                    f"'{user_respons}' with content '{user_respons.content}'"
+                )
+
+        try:
+            user_data = user_respons.json()
+            return JupyterUser(user_data['name'], user_data['server'])
+        except (KeyError, json.decoder.JSONDecodeError) as e:
+            raise exceptions.NotAJupyterHubUrl(
+                "User response data is not correct, "
+                f"is the URL '{uri}' for a JupyterHub?"
+            ) from e
