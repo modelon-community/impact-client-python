@@ -12,6 +12,8 @@ logger = logging.getLogger(__name__)
 
 
 class Service:
+    _JUPYTERHUB_VERSION_HEADER = 'x-jupyterhub-version'
+
     def __init__(self, uri, context=None, check_return=True):
         self._base_uri = uri
         self._http_client = HTTPClient(context)
@@ -24,7 +26,14 @@ class Service:
 
     def api_get_metadata(self):
         url = (self._base_uri / "api/").resolve()
-        return self._http_client.get_json(url)
+        response = self._http_client.get_json_response(url)
+        if self._JUPYTERHUB_VERSION_HEADER in response.headers:
+            raise exceptions.AccessingJupyterHubError(
+                f"API response indicates that the URL '{self._base_uri}' "
+                "hosts a JupyterHub."
+            )
+
+        return response.data
 
     def api_login(self, login_data):
         url = (self._base_uri / "api/login").resolve()
@@ -409,8 +418,11 @@ class HTTPClient:
         self._context = context if context else Context()
 
     def get_json(self, url, headers=None):
+        return self.get_json_response(url, headers=headers).data
+
+    def get_json_response(self, url, headers=None):
         request = RequestJSON(self._context, "GET", url, headers=headers)
-        return request.execute().data
+        return request.execute()
 
     def get_text(self, url):
         request = RequestText(self._context, "GET", url)
@@ -589,6 +601,10 @@ class JSONResponse(Response):
             )
 
         return self._resp_obj.json()
+
+    @property
+    def headers(self):
+        return self._resp_obj.headers
 
 
 class TextResponse(Response):
