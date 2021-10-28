@@ -6,9 +6,11 @@ import modelon.impact.client.exceptions
 import modelon.impact.client.sal.service
 import modelon.impact.client.sal.exceptions
 import modelon.impact.client.credential_manager
+import modelon.impact.client.jupyterhub
 
 from semantic_version import SimpleSpec, Version  # type: ignore
 from modelon.impact.client import exceptions
+
 
 logger = logging.getLogger(__name__)
 
@@ -75,7 +77,14 @@ class Client:
         self._credentials = credential_manager
         self._api_key = None
 
-        self._validate_compatible_api_version()
+        try:
+            self._validate_compatible_api_version()
+        except modelon.impact.client.sal.exceptions.AccessingJupyterHubError:
+            self._uri, context = modelon.impact.client.jupyterhub.authorize(
+                self._uri, interactive, context
+            )
+            self._sal = modelon.impact.client.sal.service.Service(self._uri, context)
+            self._validate_compatible_api_version()
 
         try:
             self._authenticate_against_api(interactive)
