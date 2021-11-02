@@ -1,3 +1,21 @@
+# [1.2.0-beta.24](https://github.com/modelon-community/impact-client-python/compare/v1.2.0-beta.23...v1.2.0-beta.24) (2021-11-02)
+
+
+### Bug Fixes
+
+* format of .rleaserc file ([7d0c8d0](https://github.com/modelon-community/impact-client-python/commit/7d0c8d02ab3086747926e665fad9cb61c80c41c9))
+* making warning logging more precise ([7598c4e](https://github.com/modelon-community/impact-client-python/commit/7598c4eeeadaf9fc88ff8b24f6ecf393359a2142))
+* making warning message a little more precise ([7d14f94](https://github.com/modelon-community/impact-client-python/commit/7d14f94666e6c94ee0c9d3c2f4976ce9f3b421c4))
+* message and re-try for Windows ctrl+v bug ([2f82dd4](https://github.com/modelon-community/impact-client-python/commit/2f82dd40e7e90a54e6e98a145540ebbcda5ec29c))
+* removing separate lint step ([1aaa9d9](https://github.com/modelon-community/impact-client-python/commit/1aaa9d933a2a3ece936ea324ed63c5b3a2ab73c1))
+
+
+### Features
+
+* detect if working against Jupyterhub and throw error ([7fa2278](https://github.com/modelon-community/impact-client-python/commit/7fa2278c0a27e7acda63ea85c9a32268869d490f))
+* make credential manager customizable ([a7e05b9](https://github.com/modelon-community/impact-client-python/commit/a7e05b95ef93ab1e9b200f71c4c532bda4f34474))
+* possible to authorize against Jupyterhub ([c6d700c](https://github.com/modelon-community/impact-client-python/commit/c6d700cc3afd3c0a7f0a5be3906c3d221d5dfb5a))
+
 # [1.2.0-beta.23](https://github.com/modelon-community/impact-client-python/compare/v1.2.0-beta.22...v1.2.0-beta.23) (2021-10-15)
 
 
