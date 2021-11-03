@@ -2,7 +2,7 @@ import json.decoder
 
 import requests
 
-import modelon.impact.client.jupyterhub.exceptions as exceptions
+from modelon.impact.client.jupyterhub import exceptions
 import modelon.impact.client.sal.service
 
 

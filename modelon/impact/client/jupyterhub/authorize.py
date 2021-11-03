@@ -1,8 +1,8 @@
 import logging
 
 from modelon.impact.client.credential_manager import CredentialManager
-import modelon.impact.client.jupyterhub.exceptions as exceptions
-import modelon.impact.client.jupyterhub.sal as sal
+from modelon.impact.client.jupyterhub import exceptions
+from modelon.impact.client.jupyterhub import sal
 
 
 logger = logging.getLogger(__name__)
