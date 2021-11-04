@@ -1,3 +1,10 @@
+# [1.2.0-beta.25](https://github.com/modelon-community/impact-client-python/compare/v1.2.0-beta.24...v1.2.0-beta.25) (2021-11-04)
+
+
+### Bug Fixes
+
+* imports that works for Python 3.6 ([ec5a7c2](https://github.com/modelon-community/impact-client-python/commit/ec5a7c27a7038fc868478d6a09bd9afceaeb57cf))
+
 # [1.2.0-beta.24](https://github.com/modelon-community/impact-client-python/compare/v1.2.0-beta.23...v1.2.0-beta.24) (2021-11-02)
 
 
