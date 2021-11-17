@@ -32,7 +32,7 @@ make lint
 
 ## Build
 
-Building chimp is done by running
+Building modelon-impact-client is done by running
 
 ```
 make wheel

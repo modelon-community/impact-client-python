@@ -15,6 +15,7 @@ from modelon.impact.client.entities import (
 
 MockedServer = collections.namedtuple('MockedServer', ['url', 'context', 'adapter'])
 ExperimentMock = collections.namedtuple('ExperimentMock', ['entity', 'service'])
+WorkspaceMock = collections.namedtuple('WorkspaceMock', ['entity', 'service'])
 
 
 def with_json_route(
@@ -42,7 +43,9 @@ def with_exception(mock_server_base, method, url, exce):
 
 def with_json_route_no_resp(mock_server_base, method, url, status_code=200):
     mock_server_base.adapter.register_uri(
-        method, f'{mock_server_base.url}/{url}', status_code=status_code,
+        method,
+        f'{mock_server_base.url}/{url}',
+        status_code=status_code,
     )
     return mock_server_base
 
@@ -851,11 +854,14 @@ def workspace():
         }
     }
     exp_service.experiment_execute.return_value = "pid_2009"
-    return Workspace(
-        'AwesomeWorkspace',
+    return WorkspaceMock(
+        Workspace(
+            'AwesomeWorkspace',
+            ws_service,
+            experiment_service=exp_service,
+            custom_function_service=custom_function_service,
+        ),
         ws_service,
-        experiment_service=exp_service,
-        custom_function_service=custom_function_service,
     )
 
 

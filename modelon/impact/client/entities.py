@@ -539,7 +539,7 @@ class Workspace:
             resp,
         )
 
-    def create_experiment(self, definition):
+    def create_experiment(self, definition, user_data=None):
         """Creates an experiment.
         Returns an Experiment class object.
 
@@ -550,6 +550,8 @@ class Workspace:
                 modelon.impact.client.experiment_definition.SimpleModelicaExperimentDefinition
                 or
                 modelon.impact.client.experiment_definition.SimpleFMUExperimentDefinition.
+            user_data --
+                Optional dictionary object with custom data to attach to the experiment.
 
         Returns:
 
@@ -572,7 +574,9 @@ class Workspace:
                 "experiment_definition.SimpleFMUExperimentDefinition.!"
             )
 
-        resp = self._workspace_sal.experiment_create(self._workspace_id, definition)
+        resp = self._workspace_sal.experiment_create(
+            self._workspace_id, definition, user_data
+        )
         return Experiment(
             self._workspace_id,
             resp["experiment_id"],
@@ -581,7 +585,7 @@ class Workspace:
             self._exp_sal,
         )
 
-    def execute(self, definition):
+    def execute(self, definition, user_data=None):
         """Exceutes an experiment.
         Returns an modelon.impact.client.operations.ExperimentOperation class object.
 
@@ -594,6 +598,9 @@ class Workspace:
                 modelon.impact.client.experiment_definition.SimpleModelicaExperimentDefinition
                 or
                 a dictionary object containing the definition.
+            user_data --
+                Optional dictionary object with custom data to attach to the experiment.
+
 
         Returns:
 
@@ -607,7 +614,7 @@ class Workspace:
             experiment_ops.status()
             experiment_ops.wait()
         """
-        exp_id = self.create_experiment(definition).id
+        exp_id = self.create_experiment(definition, user_data).id
         return operations.ExperimentOperation(
             self._workspace_id,
             self._exp_sal.experiment_execute(self._workspace_id, exp_id),
@@ -1307,6 +1314,16 @@ class _ExperimentRunInfo:
         return self._not_started
 
 
+class _ExperimentMetaData:
+    def __init__(self, user_data):
+        self._user_data = user_data
+
+    @property
+    def user_data(self):
+        """User data dictionary object attached to experiment, if any"""
+        return self._user_data
+
+
 class Experiment:
     """
     Class containing Experiment functionalities.
@@ -1361,6 +1378,20 @@ class Experiment:
         return _ExperimentRunInfo(
             status, errors, failed, successful, cancelled, not_started
         )
+
+    @property
+    def metadata(self):
+        """Experiment metadata. Returns custom user_data dictionary object attached
+        to the experiment, if any."""
+
+        info = self._get_info()
+        meta_data = info.get("meta_data")
+        if meta_data is not None:
+            user_data = meta_data.get("user_data")
+            if user_data is not None:
+                return _ExperimentMetaData(user_data)
+
+        return None
 
     @property
     def info(self):
@@ -1831,16 +1862,16 @@ class Case:
     def input(self):
         """Case input attributes
 
-           Example::
+        Example::
 
-            case.input.analysis.parameters = {'start_time': 0, 'final_time': 90}
-            case.input.analysis.simulation_options = {'ncp': 600}
-            case.input.analysis.solver_options = {'atol': 1e-8}
-            case.input.parametrization = {'PI.k': 120}
-            case.sync()
+         case.input.analysis.parameters = {'start_time': 0, 'final_time': 90}
+         case.input.analysis.simulation_options = {'ncp': 600}
+         case.input.analysis.solver_options = {'atol': 1e-8}
+         case.input.parametrization = {'PI.k': 120}
+         case.sync()
 
-            help(case.input.analysis) # See help for attribute
-            dir(case.input) # See nested attributes
+         help(case.input.analysis) # See help for attribute
+         dir(case.input) # See nested attributes
         """
         return _CaseInput(self._info['input'])
 
@@ -1848,13 +1879,13 @@ class Case:
     def meta(self):
         """Case meta attributes
 
-           Example::
+        Example::
 
-            case.meta.label = 'Cruise condition'
-            case.sync()
+         case.meta.label = 'Cruise condition'
+         case.sync()
 
-            help(case.meta) # See help for attribute
-            dir(case.input) # See nested attributes
+         help(case.meta) # See help for attribute
+         dir(case.input) # See nested attributes
         """
         return _CaseMeta(self._info['meta'])
 

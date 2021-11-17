@@ -194,9 +194,13 @@ class WorkspaceService:
             url, headers={"Accept": "application/vnd.impact.experiment.v2+json"}
         )
 
-    def experiment_create(self, workspace_id, definition):
+    def experiment_create(self, workspace_id, definition, user_data=None):
         url = (self._base_uri / f"api/workspaces/{workspace_id}/experiments").resolve()
-        return self._http_client.post_json(url, body=definition)
+        body = {
+            **definition,
+            **({"userData": user_data} if user_data is not None else {}),
+        }
+        return self._http_client.post_json(url, body=body)
 
 
 class ModelExecutableService:
