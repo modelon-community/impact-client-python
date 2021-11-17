@@ -7,7 +7,7 @@ from tests.impact.client.fixtures import *
 
 
 class TestService:
-    def test_api_get_meta_data(self, api_get_metadata):
+    def test_api_get_metadata(self, api_get_metadata):
         uri = modelon.impact.client.sal.service.URI(api_get_metadata.url)
         service = modelon.impact.client.sal.service.Service(
             uri=uri, context=api_get_metadata.context
@@ -232,6 +232,11 @@ class TestWorkspaceService:
         data = service.workspace.experiment_create("WS", {})
         assert experiment_create.adapter.called
         assert data == {"experiment_id": "pid_2009"}
+
+        user_data = {"value": 42}
+        data = service.workspace.experiment_create("WS", {}, user_data)
+        request_data = experiment_create.adapter.request_history[1].json()
+        assert request_data == {'userData': user_data}
 
 
 class TestModelExecutbleService:

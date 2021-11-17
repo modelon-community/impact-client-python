@@ -90,16 +90,17 @@ class TestCachedModelExecutableOperation:
 
 class TestExperimentOperation:
     def test_execute_wait_done(
-        self, workspace,
+        self,
+        workspace,
     ):
-        exp = workspace.execute({})
+        exp = workspace.entity.execute({})
         assert exp.id == "pid_2009"
         assert exp.status() == Status.DONE
         assert exp.is_complete()
         assert exp.wait() == Experiment('AwesomeWorkspace', 'pid_2009')
 
     def test_execute_wait_cancel_timeout(self, workspace):
-        exp = workspace.execute({})
+        exp = workspace.entity.execute({})
         assert exp.id == "pid_2009"
         assert exp.status() == Status.DONE
         assert exp.is_complete()
@@ -133,7 +134,8 @@ class TestExperimentOperation:
 
 class TestCaseOperation:
     def test_execute_wait_done(
-        self, experiment,
+        self,
+        experiment,
     ):
         case = experiment.entity.get_case('case_1')
         case_ops = case.execute()

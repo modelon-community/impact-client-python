@@ -5,7 +5,7 @@ import os
 import tempfile
 import unittest.mock as mock
 import modelon.impact.client.options
-from modelon.impact.client import exceptions
+from modelon.impact.client import SimpleModelicaExperimentDefinition, exceptions
 
 from tests.files.paths import SINGLE_FILE_LIBRARY_PATH
 from modelon.impact.client.entities import (
@@ -28,12 +28,13 @@ from tests.impact.client.fixtures import *
 
 class TestWorkspace:
     def test_get_custom_function(self, workspace):
-        custom_function = workspace.get_custom_function('dynamic')
+        custom_function = workspace.entity.get_custom_function('dynamic')
         assert 'dynamic' == custom_function.name
 
     def test_get_custom_functions(self, workspace):
         custom_function_list = [
-            custom_function.name for custom_function in workspace.get_custom_functions()
+            custom_function.name
+            for custom_function in workspace.entity.get_custom_functions()
         ]
         assert ['dynamic'] == custom_function_list
 
@@ -113,55 +114,63 @@ class TestWorkspace:
         assert 'DELETE' == unlock_call.method
 
     def test_download_workspace(self, workspace):
-        t = os.path.join(tempfile.gettempdir(), workspace.id + '.zip')
-        resp = workspace.download({}, tempfile.gettempdir())
+        t = os.path.join(tempfile.gettempdir(), workspace.entity.id + '.zip')
+        resp = workspace.entity.download({}, tempfile.gettempdir())
         assert resp == t
 
     def test_clone(self, workspace):
-        clone = workspace.clone()
+        clone = workspace.entity.clone()
         assert clone == Workspace('MyClonedWorkspace')
 
     def test_get_custom_function_from_clone(self, workspace):
-        clone = workspace.clone()
+        clone = workspace.entity.clone()
         custom_function = clone.get_custom_function('dynamic')
         assert 'dynamic' == custom_function.name
 
     def test_get_model(self, workspace):
-        model = workspace.get_model("Modelica.Blocks.PID")
-        assert model == Model("Modelica.Blocks.PID", workspace.id)
+        model = workspace.entity.get_model("Modelica.Blocks.PID")
+        assert model == Model("Modelica.Blocks.PID", workspace.entity.id)
 
     def test_model_repr(self, workspace):
-        model = Model("Modelica.Blocks.PID", workspace.id)
+        model = Model("Modelica.Blocks.PID", workspace.entity.id)
         assert "Class name 'Modelica.Blocks.PID'" == model.__repr__()
 
     def test_get_fmus(self, workspace):
-        fmus = workspace.get_fmus()
+        fmus = workspace.entity.get_fmus()
         assert fmus == [
             ModelExecutable('AwesomeWorkspace', 'as9f-3df5'),
             ModelExecutable('AwesomeWorkspace', 'as9D-4df5'),
         ]
 
     def test_get_fmu(self, workspace):
-        fmu = workspace.get_fmu('pid_20090615_134')
+        fmu = workspace.entity.get_fmu('pid_20090615_134')
         assert fmu == ModelExecutable('AwesomeWorkspace', 'pid_20090615_134')
 
     def test_get_experiment(self, workspace):
-        exp = workspace.get_experiment('pid_20090615_134')
+        exp = workspace.entity.get_experiment('pid_20090615_134')
         assert exp == Experiment('AwesomeWorkspace', 'pid_20090615_134')
 
     def test_get_experiments(self, workspace):
-        exps = workspace.get_experiments()
+        exps = workspace.entity.get_experiments()
         assert exps == [
             Experiment('AwesomeWorkspace', 'as9f-3df5'),
             Experiment('AwesomeWorkspace', 'dd9f-3df5'),
         ]
 
     def test_create_experiment(self, workspace):
-        exp = workspace.create_experiment({})
+        exp = workspace.entity.create_experiment({})
         assert exp == Experiment('AwesomeWorkspace', 'pid_2009')
 
+    def test_create_experiment_with_user_data(self, workspace):
+        user_data = {"customWsGetKey": "customWsGetValue"}
+        exp = workspace.entity.create_experiment({}, user_data)
+
+        workspace.service.experiment_create.assert_has_calls(
+            [mock.call('AwesomeWorkspace', {}, user_data)]
+        )
+
     def test_execute_options_dict(self, workspace):
-        exp = workspace.execute({})
+        exp = workspace.entity.execute({})
         assert exp == ExperimentOperation('AwesomeWorkspace', 'pid_2009')
 
 
@@ -467,6 +476,14 @@ class TestExperiment:
 
     def test_exp_trajectories_invalid_keys(self, experiment):
         pytest.raises(ValueError, experiment.entity.get_trajectories, ['s'])
+
+    def test_execute_with_user_data(self, workspace):
+        user_data = {"workspaceExecuteKey": "workspaceExecuteValue"}
+        workspace.entity.execute({}, user_data).wait()
+
+        workspace.service.experiment_create.assert_has_calls(
+            [mock.call('AwesomeWorkspace', {}, user_data)]
+        )
 
 
 def get_case_put_json_input(mock_method_call):
