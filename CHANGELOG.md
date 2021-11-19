@@ -1,3 +1,10 @@
+# [1.2.0-beta.26](https://github.com/modelon-community/impact-client-python/compare/v1.2.0-beta.25...v1.2.0-beta.26) (2021-11-19)
+
+
+### Features
+
+* enable user_data attached to experiments ([538fca2](https://github.com/modelon-community/impact-client-python/commit/538fca2d301f1162a7bfea0a95b29b709681d2dc))
+
 # [1.2.0-beta.25](https://github.com/modelon-community/impact-client-python/compare/v1.2.0-beta.24...v1.2.0-beta.25) (2021-11-04)
 
 
