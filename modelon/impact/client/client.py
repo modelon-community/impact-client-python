@@ -77,8 +77,15 @@ class Client:
                 modelon.impact.client.credential_manager.CredentialManager()
             )
 
+        def credential_resolver():
+            return self._authenticate_against_api(
+                interactive=False, anonymous_login_warning=False
+            )
+
         self._uri = modelon.impact.client.sal.service.URI(url)
-        self._sal = modelon.impact.client.sal.service.Service(self._uri, context)
+        self._sal = modelon.impact.client.sal.service.Service(
+            self._uri, context, credential_resolver
+        )
         self._credentials = credential_manager
         self._api_key = None
 
@@ -88,7 +95,9 @@ class Client:
             self._uri, context = modelon.impact.client.jupyterhub.authorize(
                 self._uri, interactive, context, jupyterhub_credential_manager,
             )
-            self._sal = modelon.impact.client.sal.service.Service(self._uri, context)
+            self._sal = modelon.impact.client.sal.service.Service(
+                self._uri, context, credential_resolver
+            )
             self._validate_compatible_api_version()
 
         try:
@@ -121,12 +130,12 @@ class Client:
                 f"that supports version '{version}' of the HTTP REST API."
             )
 
-    def _authenticate_against_api(self, interactive):
+    def _authenticate_against_api(self, interactive, anonymous_login_warning=True):
 
         if not self._api_key:
             self._api_key = self._credentials.get_key(interactive=interactive)
 
-        if not self._api_key:
+        if not self._api_key and anonymous_login_warning:
             logger.warning(
                 "No Modelon Impact API key could be found, "
                 "will log in as anonymous user. Permissions may be limited"

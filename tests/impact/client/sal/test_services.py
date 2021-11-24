@@ -15,6 +15,80 @@ class TestService:
         data = service.api_get_metadata()
         assert data == {'version': '1.1.0'}
 
+    def test_given_no_error_when_access_then_no_login_and_ok(self, create_workspace):
+        # Given
+        uri = modelon.impact.client.sal.service.URI(create_workspace.url)
+        credential_resolver = mock.MagicMock()
+        service = modelon.impact.client.sal.service.Service(
+            uri=uri,
+            context=create_workspace.context,
+            credential_resolver=credential_resolver,
+        )
+
+        # when
+        data = service.workspace.workspace_create('AwesomeWorkspace')
+
+        # Then
+        credential_resolver.assert_not_called()
+        assert data == {'id': 'newWorkspace'}
+
+    def test_given_authenticat_fail_once_when_access_then_login_and_ok(
+        self, create_workspace_fail_auth_once
+    ):
+        # Given
+        uri = modelon.impact.client.sal.service.URI(create_workspace_fail_auth_once.url)
+        credential_resolver = mock.MagicMock()
+        service = modelon.impact.client.sal.service.Service(
+            uri=uri,
+            context=create_workspace_fail_auth_once.context,
+            credential_resolver=credential_resolver,
+        )
+
+        # When
+        data = service.workspace.workspace_create('AwesomeWorkspace')
+
+        # Then
+        credential_resolver.assert_called_once()
+        assert data == {'id': 'newWorkspace'}
+
+    def test_given_authenticat_fail_many_when_access_then_fail(
+        self, create_workspace_fail_auth_many
+    ):
+        # Given
+        uri = modelon.impact.client.sal.service.URI(create_workspace_fail_auth_many.url)
+        credential_resolver = mock.MagicMock()
+        service = modelon.impact.client.sal.service.Service(
+            uri=uri,
+            context=create_workspace_fail_auth_many.context,
+            credential_resolver=credential_resolver,
+        )
+
+        # When
+        with pytest.raises(modelon.impact.client.sal.exceptions.HTTPError):
+            service.workspace.workspace_create('AwesomeWorkspace')
+
+        # Then
+        credential_resolver.assert_called_once()
+
+    def test_given_non_auth_failure_when_access_then_fail(
+        self, create_workspace_fail_bad_input
+    ):
+        # Given
+        uri = modelon.impact.client.sal.service.URI(create_workspace_fail_bad_input.url)
+        credential_resolver = mock.MagicMock()
+        service = modelon.impact.client.sal.service.Service(
+            uri=uri,
+            context=create_workspace_fail_bad_input.context,
+            credential_resolver=credential_resolver,
+        )
+
+        # When
+        with pytest.raises(modelon.impact.client.sal.exceptions.HTTPError):
+            service.workspace.workspace_create('AwesomeWorkspace')
+
+        # Then
+        credential_resolver.assert_not_called()
+
 
 class TestWorkspaceService:
     def test_create_workspace(self, create_workspace):
