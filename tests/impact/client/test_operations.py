@@ -89,10 +89,7 @@ class TestCachedModelExecutableOperation:
 
 
 class TestExperimentOperation:
-    def test_execute_wait_done(
-        self,
-        workspace,
-    ):
+    def test_execute_wait_done(self, workspace):
         exp = workspace.entity.execute({})
         assert exp.id == "pid_2009"
         assert exp.status() == Status.DONE
@@ -133,10 +130,7 @@ class TestExperimentOperation:
 
 
 class TestCaseOperation:
-    def test_execute_wait_done(
-        self,
-        experiment,
-    ):
+    def test_execute_wait_done(self, experiment):
         case = experiment.entity.get_case('case_1')
         case_ops = case.execute()
         assert case_ops.id == "case_1"

@@ -19,7 +19,9 @@ class UnauthorizedError(ServiceAccessError):
 
 
 class HTTPError(ServiceAccessError):
-    pass
+    def __init__(self, message, status_code):
+        self.status_code = status_code
+        super().__init__(message)
 
 
 class ErrorBodyIsNotJSONError(ServiceAccessError):
