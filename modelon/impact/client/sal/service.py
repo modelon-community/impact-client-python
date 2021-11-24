@@ -2,6 +2,7 @@ import sys
 import os
 import json
 import re
+import inspect
 import logging
 import requests
 import urllib.parse
@@ -11,10 +12,17 @@ from modelon.impact.client.sal import exceptions
 logger = logging.getLogger(__name__)
 
 
+def _decorate_all_methods(cls, decorator):
+    for method_name, method in inspect.getmembers(cls, lambda x: inspect.ismethod(x)):
+        setattr(cls, method_name, decorator(method))
+
+    return cls
+
+
 class Service:
     _JUPYTERHUB_VERSION_HEADER = 'x-jupyterhub-version'
 
-    def __init__(self, uri, context=None, check_return=True):
+    def __init__(self, uri, context=None, credential_resolver=None):
         self._base_uri = uri
         self._http_client = HTTPClient(context)
         self.workspace = WorkspaceService(self._base_uri, self._http_client)
@@ -23,6 +31,36 @@ class Service:
         )
         self.experiment = ExperimentService(self._base_uri, self._http_client)
         self.custom_function = CustomFunctionService(self._base_uri, self._http_client)
+
+        if credential_resolver is not None:
+            self._add_retry_with(credential_resolver)
+
+    def _add_retry_with(self, credential_resolver):
+        def retry_with_login_decorator(func):
+            def wrapped(*args, **kwargs):
+                try:
+                    return func(*args, **kwargs)
+                except exceptions.HTTPError as e:
+                    if e.status_code != 401:
+                        raise
+
+                    credential_resolver()
+                    return func(*args, **kwargs)
+
+            return wrapped
+
+        self.workspace = _decorate_all_methods(
+            self.workspace, retry_with_login_decorator
+        )
+        self.model_executable = _decorate_all_methods(
+            self.model_executable, retry_with_login_decorator
+        )
+        self.experiment = _decorate_all_methods(
+            self.experiment, retry_with_login_decorator
+        )
+        self.custom_function = _decorate_all_methods(
+            self.custom_function, retry_with_login_decorator
+        )
 
     def api_get_metadata(self):
         url = (self._base_uri / "api/").resolve()
@@ -523,7 +561,7 @@ class Request:
 
         resp = self.request_type(resp)
         if check_return and not resp.ok:
-            raise exceptions.HTTPError(resp.error.message)
+            raise exceptions.HTTPError(resp.error.message, resp.status_code)
 
         return resp
 
@@ -597,7 +635,7 @@ class JSONResponse(Response):
     @property
     def data(self):
         if not self._resp_obj.ok:
-            raise exceptions.HTTPError(self.error.message)
+            raise exceptions.HTTPError(self.error.message, self._resp_obj.status_code)
 
         if not self._is_json():
             raise exceptions.InvalidContentTypeError(
@@ -621,7 +659,7 @@ class TextResponse(Response):
     @property
     def data(self):
         if not self._resp_obj.ok:
-            raise exceptions.HTTPError(self.error.message)
+            raise exceptions.HTTPError(self.error.message, self._resp_obj.status_code)
 
         if not self._is_txt():
             raise exceptions.InvalidContentTypeError(
@@ -641,7 +679,7 @@ class OctetStreamResponse(Response):
     @property
     def stream(self):
         if not self._resp_obj.ok:
-            raise exceptions.HTTPError(self.error.message)
+            raise exceptions.HTTPError(self.error.message, self._resp_obj.status_code)
 
         if not self._is_octet_stream():
             raise exceptions.InvalidContentTypeError(
@@ -670,7 +708,7 @@ class ZIPResponse(Response):
     @property
     def data(self):
         if not self._resp_obj.ok:
-            raise exceptions.HTTPError(self.error.message)
+            raise exceptions.HTTPError(self.error.message, self._resp_obj.status_code)
 
         if not self._is_zip():
             raise exceptions.InvalidContentTypeError(

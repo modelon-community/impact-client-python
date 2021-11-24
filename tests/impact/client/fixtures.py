@@ -18,18 +18,22 @@ ExperimentMock = collections.namedtuple('ExperimentMock', ['entity', 'service'])
 WorkspaceMock = collections.namedtuple('WorkspaceMock', ['entity', 'service'])
 
 
+def json_request_list_item(json_response, status_code=200, extra_headers=None):
+    extra_headers = extra_headers or {}
+    json_header = {'content-type': 'application/json', **extra_headers}
+    return {'json': json_response, 'status_code': status_code, 'headers': json_header}
+
+
 def with_json_route(
     mock_server_base, method, url, json_response, status_code=200, extra_headers=None
 ):
-    extra_headers = extra_headers or {}
-    json = json_response
-    json_header = {'content-type': 'application/json', **extra_headers}
+    request_list = [json_request_list_item(json_response, status_code, extra_headers)]
+    return with_json_request_list_route(mock_server_base, method, url, request_list)
+
+
+def with_json_request_list_route(mock_server_base, method, url, request_list):
     mock_server_base.adapter.register_uri(
-        method,
-        f'{mock_server_base.url}/{url}',
-        json=json,
-        headers=json_header,
-        status_code=status_code,
+        method, f'{mock_server_base.url}/{url}', request_list
     )
     return mock_server_base
 
@@ -43,9 +47,7 @@ def with_exception(mock_server_base, method, url, exce):
 
 def with_json_route_no_resp(mock_server_base, method, url, status_code=200):
     mock_server_base.adapter.register_uri(
-        method,
-        f'{mock_server_base.url}/{url}',
-        status_code=status_code,
+        method, f'{mock_server_base.url}/{url}', status_code=status_code,
     )
     return mock_server_base
 
@@ -136,7 +138,7 @@ def sem_ver_check(mock_server_base):
 
 @pytest.fixture
 def login_fails(mock_server_base):
-    json = {'error': {'message': 'no authroization', 'code': 123}}
+    json = {'error': {'message': 'no authorization', 'code': 123}}
 
     return with_json_route(mock_server_base, 'POST', 'api/login', json, 401)
 
@@ -177,6 +179,39 @@ def create_workspace(sem_ver_check, mock_server_base):
 
 
 @pytest.fixture
+def create_workspace_fail_auth_once(sem_ver_check, mock_server_base):
+    json_error = {'error': {'code': 123456, 'message': 'JWT expired'}}
+    json_ok = {'id': 'newWorkspace'}
+    request_list = [
+        json_request_list_item(json_error, 401),
+        json_request_list_item(json_ok, 200),
+    ]
+
+    return with_json_request_list_route(
+        mock_server_base, 'POST', 'api/workspaces', request_list
+    )
+
+
+@pytest.fixture
+def create_workspace_fail_auth_many(sem_ver_check, mock_server_base):
+    json_error = {'error': {'code': 123456, 'message': 'JWT expired'}}
+    request_list = [
+        json_request_list_item(json_error, 401),
+        json_request_list_item(json_error, 401),
+    ]
+
+    return with_json_request_list_route(
+        mock_server_base, 'POST', 'api/workspaces', request_list
+    )
+
+
+@pytest.fixture
+def create_workspace_fail_bad_input(sem_ver_check, mock_server_base):
+    json_error = {'error': {'code': 123456, 'message': 'Not an allowed workspace name'}}
+    return with_json_route(mock_server_base, 'POST', 'api/workspaces', json_error, 400)
+
+
+@pytest.fixture
 def delete_workspace(sem_ver_check, mock_server_base):
 
     return with_json_route_no_resp(
@@ -202,7 +237,7 @@ def multiple_workspace(sem_ver_check, mock_server_base):
 
 @pytest.fixture
 def workspaces_error(sem_ver_check, mock_server_base):
-    json = {'error': {'message': 'no authroization', 'code': 123}}
+    json = {'error': {'message': 'no authorization', 'code': 123}}
 
     return with_json_route(mock_server_base, 'GET', 'api/workspaces', json, 401)
 
@@ -229,7 +264,7 @@ def get_ok_empty_json(sem_ver_check, mock_server_base):
 
 @pytest.fixture
 def get_with_error(sem_ver_check, mock_server_base):
-    json = {'error': {'message': 'no authroization', 'code': 123}}
+    json = {'error': {'message': 'no authorization', 'code': 123}}
 
     return with_json_route(mock_server_base, 'GET', '', json, 401)
 
