@@ -22,7 +22,7 @@ def _decorate_all_methods(cls, decorator):
 class Service:
     _JUPYTERHUB_VERSION_HEADER = 'x-jupyterhub-version'
 
-    def __init__(self, uri, context=None, credential_resolver=None):
+    def __init__(self, uri, context=None):
         self._base_uri = uri
         self._http_client = HTTPClient(context)
         self.workspace = WorkspaceService(self._base_uri, self._http_client)
@@ -32,10 +32,7 @@ class Service:
         self.experiment = ExperimentService(self._base_uri, self._http_client)
         self.custom_function = CustomFunctionService(self._base_uri, self._http_client)
 
-        if credential_resolver is not None:
-            self._add_retry_with(credential_resolver)
-
-    def _add_retry_with(self, credential_resolver):
+    def add_login_retry_with(self, api_key=None):
         def retry_with_login_decorator(func):
             def wrapped(*args, **kwargs):
                 try:
@@ -44,7 +41,7 @@ class Service:
                     if e.status_code != 401:
                         raise
 
-                    credential_resolver()
+                    self.api_login(api_key=api_key)
                     return func(*args, **kwargs)
 
             return wrapped
