@@ -18,18 +18,16 @@ class TestService:
     def test_given_no_error_when_access_then_no_login_and_ok(self, create_workspace):
         # Given
         uri = modelon.impact.client.sal.service.URI(create_workspace.url)
-        credential_resolver = mock.MagicMock()
         service = modelon.impact.client.sal.service.Service(
-            uri=uri,
-            context=create_workspace.context,
-            credential_resolver=credential_resolver,
+            uri=uri, context=create_workspace.context
         )
+        service.add_login_retry_with(api_key=None)
 
         # when
         data = service.workspace.workspace_create('AwesomeWorkspace')
 
         # Then
-        credential_resolver.assert_not_called()
+        assert len(create_workspace.adapter.request_history) == 1
         assert data == {'id': 'newWorkspace'}
 
     def test_given_authenticat_fail_once_when_access_then_login_and_ok(
@@ -37,18 +35,16 @@ class TestService:
     ):
         # Given
         uri = modelon.impact.client.sal.service.URI(create_workspace_fail_auth_once.url)
-        credential_resolver = mock.MagicMock()
         service = modelon.impact.client.sal.service.Service(
-            uri=uri,
-            context=create_workspace_fail_auth_once.context,
-            credential_resolver=credential_resolver,
+            uri=uri, context=create_workspace_fail_auth_once.context
         )
+        service.add_login_retry_with(api_key=None)
 
         # When
         data = service.workspace.workspace_create('AwesomeWorkspace')
 
         # Then
-        credential_resolver.assert_called_once()
+        assert len(create_workspace_fail_auth_once.adapter.request_history) == 3
         assert data == {'id': 'newWorkspace'}
 
     def test_given_authenticat_fail_many_when_access_then_fail(
@@ -56,38 +52,34 @@ class TestService:
     ):
         # Given
         uri = modelon.impact.client.sal.service.URI(create_workspace_fail_auth_many.url)
-        credential_resolver = mock.MagicMock()
         service = modelon.impact.client.sal.service.Service(
-            uri=uri,
-            context=create_workspace_fail_auth_many.context,
-            credential_resolver=credential_resolver,
+            uri=uri, context=create_workspace_fail_auth_many.context
         )
+        service.add_login_retry_with(api_key=None)
 
         # When
         with pytest.raises(modelon.impact.client.sal.exceptions.HTTPError):
             service.workspace.workspace_create('AwesomeWorkspace')
 
         # Then
-        credential_resolver.assert_called_once()
+        assert len(create_workspace_fail_auth_many.adapter.request_history) == 3
 
     def test_given_non_auth_failure_when_access_then_fail(
         self, create_workspace_fail_bad_input
     ):
         # Given
         uri = modelon.impact.client.sal.service.URI(create_workspace_fail_bad_input.url)
-        credential_resolver = mock.MagicMock()
         service = modelon.impact.client.sal.service.Service(
-            uri=uri,
-            context=create_workspace_fail_bad_input.context,
-            credential_resolver=credential_resolver,
+            uri=uri, context=create_workspace_fail_bad_input.context
         )
+        service.add_login_retry_with(api_key=None)
 
         # When
         with pytest.raises(modelon.impact.client.sal.exceptions.HTTPError):
             service.workspace.workspace_create('AwesomeWorkspace')
 
         # Then
-        credential_resolver.assert_not_called()
+        assert len(create_workspace_fail_bad_input.adapter.request_history) == 1
 
 
 class TestWorkspaceService:
