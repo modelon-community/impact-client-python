@@ -140,11 +140,8 @@ class Client:
                 "No Modelon Impact API key could be found, "
                 "will log in as anonymous user. Permissions may be limited"
             )
-            login_data = {}
-        else:
-            login_data = {"secretKey": self._api_key}
 
-        self._sal.api_login(login_data)
+        self._sal.api_login(api_key=self._api_key)
         if self._api_key and interactive:
             # Save the api_key for next time if
             # running interactively and login was successfuly
