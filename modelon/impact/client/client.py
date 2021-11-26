@@ -77,17 +77,9 @@ class Client:
                 modelon.impact.client.credential_manager.CredentialManager()
             )
 
-        def credential_resolver():
-            return self._authenticate_against_api(
-                interactive=False, anonymous_login_warning=False
-            )
-
         self._uri = modelon.impact.client.sal.service.URI(url)
-        self._sal = modelon.impact.client.sal.service.Service(
-            self._uri, context, credential_resolver
-        )
-        self._credentials = credential_manager
-        self._api_key = None
+        self._sal = modelon.impact.client.sal.service.Service(self._uri, context)
+        self._credential_manager = credential_manager
 
         try:
             self._validate_compatible_api_version()
@@ -95,23 +87,23 @@ class Client:
             self._uri, context = modelon.impact.client.jupyterhub.authorize(
                 self._uri, interactive, context, jupyterhub_credential_manager,
             )
-            self._sal = modelon.impact.client.sal.service.Service(
-                self._uri, context, credential_resolver
-            )
+            self._sal = modelon.impact.client.sal.service.Service(self._uri, context)
             self._validate_compatible_api_version()
 
         try:
-            self._authenticate_against_api(interactive)
+            api_key = self._authenticate_against_api(interactive)
         except modelon.impact.client.sal.exceptions.HTTPError:
             if interactive:
                 logger.warning(
                     "The provided Modelon Impact API key is not valid, "
                     "please enter a new key"
                 )
-                self._api_key = self._credentials.get_key_from_prompt()
-                self._authenticate_against_api(interactive)
+                api_key = self._credential_manager.get_key_from_prompt()
+                api_key = self._authenticate_against_api(interactive, api_key=api_key)
             else:
                 raise
+
+        self._sal.add_login_retry_with(api_key)
 
     def _validate_compatible_api_version(self):
         try:
@@ -130,22 +122,23 @@ class Client:
                 f"that supports version '{version}' of the HTTP REST API."
             )
 
-    def _authenticate_against_api(self, interactive, anonymous_login_warning=True):
+    def _authenticate_against_api(self, interactive, api_key=None):
+        if not api_key:
+            api_key = self._credential_manager.get_key(interactive=interactive)
 
-        if not self._api_key:
-            self._api_key = self._credentials.get_key(interactive=interactive)
-
-        if not self._api_key and anonymous_login_warning:
+        if not api_key:
             logger.warning(
                 "No Modelon Impact API key could be found, "
                 "will log in as anonymous user. Permissions may be limited"
             )
 
-        self._sal.api_login(api_key=self._api_key)
-        if self._api_key and interactive:
+        self._sal.api_login(api_key=api_key)
+        if api_key and interactive:
             # Save the api_key for next time if
             # running interactively and login was successfuly
-            self._credentials.write_key_to_file(self._api_key)
+            self._credential_manager.write_key_to_file(api_key)
+
+        return api_key
 
     def get_workspace(self, workspace_id):
         """
