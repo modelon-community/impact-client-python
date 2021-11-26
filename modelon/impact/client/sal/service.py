@@ -73,7 +73,8 @@ class Service:
 
         return response.data
 
-    def api_login(self, login_data):
+    def api_login(self, api_key=None):
+        login_data = {"secretKey": api_key} if api_key else {}
         url = (self._base_uri / "api/login").resolve()
         return self._http_client.post_json(url, login_data)
 
