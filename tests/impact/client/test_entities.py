@@ -38,80 +38,58 @@ class TestWorkspace:
         ]
         assert ['dynamic'] == custom_function_list
 
-    def test_delete(self, workspace_ops, delete_workspace):
-        workspace_ops.delete()
-        delete_call = delete_workspace.adapter.request_history[3]
-        assert (
-            'http://mock-impact.com/api/workspaces/AwesomeWorkspace' == delete_call.url
+    def test_delete(self):
+        workspace_sal = unittest.mock.MagicMock()
+        workspace = Workspace("toDeleteWorkspace", workspace_sal)
+
+        workspace.delete()
+        workspace_sal.workspace_delete.assert_called_with("toDeleteWorkspace")
+
+    def test_import_library(self):
+        workspace_sal = unittest.mock.MagicMock()
+        workspace = Workspace("importLibraryWorkspace", workspace_sal)
+
+        workspace.upload_model_library(SINGLE_FILE_LIBRARY_PATH)
+        workspace_sal.library_import.assert_called_with(
+            "importLibraryWorkspace", SINGLE_FILE_LIBRARY_PATH
         )
-        assert 'DELETE' == delete_call.method
 
-    def test_import_library(self, workspace_ops, import_lib):
-        workspace_ops.upload_model_library(SINGLE_FILE_LIBRARY_PATH)
-        import_call = import_lib.adapter.request_history[3]
-        assert (
-            'http://mock-impact.com/api/workspaces/AwesomeWorkspace/libraries'
-            == import_call.url
+    def test_import_fmu(self):
+        workspace_sal = unittest.mock.MagicMock()
+        workspace = Workspace("importFMUWorkspace", workspace_sal)
+        workspace.upload_fmu("test.fmu", "Workspace")
+        workspace_sal.fmu_import.assert_called_with(
+            "importFMUWorkspace",
+            "test.fmu",
+            "Workspace",
+            None,
+            False,
+            None,
+            None,
+            None,
+            step_size=0.0,
         )
-        assert 'POST' == import_call.method
 
-    def test_import_fmu(self, workspace_ops, import_fmu):
-        with mock.patch("builtins.open", mock.mock_open()) as mock_file:
-            workspace_ops.upload_fmu("test.fmu", "Workspace")
-            mock_file.assert_called_with("test.fmu", "rb")
-
-        import_fmu_call = import_fmu.adapter.request_history[3]
-        assert (
-            'http://mock-impact.com/api/workspaces/AwesomeWorkspace/libraries/Workspace/models'
-            == import_fmu_call.url
+    def test_upload_result(self, workspace_sal_upload_base):
+        workspace_service = workspace_sal_upload_base
+        workspace = Workspace('uploadResultWorksapce', workspace_service)
+        upload_op = workspace.upload_result("test.mat", "Workspace")
+        workspace_service.result_upload.assert_called_with(
+            'uploadResultWorksapce', 'test.mat', description=None, label='Workspace'
         )
-        assert 'POST' == import_fmu_call.method
+        assert upload_op.id == "2f036b9fab6f45c788cc466da327cc78workspace"
 
-    def test_upload_result(
-        self,
-        workspace_ops,
-        upload_result,
-        upload_result_status_ready,
-        upload_result_meta,
-    ):
-        with mock.patch("builtins.open", mock.mock_open()) as mock_file:
-            result = workspace_ops.upload_result("test.mat", "Workspace").wait()
-            mock_file.assert_called_with("test.mat", "rb")
+    def test_lock(self):
+        workspace_service = unittest.mock.MagicMock()
+        workspace = Workspace('lockedWorksapce', workspace_service)
+        workspace.lock()
+        workspace_service.workspace_lock.assert_called_with('lockedWorksapce')
 
-        upload_result_call = upload_result.adapter.request_history[3]
-        assert 'http://mock-impact.com/api/uploads/results' == upload_result_call.url
-        assert 'POST' == upload_result_call.method
-
-        upload_result_status_call = upload_result.adapter.request_history[4]
-        assert (
-            'http://mock-impact.com/api/uploads/results/2f036b9fab6f45c788cc466da327cc78workspace'
-            == upload_result_status_call.url
-        )
-        assert 'GET' == upload_result_status_call.method
-        meta = result.metadata
-        assert meta.id == "2f036b9fab6f45c788cc466da327cc78workspace"
-        assert meta.name == "result_for_PID"
-        assert meta.description == "This is a result file for PID controller"
-        assert meta.workspace_id == "workspace"
-        assert result.id == "2f036b9fab6f45c788cc466da327cc78workspace"
-
-    def test_lock(self, workspace_ops, lock_workspace):
-        workspace_ops.lock()
-        lock_call = lock_workspace.adapter.request_history[3]
-        assert (
-            'http://mock-impact.com/api/workspaces/AwesomeWorkspace/lock'
-            == lock_call.url
-        )
-        assert 'POST' == lock_call.method
-
-    def test_unlock(self, workspace_ops, unlock_workspace):
-        workspace_ops.unlock()
-        unlock_call = unlock_workspace.adapter.request_history[3]
-        assert (
-            'http://mock-impact.com/api/workspaces/AwesomeWorkspace/lock'
-            == unlock_call.url
-        )
-        assert 'DELETE' == unlock_call.method
+    def test_unlock(self):
+        workspace_service = unittest.mock.MagicMock()
+        workspace = Workspace('unlockedWorksapce', workspace_service)
+        workspace.unlock()
+        workspace_service.workspace_unlock.assert_called_with('unlockedWorksapce')
 
     def test_download_workspace(self, workspace):
         t = os.path.join(tempfile.gettempdir(), workspace.entity.id + '.zip')

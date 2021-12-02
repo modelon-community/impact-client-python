@@ -304,63 +304,41 @@ def import_fmu(sem_ver_check, mock_server_base):
     )
 
 
-@pytest.fixture
-def upload_result(sem_ver_check, mock_server_base):
-    json = {
-        "data": {
-            "id": "2f036b9fab6f45c788cc466da327cc78workspace",
-            "status": "ready",
-            "error": "None",
-        }
-    }
-
-    return with_json_route(mock_server_base, 'POST', 'api/uploads/results', json)
-
-
-@pytest.fixture
-def upload_result_status_ready(sem_ver_check, mock_server_base):
-    json = {
+def get_upload_result_ready_data():
+    return {
         "data": {
             "id": "2f036b9fab6f45c788cc466da327cc78workspace",
             "status": "ready",
             "data": {
                 "resourceUri": "api/external-result/2f036b9fab6f45c788cc466da327cc78workspace"
             },
-            "error": "None",
         }
     }
-    return with_json_route(
-        mock_server_base,
-        'GET',
-        'api/uploads/results/2f036b9fab6f45c788cc466da327cc78workspace',
-        json,
-    )
 
 
-@pytest.fixture
-def upload_result_status_running(sem_ver_check, mock_server_base):
-    json = {
+def get_upload_result_running_data():
+    return {
         "data": {
             "id": "2f036b9fab6f45c788cc466da327cc78workspace",
             "status": "running",
             "data": {
                 "resourceUri": "api/external-result/2f036b9fab6f45c788cc466da327cc78workspace"
             },
-            "error": "None",
         }
     }
 
-    return with_json_route(
-        mock_server_base,
-        'GET',
-        'api/uploads/results/2f036b9fab6f45c788cc466da327cc78workspace',
-        json,
-    )
+
+def get_result_upload_post_data():
+    return {
+        "data": {
+            "id": "2f036b9fab6f45c788cc466da327cc78workspace",
+            "status": "running",
+        }
+    }
 
 
-@pytest.fixture
-def upload_result_meta(sem_ver_check, mock_server_base):
-    json = {
+def get_external_result_data():
+    return {
         "data": {
             "id": "2f036b9fab6f45c788cc466da327cc78workspace",
             "createdAt": "2021-09-02T08:26:49.612000",
@@ -370,11 +348,68 @@ def upload_result_meta(sem_ver_check, mock_server_base):
         }
     }
 
+
+@pytest.fixture
+def workspace_sal_upload_base():
+    workspace_service = unittest.mock.MagicMock()
+    workspace_service.result_upload.return_value = get_result_upload_post_data()
+    workspace_service.get_uploaded_result_meta.return_value = get_external_result_data()
+
+    return workspace_service
+
+
+@pytest.fixture
+def workspace_sal_upload_result_ready(workspace_sal_upload_base):
+    workspace_sal_upload_base.get_result_upload_status.return_value = (
+        get_upload_result_ready_data()
+    )
+
+    return workspace_sal_upload_base
+
+
+@pytest.fixture
+def workspace_sal_upload_result_running(workspace_sal_upload_base):
+    workspace_sal_upload_base.get_result_upload_status.return_value = (
+        get_upload_result_running_data()
+    )
+
+    return workspace_sal_upload_base
+
+
+@pytest.fixture
+def upload_result_status_ready(sem_ver_check, mock_server_base):
+    return with_json_route(
+        mock_server_base,
+        'GET',
+        'api/uploads/results/2f036b9fab6f45c788cc466da327cc78workspace',
+        get_upload_result_ready_data(),
+    )
+
+
+@pytest.fixture
+def upload_result_status_running(sem_ver_check, mock_server_base):
+    return with_json_route(
+        mock_server_base,
+        'GET',
+        'api/uploads/results/2f036b9fab6f45c788cc466da327cc78workspace',
+        get_upload_result_running_data(),
+    )
+
+
+@pytest.fixture
+def upload_result(sem_ver_check, mock_server_base):
+    return with_json_route(
+        mock_server_base, 'POST', 'api/uploads/results', get_result_upload_post_data()
+    )
+
+
+@pytest.fixture
+def upload_result_meta(sem_ver_check, mock_server_base):
     return with_json_route(
         mock_server_base,
         'GET',
         'api/external-result/2f036b9fab6f45c788cc466da327cc78workspace',
-        json,
+        get_external_result_data(),
     )
 
 

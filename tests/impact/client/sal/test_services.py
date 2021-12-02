@@ -98,6 +98,11 @@ class TestWorkspaceService:
         )
         service.workspace.workspace_delete('AwesomeWorkspace')
         assert delete_workspace.adapter.called
+        delete_call = delete_workspace.adapter.request_history[0]
+        assert (
+            'http://mock-impact.com/api/workspaces/AwesomeWorkspace' == delete_call.url
+        )
+        assert 'DELETE' == delete_call.method
 
     def test_get_workspace(self, single_workspace):
         uri = modelon.impact.client.sal.service.URI(single_workspace.url)
@@ -124,6 +129,12 @@ class TestWorkspaceService:
         )
         service.workspace.library_import('AwesomeWorkspace', SINGLE_FILE_LIBRARY_PATH)
         assert import_lib.adapter.called
+        import_call = import_lib.adapter.request_history[0]
+        assert (
+            'http://mock-impact.com/api/workspaces/AwesomeWorkspace/libraries'
+            == import_call.url
+        )
+        assert 'POST' == import_call.method
 
     def test_workspace_upload(self, upload_workspace):
         uri = modelon.impact.client.sal.service.URI(upload_workspace.url)
@@ -145,8 +156,7 @@ class TestWorkspaceService:
         assert data == {
             "data": {
                 "id": "2f036b9fab6f45c788cc466da327cc78workspace",
-                "status": "ready",
-                "error": "None",
+                "status": "running",
             }
         }
 
@@ -166,7 +176,6 @@ class TestWorkspaceService:
                 "data": {
                     "resourceUri": "api/external-result/2f036b9fab6f45c788cc466da327cc78workspace"
                 },
-                "error": "None",
             }
         }
 
@@ -218,6 +227,13 @@ class TestWorkspaceService:
             "library": {"id": "Workspace", "uses": {}, "name": "Workspace"},
         }
 
+        import_fmu_call = import_fmu.adapter.request_history[0]
+        assert (
+            'http://mock-impact.com/api/workspaces/AwesomeWorkspace/libraries/Workspace/models'
+            == import_fmu_call.url
+        )
+        assert 'POST' == import_fmu_call.method
+
     def test_workspace_download(self, download_workspace):
         uri = modelon.impact.client.sal.service.URI(download_workspace.url)
         service = modelon.impact.client.sal.service.Service(
@@ -233,6 +249,12 @@ class TestWorkspaceService:
         )
         service.workspace.workspace_lock("AwesomeWorkspace")
         assert lock_workspace.adapter.called
+        lock_call = lock_workspace.adapter.request_history[0]
+        assert (
+            'http://mock-impact.com/api/workspaces/AwesomeWorkspace/lock'
+            == lock_call.url
+        )
+        assert 'POST' == lock_call.method
 
     def test_unlock_workspace(self, unlock_workspace):
         uri = modelon.impact.client.sal.service.URI(unlock_workspace.url)
@@ -241,6 +263,12 @@ class TestWorkspaceService:
         )
         service.workspace.workspace_unlock("AwesomeWorkspace")
         assert unlock_workspace.adapter.called
+        unlock_call = unlock_workspace.adapter.request_history[0]
+        assert (
+            'http://mock-impact.com/api/workspaces/AwesomeWorkspace/lock'
+            == unlock_call.url
+        )
+        assert 'DELETE' == unlock_call.method
 
     def test_clone_workspace(self, clone_workspace):
         uri = modelon.impact.client.sal.service.URI(clone_workspace.url)
