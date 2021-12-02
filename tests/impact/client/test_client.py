@@ -61,7 +61,7 @@ def test_semantic_version_error(semantic_version_error):
         )
     assert (
         "Version '3.1.0' of the HTTP REST API is not supported, must be in the "
-        "range '>=1.18.0,<2.0.0'! Updgrade or downgrade this package to a version"
+        "range '>=1.21.0,<2.0.0'! Updgrade or downgrade this package to a version"
         " that supports version '3.1.0' of the HTTP REST API." in str(excinfo.value)
     )
 
@@ -73,42 +73,42 @@ def assert_login_called(*, adapter, body):
     assert body == login_call.json()
 
 
-def test_client_login_api_key_from_credential_manager(sem_ver_check):
+def test_client_login_api_key_from_credential_manager(user_with_license):
     cred_manager = unittest.mock.MagicMock()
     cred_manager.get_key.return_value = 'test_from_credential_manager_key'
     modelon.impact.client.Client(
-        url=sem_ver_check.url,
-        context=sem_ver_check.context,
+        url=user_with_license.url,
+        context=user_with_license.context,
         credential_manager=cred_manager,
     )
 
     assert_login_called(
-        adapter=sem_ver_check.adapter,
+        adapter=user_with_license.adapter,
         body={"secretKey": "test_from_credential_manager_key"},
     )
 
 
-def test_client_login_api_key_missing(sem_ver_check):
+def test_client_login_api_key_missing(user_with_license):
     cred_manager = unittest.mock.MagicMock()
     cred_manager.get_key.return_value = None
     modelon.impact.client.Client(
-        url=sem_ver_check.url,
-        context=sem_ver_check.context,
+        url=user_with_license.url,
+        context=user_with_license.context,
         credential_manager=cred_manager,
     )
 
     assert_login_called(
-        adapter=sem_ver_check.adapter, body={},
+        adapter=user_with_license.adapter, body={},
     )
 
 
-def test_client_login_interactive_saves_key(sem_ver_check):
+def test_client_login_interactive_saves_key(user_with_license):
     cred_manager = unittest.mock.MagicMock()
     cred_manager.get_key.return_value = 'test_client_login_interactive_saves_key'
 
     modelon.impact.client.Client(
-        url=sem_ver_check.url,
-        context=sem_ver_check.context,
+        url=user_with_license.url,
+        context=user_with_license.context,
         credential_manager=cred_manager,
         interactive=True,
     )
@@ -117,11 +117,7 @@ def test_client_login_interactive_saves_key(sem_ver_check):
         'test_client_login_interactive_saves_key'
     )
 
-
-@unittest.mock.patch.object(
-    modelon.impact.client.Client, '_validate_compatible_api_version'
-)
-def test_client_login_fail_interactive_dont_save_key(_, login_fails):
+def test_client_login_fail_interactive_dont_save_key(login_fails, user_with_license):
     cred_manager = unittest.mock.MagicMock()
     cred_manager.get_key.return_value = 'test_client_login_fails'
     cred_manager.get_key_from_prompt.return_value = 'test_client_login_still_fails'
@@ -138,10 +134,7 @@ def test_client_login_fail_interactive_dont_save_key(_, login_fails):
     cred_manager.write_key_to_file.assert_not_called()
 
 
-@unittest.mock.patch.object(
-    modelon.impact.client.Client, '_validate_compatible_api_version'
-)
-def test_client_login_fail_lets_user_enter_new_key(_, login_fails):
+def test_client_login_fail_lets_user_enter_new_key(sem_ver_check, login_fails):
     cred_manager = unittest.mock.MagicMock()
     cred_manager.get_key.return_value = 'test_client_login_fails'
     cred_manager.get_key_from_prompt.return_value = 'test_client_login_still_fails'
@@ -158,17 +151,17 @@ def test_client_login_fail_lets_user_enter_new_key(_, login_fails):
     cred_manager.get_key_from_prompt.assert_called()
 
 
-def test_empty_api_key_when_login_then_anon_login_and_dont_save_key(sem_ver_check):
+def test_empty_api_key_when_login_then_anon_login_and_dont_save_key(user_with_license):
     cred_manager = unittest.mock.MagicMock()
     cred_manager.get_key.return_value = ''
     modelon.impact.client.Client(
-        url=sem_ver_check.url,
-        context=sem_ver_check.context,
+        url=user_with_license.url,
+        context=user_with_license.context,
         credential_manager=cred_manager,
         interactive=True,
     )
 
-    assert_login_called(adapter=sem_ver_check.adapter, body={})
+    assert_login_called(adapter=user_with_license.adapter, body={})
     cred_manager.write_key_to_file.assert_not_called()
 
 
@@ -186,3 +179,10 @@ def test_client_connect_against_jupyterhub_can_authorize(jupyterhub_api):
         jupyterhub_credential_manager=jupyterhub_cred_manager,
     )
     jupyterhub_cred_manager.write_key_to_file.assert_called_with('secret-token')
+
+
+def test_no_assigned_license_error(user_with_no_license):
+    with pytest.raises(modelon.impact.client.exceptions.NoAssignedLicenseError):
+        modelon.impact.client.Client(
+            url=user_with_no_license.url, context=user_with_no_license.context
+        )

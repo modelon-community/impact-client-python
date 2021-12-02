@@ -56,7 +56,7 @@ class Client:
         client = Client(url=impact_url, interactive=True)
     """
 
-    _SUPPORTED_VERSION_RANGE = ">=1.18.0,<2.0.0"
+    _SUPPORTED_VERSION_RANGE = ">=1.21.0,<2.0.0"
 
     def __init__(
         self,
@@ -104,6 +104,13 @@ class Client:
                 raise
 
         self._sal.add_login_retry_with(api_key)
+
+        resp = self._sal.users.get_me()
+        if 'license' not in resp['data']:
+            raise exceptions.NoAssignedLicenseError(
+                "No assigned license during login. Either out of floating "
+                "licenses or your assigned license could not be validated"
+            )
 
     def _validate_compatible_api_version(self):
         try:

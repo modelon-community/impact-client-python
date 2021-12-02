@@ -131,9 +131,20 @@ def api_get_metadata(mock_server_base):
 
 @pytest.fixture
 def sem_ver_check(mock_server_base):
-    json = {"version": "1.18.0"}
-
+    json = {"version": "1.21.0"}
     return with_json_route(mock_server_base, 'GET', 'api/', json)
+
+
+@pytest.fixture
+def user_with_license(sem_ver_check):
+    json = {'data': {'license': 'impact-pro'}}
+    return with_json_route(sem_ver_check, 'GET', 'api/users/me', json)
+
+
+@pytest.fixture
+def user_with_no_license(sem_ver_check):
+    json = {'data': {}}
+    return with_json_route(sem_ver_check, 'GET', 'api/users/me', json)
 
 
 @pytest.fixture
@@ -168,14 +179,20 @@ def jupyterhub_api(mock_server_base):
     mock_server = with_json_route(
         mock_server, 'POST', 'user/user-name/impact/api/login', {}
     )
+    mock_server = with_json_route(
+        mock_server,
+        'GET',
+        'user/user-name/impact/api/users/me',
+        {'data': {'license': 'impact-pro'}},
+    )
     return mock_server
 
 
 @pytest.fixture
-def create_workspace(sem_ver_check, mock_server_base):
+def create_workspace(user_with_license):
     json = {'id': 'newWorkspace'}
 
-    return with_json_route(mock_server_base, 'POST', 'api/workspaces', json)
+    return with_json_route(user_with_license, 'POST', 'api/workspaces', json)
 
 
 @pytest.fixture
@@ -212,82 +229,82 @@ def create_workspace_fail_bad_input(sem_ver_check, mock_server_base):
 
 
 @pytest.fixture
-def delete_workspace(sem_ver_check, mock_server_base):
+def delete_workspace(user_with_license):
 
     return with_json_route_no_resp(
-        mock_server_base, 'DELETE', 'api/workspaces/AwesomeWorkspace'
+        user_with_license, 'DELETE', 'api/workspaces/AwesomeWorkspace'
     )
 
 
 @pytest.fixture
-def single_workspace(sem_ver_check, mock_server_base):
+def single_workspace(user_with_license):
     json = {'id': 'AwesomeWorkspace'}
 
     return with_json_route(
-        mock_server_base, 'GET', 'api/workspaces/AwesomeWorkspace', json
+        user_with_license, 'GET', 'api/workspaces/AwesomeWorkspace', json
     )
 
 
 @pytest.fixture
-def multiple_workspace(sem_ver_check, mock_server_base):
+def multiple_workspace(user_with_license):
     json = {'data': {'items': [{'id': 'AwesomeWorkspace'}, {'id': 'BoringWorkspace'}]}}
 
-    return with_json_route(mock_server_base, 'GET', 'api/workspaces', json)
+    return with_json_route(user_with_license, 'GET', 'api/workspaces', json)
 
 
 @pytest.fixture
-def workspaces_error(sem_ver_check, mock_server_base):
+def workspaces_error(user_with_license):
     json = {'error': {'message': 'no authorization', 'code': 123}}
 
-    return with_json_route(mock_server_base, 'GET', 'api/workspaces', json, 401)
+    return with_json_route(user_with_license, 'GET', 'api/workspaces', json, 401)
 
 
 @pytest.fixture
-def create_workspace_error(sem_ver_check, mock_server_base):
+def create_workspace_error(user_with_license):
     json = {'error': {'message': 'name not ok', 'code': 123}}
 
-    return with_json_route(mock_server_base, 'POST', 'api/workspaces', json, 400)
+    return with_json_route(user_with_license, 'POST', 'api/workspaces', json, 400)
 
 
 @pytest.fixture
-def semantic_version_error(sem_ver_check, mock_server_base):
+def semantic_version_error(mock_server_base):
     json = {"version": "3.1.0"}
 
     return with_json_route(mock_server_base, 'GET', 'api/', json)
 
 
 @pytest.fixture
-def get_ok_empty_json(sem_ver_check, mock_server_base):
+def get_ok_empty_json(mock_server_base):
 
     return with_json_route(mock_server_base, 'GET', '', {})
 
 
 @pytest.fixture
-def get_with_error(sem_ver_check, mock_server_base):
+def get_with_error(mock_server_base):
     json = {'error': {'message': 'no authorization', 'code': 123}}
 
     return with_json_route(mock_server_base, 'GET', '', json, 401)
 
 
 @pytest.fixture
-def get_with_ssl_exception(sem_ver_check, mock_server_base):
+def get_with_ssl_exception(mock_server_base):
     return with_exception(mock_server_base, 'GET', '', requests.exceptions.SSLError)
 
 
 @pytest.fixture
-def import_lib(sem_ver_check, mock_server_base):
+def import_lib(sem_ver_check):
     json = {
         "name": "Single",
         "uses": {"Modelica": {"version": "3.2.2"}, "ThermalPower": {"version": "1.14"}},
     }
 
     return with_json_route(
-        mock_server_base, 'POST', 'api/workspaces/AwesomeWorkspace/libraries', json
+        sem_ver_check, 'POST', 'api/workspaces/AwesomeWorkspace/libraries', json
     )
 
 
 @pytest.fixture
-def import_fmu(sem_ver_check, mock_server_base):
+def import_fmu(sem_ver_check):
     json = {
         "fmuClassPath": "Workspace.PID_Controller.Model",
         "importWarnings": [
@@ -297,7 +314,7 @@ def import_fmu(sem_ver_check, mock_server_base):
     }
 
     return with_json_route(
-        mock_server_base,
+        sem_ver_check,
         'POST',
         'api/workspaces/AwesomeWorkspace/libraries/Workspace/models',
         json,
