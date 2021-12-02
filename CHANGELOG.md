@@ -1,3 +1,10 @@
+# [1.2.0-beta.27](https://github.com/modelon-community/impact-client-python/compare/v1.2.0-beta.26...v1.2.0-beta.27) (2021-12-02)
+
+
+### Features
+
+* login again if there is an authentication error ([d4b39a8](https://github.com/modelon-community/impact-client-python/commit/d4b39a80a3ab70140ae30a26bee476a9120df8eb))
+
 # [1.2.0-beta.26](https://github.com/modelon-community/impact-client-python/compare/v1.2.0-beta.25...v1.2.0-beta.26) (2021-11-19)
 
 
