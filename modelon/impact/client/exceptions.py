@@ -6,6 +6,10 @@ class UnsupportedSemanticVersionError(Error):
     pass
 
 
+class NoAssignedLicenseError(Error):
+    pass
+
+
 class OperationTimeOutError(Error):
     pass
 

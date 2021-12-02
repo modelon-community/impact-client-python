@@ -31,6 +31,7 @@ class Service:
         )
         self.experiment = ExperimentService(self._base_uri, self._http_client)
         self.custom_function = CustomFunctionService(self._base_uri, self._http_client)
+        self.users = UsersService(self._base_uri, self._http_client)
 
     def add_login_retry_with(self, api_key=None):
         def retry_with_login_decorator(func):
@@ -58,6 +59,7 @@ class Service:
         self.custom_function = _decorate_all_methods(
             self.custom_function, retry_with_login_decorator
         )
+        self.users = _decorate_all_methods(self.users, retry_with_login_decorator)
 
     def api_get_metadata(self):
         url = (self._base_uri / "api/").resolve()
@@ -74,6 +76,16 @@ class Service:
         login_data = {"secretKey": api_key} if api_key else {}
         url = (self._base_uri / "api/login").resolve()
         return self._http_client.post_json(url, login_data)
+
+
+class UsersService:
+    def __init__(self, uri, HTTPClient):
+        self._base_uri = uri
+        self._http_client = HTTPClient
+
+    def get_me(self):
+        url = (self._base_uri / "api/users/me").resolve()
+        return self._http_client.get_json(url)
 
 
 class WorkspaceService:
