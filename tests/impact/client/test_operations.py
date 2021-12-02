@@ -176,25 +176,49 @@ class TestCaseOperation:
 
 
 class TestExternalResultUploadOperation:
-    def test_result_upload_ops(
-        self, workspace_ops, upload_result, upload_result_status_ready
+    def test_given_running_when_wait_then_timeout(
+        self, workspace_sal_upload_result_running
     ):
-        with mock.patch("builtins.open", mock.mock_open()) as mock_file:
-            result_ops = workspace_ops.upload_result("test.mat", "Workspace")
-            mock_file.assert_called_with("test.mat", "rb")
-        assert isinstance(result_ops, ExternalResultUploadOperation)
-        assert result_ops.id == '2f036b9fab6f45c788cc466da327cc78workspace'
-        assert result_ops.status() == AsyncOperationStatus.READY
-        assert result_ops.status().done()
-        assert result_ops.wait() == ExternalResult(
-            '2f036b9fab6f45c788cc466da327cc78workspace'
+        # Given
+        workspace_service = workspace_sal_upload_result_running
+        upload_op = ExternalResultUploadOperation(
+            '2f036b9fab6f45c788cc466da327cc78workspace', workspace_service
         )
-        pytest.raises(NotImplementedError, result_ops.cancel)
 
-    def test_execute_wait_timeout(
-        self, workspace_ops, upload_result, upload_result_status_running
+        # When, then
+        pytest.raises(exceptions.OperationTimeOutError, upload_op.wait, 1)
+
+    def test_given_ready_when_wait_then_ok(self, workspace_sal_upload_result_ready):
+        # Given
+        workspace_service = workspace_sal_upload_result_ready
+        upload_op = ExternalResultUploadOperation(
+            '2f036b9fab6f45c788cc466da327cc78workspace', workspace_service
+        )
+
+        # When
+        result = upload_op.wait()
+
+        # Then
+        assert isinstance(upload_op, ExternalResultUploadOperation)
+        assert upload_op.id == '2f036b9fab6f45c788cc466da327cc78workspace'
+        assert upload_op.status() == AsyncOperationStatus.READY
+        assert upload_op.status().done()
+        assert result == ExternalResult('2f036b9fab6f45c788cc466da327cc78workspace')
+        meta = result.metadata
+        assert meta.id == "2f036b9fab6f45c788cc466da327cc78workspace"
+        assert meta.name == "result_for_PID"
+        assert meta.description == "This is a result file for PID controller"
+        assert meta.workspace_id == "workspace"
+        assert result.id == "2f036b9fab6f45c788cc466da327cc78workspace"
+
+    def test_give_status_ready_when_cancel_then_raises_not_implemented(
+        self, workspace_sal_upload_result_ready
     ):
-        with mock.patch("builtins.open", mock.mock_open()) as mock_file:
-            result_ops = workspace_ops.upload_result("test.mat", "Workspace")
-            mock_file.assert_called_with("test.mat", "rb")
-        pytest.raises(exceptions.OperationTimeOutError, result_ops.wait, 1)
+        # Given
+        workspace_service = workspace_sal_upload_result_ready
+        upload_op = ExternalResultUploadOperation(
+            '2f036b9fab6f45c788cc466da327cc78workspace', workspace_service
+        )
+
+        # When, then
+        pytest.raises(NotImplementedError, upload_op.cancel)
