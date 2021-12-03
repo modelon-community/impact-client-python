@@ -108,8 +108,8 @@ class Client:
         resp = self._sal.users.get_me()
         if 'license' not in resp['data']:
             raise exceptions.NoAssignedLicenseError(
-                "No assigned license during login. Either out of floating "
-                "licenses or your assigned license could not be validated"
+                "No assigned license during login. Either out of floating Deployment "
+                "Add-on licenses or your assigned user license could not be validated"
             )
 
     def _validate_compatible_api_version(self):
