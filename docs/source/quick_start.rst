@@ -6,10 +6,9 @@ may be running remotely.  With sufficient login credentials and an API Key (see 
 Modelica models may be uploaded, compiled, and executed on a server.  The results can be either processed on the server
 with a custom function or downloaded to the client for further analysis.
 
-An analysis could be set up and executed using either the :ref:`FMU <1. FMU based workflow>` or a :ref:`Class name <2. Class name based workflow>` based workflow.
-The specifics of the two workflows are discussed in more detail :ref:`here. <Analysis>`
+An analysis could be set up and executed using either the :ref:`FMU <FMU based workflow>` or a :ref:`Class name <Setup and run an experiment>` based workflow.
 
-A simple example using the :ref:`FMU based workflow <1. FMU based workflow>` is shown below::
+A simple example using the :ref:`FMU based workflow <FMU based workflow>` is shown below::
 
    from modelon.impact.client import Client
 
@@ -35,7 +34,7 @@ A simple example using the :ref:`FMU based workflow <1. FMU based workflow>` is 
    plt.plot(res['time'], res['inertia1.phi'])
    plt.show()
 
-A simple example using the :ref:`Class name based workflow <2. Class name based workflow>` is shown below::
+A simple example using the :ref:`Class name based workflow <Setup and run an experiment>` is shown below::
 
    from modelon.impact.client import Client
 

@@ -24,8 +24,23 @@ Python companion library for Modelon Impact that wraps its REST API framework an
 
    install.rst
    setup.rst
-   tutorial.rst
    quick_start.rst
+
+.. toctree::
+   :maxdepth: 1
+   :hidden:
+   :caption: Tutorials
+
+   setting_up_workspace.rst
+   choosing_analysis_type.rst
+   choosing_a_model.rst
+   setup_run_experiment.rst
+   plotting_experiment_results.rst
+   muti_execution_experiments.rst
+   reexecuting_updating_experiments.rst
+   fmu_based_workflow.rst
+   logging_output_for_client.rst
+   removing_fmus_experiments.rst
 
 .. toctree::
    :maxdepth: 1
