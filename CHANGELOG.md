@@ -1,3 +1,15 @@
+# [1.2.0-beta.28](https://github.com/modelon-community/impact-client-python/compare/v1.2.0-beta.27...v1.2.0-beta.28) (2021-12-07)
+
+
+### Bug Fixes
+
+* making license type more explicit in error message ([5c98b1e](https://github.com/modelon-community/impact-client-python/commit/5c98b1e28875ef1f483b80056b93f8890197ac44))
+
+
+### Features
+
+* check if user has license, else give error ([b52c1ed](https://github.com/modelon-community/impact-client-python/commit/b52c1ed1654a5982775334257ce03102be048240))
+
 # [1.2.0-beta.27](https://github.com/modelon-community/impact-client-python/compare/v1.2.0-beta.26...v1.2.0-beta.27) (2021-12-02)
 
 
