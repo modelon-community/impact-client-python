@@ -1,14 +1,7 @@
 Install Modelon Impact Client
 =============================
 
-You can install Modelon Impact Client with ``conda``, with ``pip``, or by installing from source.
-
-Conda
------
-
-You can install the client with ``conda``::
-
-   conda install modelon-impact-client
+You can install Modelon Impact Client with ``pip``, or by installing from source.
 
 Pip
 ---
