@@ -10,6 +10,14 @@ You can install the client with ``pip``::
 
    pip install modelon-impact-client
 
+Conda
+-----
+
+The modelon-impact-client package is not hosted on any conda channels. However, you can still install the client 
+with ``conda`` using :ref:`pip <Pip>`. Refer 
+to `using pip in an environment <https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html#using-pip-in-an-environment>`_
+for instructions.
+
 Install from Source
 -------------------
 
