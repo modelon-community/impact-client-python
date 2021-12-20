@@ -1,3 +1,10 @@
+# [1.2.0-beta.31](https://github.com/modelon-community/impact-client-python/compare/v1.2.0-beta.30...v1.2.0-beta.31) (2021-12-20)
+
+
+### Bug Fixes
+
+* Added docs for installing the client with conda ([c9c3253](https://github.com/modelon-community/impact-client-python/commit/c9c325364e5d0a3f09250de31c4a664d708512ae))
+
 # [1.2.0-beta.30](https://github.com/modelon-community/impact-client-python/compare/v1.2.0-beta.29...v1.2.0-beta.30) (2021-12-20)
 
 
