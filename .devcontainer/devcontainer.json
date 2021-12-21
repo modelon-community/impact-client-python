@@ -1,0 +1,47 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the README at:
+// https://github.com/microsoft/vscode-dev-containers/tree/v0.209.6/containers/docker-existing-dockerfile
+{
+	"name": "VS Code extension of Poetry Docker dev image",
+
+	// Base on Dockerfile one level up:
+	"context": "..",
+	"dockerFile": "../Dockerfile",
+
+	// Mount to WORKDIR as specified in Dockerfile:
+	"workspaceMount": "source=${localWorkspaceFolder},target=/home/dev/src,type=bind",
+	"workspaceFolder": "/home/dev/src",
+
+	// Python IDE settings:
+	"settings": {
+		"python.pythonPath": "/home/dev/poetry-virtualenvs/modelon-impact-client-1JqLc1Zx-py3.7/bin/python",
+		"python.defaultInterpreterPath": "/home/dev/poetry-virtualenvs/modelon-impact-client-1JqLc1Zx-py3.7/bin/python",
+		"terminal.integrated.profiles.linux": {
+			"poetry shell": {
+			  "path": "poetry",
+			  "args": ["shell"]
+			}
+		},
+		"terminal.integrated.defaultProfile.linux": "poetry shell",
+		"python.formatting.provider": "black",
+		"python.formatting.blackArgs": [
+			"-S"
+		],
+		"[python]": {
+			"editor.formatOnSave": true,
+			"editor.formatOnSaveTimeout": 3000
+		},
+		"python.linting.enabled": true,
+		"python.linting.pylintEnabled": true,
+		"python.linting.flake8Enabled": true,
+		"python.testing.pytestEnabled": true,
+	},
+	
+	// Python IDE extensions:
+	"extensions": [
+		"ms-python.python",
+		"ms-python.vscode-pylance"
+	],
+
+	// User from Dockerfile:
+	"remoteUser": "dev",
+}
