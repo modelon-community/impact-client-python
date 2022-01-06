@@ -2085,7 +2085,7 @@ class Case:
         Example::
 
             case = experiment.get_case('case_1')
-            fmu = case.get_fmu(fmu_id)
+            fmu = case.get_fmu()
             fmus = set(case.get_fmu() for case in exp.get_cases())
         """
         fmu_id = self.input.fmu_id
