@@ -53,7 +53,7 @@ A simple example using the :ref:`Class name based workflow <Setup and run an exp
 
    # Getting the simulated FMU object from the case object
    case = exp.get_case('case_1')
-   fmu = case.get_fmu(fmu_id)
+   fmu = case.get_fmu()
 
    # Plot Trajectory
    import matplotlib.pyplot as plt
