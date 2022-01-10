@@ -1,3 +1,10 @@
+# [1.2.0-beta.32](https://github.com/modelon-community/impact-client-python/compare/v1.2.0-beta.31...v1.2.0-beta.32) (2022-01-10)
+
+
+### Bug Fixes
+
+* docs fix ([f96d65a](https://github.com/modelon-community/impact-client-python/commit/f96d65a667fc722dd12a5a4b0bed214beb217f38))
+
 # [1.2.0-beta.31](https://github.com/modelon-community/impact-client-python/compare/v1.2.0-beta.30...v1.2.0-beta.31) (2021-12-20)
 
 
