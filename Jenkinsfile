@@ -7,6 +7,7 @@ node('docker'){
     }
 
     stage ('build') {
+      sh "echo more info"
       sh 'make build'
     }
 
