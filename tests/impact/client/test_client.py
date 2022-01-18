@@ -61,7 +61,7 @@ def test_semantic_version_error(semantic_version_error):
         )
     assert (
         "Version '4.1.0' of the HTTP REST API is not supported, must be in the "
-        "range '>=1.21.0,<4.0.0'! Updgrade or downgrade this package to a version"
+        "range '>=1.21.3,<4.0.0'! Updgrade or downgrade this package to a version"
         " that supports version '4.1.0' of the HTTP REST API." in str(excinfo.value)
     )
 

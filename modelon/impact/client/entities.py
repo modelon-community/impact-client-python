@@ -1,6 +1,7 @@
 import os
 import tempfile
 import logging
+import modelon.impact.client.sal.service
 from modelon.impact.client import operations
 
 from modelon.impact.client.experiment_definition import (
@@ -1957,9 +1958,16 @@ class Case:
             self._exp_sal.case_get_log(self._workspace_id, self._exp_id, self._case_id)
         )
 
-    def get_result(self):
+    def get_result(self, format='mat'):
         """
         Returns the result stream and the file name for a finished case.
+
+        Parameters:
+
+            format --
+                The file format to download the result in. The only possible values
+                are 'mat' and 'csv'.
+                Default: 'mat'
 
         Returns:
 
@@ -1979,13 +1987,14 @@ class Case:
 
         Example::
 
-            result, file_name = case.get_result()
-            with open(file_name, "wb") as f:
+            result, file_name = case.get_result(format = 'csv')
+            with open(file_name, "w") as f:
                 f.write(result)
         """
         _assert_successful_operation(self.is_successful(), self._case_id)
+        result_format = modelon.impact.client.sal.service.ResultFormat(format)
         result, file_name = self._exp_sal.case_result_get(
-            self._workspace_id, self._exp_id, self._case_id
+            self._workspace_id, self._exp_id, self._case_id, result_format
         )
         return result, file_name
 

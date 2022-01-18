@@ -78,6 +78,60 @@ def with_text_route(mock_server_base, method, url, text_response, status_code=20
     return mock_server_base
 
 
+def with_csv_route(
+    mock_server_base, method, url, text_response, status_code=200, content_header=None
+):
+    text = text_response
+    content_header = (
+        {
+            'content-type': 'text/csv',
+            'content-disposition': 'attachment; '
+            'filename="BouncingBall_2020-09-01_14-33_case_1.csv"',
+            'connection': 'close',
+            'date': 'Tue, 01 Sep 2020 14:33:56 GMT',
+            'server': '127.0.0.1',
+            'Transfer-Encoding': 'chunked',
+        }
+        if content_header is None
+        else content_header
+    )
+    mock_server_base.adapter.register_uri(
+        method,
+        f'{mock_server_base.url}/{url}',
+        text=text,
+        headers=content_header,
+        status_code=status_code,
+    )
+    return mock_server_base
+
+
+def with_mat_stream_route(
+    mock_server_base, method, url, mat_response, status_code=200, content_header=None
+):
+    content = mat_response
+    content_header = (
+        {
+            'content-type': 'application/vnd.impact.mat.v1+octet-stream',
+            'content-disposition': 'attachment; '
+            'filename="BouncingBall_2020-09-01_14-33_case_1.mat"',
+            'connection': 'close',
+            'date': 'Tue, 01 Sep 2020 14:33:56 GMT',
+            'server': '127.0.0.1',
+            'Transfer-Encoding': 'chunked',
+        }
+        if content_header is None
+        else content_header
+    )
+    mock_server_base.adapter.register_uri(
+        method,
+        f'{mock_server_base.url}/{url}',
+        content=content,
+        headers=content_header,
+        status_code=status_code,
+    )
+    return mock_server_base
+
+
 def with_octet_stream_route(
     mock_server_base, method, url, octet_response, status_code=200, content_header=None
 ):
@@ -131,7 +185,7 @@ def api_get_metadata(mock_server_base):
 
 @pytest.fixture
 def sem_ver_check(mock_server_base):
-    json = {"version": "1.21.0"}
+    json = {"version": "1.21.3"}
     return with_json_route(mock_server_base, 'GET', 'api/', json)
 
 
@@ -778,7 +832,7 @@ def get_case_log(sem_ver_check, mock_server_base):
 
 
 @pytest.fixture
-def get_case_results(sem_ver_check, mock_server_base):
+def get_mat_case_results(sem_ver_check, mock_server_base):
     binary = bytes(4)
 
     return with_octet_stream_route(
@@ -788,7 +842,30 @@ def get_case_results(sem_ver_check, mock_server_base):
         binary,
         content_header={
             'X-Powered-By': 'Express',
-            'content-type': 'application/octet-stream',
+            'content-type': 'application/vnd.impact.mat.v1+octet-stream',
+            'content-disposition': 'attachment; filename="Modelica.Blocks.Examples.PID_Controller_2020-10-22_06-03.mat"',
+            'connection': 'close',
+            'date': 'Thu, 22 Oct 2020 06:03:46 GMT',
+            'server': '127.0.0.1',
+            'Content-Length': '540',
+            'ETag': 'W/"21c-YYNaLhSng67+inxuWx+DHndUdno"',
+            'Vary': 'Accept-Encoding',
+        },
+    )
+
+
+@pytest.fixture
+def get_csv_case_results(sem_ver_check, mock_server_base):
+    text = "1;2;3"
+
+    return with_csv_route(
+        mock_server_base,
+        'GET',
+        'api/workspaces/WS/experiments/pid_2009/cases/case_1/result',
+        text,
+        content_header={
+            'X-Powered-By': 'Express',
+            'content-type': 'text/csv',
             'content-disposition': 'attachment; filename="Modelica.Blocks.Examples.PID_Controller_2020-10-22_06-03.csv"',
             'connection': 'close',
             'date': 'Thu, 22 Oct 2020 06:03:46 GMT',

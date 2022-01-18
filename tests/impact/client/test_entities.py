@@ -675,3 +675,8 @@ class TestCase:
         assert case.input.analysis.solver_options == {'atol': 1e-8}
         assert case.input.analysis.simulation_log_level == "DEBUG"
         assert case.input.parametrization == {'PI.k': 120}
+
+    def test_get_result_invalid_format(self, experiment):
+        case = experiment.entity.get_case("case_1")
+        pytest.raises(ValueError, case.get_result, 'ma')
+

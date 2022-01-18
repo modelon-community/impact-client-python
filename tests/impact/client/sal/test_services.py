@@ -534,13 +534,32 @@ class TestExperimentService:
         data = service.experiment.case_get_log("WS", "pid_2009", "case_1")
         assert data == 'Simulation log..'
 
-    def test_get_case_result(self, get_case_results):
-        uri = modelon.impact.client.sal.service.URI(get_case_results.url)
+    def test_get_mat_case_result(self, get_mat_case_results):
+        uri = modelon.impact.client.sal.service.URI(get_mat_case_results.url)
         service = modelon.impact.client.sal.service.Service(
-            uri=uri, context=get_case_results.context
+            uri=uri, context=get_mat_case_results.context
         )
-        data, name = service.experiment.case_result_get("WS", "pid_2009", "case_1")
+        data, name = service.experiment.case_result_get(
+            "WS",
+            "pid_2009",
+            "case_1",
+            modelon.impact.client.sal.service.ResultFormat.MAT,
+        )
         assert data == b'\x00\x00\x00\x00'
+        assert name == 'Modelica.Blocks.Examples.PID_Controller_2020-10-22_06-03.mat'
+
+    def test_get_csv_case_result(self, get_csv_case_results):
+        uri = modelon.impact.client.sal.service.URI(get_csv_case_results.url)
+        service = modelon.impact.client.sal.service.Service(
+            uri=uri, context=get_csv_case_results.context
+        )
+        data, name = service.experiment.case_result_get(
+            "WS",
+            "pid_2009",
+            "case_1",
+            modelon.impact.client.sal.service.ResultFormat.CSV,
+        )
+        assert data == '1;2;3'
         assert name == 'Modelica.Blocks.Examples.PID_Controller_2020-10-22_06-03.csv'
 
     def test_get_case_artifact(self, get_case_artifact):

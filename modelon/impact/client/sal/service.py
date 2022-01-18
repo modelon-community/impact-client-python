@@ -6,8 +6,9 @@ import inspect
 import logging
 import requests
 import urllib.parse
-from modelon.impact.client.sal import exceptions
 
+from modelon.impact.client.sal import exceptions
+import enum
 
 logger = logging.getLogger(__name__)
 
@@ -17,6 +18,25 @@ def _decorate_all_methods(cls, decorator):
         setattr(cls, method_name, decorator(method))
 
     return cls
+
+
+@enum.unique
+class ResultFormat(enum.Enum):
+    """
+    Class representing an enumeration for the possible
+    formats avaiable for downloading results.
+    """
+
+    MAT = "mat"
+    CSV = "csv"
+
+    @classmethod
+    def _missing_(cls, value):
+        if cls not in ['mat', 'csv']:
+            raise ValueError(
+                "Invalid result format! Allowed formats are 'mat' and 'csv."
+            )
+        return cls(value)
 
 
 class Service:
@@ -394,13 +414,20 @@ class ExperimentService:
         ).resolve()
         return self._http_client.get_text(url)
 
-    def case_result_get(self, workspace_id, experiment_id, case_id):
+    def case_result_get(
+        self, workspace_id, experiment_id, case_id, result_format=ResultFormat.MAT
+    ):
         url = (
             self._base_uri
             / f"api/workspaces/{workspace_id}/experiments/{experiment_id}/cases/"
             f"{case_id}/result"
         ).resolve()
-        resp = self._http_client.get_octet_response(url)
+        if result_format == ResultFormat.CSV:
+            headers = {'Accept': 'text/csv'}
+            resp = self._http_client.get_csv(url, headers=headers)
+        else:
+            headers = {'Accept': 'application/vnd.impact.mat.v1+octet-stream'}
+            resp = self._http_client.get_mat(url, headers=headers)
         return resp.stream, resp.file_name
 
     def case_trajectories_get(self, workspace_id, experiment_id, case_id, variables):
@@ -471,6 +498,14 @@ class HTTPClient:
     def get_text(self, url):
         request = RequestText(self._context, "GET", url)
         return request.execute().data
+
+    def get_csv(self, url, headers=None):
+        request = RequestCSV(self._context, "GET", url, headers=headers)
+        return request.execute()
+
+    def get_mat(self, url, headers=None):
+        request = RequestMatStream(self._context, "GET", url, headers=headers)
+        return request.execute()
 
     def get_octet_response(self, url):
         request = RequestOctetStream(self._context, "GET", url)
@@ -583,11 +618,21 @@ class RequestText(Request):
         super().__init__(context, method, url, TextResponse, body, files, headers)
 
 
+class RequestCSV(Request):
+    def __init__(self, context, method, url, body=None, files=None, headers=None):
+        super().__init__(context, method, url, CSVResponse, body, files, headers)
+
+
 class RequestOctetStream(Request):
     def __init__(self, context, method, url, body=None, files=None, headers=None):
         super().__init__(
             context, method, url, OctetStreamResponse, body, files, headers
         )
+
+
+class RequestMatStream(Request):
+    def __init__(self, context, method, url, body=None, files=None, headers=None):
+        super().__init__(context, method, url, MatStreamResponse, body, files, headers)
 
 
 class Context:
@@ -671,24 +716,29 @@ class TextResponse(Response):
         return self._resp_obj.text
 
 
-class OctetStreamResponse(Response):
-    def __init__(self, resp_obj):
+class FileResponse(Response):
+    def __init__(self, resp_obj, content_type):
         super().__init__(resp_obj)
+        self.content_type = content_type
 
-    def _is_octet_stream(self):
-        return "application/octet-stream" in self._resp_obj.headers.get("content-type")
+    def _is_expected_content_type(self):
+        return self.content_type in self._resp_obj.headers.get("content-type")
 
     @property
     def stream(self):
         if not self._resp_obj.ok:
             raise exceptions.HTTPError(self.error.message, self._resp_obj.status_code)
 
-        if not self._is_octet_stream():
+        if not self._is_expected_content_type():
             raise exceptions.InvalidContentTypeError(
-                "Incorrect content type on response, expected octet-stream"
+                f"Incorrect content type on response, expected {self.content_type}"
             )
 
-        return self._resp_obj.content
+        return (
+            self._resp_obj.text
+            if self.content_type.startswith("text")
+            else self._resp_obj.content
+        )
 
     @property
     def headers(self):
@@ -698,6 +748,21 @@ class OctetStreamResponse(Response):
     def file_name(self):
         d = self.headers["content-disposition"]
         return re.findall("filename=(.+)", d)[0].strip('"')
+
+
+class CSVResponse(FileResponse):
+    def __init__(self, resp_obj):
+        super().__init__(resp_obj, "text/csv")
+
+
+class OctetStreamResponse(FileResponse):
+    def __init__(self, resp_obj):
+        super().__init__(resp_obj, "application/octet-stream")
+
+
+class MatStreamResponse(FileResponse):
+    def __init__(self, resp_obj):
+        super().__init__(resp_obj, "application/vnd.impact.mat.v1+octet-stream")
 
 
 class ZIPResponse(Response):
