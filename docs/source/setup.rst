@@ -4,9 +4,39 @@ Setup
 This page describes the procedure to set up API keys to authenticate your login and
 various ways to use the generated API key to log in to the client.
 
+Authentication with JupyterHub
+******************************
+
+This section is ONLY applicable for users running Modelon Impact in a JupyterHub environment,
+otherwise skip to the section :ref:`below<Authentication with API keys>`.
+To use the client on JupyterHub, the users needs to first authenticate with a token
+for Jupyterhub. To generate the key, go to the JupyterHub token manager 
+(located at <JupyterHub url>/token).You can get a secret token by clicking the 
+"Request new API token" button. These are tokens with full access to the JupyterHub API. 
+Anything you can do with JupyterHub can be done with these tokens.
+
+*Remember that this is the only time you will see the secret. Make sure to store it
+safely.*
+
+If the token is lost, you can always generate a new one by clicking the "Request new API token"
+button.
+While initializing the client, you will be asked to enter the JupyterHub API token in a prompt.
+
+.. code-block:: pycon
+
+    >>>> from modelon.impact.client import Client
+    >>>> client = Client(url=<JupyterHub url>, interactive=True)
+    Enter JupyterHub API token:
+
+When the token has been entered the first time, it will be stored and used in future requests, 
+and the prompt will not be shown again. To view a list of active tokens or revoke active tokens, 
+the user can go to the JupyterHub token manager (located at <JupyterHub url>/token).
+Revoking the token will cause the prompt to be shown again and a new token needs to be created.
+Once the JupyterHub API has been authenticated, the user need to authenticate the client for Modelon Impact 
+following the section :ref:`below<Authentication with API keys>`.
 
 Authentication with API keys
-----------------------------
+****************************
 
 To use the client, authentication with an API key is required. To generate the key, go
 to the API key manager (located at <impact url>/admin/keys/). You will get a secret
