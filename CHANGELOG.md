@@ -1,3 +1,10 @@
+# [1.2.0-beta.33](https://github.com/modelon-community/impact-client-python/compare/v1.2.0-beta.32...v1.2.0-beta.33) (2022-01-31)
+
+
+### Bug Fixes
+
+* Added docs for JupyterHub authentiation ([0be6f3c](https://github.com/modelon-community/impact-client-python/commit/0be6f3c92373771dcbff15dbc913b58d7c2b66ee))
+
 # [1.2.0-beta.32](https://github.com/modelon-community/impact-client-python/compare/v1.2.0-beta.31...v1.2.0-beta.32) (2022-01-10)
 
 
