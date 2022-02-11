@@ -61,7 +61,7 @@ def test_semantic_version_error(semantic_version_error):
         )
     assert (
         "Version '3.1.0' of the HTTP REST API is not supported, must be in the "
-        "range '>=1.21.0,<2.0.0'! Updgrade or downgrade this package to a version"
+        "range '>=1.21.0,<3.0.0'! Updgrade or downgrade this package to a version"
         " that supports version '3.1.0' of the HTTP REST API." in str(excinfo.value)
     )
 
@@ -116,6 +116,7 @@ def test_client_login_interactive_saves_key(user_with_license):
     cred_manager.write_key_to_file.assert_called_with(
         'test_client_login_interactive_saves_key'
     )
+
 
 def test_client_login_fail_interactive_dont_save_key(login_fails, user_with_license):
     cred_manager = unittest.mock.MagicMock()
