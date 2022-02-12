@@ -1,3 +1,10 @@
+## [1.2.1](https://github.com/modelon-community/impact-client-python/compare/v1.2.0...v1.2.1) (2022-02-12)
+
+
+### Bug Fixes
+
+* Update impact api version range ([fdc6183](https://github.com/modelon-community/impact-client-python/commit/fdc61836bcaa882d0adf7388a74cf6d7841a137c))
+
 # [1.2.0](https://github.com/modelon-community/impact-client-python/compare/v1.1.2...v1.2.0) (2022-02-02)
 
 
