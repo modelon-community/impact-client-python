@@ -196,14 +196,6 @@ class WorkspaceService:
         ).resolve()
         return self._http_client.get_zip(url)
 
-    def workspace_lock(self, workspace_id):
-        url = (self._base_uri / f"api/workspaces/{workspace_id}/lock").resolve()
-        self._http_client.post_json_no_response_body(url)
-
-    def workspace_unlock(self, workspace_id):
-        url = (self._base_uri / f"api/workspaces/{workspace_id}/lock").resolve()
-        self._http_client.delete_json(url)
-
     def workspace_clone(self, workspace_id):
         url = (self._base_uri / f"api/workspaces/{workspace_id}/clone").resolve()
         return self._http_client.post_json(url)

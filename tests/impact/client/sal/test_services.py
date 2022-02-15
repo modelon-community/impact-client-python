@@ -242,34 +242,6 @@ class TestWorkspaceService:
         data = service.workspace.workspace_download("Workspace", '0d96b08c8d')
         assert data == b'\x00\x00\x00\x00'
 
-    def test_lock_workspace(self, lock_workspace):
-        uri = modelon.impact.client.sal.service.URI(lock_workspace.url)
-        service = modelon.impact.client.sal.service.Service(
-            uri=uri, context=lock_workspace.context
-        )
-        service.workspace.workspace_lock("AwesomeWorkspace")
-        assert lock_workspace.adapter.called
-        lock_call = lock_workspace.adapter.request_history[0]
-        assert (
-            'http://mock-impact.com/api/workspaces/AwesomeWorkspace/lock'
-            == lock_call.url
-        )
-        assert 'POST' == lock_call.method
-
-    def test_unlock_workspace(self, unlock_workspace):
-        uri = modelon.impact.client.sal.service.URI(unlock_workspace.url)
-        service = modelon.impact.client.sal.service.Service(
-            uri=uri, context=unlock_workspace.context
-        )
-        service.workspace.workspace_unlock("AwesomeWorkspace")
-        assert unlock_workspace.adapter.called
-        unlock_call = unlock_workspace.adapter.request_history[0]
-        assert (
-            'http://mock-impact.com/api/workspaces/AwesomeWorkspace/lock'
-            == unlock_call.url
-        )
-        assert 'DELETE' == unlock_call.method
-
     def test_clone_workspace(self, clone_workspace):
         uri = modelon.impact.client.sal.service.URI(clone_workspace.url)
         service = modelon.impact.client.sal.service.Service(
