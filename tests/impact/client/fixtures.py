@@ -268,7 +268,7 @@ def create_workspace_error(user_with_license):
 
 @pytest.fixture
 def semantic_version_error(mock_server_base):
-    json = {"version": "3.1.0"}
+    json = {"version": "4.1.0"}
 
     return with_json_route(mock_server_base, 'GET', 'api/', json)
 
@@ -461,22 +461,6 @@ def download_workspace(sem_ver_check, mock_server_base, get_export_id):
 
     return with_zip_route(
         mock_server_base, 'GET', 'api/workspaces/Workspace/exports/0d96b08c8d', content
-    )
-
-
-@pytest.fixture
-def lock_workspace(sem_ver_check, mock_server_base):
-
-    return with_json_route_no_resp(
-        mock_server_base, 'POST', 'api/workspaces/AwesomeWorkspace/lock'
-    )
-
-
-@pytest.fixture
-def unlock_workspace(sem_ver_check, mock_server_base):
-
-    return with_json_route_no_resp(
-        mock_server_base, 'DELETE', 'api/workspaces/AwesomeWorkspace/lock'
     )
 
 

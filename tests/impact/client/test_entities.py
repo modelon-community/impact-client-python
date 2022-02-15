@@ -79,18 +79,6 @@ class TestWorkspace:
         )
         assert upload_op.id == "2f036b9fab6f45c788cc466da327cc78workspace"
 
-    def test_lock(self):
-        workspace_service = unittest.mock.MagicMock()
-        workspace = Workspace('lockedWorksapce', workspace_service)
-        workspace.lock()
-        workspace_service.workspace_lock.assert_called_with('lockedWorksapce')
-
-    def test_unlock(self):
-        workspace_service = unittest.mock.MagicMock()
-        workspace = Workspace('unlockedWorksapce', workspace_service)
-        workspace.unlock()
-        workspace_service.workspace_unlock.assert_called_with('unlockedWorksapce')
-
     def test_download_workspace(self, workspace):
         t = os.path.join(tempfile.gettempdir(), workspace.entity.id + '.zip')
         resp = workspace.entity.download({}, tempfile.gettempdir())

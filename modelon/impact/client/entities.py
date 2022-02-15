@@ -327,24 +327,6 @@ class Workspace:
             self._model_exe_sal,
         )
 
-    def lock(self):
-        """Locks the workspace to the user.
-
-        Example::
-
-            workspace.lock()
-        """
-        self._workspace_sal.workspace_lock(self._workspace_id)
-
-    def unlock(self):
-        """Unlocks the workspace for other users.
-
-        Example::
-
-            workspace.unlock()
-        """
-        self._workspace_sal.workspace_unlock(self._workspace_id)
-
     def download(self, options, path):
         """Downloads the workspace as a binary compressed archive.
         Returns the local path to the downloaded workspace archive.
