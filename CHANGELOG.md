@@ -1,3 +1,15 @@
+# [2.0.0](https://github.com/modelon-community/impact-client-python/compare/v1.2.1...v2.0.0) (2022-02-17)
+
+
+### Features
+
+* remove workspace locks ([f93255f](https://github.com/modelon-community/impact-client-python/commit/f93255f5e0c5fe1c82cbab9346b02363290ce274))
+
+
+### BREAKING CHANGES
+
+* workspace locks removed
+
 ## [1.2.1](https://github.com/modelon-community/impact-client-python/compare/v1.2.0...v1.2.1) (2022-02-12)
 
 
