@@ -1,17 +1,22 @@
 .PHONY: build coverage shell unit-test test test-watch lint wheel publish
 USER_ID := $(shell id -u)
 GROUP_ID := $(shell id -g)
+IN_DOCKER_IMG := $(shell test -f /.dockerenv && echo 1 || echo 0)
 
 define _run
-	docker run \
-	--rm $(1) \
-	-v $(CURDIR):/home/dev/src \
-	-u $(USER_ID):$(GROUP_ID) \
-	-e GIT_CREDENTIALS \
-	-e PYPI_USERNAME \
-	-e PYPI_PASSWORD \
-	modelon-impact-client-build:latest \
-	$(2)
+	@if [ $(IN_DOCKER_IMG) -eq 1 ]; then \
+		$(2);\
+	else \
+		docker run \
+		--rm $(1) \
+		-v $(CURDIR):/home/dev/src \
+		-u $(USER_ID):$(GROUP_ID) \
+		-e GIT_CREDENTIALS \
+		-e PYPI_USERNAME \
+		-e PYPI_PASSWORD \
+		modelon-impact-client-build:latest \
+		$(2);\
+	fi
 endef
 
 define _run_interactive
@@ -23,7 +28,9 @@ define _run_bare
 endef
 
 build:
-	docker build -t modelon-impact-client-build:latest .
+	@if [ $(IN_DOCKER_IMG) -eq 0 ]; then \
+        docker build -t modelon-impact-client-build:latest . ;\
+    fi
 
 coverage:
 	$(call _run_bare, poetry run pytest --cov-report=html:htmlcov --cov-report=term --cov=modelon)
