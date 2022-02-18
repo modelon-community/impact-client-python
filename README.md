@@ -5,8 +5,27 @@ Client library for easy scripting against Modelon Impact
 
 For installation instructions and requirements, please refer to the [documentation](https://modelon-impact-client.readthedocs.io).
 
-
 ## Develop
+
+### Devcontainer
+If you are developing with VS Code you can use the devcontainer which gives gives you a ready to use environment for development. Just click the "Reopen in Container" button after opening the project in VS Code.
+
+#### Tips and tricks
+It is possible to run the 'make' commands listed bellow using the devcontainer. It will detect being in a container and bypass Docker parts of the commands.
+
+You can open a project with the dev-container directly without having to open and then re-load. Standing in the project directory you can run:
+```
+devcontainer open .
+```
+Note that this requires the [devcontainer-cli](https://code.visualstudio.com/docs/remote/devcontainer-cli).
+
+You can add your own extensions to devcontainers. These extensions will be added for all devcontainers. First open your 'settings' as JSON. Then, to add for example the "GitLens" extension, put the following at the bottom of the settings:
+```
+    ...
+    "remote.containers.defaultExtensions": ["eamodio.gitlens"]
+}
+```
+VS Code also have a `'Install Local Extensions in 'Remote'` command, but it must be repeated for each devcontainer and everytime a devcontainer is re-built.
 
 ### Creating a shell
 Modelon-impact-client is developed using a Docker container for all build tools.
