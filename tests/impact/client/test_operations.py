@@ -1,11 +1,10 @@
 import pytest
 from modelon.impact.client import exceptions
-
-from modelon.impact.client.entities import (
-    Case,
-    ModelExecutable,
-    Experiment,
-    ExternalResult,
+from tests.impact.client.helpers import (
+    create_case_entity,
+    create_model_exe_entity,
+    create_experiment_entity,
+    create_external_result_entity,
 )
 from modelon.impact.client.operations import (
     ExternalResultUploadOperation,
@@ -14,7 +13,6 @@ from modelon.impact.client.operations import (
     CachedModelExecutableOperation,
     ModelExecutableOperation,
 )
-from unittest import mock
 from tests.impact.client.fixtures import *
 
 
@@ -25,7 +23,9 @@ class TestModelExecutableOperation:
         assert fmu.id == "test_pid_fmu_id"
         assert fmu.status() == Status.DONE
         assert fmu.is_complete()
-        assert fmu.wait() == ModelExecutable('AwesomeWorkspace', 'test_pid_fmu_id')
+        assert fmu.wait() == create_model_exe_entity(
+            'AwesomeWorkspace', 'test_pid_fmu_id'
+        )
 
     def test_compile_wait_cancel_timeout(self, model_compiled, compiler_options):
         fmu = model_compiled.compile(compiler_options, force_compilation=True)
@@ -43,7 +43,7 @@ class TestModelExecutableOperation:
         assert fmu.id == "test_pid_fmu_id"
         assert fmu.status() == Status.RUNNING
         assert not fmu.is_complete()
-        assert fmu.wait(status=Status.RUNNING) == ModelExecutable(
+        assert fmu.wait(status=Status.RUNNING) == create_model_exe_entity(
             'AwesomeWorkspace', 'test_pid_fmu_id'
         )
 
@@ -52,7 +52,7 @@ class TestModelExecutableOperation:
         assert fmu == ModelExecutableOperation('AwesomeWorkspace', 'test_pid_fmu_id')
         assert fmu.id == "test_pid_fmu_id"
         assert fmu.status() == Status.CANCELLED
-        assert fmu.wait(status=Status.CANCELLED) == ModelExecutable(
+        assert fmu.wait(status=Status.CANCELLED) == create_model_exe_entity(
             'AwesomeWorkspace', 'test_pid_fmu_id'
         )
 
@@ -74,7 +74,9 @@ class TestCachedModelExecutableOperation:
         assert fmu.name == "Looking for cached FMU"
         assert fmu.status() == Status.DONE
         assert fmu.is_complete()
-        assert fmu.wait() == ModelExecutable('AwesomeWorkspace', 'test_pid_fmu_id')
+        assert fmu.wait() == create_model_exe_entity(
+            'AwesomeWorkspace', 'test_pid_fmu_id'
+        )
 
     def test_cached_fmu_wait_cancelled(self, model_cached, compiler_options):
         fmu = model_cached.compile(compiler_options, force_compilation=False)
@@ -94,7 +96,7 @@ class TestExperimentOperation:
         assert exp.id == "pid_2009"
         assert exp.status() == Status.DONE
         assert exp.is_complete()
-        assert exp.wait() == Experiment('AwesomeWorkspace', 'pid_2009')
+        assert exp.wait() == create_experiment_entity('AwesomeWorkspace', 'pid_2009')
 
     def test_execute_wait_cancel_timeout(self, workspace):
         exp = workspace.entity.execute({})
@@ -110,7 +112,7 @@ class TestExperimentOperation:
         assert exp.id == "pid_2009"
         assert exp.status() == Status.RUNNING
         assert not exp.is_complete()
-        assert exp.wait(status=Status.RUNNING) == Experiment(
+        assert exp.wait(status=Status.RUNNING) == create_experiment_entity(
             'AwesomeWorkspace', 'pid_2009'
         )
 
@@ -118,7 +120,7 @@ class TestExperimentOperation:
         exp = workspace_execute_cancelled.execute({})
         assert exp.id == "pid_2009"
         assert exp.status() == Status.CANCELLED
-        assert exp.wait(status=Status.CANCELLED) == Experiment(
+        assert exp.wait(status=Status.CANCELLED) == create_experiment_entity(
             'AwesomeWorkspace', 'pid_2009'
         )
 
@@ -136,7 +138,9 @@ class TestCaseOperation:
         assert case_ops.id == "case_1"
         assert case_ops.status() == Status.DONE
         assert case_ops.is_complete()
-        assert case_ops.wait() == Case('case_1', 'Workspace', 'Test', 'pid_2009')
+        assert case_ops.wait() == create_case_entity(
+            'case_1', 'Workspace', 'Test', 'pid_2009'
+        )
 
     def test_execute_wait_cancel_timeout(self, experiment):
         case = experiment.entity.get_case('case_1')
@@ -154,8 +158,8 @@ class TestCaseOperation:
         assert case_ops.id == "case_1"
         assert case_ops.status() == Status.RUNNING
         assert not case_ops.is_complete()
-        assert case_ops.wait(status=Status.RUNNING) == Case(
-            'case_1', 'Workspace', 'Test', 'pid_2009'
+        assert case_ops.wait(status=Status.RUNNING) == create_case_entity(
+            'case_1', 'Workspace', 'Test', 'pid_2009',
         )
 
     def test_execute_wait_cancelled(self, experiment_cancelled):
@@ -163,8 +167,8 @@ class TestCaseOperation:
         case = case.execute()
         assert case.id == "case_1"
         assert case.status() == Status.CANCELLED
-        assert case.wait(status=Status.CANCELLED) == Case(
-            'case_1', 'Workspace', 'Test', 'pid_2009'
+        assert case.wait(status=Status.CANCELLED) == create_case_entity(
+            'case_1', 'Workspace', 'Test', 'pid_2009',
         )
 
     def test_execute_wait_timeout(self, experiment_cancelled):
@@ -203,7 +207,9 @@ class TestExternalResultUploadOperation:
         assert upload_op.id == '2f036b9fab6f45c788cc466da327cc78workspace'
         assert upload_op.status() == AsyncOperationStatus.READY
         assert upload_op.status().done()
-        assert result == ExternalResult('2f036b9fab6f45c788cc466da327cc78workspace')
+        assert result == create_external_result_entity(
+            '2f036b9fab6f45c788cc466da327cc78workspace'
+        )
         meta = result.metadata
         assert meta.id == "2f036b9fab6f45c788cc466da327cc78workspace"
         assert meta.name == "result_for_PID"
