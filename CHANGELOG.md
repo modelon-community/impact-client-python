@@ -1,3 +1,10 @@
+## [2.1.1-feature-workspace.1](https://github.com/modelon-community/impact-client-python/compare/v2.1.0...v2.1.1-feature-workspace.1) (2022-05-25)
+
+
+### Bug Fixes
+
+* updated python dependency ([e5cbd29](https://github.com/modelon-community/impact-client-python/commit/e5cbd29540c01365fd088d281630cb0423cd1ff4))
+
 ## [2.1.1-beta.1](https://github.com/modelon-community/impact-client-python/compare/v2.1.0...v2.1.1-beta.1) (2022-05-25)
 
 
