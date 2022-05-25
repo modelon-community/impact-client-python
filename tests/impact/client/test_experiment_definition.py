@@ -10,7 +10,10 @@ from modelon.impact.client import (
 import pytest
 import copy
 from modelon.impact.client import exceptions
-
+from tests.impact.client.helpers import (
+    create_external_result_entity,
+    create_case_entity,
+)
 from tests.impact.client.fixtures import *
 
 _EXPECTED_FMU_EXP = {
@@ -1067,7 +1070,7 @@ class TestSimpleModelicaExperimentDefinition:
         ).initialize_from(experiment)
 
         # Reinitializing with case entity
-        case_to_init = entities.Case('Case_2', 'ws_id', 'exp_id')
+        case_to_init = create_case_entity('Case_2', 'ws_id', 'exp_id')
         err_str = "An experiment can only be initialized from one entity. "
         with pytest.raises(Exception) as err:
             definition = definition.initialize_from(case_to_init)
@@ -1079,7 +1082,7 @@ class TestSimpleModelicaExperimentDefinition:
         )
 
         # Reinitializing with external result entity
-        result_to_init = entities.ExternalResult('result_id')
+        result_to_init = create_external_result_entity('result_id')
         with pytest.raises(Exception) as err:
             definition = definition.initialize_from(result_to_init)
         assert str(err.value) == (

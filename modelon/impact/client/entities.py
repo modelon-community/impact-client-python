@@ -1,20 +1,79 @@
 import os
+from collections.abc import Mapping
 import tempfile
 import logging
-import modelon.impact.client.sal.service
-from modelon.impact.client import operations
+from enum import Enum
+from typing import Any, List, Dict, Tuple, Union, Optional
+from modelon.impact.client import experiment_definition
+from modelon.impact.client.sal.service import (
+    CustomFunctionService,
+    ExperimentService,
+    ModelExecutableService,
+    ResultFormat,
+    WorkspaceService,
+)
+from modelon.impact.client.operations import (
+    ModelExecutableOperation,
+    CachedModelExecutableOperation,
+    ExperimentOperation,
+    CaseOperation,
+    ExternalResultUploadOperation,
+)
 
 from modelon.impact.client.experiment_definition import (
     SimpleModelicaExperimentDefinition,
     SimpleFMUExperimentDefinition,
-    assert_valid_args,
 )
-from collections.abc import Mapping
+
 from modelon.impact.client.options import ExecutionOptions
 from modelon.impact.client import exceptions
-from enum import Enum
 
 logger = logging.getLogger(__name__)
+
+
+def assert_valid_args(
+    model=None,
+    fmu=None,
+    custom_function=None,
+    solver_options=None,
+    simulation_options=None,
+    compiler_options=None,
+    runtime_options=None,
+):
+    if fmu and not isinstance(fmu, ModelExecutable):
+        raise TypeError("FMU must be an instance of ModelExecutable class!")
+    if model and not isinstance(model, Model):
+        raise TypeError("Model must be an instance of Model class!")
+    if custom_function and not isinstance(custom_function, CustomFunction):
+        raise TypeError("Custom_function must be an instance of CustomFunction class!")
+    if solver_options is not None and not isinstance(
+        solver_options, (ExecutionOptions, dict)
+    ):
+        raise TypeError(
+            "Solver options must be an instance of ExecutionOptions class or a "
+            "dictionary class object!"
+        )
+    if simulation_options is not None and not isinstance(
+        simulation_options, (ExecutionOptions, dict)
+    ):
+        raise TypeError(
+            "Simulation options must be an instance of ExecutionOptions class or"
+            " a dictionary class object!"
+        )
+    if compiler_options is not None and not isinstance(
+        compiler_options, (ExecutionOptions, dict)
+    ):
+        raise TypeError(
+            "Compiler options object must either be a dictionary or an "
+            "instance of modelon.impact.client.options.ExecutionOptions class!"
+        )
+    if runtime_options is not None and not isinstance(
+        runtime_options, (ExecutionOptions, dict)
+    ):
+        raise TypeError(
+            "Runtime options object must either be a dictionary or an "
+            "instance of modelon.impact.client.options.ExecutionOptions class!"
+        )
 
 
 def _assert_successful_operation(is_successful, operation_name="Operation"):
@@ -65,6 +124,15 @@ def _create_result_dict(variables, workspace_id, exp_id, case_id, exp_sal):
     return data
 
 
+Options = Union[ExecutionOptions, Dict[str, Any]]
+CompilationOperations = Union[ModelExecutableOperation, CachedModelExecutableOperation]
+ExperimentDefinition = Union[
+    experiment_definition.SimpleModelicaExperimentDefinition,
+    experiment_definition.SimpleFMUExperimentDefinition,
+    Dict[str, Any],
+]
+
+
 class ModelExecutableStatus(Enum):
     """
     Class representing an enumeration for the possible
@@ -102,512 +170,6 @@ class CaseStatus(Enum):
     STARTED = 'started'
 
 
-class Workspace:
-    """
-    Class containing Workspace functionalities.
-    """
-
-    def __init__(
-        self,
-        workspace_id,
-        workspace_service=None,
-        model_exe_service=None,
-        experiment_service=None,
-        custom_function_service=None,
-    ):
-        self._workspace_id = workspace_id
-        self._workspace_sal = workspace_service
-        self._model_exe_sal = model_exe_service
-        self._exp_sal = experiment_service
-        self._custom_func_sal = custom_function_service
-
-    def __repr__(self):
-        return f"Workspace with id '{self._workspace_id}'"
-
-    def __eq__(self, obj):
-        return isinstance(obj, Workspace) and obj._workspace_id == self._workspace_id
-
-    @property
-    def id(self):
-        """Workspace id"""
-        return self._workspace_id
-
-    def get_custom_function(self, name):
-        """
-        Returns a CustomFunction class object.
-
-        Parameters:
-
-            name --
-                The name of the custom function.
-
-        Returns:
-
-            custom_function --
-                The CustomFunction class object.
-
-        Example::
-
-            workspace.get_custom_function('dynamic')
-        """
-        custom_function = self._custom_func_sal.custom_function_get(
-            self._workspace_id, name
-        )
-        return CustomFunction(
-            self._workspace_id,
-            custom_function["name"],
-            custom_function["parameters"],
-            self._custom_func_sal,
-        )
-
-    def get_custom_functions(self):
-        """
-        Returns a list of CustomFunctions class objects.
-
-        Returns:
-
-            custom_functions --
-                A list of CustomFunction class objects.
-
-        Example::
-
-            workspace.get_custom_functions()
-        """
-        custom_functions = self._custom_func_sal.custom_functions_get(
-            self._workspace_id
-        )
-        return [
-            CustomFunction(
-                self._workspace_id,
-                custom_function["name"],
-                custom_function["parameters"],
-                self._custom_func_sal,
-            )
-            for custom_function in custom_functions["data"]["items"]
-        ]
-
-    def delete(self):
-        """Deletes a workspace.
-
-        Example::
-
-            workspace.delete()
-        """
-        self._workspace_sal.workspace_delete(self._workspace_id)
-
-    def upload_model_library(self, path_to_lib):
-        """Uploads a modelica library or a modelica model to the workspace.
-
-        Parameters:
-
-            path_to_lib --
-                The path for the library to be imported.
-
-        Example::
-
-            workspace.upload_model_library('C:/A.mo')
-            workspace.upload_model_library('C:/B.mol')
-        """
-        self._workspace_sal.library_import(self._workspace_id, path_to_lib)
-
-    def upload_result(self, path_to_result, label=None, description=None):
-        """Uploads a '.mat' result file to the workspace.
-
-        Parameters:
-
-            path_to_result --
-                The path for the result file to be imported.
-
-            label --
-                The label of the result file. Default: None.
-
-            description --
-                The description of the result file. Default: None.
-
-        Example::
-
-            workspace.upload_result('C:/A.mat')
-            workspace.upload_result('C:/B.mat', label = "result_for_PID.mat",
-            description = "This is a result file for PID controller")
-        """
-        resp = self._workspace_sal.result_upload(
-            self._workspace_id, path_to_result, label=label, description=description
-        )
-        return operations.ExternalResultUploadOperation(
-            resp["data"]["id"], self._workspace_sal
-        )
-
-    def upload_fmu(
-        self,
-        fmu_path,
-        library_path,
-        class_name=None,
-        overwrite=False,
-        include_patterns=None,
-        exclude_patterns=None,
-        top_level_inputs=None,
-        step_size=0.0,
-    ):
-        """Uploads a FMU to the workspace.
-
-        Parameters:
-
-            fmu_path --
-                The path for the FMU to be imported.
-
-            library_path --
-                The library identifier, '{name} {version}' or '{name}' if version is
-                missing.
-
-            class_name --
-                Qualified name of generated class. By default, 'class_name' is
-                set to the name of the library followed by a name based
-                on the filename of the imported FMU.
-
-            overwrite --
-                Determines if any already existing files should be overwritten.
-                Default: False.
-
-            include_patterns, exclude_patterns --
-                Specifies what variables from the FMU to include and/or exclude in the
-                wrapper model. These two arguments are patterns or lists of patterns as
-                the same kind as the argument 'filter' for the function
-                'get_model_variables' in PyFMI. If both 'include_patterns' and
-                'exclude_patterns' are given, then all variables that matches
-                'include_patterns' but does not match 'exclude_patterns' are included.
-                Derivatives and variables with a leading underscore in the name are
-                always excluded.
-                Default value: None (which means to include all the variables).
-
-            top_level_inputs --
-                Specify what inputs that should be kept as inputs, i.e. with or without
-                the input keyword. The argument is a pattern similar to the arguments
-                include_patterns and exclude_patterns. Example: If
-                top_level_inputs = 'my_inputs*', then all input variables matching the
-                pattern 'my_inputs*' will be generated as inputs, and all other inputs
-                not matching the pattern as model variables. If top_level_inputs = '',
-                then no input is imported as an input.
-                Default value: None (which means all inputs are kept as inputs)
-                Type: str or a list of strings
-
-            step_size --
-                Specify what value to set for the parameter for step size in the
-                generated model. By default the parameter is set to zero, which
-                inturn means that the step size will be set during simulation based
-                on simulation properties such as the time interval.
-                This can also be manually set to any real non-negative number.
-                The value of the step size parameter can also be set via the function
-                set_step_size, which must be invoked before importing the model.
-                Default value: 0.0 (which during simulation is set according to the
-                description above).
-                Type: number
-
-        Example::
-
-            workspace.upload_fmu('C:/A.fmu',"Workspace")
-            workspace.upload_fmu('C:/B.fmu',"Workspace",class_name="Workspace.Model")
-        """
-        resp = self._workspace_sal.fmu_import(
-            self._workspace_id,
-            fmu_path,
-            library_path,
-            class_name,
-            overwrite,
-            include_patterns,
-            exclude_patterns,
-            top_level_inputs,
-            step_size=step_size,
-        )
-
-        if resp["importWarnings"]:
-            logger.warning(f"Import Warnings: {'. '.join(resp['importWarnings'])}")
-
-        return Model(
-            resp['fmuClassPath'],
-            self._workspace_id,
-            self._workspace_sal,
-            self._model_exe_sal,
-        )
-
-    def download(self, options, path):
-        """Downloads the workspace as a binary compressed archive.
-        Returns the local path to the downloaded workspace archive.
-
-        Parameters:
-
-            options --
-                The definition of what workspace resources to include when
-                exporting the workspace.
-
-            path --
-                The local path to store the downloaded workspace.
-
-        Returns:
-
-            path --
-                Local path to the downloaded workspace archive.
-
-        Example::
-
-            options = {
-                "contents": {
-                    "libraries": [
-                        {"name": "LiquidCooling", "resources_to_exclude": []},
-                        {
-                            "name": "Workspace",
-                            "resources_to_exclude": ["my_plot.png", "my_sheet.csv"],
-                        },
-                    ],
-                    "experiment_ids": [
-                        "_nics_multibody_examples_elementary_doublependulum_20191029_084342_2c956e9",
-                        "modelica_blocks_examples_pid_controller_20191023_151659_f32a30d",
-                    ],
-                    "fmu_ids": [
-                        "_nics_multibody_examples_elementary_doublependulum_20191029_084342_2c956e9",
-                        "modelica_blocks_examples_pid_controller_20191023_151659_f32a30d",
-                    ],
-                }
-            }
-            workspace.download(options, path)
-        """
-        data = self._workspace_sal.workspace_download(self._workspace_id, options)
-        ws_path = os.path.join(path, self._workspace_id + ".zip")
-
-        os.makedirs(os.path.dirname(path), exist_ok=True)
-        with open(ws_path, "wb") as f:
-            f.write(data)
-        return ws_path
-
-    def clone(self):
-        """Clones the workspace.
-        Returns a clone Workspace class object.
-
-        Returns:
-
-            workspace_clone --
-                Clones workspace class object.
-
-        Example::
-
-            workspace.clone()
-        """
-        resp = self._workspace_sal.workspace_clone(self._workspace_id)
-        return Workspace(
-            resp["workspace_id"],
-            self._workspace_sal,
-            self._model_exe_sal,
-            self._exp_sal,
-            self._custom_func_sal,
-        )
-
-    def get_model(self, class_name):
-        """
-        Returns a Model class object.
-
-        Parameters:
-
-            class_name --
-                The modelica class path of the model.
-
-        Returns:
-
-            model --
-                Model class object.
-
-        Example::
-
-            workspace.get_model(class_name)
-        """
-        return Model(
-            class_name, self._workspace_id, self._workspace_sal, self._model_exe_sal
-        )
-
-    def get_fmus(self):
-        """
-        Returns a list of ModelExecutable class objects.
-
-        Returns:
-
-            FMUs --
-                List of ModelExecutable class objects.
-
-        Example::
-
-            workspace.get_fmus()
-        """
-        resp = self._workspace_sal.fmus_get(self._workspace_id)
-        return [
-            ModelExecutable(
-                self._workspace_id,
-                item["id"],
-                self._workspace_sal,
-                self._model_exe_sal,
-                item,
-            )
-            for item in resp["data"]["items"]
-        ]
-
-    def get_fmu(self, fmu_id):
-        """
-        Returns a ModelExecutable class object.
-
-        Returns:
-
-            FMU --
-                ModelExecutable class object.
-
-        Example::
-
-            workspace.get_fmu(fmu_id)
-        """
-        resp = self._workspace_sal.fmu_get(self._workspace_id, fmu_id)
-        return ModelExecutable(
-            self._workspace_id,
-            resp["id"],
-            self._workspace_sal,
-            self._model_exe_sal,
-            resp,
-        )
-
-    def get_experiments(self):
-        """
-        Returns a list of Experiment class objects.
-
-        Returns:
-
-            experiment --
-                List of Experiment class objects.
-
-        Example::
-
-            workspace.get_experiments()
-        """
-        resp = self._workspace_sal.experiments_get(self._workspace_id)
-        return [
-            Experiment(
-                self._workspace_id,
-                item["id"],
-                self._workspace_sal,
-                self._model_exe_sal,
-                self._exp_sal,
-                item,
-            )
-            for item in resp["data"]["items"]
-        ]
-
-    def get_experiment(self, experiment_id):
-        """
-        Returns an Experiment class object.
-
-        Parameters:
-
-            experiment_id --
-                The ID of the experiment.
-
-        Returns:
-
-            experiment --
-                Experiment class object.
-
-        Example::
-
-            workspace.get_experiment(experiment_id)
-        """
-        resp = self._workspace_sal.experiment_get(self._workspace_id, experiment_id)
-        return Experiment(
-            self._workspace_id,
-            resp["id"],
-            self._workspace_sal,
-            self._model_exe_sal,
-            self._exp_sal,
-            resp,
-        )
-
-    def create_experiment(self, definition, user_data=None):
-        """Creates an experiment.
-        Returns an Experiment class object.
-
-        Parameters:
-
-            definition --
-                An parametrized experiment definition class of type
-                modelon.impact.client.experiment_definition.SimpleModelicaExperimentDefinition
-                or
-                modelon.impact.client.experiment_definition.SimpleFMUExperimentDefinition.
-            user_data --
-                Optional dictionary object with custom data to attach to the experiment.
-
-        Returns:
-
-            experiment --
-                Experiment class object.
-
-        Example::
-
-            workspace.create_experiment(definition)
-        """
-        if isinstance(definition, SimpleFMUExperimentDefinition):
-            definition = definition.to_dict()
-        elif isinstance(definition, SimpleModelicaExperimentDefinition):
-            definition = definition.to_dict()
-        elif not isinstance(definition, dict):
-            raise TypeError(
-                "Definition object must either be a dictionary or an instance of either"
-                "modelon.impact.client.experiment_definition."
-                "SimpleModelicaExperimentDefinition class or modelon.impact.client."
-                "experiment_definition.SimpleFMUExperimentDefinition.!"
-            )
-
-        resp = self._workspace_sal.experiment_create(
-            self._workspace_id, definition, user_data
-        )
-        return Experiment(
-            self._workspace_id,
-            resp["experiment_id"],
-            self._workspace_sal,
-            self._model_exe_sal,
-            self._exp_sal,
-        )
-
-    def execute(self, definition, user_data=None):
-        """Exceutes an experiment.
-        Returns an modelon.impact.client.operations.ExperimentOperation class object.
-
-        Parameters:
-
-            definition --
-                An experiment definition class instance of
-                modelon.impact.client.experiment_definition.SimpleFMUExperimentDefinition
-                or
-                modelon.impact.client.experiment_definition.SimpleModelicaExperimentDefinition
-                or
-                a dictionary object containing the definition.
-            user_data --
-                Optional dictionary object with custom data to attach to the experiment.
-
-
-        Returns:
-
-            experiment_ops --
-                An modelon.impact.client.operations.ExperimentOperation class object.
-
-        Example::
-
-            experiment_ops = workspace.execute(definition)
-            experiment_ops.cancel()
-            experiment_ops.status()
-            experiment_ops.wait()
-        """
-        exp_id = self.create_experiment(definition, user_data).id
-        return operations.ExperimentOperation(
-            self._workspace_id,
-            self._exp_sal.experiment_execute(self._workspace_id, exp_id),
-            self._workspace_sal,
-            self._model_exe_sal,
-            self._exp_sal,
-        )
-
-
 class _Parameter:
     _JSON_2_PY_TYPE = {
         "Number": (float, int,),
@@ -616,14 +178,14 @@ class _Parameter:
         "Enumeration": (str,),
     }
 
-    def __init__(self, name, value, value_type, valid_values):
+    def __init__(self, name: str, value: Any, value_type: str, valid_values: List[Any]):
         self._name = name
         self._value = value
         self._value_type = value_type
         self._valid_values = valid_values
 
     @property
-    def name(self):
+    def name(self) -> str:
         return self._name
 
     @property
@@ -651,7 +213,13 @@ class CustomFunction:
     Class containing CustomFunction functionalities.
     """
 
-    def __init__(self, workspace_id, name, parameter_data, custom_function_service):
+    def __init__(
+        self,
+        workspace_id: str,
+        name: str,
+        parameter_data: List[Dict[str, Any]],
+        custom_function_service: CustomFunctionService,
+    ):
         self._name = name
         self._workspace_id = workspace_id
         self._parameter_data = parameter_data
@@ -670,11 +238,11 @@ class CustomFunction:
         return isinstance(obj, CustomFunction) and obj._name == self._name
 
     @property
-    def name(self):
+    def name(self) -> str:
         "Custom function name"
         return self._name
 
-    def with_parameters(self, **modified):
+    def with_parameters(self, **modified) -> 'CustomFunction':
         """Sets/updates the custom_function parameters for an experiment.
 
         Parameters:
@@ -703,11 +271,11 @@ class CustomFunction:
         return new
 
     @property
-    def parameter_values(self):
+    def parameter_values(self) -> Dict[str, Any]:
         """Custom_function parameters and value as a dictionary"""
         return {p.name: p.value for p in self._param_by_name.values()}
 
-    def get_compiler_options(self):
+    def get_compiler_options(self) -> ExecutionOptions:
         """
         Return a modelon.impact.client.options.ExecutionOptions object.
 
@@ -726,7 +294,7 @@ class CustomFunction:
         )
         return ExecutionOptions(options["compiler"], self._name, self._custom_func_sal)
 
-    def get_runtime_options(self):
+    def get_runtime_options(self) -> ExecutionOptions:
         """
         Return a modelon.impact.client.options.ExecutionOptions object.
 
@@ -745,7 +313,7 @@ class CustomFunction:
         )
         return ExecutionOptions(options["runtime"], self._name, self._custom_func_sal)
 
-    def get_solver_options(self):
+    def get_solver_options(self) -> ExecutionOptions:
         """
         Return a modelon.impact.client.options.ExecutionOptions object.
 
@@ -764,7 +332,7 @@ class CustomFunction:
         )
         return ExecutionOptions(options["solver"], self._name, self._custom_func_sal)
 
-    def get_simulation_options(self):
+    def get_simulation_options(self) -> ExecutionOptions:
         """
         Return a modelon.impact.client.options.ExecutionOptions object.
 
@@ -792,7 +360,11 @@ class Model:
     """
 
     def __init__(
-        self, class_name, workspace_id, workspace_service=None, model_exe_service=None
+        self,
+        class_name: str,
+        workspace_id: str,
+        workspace_service: WorkspaceService,
+        model_exe_service: ModelExecutableService,
     ):
         self._class_name = class_name
         self._workspace_id = workspace_id
@@ -806,20 +378,20 @@ class Model:
         return isinstance(obj, Model) and obj._class_name == self._class_name
 
     @property
-    def name(self):
+    def name(self) -> str:
         """Class name"""
         return self._class_name
 
     def compile(
         self,
-        compiler_options,
-        runtime_options=None,
-        compiler_log_level="warning",
-        fmi_target="me",
-        fmi_version="2.0",
-        platform="auto",
-        force_compilation=False,
-    ):
+        compiler_options: Options,
+        runtime_options: Optional[Options] = None,
+        compiler_log_level: str = "warning",
+        fmi_target: str = "me",
+        fmi_version: str = "2.0",
+        platform: str = "auto",
+        force_compilation: bool = False,
+    ) -> CompilationOperations:
         """Compiles the model to an FMU.
         Returns an modelon.impact.client.operations.ModelExecutableOperation class
         object.
@@ -913,7 +485,7 @@ class Model:
                 self._workspace_id, body, True
             )
             if fmu_id:
-                return operations.CachedModelExecutableOperation(
+                return CachedModelExecutableOperation(
                     self._workspace_id,
                     fmu_id,
                     self._workspace_sal,
@@ -925,7 +497,7 @@ class Model:
         # No cached FMU, setup up a new one
         fmu_id, _ = self._model_exe_sal.fmu_setup(self._workspace_id, body, False)
 
-        return operations.ModelExecutableOperation(
+        return ModelExecutableOperation(
             self._workspace_id,
             self._model_exe_sal.compile_model(self._workspace_id, fmu_id),
             self._workspace_sal,
@@ -934,18 +506,18 @@ class Model:
 
     def new_experiment_definition(
         self,
-        custom_function,
+        custom_function: CustomFunction,
         *,
-        compiler_options=None,
-        fmi_target="me",
-        fmi_version="2.0",
-        platform="auto",
-        compiler_log_level="warning",
-        runtime_options=None,
-        solver_options=None,
-        simulation_options=None,
-        simulation_log_level="WARNING",
-    ):
+        compiler_options: Optional[Options] = None,
+        fmi_target: str = "me",
+        fmi_version: str = "2.0",
+        platform: str = "auto",
+        compiler_log_level: str = "warning",
+        runtime_options: Optional[Options] = None,
+        solver_options: Optional[Options] = None,
+        simulation_options: Optional[Options] = None,
+        simulation_log_level: str = "WARNING",
+    ) -> SimpleModelicaExperimentDefinition:
         """
         Returns a new experiment definition using this Model.
 
@@ -1031,7 +603,7 @@ class Model:
 
 
 class _ModelExecutableRunInfo:
-    def __init__(self, status, errors):
+    def __init__(self, status: ModelExecutableStatus, errors: List[str]):
         self._status = status
         self._errors = errors
 
@@ -1046,6 +618,16 @@ class _ModelExecutableRunInfo:
         return self._errors
 
 
+class Log(str):
+    """
+    Log class inheriting from string object.
+    """
+
+    def show(self):
+        """Prints the formatted log."""
+        print(self)
+
+
 class ModelExecutable:
     """
     Class containing ModelExecutable functionalities.
@@ -1053,12 +635,12 @@ class ModelExecutable:
 
     def __init__(
         self,
-        workspace_id,
-        fmu_id,
-        workspace_service=None,
-        model_exe_service=None,
-        info=None,
-        modifiers=None,
+        workspace_id: str,
+        fmu_id: str,
+        workspace_service: WorkspaceService,
+        model_exe_service: ModelExecutableService,
+        info: Optional[Dict[str, Any]] = None,
+        modifiers: Optional[Dict[str, Any]] = None,
     ):
         self._workspace_id = workspace_id
         self._fmu_id = fmu_id
@@ -1077,27 +659,27 @@ class ModelExecutable:
         return self._fmu_id.__hash__()
 
     @property
-    def id(self):
+    def id(self) -> str:
         """FMU id"""
         return self._fmu_id
 
-    def _variable_modifiers(self):
+    def _variable_modifiers(self) -> Dict[str, Any]:
         return {} if self._modifiers is None else self._modifiers
 
-    def _get_info(self):
+    def _get_info(self) -> Dict[str, Any]:
         if self._info is None:
             self._info = self._workspace_sal.fmu_get(self._workspace_id, self._fmu_id)
 
         return self._info
 
     @property
-    def info(self):
+    def info(self) -> Dict[str, Any]:
         """Deprecated, use 'run_info' attribute"""
         logger.warning("This attribute is deprectated, use 'run_info' instead")
         return self._get_info()
 
     @property
-    def run_info(self):
+    def run_info(self) -> _ModelExecutableRunInfo:
         """Compilation run information"""
         run_info = self._get_info()["run_info"]
         status = ModelExecutableStatus(run_info["status"])
@@ -1105,7 +687,7 @@ class ModelExecutable:
         return _ModelExecutableRunInfo(status, errors)
 
     @property
-    def metadata(self):
+    def metadata(self) -> Dict[str, Any]:
         """FMU metadata. Returns the 'iteration_variable_count' and 'residual_variable_count'
         only for steady state model compiled as an FMU"""
         _assert_successful_operation(self.is_successful(), "Compilation")
@@ -1114,7 +696,7 @@ class ModelExecutable:
             self._workspace_id, self._fmu_id, parameter_state
         )
 
-    def is_successful(self):
+    def is_successful(self) -> bool:
         """
         Returns True if the model has compiled successfully.
         Use the 'run_info' attribute to get more info.
@@ -1130,7 +712,7 @@ class ModelExecutable:
         """
         return self.run_info.status == ModelExecutableStatus.SUCCESSFUL
 
-    def get_log(self):
+    def get_log(self) -> Log:
         """
         Returns the compilation log object.
 
@@ -1161,7 +743,7 @@ class ModelExecutable:
         """
         self._model_exe_sal.fmu_delete(self._workspace_id, self._fmu_id)
 
-    def get_settable_parameters(self):
+    def get_settable_parameters(self) -> List[str]:
         """
         Returns a list of settable parameters for the FMU.
 
@@ -1186,11 +768,11 @@ class ModelExecutable:
 
     def new_experiment_definition(
         self,
-        custom_function,
-        solver_options=None,
-        simulation_options=None,
-        simulation_log_level="WARNING",
-    ):
+        custom_function: CustomFunction,
+        solver_options: Optional[Options] = None,
+        simulation_options: Optional[Options] = None,
+        simulation_log_level: str = "WARNING",
+    ) -> SimpleFMUExperimentDefinition:
         """
         Returns a new experiment definition using this FMU.
 
@@ -1228,7 +810,7 @@ class ModelExecutable:
             simulation_log_level,
         )
 
-    def download(self, path=None):
+    def download(self, path: Optional[str] = None):
         """Downloads an FMU binary that is compiled.
         Returns the local path to the downloaded FMU archive.
 
@@ -1259,7 +841,15 @@ class ModelExecutable:
 
 
 class _ExperimentRunInfo:
-    def __init__(self, status, errors, failed, successful, cancelled, not_started):
+    def __init__(
+        self,
+        status: ExperimentStatus,
+        errors: List[str],
+        failed: int,
+        successful: int,
+        cancelled: int,
+        not_started: int,
+    ):
         self._status = status
         self._errors = errors
         self._failed = failed
@@ -1299,11 +889,11 @@ class _ExperimentRunInfo:
 
 
 class _ExperimentMetaData:
-    def __init__(self, user_data):
+    def __init__(self, user_data: Dict[str, Any]):
         self._user_data = user_data
 
     @property
-    def user_data(self):
+    def user_data(self) -> Dict[str, Any]:
         """User data dictionary object attached to experiment, if any"""
         return self._user_data
 
@@ -1315,12 +905,12 @@ class Experiment:
 
     def __init__(
         self,
-        workspace_id,
-        exp_id,
-        workspace_service=None,
-        model_exe_service=None,
-        exp_service=None,
-        info=None,
+        workspace_id: str,
+        exp_id: str,
+        workspace_service: WorkspaceService,
+        model_exe_service: ModelExecutableService,
+        exp_service: ExperimentService,
+        info: Optional[Dict[str, Any]] = None,
     ):
         self._workspace_id = workspace_id
         self._exp_id = exp_id
@@ -1336,11 +926,11 @@ class Experiment:
         return isinstance(obj, Experiment) and obj._exp_id == self._exp_id
 
     @property
-    def id(self):
+    def id(self) -> str:
         """Experiment id"""
         return self._exp_id
 
-    def _get_info(self):
+    def _get_info(self) -> Dict[str, Any]:
         if self._info is None:
             self._info = self._workspace_sal.experiment_get(
                 self._workspace_id, self._exp_id
@@ -1349,7 +939,7 @@ class Experiment:
         return self._info
 
     @property
-    def run_info(self):
+    def run_info(self) -> _ExperimentRunInfo:
         """Experiment run information"""
         run_info = self._get_info()["run_info"]
 
@@ -1364,7 +954,7 @@ class Experiment:
         )
 
     @property
-    def metadata(self):
+    def metadata(self) -> Optional[_ExperimentMetaData]:
         """Experiment metadata. Returns custom user_data dictionary object attached
         to the experiment, if any."""
 
@@ -1378,12 +968,14 @@ class Experiment:
         return None
 
     @property
-    def info(self):
+    def info(self) -> Dict[str, Any]:
         """Deprecated, use 'run_info' attribute"""
         logger.warning("This attribute is deprectated, use 'run_info' instead")
         return self._get_info()
 
-    def execute(self, with_cases=None, sync_case_changes=True):
+    def execute(
+        self, with_cases: Optional[List['Case']] = None, sync_case_changes: bool = True
+    ) -> ExperimentOperation:
         """Exceutes an experiment.
         Returns an modelon.impact.client.operations.ExperimentOperation class object.
 
@@ -1417,7 +1009,7 @@ class Experiment:
                 case.sync()
 
         case_ids = [case.id for case in with_cases] if with_cases is not None else None
-        return operations.ExperimentOperation(
+        return ExperimentOperation(
             self._workspace_id,
             self._exp_sal.experiment_execute(
                 self._workspace_id, self._exp_id, case_ids
@@ -1427,7 +1019,7 @@ class Experiment:
             self._exp_sal,
         )
 
-    def is_successful(self):
+    def is_successful(self) -> bool:
         """
         Returns True if the Experiment is done and no cases has failed.
         Use the 'run_info' attribute to get more info.
@@ -1447,7 +1039,7 @@ class Experiment:
             and self.run_info.cancelled == 0
         )
 
-    def get_variables(self):
+    def get_variables(self) -> List[str]:
         """
         Returns a list of variables available in the result.
 
@@ -1468,7 +1060,7 @@ class Experiment:
         _assert_is_complete(self.run_info.status, "Simulation")
         return self._exp_sal.result_variables_get(self._workspace_id, self._exp_id)
 
-    def get_cases(self):
+    def get_cases(self) -> List['Case']:
         """
         Returns a list of case objects for an experiment.
 
@@ -1495,7 +1087,7 @@ class Experiment:
             for case in resp["data"]["items"]
         ]
 
-    def get_case(self, case_id):
+    def get_case(self, case_id: str) -> 'Case':
         """
         Returns a case object for a given case_id.
 
@@ -1524,7 +1116,7 @@ class Experiment:
             case_data,
         )
 
-    def get_cases_with_label(self, case_label):
+    def get_cases_with_label(self, case_label: str) -> List['Case']:
         """
         Returns a list of case objects for an experiment with the label.
 
@@ -1544,7 +1136,7 @@ class Experiment:
         """
         return [case for case in self.get_cases() if case.meta.label == case_label]
 
-    def get_trajectories(self, variables):
+    def get_trajectories(self, variables: List[str]) -> Dict[str, Any]:
         """
         Returns a dictionary containing the result trajectories
         for a list of result variables for all the cases.
@@ -1605,7 +1197,7 @@ class Experiment:
         """
         self._exp_sal.experiment_delete(self._workspace_id, self._exp_id)
 
-    def set_label(self, label):
+    def set_label(self, label: str):
         """Sets a label (string) for an experiment to distinguish it.
 
         Example::
@@ -1620,17 +1212,17 @@ class _CaseRunInfo:
     Class containing Case run info.
     """
 
-    def __init__(self, status, consistent):
+    def __init__(self, status: CaseStatus, consistent: bool):
         self._status = status
         self._consistent = consistent
 
     @property
-    def status(self):
+    def status(self) -> CaseStatus:
         """Status info for a Case, its type is CaseStatus."""
         return self._status
 
     @property
-    def consistent(self):
+    def consistent(self) -> bool:
         """True if the case has not been synced since it was executed,
         false otherwise."""
         return self._consistent
@@ -1641,29 +1233,29 @@ class _ExternalResultMetaData:
     Class containing external result metadata.
     """
 
-    def __init__(self, id, name, description, workspace_id):
+    def __init__(self, id: str, name: str, description: str, workspace_id: str):
         self._id = id
         self._name = name
         self._description = description
         self._workspace_id = workspace_id
 
     @property
-    def id(self):
+    def id(self) -> str:
         """Result id"""
         return self._id
 
     @property
-    def name(self):
+    def name(self) -> str:
         """Label for result"""
         return self._name
 
     @property
-    def description(self):
+    def description(self) -> str:
         """Description of the result"""
         return self._description
 
     @property
-    def workspace_id(self):
+    def workspace_id(self) -> str:
         """Name of workspace"""
         return self._workspace_id
 
@@ -1673,16 +1265,16 @@ class _CaseAnalysis:
     Class containing Case analysis configuration.
     """
 
-    def __init__(self, analysis):
+    def __init__(self, analysis: Dict[str, Any]):
         self._analysis = analysis
 
     @property
-    def analysis_function(self):
+    def analysis_function(self) -> str:
         """The name of the custom function"""
         return self._analysis['analysis_function']
 
     @property
-    def parameters(self):
+    def parameters(self) -> Dict[str, Any]:
         """Parameters to the custom function
 
         Example::
@@ -1694,34 +1286,34 @@ class _CaseAnalysis:
         return self._analysis['parameters']
 
     @parameters.setter
-    def parameters(self, parameters):
+    def parameters(self, parameters: Dict[str, Any]):
         self._analysis['parameters'] = parameters
 
     @property
-    def simulation_options(self):
+    def simulation_options(self) -> Dict[str, Any]:
         """Key-value pairs of simulation options"""
         return self._analysis['simulation_options']
 
     @simulation_options.setter
-    def simulation_options(self, simulation_options):
+    def simulation_options(self, simulation_options: Dict[str, Any]):
         self._analysis['simulation_options'] = simulation_options
 
     @property
-    def solver_options(self):
+    def solver_options(self) -> Dict[str, Any]:
         """Key-value pairs of solver options"""
         return self._analysis['solver_options']
 
     @solver_options.setter
-    def solver_options(self, solver_options):
+    def solver_options(self, solver_options: Dict[str, Any]):
         self._analysis['solver_options'] = solver_options
 
     @property
-    def simulation_log_level(self):
+    def simulation_log_level(self) -> str:
         """The simulation log level"""
         return self._analysis['simulation_log_level']
 
     @simulation_log_level.setter
-    def simulation_log_level(self, simulation_log_level):
+    def simulation_log_level(self, simulation_log_level: str):
         self._analysis['simulation_log_level'] = simulation_log_level
 
 
@@ -1730,16 +1322,16 @@ class _CaseMeta:
     Class containing Case meta
     """
 
-    def __init__(self, data):
+    def __init__(self, data: Dict[str, Any]):
         self._data = data
 
     @property
-    def label(self):
+    def label(self) -> str:
         """Label for the case."""
         return self._data['label']
 
     @label.setter
-    def label(self, label):
+    def label(self, label: str):
         self._data['label'] = label
 
 
@@ -1748,15 +1340,15 @@ class _CaseInput:
     Class containing Case input
     """
 
-    def __init__(self, data):
+    def __init__(self, data: Dict[str, Any]):
         self._data = data
 
     @property
-    def analysis(self):
+    def analysis(self) -> _CaseAnalysis:
         return _CaseAnalysis(self._data['analysis'])
 
     @property
-    def parametrization(self):
+    def parametrization(self) -> Dict[str, Any]:
         """
         Parameterization of the case, a list of key value pairs where key
         is variable name and value is the value to use for that variable.
@@ -1764,16 +1356,16 @@ class _CaseInput:
         return self._data['parametrization']
 
     @parametrization.setter
-    def parametrization(self, parameterization):
+    def parametrization(self, parameterization: Dict[str, Any]):
         self._data['parametrization'] = parameterization
 
     @property
-    def fmu_id(self):
+    def fmu_id(self) -> str:
         """Reference ID to the compiled model used running the case."""
         return self._data['fmu_id']
 
     @property
-    def structural_parametrization(self):
+    def structural_parametrization(self) -> Dict[str, Any]:
         """
         Structural parameterization of the case, a list of key value pairs where
         key is variable name and value is the value to use for that variable.
@@ -1782,13 +1374,100 @@ class _CaseInput:
         return self._data['structural_parametrization']
 
     @property
-    def fmu_base_parametrization(self):
+    def fmu_base_parametrization(self) -> Dict[str, Any]:
         """
         This is some base parametrization that must be applied to the FMU for
         it to be valid running this case. It often comes as a result from of
         caching to reuse the FMU.
         """
         return self._data['fmu_base_parametrization']
+
+
+class Result(Mapping):
+    """
+    Result class containing base functionality.
+    """
+
+    def __init__(
+        self,
+        case_id: str,
+        workspace_id: str,
+        exp_id: str,
+        workspace_service: WorkspaceService,
+        exp_service: ExperimentService,
+        model_exe_service: ModelExecutableService,
+    ):
+        self._case_id = case_id
+        self._workspace_id = workspace_id
+        self._exp_id = exp_id
+        self._workspace_sal = workspace_service
+        self._exp_sal = exp_service
+        self._variables = Experiment(
+            self._workspace_id,
+            self._exp_id,
+            self._workspace_sal,
+            model_exe_service,
+            exp_service=self._exp_sal,
+        ).get_variables()
+
+    def __getitem__(self, key):
+        _assert_variable_in_result([key], self._variables)
+        response = self._exp_sal.case_trajectories_get(
+            self._workspace_id, self._exp_id, self._case_id, [key]
+        )
+        return response[0]
+
+    def __iter__(self):
+        data = _create_result_dict(
+            self._variables,
+            self._workspace_id,
+            self._exp_id,
+            self._case_id,
+            self._exp_sal,
+        )
+        return data.__iter__()
+
+    def __len__(self):
+        return self._variables.__len__()
+
+    def keys(self):
+        return self._variables
+
+
+class ExternalResult:
+    """
+    Class containing  external result.
+    """
+
+    def __init__(self, result_id: str, workspace_service: WorkspaceService):
+        self._result_id = result_id
+        self._workspace_sal = workspace_service
+
+    def __repr__(self):
+        return f"Result id '{self._result_id}'"
+
+    def __eq__(self, obj):
+        return isinstance(obj, ExternalResult) and obj._result_id == self._result_id
+
+    @property
+    def id(self) -> str:
+        """Result id"""
+        return self._result_id
+
+    @property
+    def metadata(self) -> _ExternalResultMetaData:
+        """External result metadata."""
+        upload_meta = self._workspace_sal.get_uploaded_result_meta(self._result_id)[
+            "data"
+        ]
+        id = upload_meta.get("id")
+        name = upload_meta.get("name")
+        description = upload_meta.get("description")
+        workspace_id = upload_meta.get("workspaceId")
+        return _ExternalResultMetaData(id, name, description, workspace_id)
+
+    def delete(self):
+        self._workspace_sal.delete_uploaded_result(self._result_id)
 
 
 class Case:
@@ -1798,13 +1477,13 @@ class Case:
 
     def __init__(
         self,
-        case_id,
-        workspace_id,
-        exp_id,
-        exp_service=None,
-        model_exe_service=None,
-        workspace_service=None,
-        info=None,
+        case_id: str,
+        workspace_id: str,
+        exp_id: str,
+        exp_service: ExperimentService,
+        model_exe_service: ModelExecutableService,
+        workspace_service: WorkspaceService,
+        info: Dict[str, Any],
     ):
         self._case_id = case_id
         self._workspace_id = workspace_id
@@ -1821,29 +1500,29 @@ class Case:
         return isinstance(obj, Case) and obj._case_id == self._case_id
 
     @property
-    def id(self):
+    def id(self) -> str:
         """Case id"""
         return self._case_id
 
     @property
-    def experiment_id(self):
+    def experiment_id(self) -> str:
         """Experiment id"""
         return self._exp_id
 
     @property
-    def info(self):
+    def info(self) -> Dict[str, Any]:
         """Deprecated, use 'run_info' attribute"""
         logger.warning("This attribute is deprectated, use 'run_info' instead")
         return self._info
 
     @property
-    def run_info(self):
+    def run_info(self) -> _CaseRunInfo:
         """Case run information"""
         run_info = self._info["run_info"]
         return _CaseRunInfo(CaseStatus(run_info["status"]), run_info["consistent"])
 
     @property
-    def input(self):
+    def input(self) -> _CaseInput:
         """Case input attributes
 
         Example::
@@ -1860,7 +1539,7 @@ class Case:
         return _CaseInput(self._info['input'])
 
     @property
-    def meta(self):
+    def meta(self) -> _CaseMeta:
         """Case meta attributes
 
         Example::
@@ -1874,7 +1553,7 @@ class Case:
         return _CaseMeta(self._info['meta'])
 
     @property
-    def initialize_from_case(self):
+    def initialize_from_case(self) -> Optional['Case']:
         init_from_dict = self._info['input'].get('initialize_from_case')
         if init_from_dict is None:
             return None
@@ -1894,7 +1573,7 @@ class Case:
         )
 
     @initialize_from_case.setter
-    def initialize_from_case(self, case):
+    def initialize_from_case(self, case: 'Case'):
         if not isinstance(case, Case):
             raise TypeError(
                 "The value must be an instance of modelon.impact.client.entities.Case"
@@ -1906,7 +1585,7 @@ class Case:
         }
 
     @property
-    def initialize_from_external_result(self):
+    def initialize_from_external_result(self) -> Optional[ExternalResult]:
         init_from_dict = self._info['input'].get('initialize_from_external_result')
 
         if init_from_dict is None:
@@ -1917,7 +1596,7 @@ class Case:
         return ExternalResult(result_id, self._workspace_sal)
 
     @initialize_from_external_result.setter
-    def initialize_from_external_result(self, result):
+    def initialize_from_external_result(self, result: ExternalResult):
         if not isinstance(result, ExternalResult):
             raise TypeError(
                 "The value must be an instance of "
@@ -1926,7 +1605,7 @@ class Case:
         self._assert_unique_case_initialization('initialize_from_case')
         self._info['input']['initialize_from_external_result'] = {"uploadId": result.id}
 
-    def is_successful(self):
+    def is_successful(self) -> bool:
         """
         Returns True if a case has completed successfully.
 
@@ -1941,7 +1620,7 @@ class Case:
         """
         return self.run_info.status == CaseStatus.SUCCESSFUL
 
-    def get_log(self):
+    def get_log(self) -> Log:
         """
         Returns the log class object for a finished case.
 
@@ -1959,7 +1638,7 @@ class Case:
             self._exp_sal.case_get_log(self._workspace_id, self._exp_id, self._case_id)
         )
 
-    def get_result(self, format='mat'):
+    def get_result(self, format: str = 'mat') -> Tuple[bytes, str]:
         """
         Returns the result stream and the file name for a finished case.
 
@@ -1993,13 +1672,13 @@ class Case:
                 f.write(result)
         """
         _assert_successful_operation(self.is_successful(), self._case_id)
-        result_format = modelon.impact.client.sal.service.ResultFormat(format)
+        result_format = ResultFormat(format)
         result, file_name = self._exp_sal.case_result_get(
             self._workspace_id, self._exp_id, self._case_id, result_format
         )
         return result, file_name
 
-    def get_trajectories(self):
+    def get_trajectories(self) -> Result:
         """
         Returns result(Mapping) object containing the result trajectories.
 
@@ -2027,9 +1706,10 @@ class Case:
             self._exp_id,
             self._workspace_sal,
             self._exp_sal,
+            self._model_exe_sal,
         )
 
-    def get_artifact(self, artifact_id):
+    def get_artifact(self, artifact_id: str) -> Tuple[bytes, str]:
         """
         Returns the artifact stream and the file name for a finished case.
 
@@ -2065,7 +1745,7 @@ class Case:
 
         return result, file_name
 
-    def get_fmu(self):
+    def get_fmu(self) -> ModelExecutable:
         """
         Returns the ModelExecutable class object simulated for the case.
 
@@ -2098,7 +1778,7 @@ class Case:
             self._workspace_id, self._exp_id, self._case_id, self._info
         )
 
-    def execute(self, sync_case_changes=True):
+    def execute(self, sync_case_changes: bool = True) -> CaseOperation:
         """Exceutes a case.
         Returns an modelon.impact.client.operations.CaseOperation class object.
 
@@ -2126,7 +1806,7 @@ class Case:
         if sync_case_changes:
             self.sync()
 
-        return operations.CaseOperation(
+        return CaseOperation(
             self._workspace_id,
             self._exp_sal.experiment_execute(
                 self._workspace_id, self._exp_id, [self._case_id]
@@ -2147,91 +1827,518 @@ class Case:
             )
 
 
-class Result(Mapping):
+class Workspace:
     """
-    Result class containing base functionality.
+    Class containing Workspace functionalities.
     """
 
     def __init__(
-        self, case_id, workspace_id, exp_id, workspace_service=None, exp_service=None,
+        self,
+        workspace_id: str,
+        workspace_service: WorkspaceService,
+        model_exe_service: ModelExecutableService,
+        experiment_service: ExperimentService,
+        custom_function_service: CustomFunctionService,
     ):
-        self._case_id = case_id
         self._workspace_id = workspace_id
-        self._exp_id = exp_id
         self._workspace_sal = workspace_service
-        self._exp_sal = exp_service
-        self._variables = Experiment(
-            self._workspace_id,
-            self._exp_id,
-            self._workspace_sal,
-            exp_service=self._exp_sal,
-        ).get_variables()
-
-    def __getitem__(self, key):
-        _assert_variable_in_result([key], self._variables)
-        response = self._exp_sal.case_trajectories_get(
-            self._workspace_id, self._exp_id, self._case_id, [key]
-        )
-        return response[0]
-
-    def __iter__(self):
-        data = _create_result_dict(
-            self._variables,
-            self._workspace_id,
-            self._exp_id,
-            self._case_id,
-            self._exp_sal,
-        )
-        return data.__iter__()
-
-    def __len__(self):
-        return self._variables.__len__()
-
-    def keys(self):
-        return self._variables
-
-
-class ExternalResult:
-    """
-    Class containing  external result.
-    """
-
-    def __init__(self, result_id, workspace_service=None):
-        self._result_id = result_id
-        self._workspace_sal = workspace_service
+        self._model_exe_sal = model_exe_service
+        self._exp_sal = experiment_service
+        self._custom_func_sal = custom_function_service
 
     def __repr__(self):
-        return f"Result id '{self._result_id}'"
+        return f"Workspace with id '{self._workspace_id}'"
 
     def __eq__(self, obj):
-        return isinstance(obj, ExternalResult) and obj._result_id == self._result_id
+        return isinstance(obj, Workspace) and obj._workspace_id == self._workspace_id
 
     @property
-    def id(self):
-        """Result id"""
-        return self._result_id
+    def id(self) -> str:
+        """Workspace id"""
+        return self._workspace_id
 
-    @property
-    def metadata(self):
-        """External result metadata."""
-        upload_meta = self._workspace_sal.get_uploaded_result_meta(self._result_id)[
-            "data"
+    def get_custom_function(self, name: str) -> CustomFunction:
+        """
+        Returns a CustomFunction class object.
+
+        Parameters:
+
+            name --
+                The name of the custom function.
+
+        Returns:
+
+            custom_function --
+                The CustomFunction class object.
+
+        Example::
+
+            workspace.get_custom_function('dynamic')
+        """
+        custom_function = self._custom_func_sal.custom_function_get(
+            self._workspace_id, name
+        )
+        return CustomFunction(
+            self._workspace_id,
+            custom_function["name"],
+            custom_function["parameters"],
+            self._custom_func_sal,
+        )
+
+    def get_custom_functions(self) -> List[CustomFunction]:
+        """
+        Returns a list of CustomFunctions class objects.
+
+        Returns:
+
+            custom_functions --
+                A list of CustomFunction class objects.
+
+        Example::
+
+            workspace.get_custom_functions()
+        """
+        custom_functions = self._custom_func_sal.custom_functions_get(
+            self._workspace_id
+        )
+        return [
+            CustomFunction(
+                self._workspace_id,
+                custom_function["name"],
+                custom_function["parameters"],
+                self._custom_func_sal,
+            )
+            for custom_function in custom_functions["data"]["items"]
         ]
-        id = upload_meta.get("id")
-        name = upload_meta.get("name")
-        description = upload_meta.get("description")
-        workspace_id = upload_meta.get("workspaceId")
-        return _ExternalResultMetaData(id, name, description, workspace_id)
 
     def delete(self):
-        self._workspace_sal.delete_uploaded_result(self._result_id)
+        """Deletes a workspace.
+
+        Example::
+
+            workspace.delete()
+        """
+        self._workspace_sal.workspace_delete(self._workspace_id)
+
+    def upload_model_library(self, path_to_lib: str):
+        """Uploads a modelica library or a modelica model to the workspace.
+
+        Parameters:
+
+            path_to_lib --
+                The path for the library to be imported.
+
+        Example::
+
+            workspace.upload_model_library('C:/A.mo')
+            workspace.upload_model_library('C:/B.mol')
+        """
+        self._workspace_sal.library_import(self._workspace_id, path_to_lib)
+
+    def upload_result(
+        self,
+        path_to_result: str,
+        label: Optional[str] = None,
+        description: Optional[str] = None,
+    ) -> ExternalResultUploadOperation:
+        """Uploads a '.mat' result file to the workspace.
+
+        Parameters:
+
+            path_to_result --
+                The path for the result file to be imported.
+
+            label --
+                The label of the result file. Default: None.
+
+            description --
+                The description of the result file. Default: None.
+
+        Example::
+
+            workspace.upload_result('C:/A.mat')
+            workspace.upload_result('C:/B.mat', label = "result_for_PID.mat",
+            description = "This is a result file for PID controller")
+        """
+        resp = self._workspace_sal.result_upload(
+            self._workspace_id, path_to_result, label=label, description=description
+        )
+        return ExternalResultUploadOperation(resp["data"]["id"], self._workspace_sal)
+
+    def upload_fmu(
+        self,
+        fmu_path: str,
+        library_path: str,
+        class_name: Optional[str] = None,
+        overwrite: bool = False,
+        include_patterns: Optional[Union[str, List[str]]] = None,
+        exclude_patterns: Optional[Union[str, List[str]]] = None,
+        top_level_inputs: Optional[Union[str, List[str]]] = None,
+        step_size: float = 0.0,
+    ) -> Model:
+        """Uploads a FMU to the workspace.
+
+        Parameters:
+
+            fmu_path --
+                The path for the FMU to be imported.
+
+            library_path --
+                The library identifier, '{name} {version}' or '{name}' if version is
+                missing.
+
+            class_name --
+                Qualified name of generated class. By default, 'class_name' is
+                set to the name of the library followed by a name based
+                on the filename of the imported FMU.
+
+            overwrite --
+                Determines if any already existing files should be overwritten.
+                Default: False.
+
+            include_patterns, exclude_patterns --
+                Specifies what variables from the FMU to include and/or exclude in the
+                wrapper model. These two arguments are patterns or lists of patterns as
+                the same kind as the argument 'filter' for the function
+                'get_model_variables' in PyFMI. If both 'include_patterns' and
+                'exclude_patterns' are given, then all variables that matches
+                'include_patterns' but does not match 'exclude_patterns' are included.
+                Derivatives and variables with a leading underscore in the name are
+                always excluded.
+                Default value: None (which means to include all the variables).
+
+            top_level_inputs --
+                Specify what inputs that should be kept as inputs, i.e. with or without
+                the input keyword. The argument is a pattern similar to the arguments
+                include_patterns and exclude_patterns. Example: If
+                top_level_inputs = 'my_inputs*', then all input variables matching the
+                pattern 'my_inputs*' will be generated as inputs, and all other inputs
+                not matching the pattern as model variables. If top_level_inputs = '',
+                then no input is imported as an input.
+                Default value: None (which means all inputs are kept as inputs)
+                Type: str or a list of strings
+
+            step_size --
+                Specify what value to set for the parameter for step size in the
+                generated model. By default the parameter is set to zero, which
+                inturn means that the step size will be set during simulation based
+                on simulation properties such as the time interval.
+                This can also be manually set to any real non-negative number.
+                The value of the step size parameter can also be set via the function
+                set_step_size, which must be invoked before importing the model.
+                Default value: 0.0 (which during simulation is set according to the
+                description above).
+                Type: number
+
+        Example::
+
+            workspace.upload_fmu('C:/A.fmu',"Workspace")
+            workspace.upload_fmu('C:/B.fmu',"Workspace",class_name="Workspace.Model")
+        """
+        resp = self._workspace_sal.fmu_import(
+            self._workspace_id,
+            fmu_path,
+            library_path,
+            class_name,
+            overwrite,
+            include_patterns,
+            exclude_patterns,
+            top_level_inputs,
+            step_size=step_size,
+        )
+
+        if resp["importWarnings"]:
+            logger.warning(f"Import Warnings: {'. '.join(resp['importWarnings'])}")
+
+        return Model(
+            resp['fmuClassPath'],
+            self._workspace_id,
+            self._workspace_sal,
+            self._model_exe_sal,
+        )
+
+    def download(self, options: Dict[str, Any], path: str) -> str:
+        """Downloads the workspace as a binary compressed archive.
+        Returns the local path to the downloaded workspace archive.
+
+        Parameters:
+
+            options --
+                The definition of what workspace resources to include when
+                exporting the workspace.
+
+            path --
+                The local path to store the downloaded workspace.
+
+        Returns:
+
+            path --
+                Local path to the downloaded workspace archive.
+
+        Example::
+
+            options = {
+                "contents": {
+                    "libraries": [
+                        {"name": "LiquidCooling", "resources_to_exclude": []},
+                        {
+                            "name": "Workspace",
+                            "resources_to_exclude": ["my_plot.png", "my_sheet.csv"],
+                        },
+                    ],
+                    "experiment_ids": [
+                        "_nics_multibody_examples_elementary_doublependulum_20191029_084342_2c956e9",
+                        "modelica_blocks_examples_pid_controller_20191023_151659_f32a30d",
+                    ],
+                    "fmu_ids": [
+                        "_nics_multibody_examples_elementary_doublependulum_20191029_084342_2c956e9",
+                        "modelica_blocks_examples_pid_controller_20191023_151659_f32a30d",
+                    ],
+                }
+            }
+            workspace.download(options, path)
+        """
+        data = self._workspace_sal.workspace_download(self._workspace_id, options)
+        ws_path = os.path.join(path, self._workspace_id + ".zip")
+
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        with open(ws_path, "wb") as f:
+            f.write(data)
+        return ws_path
+
+    def clone(self) -> 'Workspace':
+        """Clones the workspace.
+        Returns a clone Workspace class object.
+
+        Returns:
+
+            workspace_clone --
+                Clones workspace class object.
+
+        Example::
+
+            workspace.clone()
+        """
+        resp = self._workspace_sal.workspace_clone(self._workspace_id)
+        return Workspace(
+            resp["workspace_id"],
+            self._workspace_sal,
+            self._model_exe_sal,
+            self._exp_sal,
+            self._custom_func_sal,
+        )
+
+    def get_model(self, class_name: str) -> Model:
+        """
+        Returns a Model class object.
+
+        Parameters:
+
+            class_name --
+                The modelica class path of the model.
+
+        Returns:
+
+            model --
+                Model class object.
+
+        Example::
+
+            workspace.get_model(class_name)
+        """
+        return Model(
+            class_name, self._workspace_id, self._workspace_sal, self._model_exe_sal
+        )
+
+    def get_fmus(self) -> List[ModelExecutable]:
+        """
+        Returns a list of ModelExecutable class objects.
+
+        Returns:
+
+            FMUs --
+                List of ModelExecutable class objects.
+
+        Example::
+
+            workspace.get_fmus()
+        """
+        resp = self._workspace_sal.fmus_get(self._workspace_id)
+        return [
+            ModelExecutable(
+                self._workspace_id,
+                item["id"],
+                self._workspace_sal,
+                self._model_exe_sal,
+                item,
+            )
+            for item in resp["data"]["items"]
+        ]
+
+    def get_fmu(self, fmu_id: str) -> ModelExecutable:
+        """
+        Returns a ModelExecutable class object.
+
+        Returns:
+
+            FMU --
+                ModelExecutable class object.
+
+        Example::
+
+            workspace.get_fmu(fmu_id)
+        """
+        resp = self._workspace_sal.fmu_get(self._workspace_id, fmu_id)
+        return ModelExecutable(
+            self._workspace_id,
+            resp["id"],
+            self._workspace_sal,
+            self._model_exe_sal,
+            resp,
+        )
+
+    def get_experiments(self) -> List[Experiment]:
+        """
+        Returns a list of Experiment class objects.
+
+        Returns:
+
+            experiment --
+                List of Experiment class objects.
+
+        Example::
+
+            workspace.get_experiments()
+        """
+        resp = self._workspace_sal.experiments_get(self._workspace_id)
+        return [
+            Experiment(
+                self._workspace_id,
+                item["id"],
+                self._workspace_sal,
+                self._model_exe_sal,
+                self._exp_sal,
+                item,
+            )
+            for item in resp["data"]["items"]
+        ]
+
+    def get_experiment(self, experiment_id: str) -> Experiment:
+        """
+        Returns an Experiment class object.
+
+        Parameters:
+
+            experiment_id --
+                The ID of the experiment.
+
+        Returns:
+
+            experiment --
+                Experiment class object.
+
+        Example::
+
+            workspace.get_experiment(experiment_id)
+        """
+        resp = self._workspace_sal.experiment_get(self._workspace_id, experiment_id)
+        return Experiment(
+            self._workspace_id,
+            resp["id"],
+            self._workspace_sal,
+            self._model_exe_sal,
+            self._exp_sal,
+            resp,
+        )
+
+    def create_experiment(
+        self,
+        definition: ExperimentDefinition,
+        user_data: Optional[Dict[str, Any]] = None,
+    ) -> Experiment:
+        """Creates an experiment.
+        Returns an Experiment class object.
+
+        Parameters:
+
+            definition --
+                An parametrized experiment definition class of type
+                modelon.impact.client.experiment_definition.SimpleModelicaExperimentDefinition
+                or
+                modelon.impact.client.experiment_definition.SimpleFMUExperimentDefinition.
+            user_data --
+                Optional dictionary object with custom data to attach to the experiment.
+
+        Returns:
+
+            experiment --
+                Experiment class object.
+
+        Example::
+
+            workspace.create_experiment(definition)
+        """
+        if isinstance(definition, SimpleFMUExperimentDefinition):
+            definition = definition.to_dict()
+        elif isinstance(definition, SimpleModelicaExperimentDefinition):
+            definition = definition.to_dict()
+        elif not isinstance(definition, dict):
+            raise TypeError(
+                "Definition object must either be a dictionary or an instance of either"
+                "modelon.impact.client.experiment_definition."
+                "SimpleModelicaExperimentDefinition class or modelon.impact.client."
+                "experiment_definition.SimpleFMUExperimentDefinition.!"
+            )
+
+        resp = self._workspace_sal.experiment_create(
+            self._workspace_id, definition, user_data
+        )
+        return Experiment(
+            self._workspace_id,
+            resp["experiment_id"],
+            self._workspace_sal,
+            self._model_exe_sal,
+            self._exp_sal,
+        )
+
+    def execute(
+        self,
+        definition: ExperimentDefinition,
+        user_data: Optional[Dict[str, Any]] = None,
+    ) -> ExperimentOperation:
+        """Exceutes an experiment.
+        Returns an modelon.impact.client.operations.ExperimentOperation class object.
+
+        Parameters:
+
+            definition --
+                An experiment definition class instance of
+                modelon.impact.client.experiment_definition.SimpleFMUExperimentDefinition
+                or
+                modelon.impact.client.experiment_definition.SimpleModelicaExperimentDefinition
+                or
+                a dictionary object containing the definition.
+            user_data --
+                Optional dictionary object with custom data to attach to the experiment.
 
 
-class Log(str):
-    """
-    Log class inheriting from string object.
-    """
+        Returns:
 
-    def show(self):
-        """Prints the formatted log."""
-        print(self)
+            experiment_ops --
+                An modelon.impact.client.operations.ExperimentOperation class object.
+
+        Example::
+
+            experiment_ops = workspace.execute(definition)
+            experiment_ops.cancel()
+            experiment_ops.status()
+            experiment_ops.wait()
+        """
+        exp_id = self.create_experiment(definition, user_data).id
+        return ExperimentOperation(
+            self._workspace_id,
+            self._exp_sal.experiment_execute(self._workspace_id, exp_id),
+            self._workspace_sal,
+            self._model_exe_sal,
+            self._exp_sal,
+        )
