@@ -1,3 +1,10 @@
+## [2.0.1](https://github.com/modelon-community/impact-client-python/compare/v2.0.0...v2.0.1) (2022-05-25)
+
+
+### Bug Fixes
+
+* add started to CaseStatus enum to mirror impact Case statuses ([1dcbf12](https://github.com/modelon-community/impact-client-python/commit/1dcbf1222ae3527ce89709bc569ee6e649e95b34))
+
 # [2.0.0](https://github.com/modelon-community/impact-client-python/compare/v1.2.1...v2.0.0) (2022-02-17)
 
 
