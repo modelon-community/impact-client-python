@@ -1,7 +1,9 @@
 import logging
-
-from modelon.impact.client import entities
 from abc import ABC, abstractmethod
+from typing import Dict, Any
+
+from modelon.impact.client.operators import Operator
+from modelon.impact.client import entities
 from modelon.impact.client.options import ExecutionOptions
 from modelon.impact.client import exceptions
 
@@ -31,51 +33,6 @@ def _assert_unique_exp_initialization(*initializing_from):
         raise ValueError(
             "An experiment can only be initialized from one entity. Experiment is "
             f"configured to initialize from {' and '.join(map(str, initializing_from))}"
-        )
-
-
-def assert_valid_args(
-    model=None,
-    fmu=None,
-    custom_function=None,
-    solver_options=None,
-    simulation_options=None,
-    compiler_options=None,
-    runtime_options=None,
-):
-    if fmu and not isinstance(fmu, entities.ModelExecutable):
-        raise TypeError("FMU must be an instance of ModelExecutable class!")
-    if model and not isinstance(model, entities.Model):
-        raise TypeError("Model must be an instance of Model class!")
-    if custom_function and not isinstance(custom_function, entities.CustomFunction):
-        raise TypeError("Custom_function must be an instance of CustomFunction class!")
-    if solver_options is not None and not isinstance(
-        solver_options, (ExecutionOptions, dict)
-    ):
-        raise TypeError(
-            "Solver options must be an instance of ExecutionOptions class or a "
-            "dictionary class object!"
-        )
-    if simulation_options is not None and not isinstance(
-        simulation_options, (ExecutionOptions, dict)
-    ):
-        raise TypeError(
-            "Simulation options must be an instance of ExecutionOptions class or"
-            " a dictionary class object!"
-        )
-    if compiler_options is not None and not isinstance(
-        compiler_options, (ExecutionOptions, dict)
-    ):
-        raise TypeError(
-            "Compiler options object must either be a dictionary or an "
-            "instance of modelon.impact.client.options.ExecutionOptions class!"
-        )
-    if runtime_options is not None and not isinstance(
-        runtime_options, (ExecutionOptions, dict)
-    ):
-        raise TypeError(
-            "Runtime options object must either be a dictionary or an "
-            "instance of modelon.impact.client.options.ExecutionOptions class!"
         )
 
 
@@ -130,78 +87,6 @@ def _assert_valid_extensions(experiment_extensions):
             )
 
 
-class Operator:
-    """
-    Base class for an Operator.
-    """
-
-    @abstractmethod
-    def __str__(self):
-        "Returns a string representation of the operator"
-        pass
-
-
-class Range(Operator):
-    """
-    Range operator class for parameterizing batch runs.
-
-    Parameters:
-
-        start_value --
-            The start value for the sweep parameter.
-
-        end_value --
-            The end value for the sweep parameter.
-
-        no_of_steps --
-            The number of steps to intermediate steps to take between start_value
-            and end_value.
-
-    Examples::
-
-        from modelon.impact.client import Range
-
-        fmu = model.compile().wait()
-        experiment_definition = fmu.new_experiment_definition(
-            custom_function).with_modifiers({'inertia1.J': 2,
-            'inertia2.J': Range(0.1, 0.5, 3)})
-    """
-
-    def __init__(self, start_value, end_value, no_of_steps):
-        self.start_value = start_value
-        self.end_value = end_value
-        self.no_of_steps = no_of_steps
-
-    def __str__(self):
-        return f"range({self.start_value},{self.end_value},{self.no_of_steps})"
-
-
-class Choices(Operator):
-    """
-    Choices operator class for parameterizing batch runs.
-
-    Parameters:
-
-        values --
-            Variable number of numerical arguments to sweep.
-
-    Examples::
-
-        from modelon.impact.client import Choices
-
-        fmu = model.compile().wait()
-        experiment_definition = fmu.new_experiment_definition(
-            custom_function).with_modifiers({'inertia1.J': 2,
-            'inertia2.J': Choices(0.1, 0.5)})
-    """
-
-    def __init__(self, *values):
-        self.values = values
-
-    def __str__(self):
-        return f"choices({', '.join(map(str, self.values))})"
-
-
 class BaseExperimentDefinition(ABC):
     """
     Base class for an Experiment definition class.
@@ -212,14 +97,12 @@ class BaseExperimentDefinition(ABC):
         """
         Validates the modifiers appended to the experiment definition.
         """
-        pass
 
     @abstractmethod
     def to_dict(self):
         """
         Returns the experiment definition as a dictionary.
         """
-        pass
 
 
 class SimpleFMUExperimentDefinition(BaseExperimentDefinition):
@@ -266,7 +149,7 @@ class SimpleFMUExperimentDefinition(BaseExperimentDefinition):
         simulation_options=None,
         simulation_log_level="WARNING",
     ):
-        assert_valid_args(
+        entities.assert_valid_args(
             fmu=fmu,
             custom_function=custom_function,
             solver_options=solver_options,
@@ -605,7 +488,7 @@ class SimpleModelicaExperimentDefinition(BaseExperimentDefinition):
         simulation_options=None,
         simulation_log_level="WARNING",
     ):
-        assert_valid_args(
+        entities.assert_valid_args(
             model=model,
             custom_function=custom_function,
             compiler_options=compiler_options,
@@ -643,7 +526,7 @@ class SimpleModelicaExperimentDefinition(BaseExperimentDefinition):
             "Validation is not supported for SimpleModelicaExperimentDefinition class"
         )
 
-    def with_modifiers(self, modifiers=None):
+    def with_modifiers(self, modifiers: Dict[str, Any] = None):
         """Sets the modifiers parameters for an experiment.
 
         Parameters:
