@@ -1,3 +1,10 @@
+# [2.1.0](https://github.com/modelon-community/impact-client-python/compare/v2.0.1...v2.1.0) (2022-05-25)
+
+
+### Features
+
+* Added possibility to specify result format ([3ab12c8](https://github.com/modelon-community/impact-client-python/commit/3ab12c854e1615e4335fe7d4d21682a1c98de4f8))
+
 # [2.1.0-beta.2](https://github.com/modelon-community/impact-client-python/compare/v2.1.0-beta.1...v2.1.0-beta.2) (2022-05-25)
 
 
