@@ -98,6 +98,7 @@ class CaseStatus(Enum):
     FAILED = "failed"
     CANCELLED = "cancelled"
     NOT_STARTED = "not_started"
+    STARTED = 'started'
 
 
 class Workspace:
