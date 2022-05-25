@@ -4,6 +4,12 @@
 ### Features
 
 * Added possibility to specify result format ([3ab12c8](https://github.com/modelon-community/impact-client-python/commit/3ab12c854e1615e4335fe7d4d21682a1c98de4f8))
+## [2.0.1](https://github.com/modelon-community/impact-client-python/compare/v2.0.0...v2.0.1) (2022-05-25)
+
+
+### Bug Fixes
+
+* add started to CaseStatus enum to mirror impact Case statuses ([1dcbf12](https://github.com/modelon-community/impact-client-python/commit/1dcbf1222ae3527ce89709bc569ee6e649e95b34))
 
 # [2.0.0](https://github.com/modelon-community/impact-client-python/compare/v1.2.1...v2.0.0) (2022-02-17)
 
@@ -1684,8 +1690,6 @@
 * integrating custom function entity ([97951b7](https://github.com/modelon-community/impact-client-python/commit/97951b7aace16eaa3deb419f232b9264410cf976))
 * possible to specify client inputs through env variables ([e0f6bfe](https://github.com/modelon-community/impact-client-python/commit/e0f6bfef58e907c91e7143d6aa6bdc80cba26846))
 
-<<<<<<< HEAD
-=======
 # 1.0.0 (2020-09-28)
 
 
@@ -1693,7 +1697,6 @@
 
 * First release of modelon-impact-client ([6aa3720](https://github.com/modelon-community/impact-client-python/commit/6aa3720b78f2595547d0aa89953739da3ba2d9bf))
 
->>>>>>> master
 # [1.0.0-beta.50](https://github.com/modelon-community/impact-client-python/compare/v1.0.0-beta.49...v1.0.0-beta.50) (2020-09-28)
 
 
