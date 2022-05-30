@@ -3,12 +3,12 @@ import json.decoder
 import requests
 
 from modelon.impact.client.jupyterhub import exceptions
-import modelon.impact.client.sal.service
+from modelon.impact.client.sal.context import Context
 
 
 class JupyterContext:
     def __init__(self, base=None):
-        self._base = base if base else modelon.impact.client.sal.service.Context()
+        self._base = base if base else Context()
         self._token = None
 
     @property

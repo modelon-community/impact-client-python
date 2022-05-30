@@ -1,5 +1,6 @@
 """This module provides an entry-point to the client APIs."""
 import logging
+from semantic_version import SimpleSpec, Version  # type: ignore
 import modelon.impact.client.configuration
 import modelon.impact.client.entities
 import modelon.impact.client.exceptions
@@ -7,8 +8,7 @@ import modelon.impact.client.sal.service
 import modelon.impact.client.sal.exceptions
 import modelon.impact.client.credential_manager
 import modelon.impact.client.jupyterhub
-
-from semantic_version import SimpleSpec, Version  # type: ignore
+from modelon.impact.client.sal.uri import URI
 from modelon.impact.client import exceptions
 
 
@@ -77,7 +77,7 @@ class Client:
                 modelon.impact.client.credential_manager.CredentialManager()
             )
 
-        self._uri = modelon.impact.client.sal.service.URI(url)
+        self._uri = URI(url)
         self._sal = modelon.impact.client.sal.service.Service(self._uri, context)
         self._credential_manager = credential_manager
 

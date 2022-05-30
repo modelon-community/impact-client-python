@@ -1,3 +1,6 @@
+"""Service access layer exceptions"""
+
+
 class ServiceAccessError(Exception):
     pass
 

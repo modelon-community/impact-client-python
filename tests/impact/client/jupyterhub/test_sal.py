@@ -1,6 +1,6 @@
 import unittest.mock
 
-from modelon.impact.client.sal.service import URI
+from modelon.impact.client.sal.uri import URI
 from modelon.impact.client.jupyterhub.sal import JupyterHubService, JupyterContext
 from tests.impact.client.jupyterhub.fixtures import *
 import modelon.impact.client.jupyterhub.exceptions as exceptions
