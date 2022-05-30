@@ -5,7 +5,12 @@ from modelon.impact.client import (
     SimpleModelicaExperimentDefinition,
     Range,
     Choices,
+    Uniform,
+    Beta,
+    Normal,
     SimpleExperimentExtension,
+    Sobol,
+    LatinHypercube,
 )
 import pytest
 import copy
@@ -62,7 +67,9 @@ _EXPECTED_MODELICA_EXP = {
                 "solverOptions": {},
                 "simulationLogLevel": "WARNING",
             },
+            "expansion": {"algorithm": "FULLFACTORIAL"},
         },
+        "extensions": [],
     }
 }
 
@@ -109,6 +116,30 @@ def get_expected_with_cases_first(experiment_body):
         {"modifiers": {"variables": {"p": 3}}},
         {"modifiers": {"variables": {"t": 2}}},
     ]
+    return expected
+
+
+def get_expected_with_sobol_expansion(experiment_body):
+    expected = copy.deepcopy(experiment_body)
+    expected["experiment"]["base"]["modifiers"] = {
+        "variables": {'h0': 'uniform(0.1,0.5)'}
+    }
+    expected["experiment"]["base"]["expansion"] = {
+        "algorithm": "SOBOL",
+        "parameters": {'samples': 5},
+    }
+    return expected
+
+
+def get_expected_with_lhs_expansion(experiment_body):
+    expected = copy.deepcopy(experiment_body)
+    expected["experiment"]["base"]["modifiers"] = {
+        "variables": {'h0': 'normal(0.1,0.5,-inf,inf)'}
+    }
+    expected["experiment"]["base"]["expansion"] = {
+        "algorithm": "LATINHYPERCUBE",
+        "parameters": {'samples': 5, 'seed': 1},
+    }
     return expected
 
 
@@ -683,10 +714,41 @@ class TestSimpleModelicaExperimentDefinition:
                         "solverOptions": {},
                         "simulationLogLevel": "WARNING",
                     },
+                    "expansion": {"algorithm": "FULLFACTORIAL"},
                 },
                 "extensions": [],
             },
         }
+
+    def test_experiment_definition_with_sobol_expansion(
+        self, model, custom_function_no_param
+    ):
+        expected = get_expected_with_sobol_expansion(_EXPECTED_MODELICA_EXP)
+        definition = (
+            SimpleModelicaExperimentDefinition(
+                model, custom_function=custom_function_no_param
+            )
+            .with_modifiers({'h0': Uniform(0.1, 0.5)})
+            .with_expansion(expansion=Sobol(5))
+            .to_dict()
+        )
+
+        assert definition == expected
+
+    def test_experiment_definition_with_lhs_expansion(
+        self, model, custom_function_no_param
+    ):
+        expected = get_expected_with_lhs_expansion(_EXPECTED_MODELICA_EXP)
+        definition = (
+            SimpleModelicaExperimentDefinition(
+                model, custom_function=custom_function_no_param
+            )
+            .with_modifiers({'h0': Normal(0.1, 0.5)})
+            .with_expansion(expansion=LatinHypercube(5, 1))
+            .to_dict()
+        )
+
+        assert definition == expected
 
     def test_experiment_definition_order_1(
         self, model, custom_function_no_param, experiment
@@ -1005,7 +1067,9 @@ class TestSimpleModelicaExperimentDefinition:
         }
         assert config["experiment"]["base"]["analysis"]["solverOptions"] == {"a": 1}
 
-    def test_experiment_definition_with_modifier(self, model, custom_function_no_param):
+    def test_experiment_definition_with_operator_modifier(
+        self, model, custom_function_no_param
+    ):
         definition = SimpleModelicaExperimentDefinition(
             model, custom_function=custom_function_no_param,
         ).with_modifiers({'h0': Range(0.1, 0.5, 3), 'v': Choices(0.1, 0.5, 3)})
@@ -1013,6 +1077,21 @@ class TestSimpleModelicaExperimentDefinition:
         assert config["experiment"]["base"]["modifiers"]["variables"] == {
             'h0': 'range(0.1,0.5,3)',
             'v': 'choices(0.1, 0.5, 3)',
+        }
+
+    def test_experiment_definition_with_distribution_modifier(
+        self, model, custom_function_no_param
+    ):
+        definition = SimpleModelicaExperimentDefinition(
+            model, custom_function=custom_function_no_param,
+        ).with_modifiers(
+            {'h0': Uniform(0.1, 0.5), 'v': Beta(0.1, 0.5), 't': Normal(0.1, 0.5, -5)}
+        )
+        config = definition.to_dict()
+        assert config["experiment"]["base"]["modifiers"]["variables"] == {
+            'h0': 'uniform(0.1,0.5)',
+            'v': 'beta(0.1,0.1)',
+            't': 'normal(0.1,0.5,-5,inf)',
         }
 
     def test_experiment_definition_initialize_from_result(

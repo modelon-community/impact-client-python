@@ -12,6 +12,14 @@ from modelon.impact.client.entities import (
     ModelExecutableStatus,
     CaseStatus,
 )
+from tests.impact.client.utils import (
+    get_case_entity,
+    get_experiment_entity,
+    get_external_result_entity,
+    get_model_entity,
+    get_model_exe_entity,
+    get_workspace_entity,
+)
 from tests.impact.client.helpers import (
     create_case_entity,
     create_experiment_entity,
