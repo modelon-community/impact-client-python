@@ -4,12 +4,10 @@ import tempfile
 import logging
 from enum import Enum
 from typing import Any, List, Dict, Tuple, Union, Optional
-from modelon.impact.client.experiment_definition import base
 from modelon.impact.client.sal.service import (
     CustomFunctionService,
     ExperimentService,
     ModelExecutableService,
-    ResultFormat,
     WorkspaceService,
 )
 from modelon.impact.client.operations import (
@@ -19,6 +17,7 @@ from modelon.impact.client.operations import (
     CaseOperation,
     ExternalResultUploadOperation,
 )
+from modelon.impact.client.sal.experiment import ResultFormat
 
 from modelon.impact.client.experiment_definition.base import (
     SimpleModelicaExperimentDefinition,
@@ -83,9 +82,7 @@ def _create_result_dict(variables, workspace_id, exp_id, case_id, exp_sal):
 Options = Union[ExecutionOptions, Dict[str, Any]]
 CompilationOperations = Union[ModelExecutableOperation, CachedModelExecutableOperation]
 ExperimentDefinition = Union[
-    base.SimpleModelicaExperimentDefinition,
-    base.SimpleFMUExperimentDefinition,
-    Dict[str, Any],
+    SimpleModelicaExperimentDefinition, SimpleFMUExperimentDefinition, Dict[str, Any],
 ]
 
 
@@ -2234,20 +2231,22 @@ class Workspace:
 
             workspace.create_experiment(definition)
         """
-        if isinstance(definition, SimpleFMUExperimentDefinition):
-            definition = definition.to_dict()
-        elif isinstance(definition, SimpleModelicaExperimentDefinition):
-            definition = definition.to_dict()
-        elif not isinstance(definition, dict):
+        if isinstance(
+            definition,
+            (SimpleFMUExperimentDefinition, SimpleModelicaExperimentDefinition),
+        ):
+            experiment_definition = definition.to_dict()
+        elif isinstance(definition, dict):
+            experiment_definition = definition
+        else:
             raise TypeError(
                 "Definition object must either be a dictionary or an instance of either"
                 "modelon.impact.client.experiment_definition."
                 "SimpleModelicaExperimentDefinition class or modelon.impact.client."
                 "experiment_definition.SimpleFMUExperimentDefinition.!"
             )
-
         resp = self._workspace_sal.experiment_create(
-            self._workspace_id, definition, user_data
+            self._workspace_id, experiment_definition, user_data
         )
         return Experiment(
             self._workspace_id,

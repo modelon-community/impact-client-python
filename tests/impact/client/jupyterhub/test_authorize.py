@@ -4,7 +4,7 @@ import pytest
 
 from modelon.impact.client.jupyterhub.authorize import authorize
 from modelon.impact.client.jupyterhub.sal import JupyterUser
-from modelon.impact.client.sal.service import URI
+from modelon.impact.client.sal.uri import URI
 import modelon.impact.client.jupyterhub.exceptions as exceptions
 
 
