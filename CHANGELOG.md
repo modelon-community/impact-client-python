@@ -1,3 +1,10 @@
+## [2.1.1-beta.2](https://github.com/modelon-community/impact-client-python/compare/v2.1.1-beta.1...v2.1.1-beta.2) (2022-05-31)
+
+
+### Bug Fixes
+
+* refactored operator into a seperate model and updated to use dataclass ([3dcafdd](https://github.com/modelon-community/impact-client-python/commit/3dcafdd2a1cb02604500980592d7dd41bee6b870))
+
 ## [2.1.1-beta.1](https://github.com/modelon-community/impact-client-python/compare/v2.1.0...v2.1.1-beta.1) (2022-05-25)
 
 
