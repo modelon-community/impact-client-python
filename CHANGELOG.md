@@ -1,3 +1,10 @@
+# [2.2.0-beta.1](https://github.com/modelon-community/impact-client-python/compare/v2.1.1-beta.2...v2.2.0-beta.1) (2022-05-31)
+
+
+### Features
+
+* added support for expansion algorithms ([3acfbb4](https://github.com/modelon-community/impact-client-python/commit/3acfbb49e10bccf701ae8d20a153445103b7ea84))
+
 ## [2.1.1-beta.2](https://github.com/modelon-community/impact-client-python/compare/v2.1.1-beta.1...v2.1.1-beta.2) (2022-05-31)
 
 
