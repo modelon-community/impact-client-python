@@ -2,7 +2,7 @@
 import logging
 from semantic_version import SimpleSpec, Version  # type: ignore
 import modelon.impact.client.configuration
-import modelon.impact.client.entities
+import modelon.impact.client.entities.workspace
 import modelon.impact.client.exceptions
 import modelon.impact.client.sal.service
 import modelon.impact.client.sal.exceptions
@@ -166,7 +166,7 @@ class Client:
             client.get_workspace('my_workspace')
         """
         resp = self._sal.workspace.workspace_get(workspace_id)
-        return modelon.impact.client.entities.Workspace(
+        return modelon.impact.client.entities.workspace.Workspace(
             resp["id"],
             self._sal.workspace,
             self._sal.model_executable,
@@ -189,7 +189,7 @@ class Client:
         """
         resp = self._sal.workspace.workspaces_get()
         return [
-            modelon.impact.client.entities.Workspace(
+            modelon.impact.client.entities.workspace.Workspace(
                 item["id"],
                 self._sal.workspace,
                 self._sal.model_executable,
@@ -218,7 +218,7 @@ class Client:
             client.create_workspace('my_workspace')
         """
         resp = self._sal.workspace.workspace_create(workspace_id)
-        return modelon.impact.client.entities.Workspace(
+        return modelon.impact.client.entities.workspace.Workspace(
             resp["id"],
             self._sal.workspace,
             self._sal.model_executable,
@@ -245,7 +245,7 @@ class Client:
             client.upload_workspace(path_to_workspace)
         """
         resp = self._sal.workspace.workspace_upload(path_to_workspace)
-        return modelon.impact.client.entities.Workspace(
+        return modelon.impact.client.entities.workspace.Workspace(
             resp["id"],
             self._sal.workspace,
             self._sal.model_executable,

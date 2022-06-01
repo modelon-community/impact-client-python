@@ -4,9 +4,9 @@ from modelon.impact.client.sal.uri import URI
 
 
 class CustomFunctionService:
-    def __init__(self, uri: URI, HTTPClient: HTTPClient):
+    def __init__(self, uri: URI, http_client: HTTPClient):
         self._base_uri = uri
-        self._http_client = HTTPClient
+        self._http_client = http_client
 
     def custom_function_get(self, workspace_id: str, custom_function: str):
         url = (

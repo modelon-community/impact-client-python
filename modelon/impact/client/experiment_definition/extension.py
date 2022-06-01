@@ -2,7 +2,7 @@ import logging
 from abc import ABC
 
 from modelon.impact.client.experiment_definition.operators import Operator
-from modelon.impact.client import entities
+from modelon.impact.client.entities.external_result import ExternalResult
 from modelon.impact.client.experiment_definition.util import (
     get_options,
     case_to_identifier_dict,
@@ -191,7 +191,7 @@ class SimpleExperimentExtension(BaseExperimentExtension):
             self._simulation_options,
             self._simulation_log_level,
         )
-        if isinstance(entity, entities.ExternalResult):
+        if isinstance(entity, ExternalResult):
             raise TypeError(
                 "It is not supported to specify initialize from external result for "
                 "experiment extensions"
