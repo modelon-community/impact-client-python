@@ -5,9 +5,9 @@ from modelon.impact.client.sal.uri import URI
 
 
 class ModelExecutableService:
-    def __init__(self, uri: URI, HTTPClient: HTTPClient):
+    def __init__(self, uri: URI, http_client: HTTPClient):
         self._base_uri = uri
-        self._http_client = HTTPClient
+        self._http_client = http_client
 
     def fmu_setup(
         self, workspace_id: str, options: Dict[str, Any], get_cached: bool

@@ -1,17 +1,19 @@
-from modelon.impact.client import entities
+from modelon.impact.client.entities.external_result import ExternalResult
+from modelon.impact.client.entities.case import Case
+from modelon.impact.client.entities.experiment import Experiment
 
 
 def validate_and_set_initialize_from(entity, definition):
-    if isinstance(entity, entities.Experiment):
+    if isinstance(entity, Experiment):
         if len(entity.get_cases()) > 1:
             raise ValueError(
                 "Cannot initialize from an experiment result containing multiple"
                 " cases! Please specify a case object instead."
             )
         definition._initialize_from_experiment = entity
-    elif isinstance(entity, entities.Case):
+    elif isinstance(entity, Case):
         definition._initialize_from_case = entity
-    elif isinstance(entity, entities.ExternalResult):
+    elif isinstance(entity, ExternalResult):
         definition._initialize_from_external_result = entity
     else:
         raise TypeError(
