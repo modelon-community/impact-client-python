@@ -25,9 +25,9 @@ class ResultFormat(enum.Enum):
 
 
 class ExperimentService:
-    def __init__(self, uri: URI, HTTPClient: HTTPClient):
+    def __init__(self, uri: URI, http_client: HTTPClient):
         self._base_uri = uri
-        self._http_client = HTTPClient
+        self._http_client = http_client
 
     def experiment_execute(
         self, workspace_id: str, exp_id: str, case_ids: Optional[List[str]] = None

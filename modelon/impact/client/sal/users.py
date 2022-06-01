@@ -4,9 +4,9 @@ from modelon.impact.client.sal.uri import URI
 
 
 class UsersService:
-    def __init__(self, uri: URI, HTTPClient: HTTPClient):
+    def __init__(self, uri: URI, http_client: HTTPClient):
         self._base_uri = uri
-        self._http_client = HTTPClient
+        self._http_client = http_client
 
     def get_me(self):
         url = (self._base_uri / "api/users/me").resolve()

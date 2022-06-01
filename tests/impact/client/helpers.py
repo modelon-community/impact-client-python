@@ -1,11 +1,14 @@
-from modelon.impact.client.entities import (
-    CustomFunction,
-    Workspace,
-    Model,
-    ModelExecutable,
-    Experiment,
-    Case,
-    ExternalResult,
+from modelon.impact.client.entities.custom_function import CustomFunction
+from modelon.impact.client.entities.workspace import Workspace
+from modelon.impact.client.entities.experiment import Experiment
+from modelon.impact.client.entities.model_executable import ModelExecutable
+from modelon.impact.client.entities.case import Case
+from modelon.impact.client.entities.external_result import ExternalResult
+from modelon.impact.client.entities.model import Model
+from modelon.impact.client.operations.experiment import ExperimentOperation
+from modelon.impact.client.operations.model_executable import (
+    CachedModelExecutableOperation,
+    ModelExecutableOperation,
 )
 from unittest.mock import MagicMock
 
@@ -102,4 +105,49 @@ def create_custom_function_entity(
 ):
     return CustomFunction(
         workspace_id, name, parameter_data, custom_function_service or MagicMock()
+    )
+
+
+def create_experiment_operation(
+    workspace_id,
+    exp_id,
+    workspace_service=None,
+    model_exe_service=None,
+    exp_service=None,
+):
+    return ExperimentOperation(
+        workspace_id,
+        exp_id,
+        workspace_service or MagicMock(),
+        model_exe_service or MagicMock(),
+        exp_service or MagicMock(),
+    )
+
+
+def create_cached_model_exe_operation(
+    workspace_id,
+    fmu_id,
+    workspace_service=None,
+    model_exe_service=None,
+    info=None,
+    modifiers=None,
+):
+    return CachedModelExecutableOperation(
+        workspace_id,
+        fmu_id,
+        workspace_service or MagicMock(),
+        model_exe_service or MagicMock(),
+        info=info,
+        modifiers=modifiers,
+    )
+
+
+def create_model_exe_operation(
+    workspace_id, fmu_id, workspace_service=None, model_exe_service=None,
+):
+    return ModelExecutableOperation(
+        workspace_id,
+        fmu_id,
+        workspace_service or MagicMock(),
+        model_exe_service or MagicMock(),
     )

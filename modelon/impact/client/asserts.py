@@ -1,5 +1,7 @@
 from modelon.impact.client.options import ExecutionOptions
-from modelon.impact.client import entities
+from modelon.impact.client.entities.model import Model
+from modelon.impact.client.entities.custom_function import CustomFunction
+from modelon.impact.client.entities.model_executable import ModelExecutable
 
 
 def assert_valid_args(
@@ -11,11 +13,11 @@ def assert_valid_args(
     compiler_options=None,
     runtime_options=None,
 ):
-    if fmu and not isinstance(fmu, entities.ModelExecutable):
+    if fmu and not isinstance(fmu, ModelExecutable):
         raise TypeError("FMU must be an instance of ModelExecutable class!")
-    if model and not isinstance(model, entities.Model):
+    if model and not isinstance(model, Model):
         raise TypeError("Model must be an instance of Model class!")
-    if custom_function and not isinstance(custom_function, entities.CustomFunction):
+    if custom_function and not isinstance(custom_function, CustomFunction):
         raise TypeError("Custom_function must be an instance of CustomFunction class!")
     if solver_options is not None and not isinstance(
         solver_options, (ExecutionOptions, dict)

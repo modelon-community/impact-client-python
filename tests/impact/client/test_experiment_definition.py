@@ -1,5 +1,5 @@
 from unittest import mock
-from modelon.impact.client import entities
+from modelon.impact.client.entities.result import Result
 from modelon.impact.client import (
     SimpleFMUExperimentDefinition,
     SimpleModelicaExperimentDefinition,
@@ -1189,7 +1189,7 @@ class TestSimpleModelicaExperimentDefinition:
 
     def test_experiment_definition_with_extensions_initialize_from_result(self):
         ext = SimpleExperimentExtension()
-        pytest.raises(TypeError, ext.initialize_from, entities.Result)
+        pytest.raises(TypeError, ext.initialize_from, Result)
 
     def test_experiment_definition_with_extensions_initialize_from_experiment(
         self, model, custom_function_no_param, experiment
