@@ -1,3 +1,18 @@
+# [2.2.0-feature-workspace.1](https://github.com/modelon-community/impact-client-python/compare/v2.1.0...v2.2.0-feature-workspace.1) (2022-06-06)
+
+
+### Bug Fixes
+
+* breakout entities ([1340401](https://github.com/modelon-community/impact-client-python/commit/13404017c7e37be542d8e3b37fe2ab203e423a2c))
+* refactored operator into a seperate model and updated to use dataclass ([3dcafdd](https://github.com/modelon-community/impact-client-python/commit/3dcafdd2a1cb02604500980592d7dd41bee6b870))
+* refactored service class ([74658cf](https://github.com/modelon-community/impact-client-python/commit/74658cfea7e439c10833c93594e3f1e43dc112cd))
+* updated python dependency ([e5cbd29](https://github.com/modelon-community/impact-client-python/commit/e5cbd29540c01365fd088d281630cb0423cd1ff4))
+
+
+### Features
+
+* added support for expansion algorithms ([3acfbb4](https://github.com/modelon-community/impact-client-python/commit/3acfbb49e10bccf701ae8d20a153445103b7ea84))
+
 # [2.2.0-beta.2](https://github.com/modelon-community/impact-client-python/compare/v2.2.0-beta.1...v2.2.0-beta.2) (2022-06-02)
 
 
