@@ -286,7 +286,8 @@ class Case:
     def initialize_from_case(self, case: 'Case'):
         if not isinstance(case, Case):
             raise TypeError(
-                "The value must be an instance of modelon.impact.client.entities.Case"
+                "The value must be an instance of modelon.impact.client.entities."
+                "case.Case"
             )
         self._assert_unique_case_initialization('initialize_from_external_result')
         self._info['input']['initialize_from_case'] = {
@@ -310,7 +311,7 @@ class Case:
         if not isinstance(result, ExternalResult):
             raise TypeError(
                 "The value must be an instance of "
-                "modelon.impact.client.entities.ExternalResult"
+                "modelon.impact.client.entities.external_result.ExternalResult"
             )
         self._assert_unique_case_initialization('initialize_from_case')
         self._info['input']['initialize_from_external_result'] = {"uploadId": result.id}
@@ -490,7 +491,7 @@ class Case:
 
     def execute(self, sync_case_changes: bool = True) -> CaseOperation:
         """Exceutes a case.
-        Returns an modelon.impact.client.operations.CaseOperation class object.
+        Returns an modelon.impact.client.operations.case.CaseOperation class object.
 
         Parameters:
 
@@ -502,7 +503,7 @@ class Case:
         Returns:
 
             case_ops --
-                An modelon.impact.client.operations.CaseOperation class object.
+                An modelon.impact.client.operations.case.CaseOperation class object.
 
         Example::
             case = experiment.get_case('case_1')

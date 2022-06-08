@@ -5,7 +5,8 @@ from modelon.impact.client.operations.base import AsyncOperation, AsyncOperation
 
 class ExternalResultUploadOperation(AsyncOperation):
     """
-    An operation class for the modelon.impact.client.entities.ExternalResult class.
+    An operation class for the modelon.impact.client.entities.
+    external_result.ExternalResult class.
     """
 
     def __init__(self, result_id: str, workspace_service: WorkspaceService):

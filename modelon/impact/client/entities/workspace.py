@@ -462,9 +462,9 @@ class Workspace:
 
             definition --
                 An parametrized experiment definition class of type
-                modelon.impact.client.experiment_definition.SimpleModelicaExperimentDefinition
+                modelon.impact.client.experiment_definition.base.SimpleModelicaExperimentDefinition
                 or
-                modelon.impact.client.experiment_definition.SimpleFMUExperimentDefinition.
+                modelon.impact.client.experiment_definition.base.SimpleFMUExperimentDefinition.
             user_data --
                 Optional dictionary object with custom data to attach to the experiment.
 
@@ -487,9 +487,9 @@ class Workspace:
         else:
             raise TypeError(
                 "Definition object must either be a dictionary or an instance of either"
-                "modelon.impact.client.experiment_definition."
+                "modelon.impact.client.experiment_definition.base."
                 "SimpleModelicaExperimentDefinition class or modelon.impact.client."
-                "experiment_definition.SimpleFMUExperimentDefinition.!"
+                "experiment_definition.base.SimpleFMUExperimentDefinition.!"
             )
         resp = self._workspace_sal.experiment_create(
             self._workspace_id, definition_as_dict, user_data
@@ -508,15 +508,16 @@ class Workspace:
         user_data: Optional[Dict[str, Any]] = None,
     ) -> ExperimentOperation:
         """Exceutes an experiment.
-        Returns an modelon.impact.client.operations.ExperimentOperation class object.
+        Returns an modelon.impact.client.operations.experiment.ExperimentOperation
+        class object.
 
         Parameters:
 
             definition --
                 An experiment definition class instance of
-                modelon.impact.client.experiment_definition.SimpleFMUExperimentDefinition
+                modelon.impact.client.experiment_definition.base.SimpleFMUExperimentDefinition
                 or
-                modelon.impact.client.experiment_definition.SimpleModelicaExperimentDefinition
+                modelon.impact.client.experiment_definition.base.SimpleModelicaExperimentDefinition
                 or
                 a dictionary object containing the definition.
             user_data --
@@ -526,7 +527,8 @@ class Workspace:
         Returns:
 
             experiment_ops --
-                An modelon.impact.client.operations.ExperimentOperation class object.
+                An modelon.impact.client.operations.experiment.ExperimentOperation
+                class object.
 
         Example::
 
