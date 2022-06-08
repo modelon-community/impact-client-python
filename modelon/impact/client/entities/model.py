@@ -57,8 +57,8 @@ class Model:
         force_compilation: bool = False,
     ) -> CompilationOperations:
         """Compiles the model to an FMU.
-        Returns an modelon.impact.client.operations.ModelExecutableOperation class
-        object.
+        Returns an modelon.impact.client.operations.model_executable
+        .ModelExecutableOperation class object.
 
         Parameters:
 
@@ -102,8 +102,8 @@ class Model:
         Returns:
 
             modelexecutableoperation --
-                An modelon.impact.client.operations.ModelExecutableOperation class
-                object.
+                An modelon.impact.client.operations.model_executable
+                .ModelExecutableOperation class object.
 
         Example::
 

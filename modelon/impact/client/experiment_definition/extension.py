@@ -174,8 +174,8 @@ class SimpleExperimentExtension(BaseExperimentExtension):
         Parameters:
 
             entity --
-                "An instance of modelon.impact.client.entities.Case or "
-                "modelon.impact.client.entities.Experiment."
+                "An instance of modelon.impact.client.entities.case.Case or "
+                "modelon.impact.client.entities.experiment.Experiment."
 
         Example::
             experiment = workspace.get_experiment(experiment_id)

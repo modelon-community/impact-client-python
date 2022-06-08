@@ -50,7 +50,7 @@ def _assert_valid_extensions(experiment_extensions):
             raise TypeError(
                 "The extension object in the experiment extension list "
                 "must be an instance of modelon.impact.client.experiment_definition."
-                "SimpleExperimentExtension class!"
+                "extension.SimpleExperimentExtension class!"
             )
 
 
@@ -201,7 +201,7 @@ class SimpleFMUExperimentDefinition(BaseExperimentDefinition):
                 "A list of experiment extension objects."
                 "Extension object must an instance of "
                 "modelon.impact.client.experiment_definition."
-                "SimpleExperimentExtension class."
+                "extension.SimpleExperimentExtension class."
 
         Example::
 
@@ -324,8 +324,8 @@ class SimpleFMUExperimentDefinition(BaseExperimentDefinition):
         Parameters:
 
             entity --
-                "An instance of modelon.impact.client.entities.Case or "
-                "modelon.impact.client.entities.Experiment."
+                "An instance of modelon.impact.client.entities.case.Case or "
+                "modelon.impact.client.entities.experiment.Experiment."
 
         Example::
 
@@ -592,8 +592,8 @@ class SimpleModelicaExperimentDefinition(BaseExperimentDefinition):
         Parameters:
 
             entity --
-                "An instance of modelon.impact.client.entities.Case or "
-                "modelon.impact.client.entities.Experiment."
+                "An instance of modelon.impact.client.entities.case.Case or "
+                "modelon.impact.client.entities.experiment.Experiment."
 
         Example::
 
@@ -646,7 +646,7 @@ class SimpleModelicaExperimentDefinition(BaseExperimentDefinition):
                 "A list of experiment extension objects."
                 "Extension object must an instance of "
                 "modelon.impact.client.experiment_definition."
-                "SimpleExperimentExtension class."
+                "extension.SimpleExperimentExtension class."
 
         Example::
 
