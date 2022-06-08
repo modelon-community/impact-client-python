@@ -7,7 +7,8 @@ from modelon.impact.client.sal.experiment import ExperimentService
 
 class ExperimentOperation(base.ExecutionOperation):
     """
-    An operation class for the modelon.impact.client.entities.Experiment class.
+    An operation class for the modelon.impact.client.entities.experiment.Experiment
+    class.
     """
 
     def __init__(

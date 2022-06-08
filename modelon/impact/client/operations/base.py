@@ -173,7 +173,7 @@ class ExecutionOperation(BaseOperation):
            model.compile(compile_options).wait(
                timeout = 120,
                status = Status.CANCELLED
-           ) modelon.impact.client.entities.
+           )
            workspace.execute(experiment_definition).wait(timeout = 120)
         """
         start_t = time.time()

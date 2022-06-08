@@ -168,7 +168,8 @@ class Experiment:
         self, with_cases: Optional[List[Case]] = None, sync_case_changes: bool = True
     ):
         """Exceutes an experiment.
-        Returns an modelon.impact.client.operations.ExperimentOperation class object.
+        Returns an modelon.impact.client.operations.experiment.ExperimentOperation class
+        object.
 
         Parameters:
 
@@ -182,7 +183,8 @@ class Experiment:
         Returns:
 
             experiment_ops --
-                An modelon.impact.client.operations.ExperimentOperation class object.
+                An modelon.impact.client.operations.experiment.ExperimentOperation
+                class object.
 
         Example::
             experiment = workspace.create_experiment(experiment_definition)

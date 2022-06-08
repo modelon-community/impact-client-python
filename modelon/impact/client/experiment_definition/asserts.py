@@ -18,9 +18,9 @@ def validate_and_set_initialize_from(entity, definition):
     else:
         raise TypeError(
             "The entity argument be an instance of "
-            "modelon.impact.client.entities.Case or "
-            "modelon.impact.client.entities.Experiment or "
-            "modelon.impact.client.entities.ExternalResultUploadOperation!"
+            "modelon.impact.client.entities.case.Case or "
+            "modelon.impact.client.entities.experiment.Experiment or "
+            "modelon.impact.client.entities.external_result.ExternalResult!"
         )
 
 
