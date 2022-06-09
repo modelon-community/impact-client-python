@@ -1,3 +1,11 @@
+## [2.2.1](https://github.com/modelon-community/impact-client-python/compare/v2.2.0...v2.2.1) (2022-06-09)
+
+
+### Bug Fixes
+
+* added types-requests package as a dependency ([b165fed](https://github.com/modelon-community/impact-client-python/commit/b165feda8c1b20ea415cef72bf39214175343fd8))
+* update python dependencies ([e4ae2d4](https://github.com/modelon-community/impact-client-python/commit/e4ae2d434de0fd458dcabcf4c1d7a6797b68cdd3))
+
 # [2.2.0](https://github.com/modelon-community/impact-client-python/compare/v2.1.0...v2.2.0) (2022-06-08)
 
 
