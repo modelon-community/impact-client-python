@@ -1,5 +1,4 @@
 import logging
-from enum import Enum
 from typing import Any, List, Dict, Optional
 from modelon.impact.client.sal.workspace import WorkspaceService
 from modelon.impact.client.sal.model_executable import ModelExecutableService
@@ -7,6 +6,7 @@ from modelon.impact.client.sal.experiment import ExperimentService
 from modelon.impact.client.operations import experiment
 from modelon.impact.client.entities.case import Case
 from modelon.impact.client.entities.asserts import assert_variable_in_result
+from modelon.impact.client.entities.status import ExperimentStatus
 from modelon.impact.client import exceptions
 
 logger = logging.getLogger(__name__)
@@ -17,18 +17,6 @@ def _assert_experiment_is_complete(status, operation_name="Operation"):
         raise exceptions.OperationNotCompleteError.for_operation(operation_name, status)
     elif status == ExperimentStatus.CANCELLED:
         raise exceptions.OperationFailureError.for_operation(operation_name)
-
-
-class ExperimentStatus(Enum):
-    """
-    Class representing an enumeration for the possible
-    experiment run info states.
-    """
-
-    NOTSTARTED = "not_started"
-    CANCELLED = "cancelled"
-    DONE = "done"
-    FAILED = "failed"
 
 
 class _ExperimentRunInfo:

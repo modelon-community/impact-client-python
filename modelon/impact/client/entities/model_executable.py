@@ -1,13 +1,13 @@
 import logging
 import os
 import tempfile
-from enum import Enum
 from typing import Any, List, Dict, Optional, Union
 from modelon.impact.client.sal.workspace import WorkspaceService
 from modelon.impact.client.sal.model_executable import ModelExecutableService
 from modelon.impact.client.entities.asserts import assert_successful_operation
 from modelon.impact.client.entities.custom_function import CustomFunction
 from modelon.impact.client.entities.log import Log
+from modelon.impact.client.entities.status import ModelExecutableStatus
 from modelon.impact.client.options import ExecutionOptions
 from modelon.impact.client.experiment_definition import base
 from modelon.impact.client import exceptions
@@ -23,18 +23,6 @@ def _assert_compilation_is_complete(status, operation_name="Operation"):
         raise exceptions.OperationNotCompleteError.for_operation(operation_name, status)
     elif status == ModelExecutableStatus.CANCELLED:
         raise exceptions.OperationFailureError.for_operation(operation_name)
-
-
-class ModelExecutableStatus(Enum):
-    """
-    Class representing an enumeration for the possible
-    model-executable run info states.
-    """
-
-    NOTSTARTED = "not_started"
-    CANCELLED = "cancelled"
-    SUCCESSFUL = "successful"
-    FAILED = "failed"
 
 
 class _ModelExecutableRunInfo:
