@@ -1,6 +1,5 @@
 import logging
 from typing import Any, Dict, Tuple, Optional
-from enum import Enum
 from modelon.impact.client.sal.experiment import ExperimentService
 from modelon.impact.client.sal.model_executable import ModelExecutableService
 from modelon.impact.client.sal.workspace import WorkspaceService
@@ -10,23 +9,11 @@ from modelon.impact.client.entities.external_result import ExternalResult
 from modelon.impact.client.entities.log import Log
 from modelon.impact.client.entities.result import Result
 from modelon.impact.client.entities.model_executable import ModelExecutable
+from modelon.impact.client.entities.status import CaseStatus
 from modelon.impact.client.entities.asserts import assert_successful_operation
 from modelon.impact.client import exceptions
 
 logger = logging.getLogger(__name__)
-
-
-class CaseStatus(Enum):
-    """
-    Class representing an enumeration for the possible
-    Case run info states.
-    """
-
-    SUCCESSFUL = "successful"
-    FAILED = "failed"
-    CANCELLED = "cancelled"
-    NOT_STARTED = "not_started"
-    STARTED = 'started'
 
 
 def _assert_case_is_complete(status, operation_name="Operation"):
