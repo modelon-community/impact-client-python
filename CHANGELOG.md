@@ -1,3 +1,10 @@
+## [2.2.2](https://github.com/modelon-community/impact-client-python/compare/v2.2.1...v2.2.2) (2022-06-13)
+
+
+### Bug Fixes
+
+* compability for accessing status enums for users ([4b377e8](https://github.com/modelon-community/impact-client-python/commit/4b377e82b29faab98d7d9f04614416f4949ca7fa))
+
 ## [2.2.1](https://github.com/modelon-community/impact-client-python/compare/v2.2.0...v2.2.1) (2022-06-09)
 
 
