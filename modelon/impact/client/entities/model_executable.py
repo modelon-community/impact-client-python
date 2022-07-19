@@ -8,14 +8,15 @@ from modelon.impact.client.sal.model_executable import ModelExecutableService
 from modelon.impact.client.entities.asserts import assert_successful_operation
 from modelon.impact.client.entities.custom_function import CustomFunction
 from modelon.impact.client.entities.log import Log
-from modelon.impact.client.options import ExecutionOptions
+from modelon.impact.client.options import SimulationOptions, SolverOptions
 from modelon.impact.client.experiment_definition import base
 from modelon.impact.client import exceptions
 
 
 logger = logging.getLogger(__name__)
 
-Options = Union[ExecutionOptions, Dict[str, Any]]
+SimulationOptionsOrDict = Union[SimulationOptions, Dict[str, Any]]
+SolverOptionsOrDict = Union[SolverOptions, Dict[str, Any]]
 
 
 def _assert_compilation_is_complete(status, operation_name="Operation"):
@@ -194,8 +195,8 @@ class ModelExecutable:
     def new_experiment_definition(
         self,
         custom_function: CustomFunction,
-        solver_options: Optional[Options] = None,
-        simulation_options: Optional[Options] = None,
+        solver_options: Optional[SolverOptionsOrDict] = None,
+        simulation_options: Optional[SimulationOptionsOrDict] = None,
         simulation_log_level: str = "WARNING",
     ):
         """

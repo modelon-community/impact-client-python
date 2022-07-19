@@ -5,7 +5,12 @@ import pytest
 import requests
 import requests_mock
 from modelon.impact.client import Client
-from modelon.impact.client.options import ExecutionOptions
+from modelon.impact.client.options import (
+    CompilerOptions,
+    SimulationOptions,
+    SolverOptions,
+    RuntimeOptions,
+)
 from tests.impact.client.helpers import (
     create_workspace_entity,
     create_model_exe_entity,
@@ -1057,6 +1062,12 @@ def custom_function():
         "simulation": {"ncp": 500},
         "solver": {'atol': 1e-7, 'rtol': 1e-9},
     }
+    custom_function_service.custom_function_default_options_get.return_value = {
+        "compiler": {"c_compiler": "msvs"},
+        "runtime": {"log_level": 2},
+        "simulation": {"ncp": 500},
+        "solver": {"rtol": 1e-5},
+    }
     return create_custom_function_entity(
         'test_ws', 'dynamic', _custom_function_parameter_list(), custom_function_service
     )
@@ -1125,15 +1136,8 @@ def compiler_options():
         "simulation": {"ncp": 2000},
         "solver": {"rtol": 0.0001},
     }
-    def_opts = {
-        "compiler": {"c_compiler": "msvs"},
-        "runtime": {"log_level": 2},
-        "simulation": {"ncp": 500},
-        "solver": {"rtol": 1e-5},
-    }
     custom_function_service.custom_function_options_get.return_value = opts
-    custom_function_service.custom_function_default_options_get.return_value = def_opts
-    return ExecutionOptions(opts["compiler"], "dynamic", custom_function_service)
+    return CompilerOptions(opts["compiler"], "dynamic")
 
 
 @pytest.fixture
@@ -1145,15 +1149,8 @@ def runtime_options():
         "simulation": {"ncp": 2000},
         "solver": {"rtol": 0.0001},
     }
-    def_opts = {
-        "compiler": {"c_compiler": "msvs"},
-        "runtime": {"log_level": 2},
-        "simulation": {"ncp": 500},
-        "solver": {"rtol": 1e-5},
-    }
     custom_function_service.custom_function_options_get.return_value = opts
-    custom_function_service.custom_function_default_options_get.return_value = def_opts
-    return ExecutionOptions(opts["runtime"], "dynamic", custom_function_service)
+    return RuntimeOptions(opts["runtime"], "dynamic")
 
 
 @pytest.fixture
@@ -1165,15 +1162,8 @@ def simulation_options():
         "simulation": {"ncp": 2000},
         "solver": {"rtol": 0.0001},
     }
-    def_opts = {
-        "compiler": {"c_compiler": "msvs"},
-        "runtime": {"log_level": 2},
-        "simulation": {"ncp": 500},
-        "solver": {"rtol": 1e-5},
-    }
     custom_function_service.custom_function_options_get.return_value = opts
-    custom_function_service.custom_function_default_options_get.return_value = def_opts
-    return ExecutionOptions(opts["simulation"], "dynamic", custom_function_service)
+    return SimulationOptions(opts["simulation"], "dynamic")
 
 
 @pytest.fixture
@@ -1185,15 +1175,8 @@ def solver_options():
         "simulation": {"ncp": 2000},
         "solver": {"rtol": 0.0001},
     }
-    def_opts = {
-        "compiler": {"c_compiler": "msvs"},
-        "runtime": {"log_level": 2},
-        "simulation": {"ncp": 500},
-        "solver": {"rtol": 1e-5},
-    }
     custom_function_service.custom_function_options_get.return_value = opts
-    custom_function_service.custom_function_default_options_get.return_value = def_opts
-    return ExecutionOptions(opts["solver"], "dynamic", custom_function_service)
+    return SolverOptions(opts["solver"], "dynamic")
 
 
 @pytest.fixture

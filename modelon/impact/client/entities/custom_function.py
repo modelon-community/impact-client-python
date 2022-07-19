@@ -1,7 +1,12 @@
 import logging
 from typing import Any, List, Dict
 from modelon.impact.client.sal.custom_function import CustomFunctionService
-from modelon.impact.client.options import ExecutionOptions
+from modelon.impact.client.options import (
+    CompilerOptions,
+    RuntimeOptions,
+    SimulationOptions,
+    SolverOptions,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -111,80 +116,88 @@ class CustomFunction:
         """Custom_function parameters and value as a dictionary"""
         return {p.name: p.value for p in self._param_by_name.values()}
 
-    def get_compiler_options(self) -> ExecutionOptions:
+    def _get_options(self, use_defaults):
+        if use_defaults:
+            return self._custom_func_sal.custom_function_default_options_get(
+                self._workspace_id, self._name
+            )
+        return self._custom_func_sal.custom_function_options_get(
+            self._workspace_id, self._name
+        )
+
+    def get_compiler_options(self, use_defaults: bool = False) -> CompilerOptions:
         """
-        Return a modelon.impact.client.options.ExecutionOptions object.
+        Return a modelon.impact.client.options.CompilerOptions object.
 
         Returns:
 
             compiler_options --
-                A modelon.impact.client.options.ExecutionOptions object.
+                A modelon.impact.client.options.CompilerOptions object.
 
+            use_defaults --
+                If true, default compiler options are used.
         Example::
 
             opts = custom_function.get_compiler_options()
             opts_2 = opts.with_values(c_compiler='gcc')
         """
-        options = self._custom_func_sal.custom_function_options_get(
-            self._workspace_id, self._name
-        )
-        return ExecutionOptions(options["compiler"], self._name, self._custom_func_sal)
+        options = self._get_options(use_defaults=use_defaults)
+        return CompilerOptions(options["compiler"], self._name)
 
-    def get_runtime_options(self) -> ExecutionOptions:
+    def get_runtime_options(self, use_defaults: bool = False) -> RuntimeOptions:
         """
-        Return a modelon.impact.client.options.ExecutionOptions object.
+        Return a modelon.impact.client.options.RuntimeOptions object.
 
         Returns:
 
             runtime_options --
-                A modelon.impact.client.options.ExecutionOptions object.
+                A modelon.impact.client.options.RuntimeOptions object.
 
+            use_defaults --
+                If true, default runtime options are used.
         Example::
 
             opts = custom_function.get_runtime_options()
             opts_2 = opts.with_values(cs_solver=0)
         """
-        options = self._custom_func_sal.custom_function_options_get(
-            self._workspace_id, self._name
-        )
-        return ExecutionOptions(options["runtime"], self._name, self._custom_func_sal)
+        options = self._get_options(use_defaults=use_defaults)
+        return RuntimeOptions(options["runtime"], self._name)
 
-    def get_solver_options(self) -> ExecutionOptions:
+    def get_solver_options(self, use_defaults: bool = False) -> SolverOptions:
         """
-        Return a modelon.impact.client.options.ExecutionOptions object.
+        Return a modelon.impact.client.options.SolverOptions object.
 
         Returns:
 
             solver_options --
-                A modelon.impact.client.options.ExecutionOptions object.
+                A modelon.impact.client.options.SolverOptions object.
+
+            use_defaults --
+                If true, default solver options are used.
 
         Example::
 
             opts = custom_function.get_solver_options()
             opts_2 = opts.with_values(rtol=1e-7)
         """
-        options = self._custom_func_sal.custom_function_options_get(
-            self._workspace_id, self._name
-        )
-        return ExecutionOptions(options["solver"], self._name, self._custom_func_sal)
+        options = self._get_options(use_defaults=use_defaults)
+        return SolverOptions(options["solver"], self._name)
 
-    def get_simulation_options(self) -> ExecutionOptions:
+    def get_simulation_options(self, use_defaults: bool = False) -> SimulationOptions:
         """
-        Return a modelon.impact.client.options.ExecutionOptions object.
+        Return a modelon.impact.client.options.SimulationOptions object.
 
         Returns:
 
             simulation_options --
-                A modelon.impact.client.options.ExecutionOptions object.
+                A modelon.impact.client.options.SimulationOptions object.
 
+            use_defaults --
+                If true, default simulation options are used.
         Example::
 
             opts = custom_function.get_simulation_options()
             opts_2 = opts.with_values(ncp=500)
         """
-        options = self._custom_func_sal.custom_function_options_get(
-            self._workspace_id, self._name
-        )
-        return ExecutionOptions(
-            options["simulation"], self._name, self._custom_func_sal
-        )
+        options = self._get_options(use_defaults=use_defaults)
+        return SimulationOptions(options["simulation"], self._name)
