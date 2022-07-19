@@ -1,5 +1,7 @@
 from copy import deepcopy
 from collections.abc import Mapping
+from typing import Union, List, Dict, Any
+from abc import ABC
 
 
 def _set_options(options, **modified):
@@ -9,20 +11,19 @@ def _set_options(options, **modified):
     return opts
 
 
-class ExecutionOptions(Mapping):
+class BaseExecutionOptions(Mapping, ABC):
     """
-    An class containing the simulation, compiler, solver and runtime options settings.
+    Base class for the simulation, compiler, solver and runtime options settings.
     """
 
     def __init__(
-        self, values, custom_function_name, custom_function_service=None,
+        self, values: Dict[str, Any], custom_function_name: str,
     ):
         self._values = values
-        self._name = custom_function_name
-        self._custom_func_sal = custom_function_service
+        self._custom_function_name = custom_function_name
 
     def __repr__(self):
-        return f"Execution option for '{self._name}'"
+        return f"{type(self).__name__} for '{self._custom_function_name}'"
 
     def __getitem__(self, key):
         return self._values[key]
@@ -34,13 +35,12 @@ class ExecutionOptions(Mapping):
         return self._values.__len__()
 
     def with_values(self, **modified):
-        """Sets/updates the compiler options.
+        """Sets/updates the options.
 
         Parameters:
 
             parameters --
-                A keyworded, variable-length argument list of compiler
-                options.
+                A keyworded, variable-length argument list of options.
 
         Example::
 
@@ -51,5 +51,40 @@ class ExecutionOptions(Mapping):
             sol_opts = custom_function.get_solver_options().with_values(rtol=1e-7)
             sim_opts = custom_function.get_simulation_options().with_values(ncp=500)
         """
-        values = _set_options(self._values, **modified,)
-        return ExecutionOptions(values, self._name, self._custom_func_sal)
+        values = _set_options(self._values, **modified)
+        return self.__class__(values, self._custom_function_name)
+
+
+class CompilerOptions(BaseExecutionOptions):
+    pass
+
+
+class RuntimeOptions(BaseExecutionOptions):
+    pass
+
+
+class SolverOptions(BaseExecutionOptions):
+    pass
+
+
+class SimulationOptions(BaseExecutionOptions):
+    def with_result_filter(self, pattern: Union[str, List[str]]):
+        """Sets the variable filter for results.
+
+        Parameters:
+
+            pattern --
+                A filter pattern for choosing which variables to actually store
+            result for. The syntax can be found in
+            http://en.wikipedia.org/wiki/Glob_%28programming%29 . An
+            example is filter = "*der" , stores all variables ending with
+            'der'. Can also be a list.
+
+        Example::
+
+            sim_opts = custom_function.get_simulation_options().with_result_filter(
+                pattern = ["*.phi"])
+        """
+        if not isinstance(pattern, str):
+            pattern = str(pattern)
+        return self.with_values(filter=pattern)

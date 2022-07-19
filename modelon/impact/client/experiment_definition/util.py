@@ -1,4 +1,4 @@
-from modelon.impact.client.options import ExecutionOptions
+from modelon.impact.client.options import BaseExecutionOptions
 
 
 def get_options(default_options, options):
@@ -6,7 +6,7 @@ def get_options(default_options, options):
         dict(default_options())
         if options is None
         else dict(options)
-        if isinstance(options, ExecutionOptions)
+        if isinstance(options, BaseExecutionOptions)
         else options
     )
 

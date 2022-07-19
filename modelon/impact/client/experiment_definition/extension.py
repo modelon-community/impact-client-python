@@ -34,14 +34,14 @@ class SimpleExperimentExtension(BaseExperimentExtension):
 
         solver_options --
             A solver options class instance of
-            modelon.impact.client.options.ExecutionOptions or
+            modelon.impact.client.options.SolverOptions or
             a dictionary object containing the solver options. By
             default, the options is set to None, which means an empty dictionary
             is passed in the experiment extension.
 
         simulation_options --
             A simulation options class instance of
-            modelon.impact.client.options.ExecutionOptions or
+            modelon.impact.client.options.SimulationOptions or
             a dictionary object containing the simulation options. By
             default, the options is set to None, which means an empty dictionary
             is passed in the experiment extension.

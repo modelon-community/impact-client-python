@@ -9,13 +9,22 @@ from modelon.impact.client.operations.model_executable import (
 
 from modelon.impact.client.experiment_definition import base
 from modelon.impact.client.entities.custom_function import CustomFunction
-from modelon.impact.client.options import ExecutionOptions
+from modelon.impact.client.options import (
+    CompilerOptions,
+    RuntimeOptions,
+    SimulationOptions,
+    SolverOptions,
+)
 from modelon.impact.client import asserts
 
 logger = logging.getLogger(__name__)
 
-Options = Union[ExecutionOptions, Dict[str, Any]]
 CompilationOperations = Union[ModelExecutableOperation, CachedModelExecutableOperation]
+
+RuntimeOptionsOrDict = Union[RuntimeOptions, Dict[str, Any]]
+CompilerOptionsOrDict = Union[CompilerOptions, Dict[str, Any]]
+SimulationOptionsOrDict = Union[SimulationOptions, Dict[str, Any]]
+SolverOptionsOrDict = Union[SolverOptions, Dict[str, Any]]
 
 
 class Model:
@@ -48,8 +57,8 @@ class Model:
 
     def compile(
         self,
-        compiler_options: Options,
-        runtime_options: Optional[Options] = None,
+        compiler_options: CompilerOptionsOrDict,
+        runtime_options: Optional[RuntimeOptionsOrDict] = None,
         compiler_log_level: str = "warning",
         fmi_target: str = "me",
         fmi_version: str = "2.0",
@@ -64,12 +73,12 @@ class Model:
 
             compiler_options --
                 An compilation options class instance of
-                modelon.impact.client.options.ExecutionOptions or
+                modelon.impact.client.options.CompilerOptions or
                 a dictionary object containing the compiler options.
 
             runtime_options --
                 An runtime options class instance of
-                modelon.impact.client.options.ExecutionOptions or
+                modelon.impact.client.options.RuntimeOptions or
                 a dictionary object containing the runtime options. Default: None.
 
             compiler_log_level --
@@ -120,14 +129,14 @@ class Model:
         )
         compiler_options = (
             dict(compiler_options)
-            if isinstance(compiler_options, ExecutionOptions)
+            if isinstance(compiler_options, CompilerOptions)
             else compiler_options
             if isinstance(compiler_options, dict)
             else {}
         )
         runtime_options = (
             dict(runtime_options)
-            if isinstance(runtime_options, ExecutionOptions)
+            if isinstance(runtime_options, RuntimeOptions)
             else runtime_options
             if isinstance(runtime_options, dict)
             else {}
@@ -172,14 +181,14 @@ class Model:
         self,
         custom_function: CustomFunction,
         *,
-        compiler_options: Optional[Options] = None,
+        compiler_options: Optional[CompilerOptionsOrDict] = None,
         fmi_target: str = "me",
         fmi_version: str = "2.0",
         platform: str = "auto",
         compiler_log_level: str = "warning",
-        runtime_options: Optional[Options] = None,
-        solver_options: Optional[Options] = None,
-        simulation_options: Optional[Options] = None,
+        runtime_options: Optional[RuntimeOptionsOrDict] = None,
+        solver_options: Optional[SolverOptionsOrDict] = None,
+        simulation_options: Optional[SimulationOptionsOrDict] = None,
         simulation_log_level: str = "WARNING",
     ):
         """
@@ -192,7 +201,7 @@ class Model:
 
             compiler_options --
                 An compilation options class instance of
-                modelon.impact.client.options.ExecutionOptions or
+                modelon.impact.client.options.CompilerOptions or
                 a dictionary object containing the compiler options.
 
             fmi_target --
@@ -221,7 +230,7 @@ class Model:
 
             runtime_options --
                 An runtime options class instance of
-                modelon.impact.client.options.ExecutionOptions or
+                modelon.impact.client.options.RuntimeOptions or
                 a dictionary object containing the runtime options. Default: None.
 
             solver_options --
