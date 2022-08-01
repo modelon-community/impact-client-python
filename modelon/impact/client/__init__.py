@@ -18,5 +18,6 @@ from modelon.impact.client.experiment_definition.expansion import (
     FullFactorial,
     LatinHypercube,
 )
+from modelon.impact.client.entities.project import ContentType
 
 SimpleExperimentDefinition = SimpleFMUExperimentDefinition  # For compability

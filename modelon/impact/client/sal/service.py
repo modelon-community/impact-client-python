@@ -6,6 +6,7 @@ from typing import Optional
 from modelon.impact.client.sal import exceptions
 from modelon.impact.client.sal.http import HTTPClient
 from modelon.impact.client.sal.workspace import WorkspaceService
+from modelon.impact.client.sal.project import ProjectService
 from modelon.impact.client.sal.custom_function import CustomFunctionService
 from modelon.impact.client.sal.model_executable import ModelExecutableService
 from modelon.impact.client.sal.experiment import ExperimentService
@@ -30,6 +31,7 @@ class Service:
         self._base_uri = uri
         self._http_client = HTTPClient(context)
         self.workspace = WorkspaceService(self._base_uri, self._http_client)
+        self.project = ProjectService(self._base_uri, self._http_client)
         self.model_executable = ModelExecutableService(
             self._base_uri, self._http_client
         )
@@ -54,6 +56,7 @@ class Service:
         self.workspace = _decorate_all_methods(
             self.workspace, retry_with_login_decorator
         )
+        self.project = _decorate_all_methods(self.project, retry_with_login_decorator)
         self.model_executable = _decorate_all_methods(
             self.model_executable, retry_with_login_decorator
         )

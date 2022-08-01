@@ -11,8 +11,11 @@ class TestWorkspaceService:
         service = modelon.impact.client.sal.service.Service(
             uri=uri, context=create_workspace.context
         )
-        data = service.workspace.workspace_create('AwesomeWorkspace')
-        assert data == {'id': 'newWorkspace'}
+        data = service.workspace.workspace_create('newWorkspace')
+        assert data == {
+            'definition': TEST_WORKSPACE_DEFINITION,
+            'id': 'newWorkspace',
+        }
 
     def test_delete_workspace(self, delete_workspace):
         uri = URI(delete_workspace.url)
@@ -33,7 +36,10 @@ class TestWorkspaceService:
             uri=uri, context=single_workspace.context
         )
         data = service.workspace.workspace_get('AwesomeWorkspace')
-        assert data == {'id': 'AwesomeWorkspace'}
+        assert data == {
+            "definition": TEST_WORKSPACE_DEFINITION,
+            "id": "AwesomeWorkspace",
+        }
 
     def test_get_workspaces(self, multiple_workspace):
         uri = URI(multiple_workspace.url)
@@ -41,8 +47,17 @@ class TestWorkspaceService:
             uri=uri, context=multiple_workspace.context
         )
         data = service.workspace.workspaces_get()
+        workspace_1_def = TEST_WORKSPACE_DEFINITION.copy()
+        workspace_1_def["name"] = 'workspace_1'
+        workspace_2_def = TEST_WORKSPACE_DEFINITION.copy()
+        workspace_2_def["name"] = 'workspace_2'
         assert data == {
-            'data': {'items': [{'id': 'AwesomeWorkspace'}, {'id': 'BoringWorkspace'}]}
+            'data': {
+                'items': [
+                    {'id': 'workspace_1', 'definition': workspace_1_def},
+                    {'id': 'workspace_2', 'definition': workspace_2_def},
+                ]
+            }
         }
 
     def test_library_import(self, import_lib):
@@ -165,13 +180,14 @@ class TestWorkspaceService:
         data = service.workspace.workspace_download("Workspace", '0d96b08c8d')
         assert data == b'\x00\x00\x00\x00'
 
-    def test_clone_workspace(self, clone_workspace):
-        uri = URI(clone_workspace.url)
-        service = modelon.impact.client.sal.service.Service(
-            uri=uri, context=clone_workspace.context
-        )
-        data = service.workspace.workspace_clone("Workspace")
-        assert data == {'workspace_id': 'clone_44e8ad8c036'}
+    # TODO: Cloning workspace is not implemented on feature branch
+    # def test_clone_workspace(self, clone_workspace):
+    #     uri = URI(clone_workspace.url)
+    #     service = modelon.impact.client.sal.service.Service(
+    #         uri=uri, context=clone_workspace.context
+    #     )
+    #     data = service.workspace.workspace_clone("Workspace")
+    #     assert data == {'workspace_id': 'clone_44e8ad8c036'}
 
     def test_get_fmu(self, get_fmu):
         uri = URI(get_fmu.url)
@@ -226,3 +242,57 @@ class TestWorkspaceService:
         data = service.workspace.experiment_create("WS", {}, user_data)
         request_data = experiment_create.adapter.request_history[1].json()
         assert request_data == {'userData': user_data}
+
+    def test_get_projects(self, get_projects):
+        uri = URI(get_projects.url)
+        service = modelon.impact.client.sal.service.Service(
+            uri=uri, context=get_projects.context
+        )
+        data = service.workspace.projects_get("WS")
+        assert data == {
+            "data": {
+                "items": [
+                    {
+                        "id": "659573e31fcd7e6809a00171f734c13497acdf7f",
+                        "definition": {},
+                        "projectType": "LOCAL",
+                    }
+                ]
+            }
+        }
+
+    def test_create_project(self, create_project):
+        uri = URI(create_project.url)
+        service = modelon.impact.client.sal.service.Service(
+            uri=uri, context=create_project.context
+        )
+        data = service.workspace.project_create("WS", "my_project")
+        assert data == {
+            "id": "2d45026ab0733e7dc4eca0510369144e46caf1f6",
+            "definition": {
+                "name": "my_project",
+                "format": "1.0",
+                "dependencies": [],
+                "content": [],
+                "executionOptions": [],
+            },
+            "projectType": "LOCAL",
+        }
+
+    def test_get_dependencies(self, get_dependencies):
+        uri = URI(get_dependencies.url)
+        service = modelon.impact.client.sal.service.Service(
+            uri=uri, context=get_dependencies.context
+        )
+        data = service.workspace.dependencies_get("WS")
+        assert data == {
+            "data": {
+                "items": [
+                    {
+                        "id": "84fb1c37abe6ed97a53972fb7239630e1212438b",
+                        "definition": {},
+                        "projectType": "SYSTEM",
+                    },
+                ]
+            }
+        }

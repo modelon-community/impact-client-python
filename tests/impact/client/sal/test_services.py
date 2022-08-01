@@ -28,7 +28,7 @@ class TestService:
 
         # Then
         assert len(create_workspace.adapter.request_history) == 1
-        assert data == {'id': 'newWorkspace'}
+        assert data == {'definition': TEST_WORKSPACE_DEFINITION, 'id': 'newWorkspace'}
 
     def test_given_authenticat_fail_once_when_access_then_login_and_ok(
         self, create_workspace_fail_auth_once

@@ -23,6 +23,18 @@ class WorkspaceService:
         url = (self._base_uri / "api/workspaces").resolve()
         return self._http_client.get_json(url)
 
+    def projects_get(self, workspace_id: str):
+        url = (self._base_uri / f"api/workspaces/{workspace_id}/projects").resolve()
+        return self._http_client.get_json(url)
+
+    def project_create(self, workspace_id: str, name: str):
+        url = (self._base_uri / f"api/workspaces/{workspace_id}/projects").resolve()
+        return self._http_client.post_json(url, body={"new": {"name": name}})
+
+    def dependencies_get(self, workspace_id: str):
+        url = (self._base_uri / f"api/workspaces/{workspace_id}/dependencies").resolve()
+        return self._http_client.get_json(url)
+
     def workspace_get(self, workspace_id: str):
         url = (self._base_uri / f"api/workspaces/{workspace_id}").resolve()
         return self._http_client.get_json(url)
