@@ -12,6 +12,7 @@ from modelon.impact.client.options import (
     RuntimeOptions,
 )
 from tests.impact.client.helpers import (
+    create_project_entity,
     create_workspace_entity,
     create_model_exe_entity,
     create_experiment_entity,
@@ -22,6 +23,42 @@ from tests.impact.client.helpers import (
 MockedServer = collections.namedtuple('MockedServer', ['url', 'context', 'adapter'])
 ExperimentMock = collections.namedtuple('ExperimentMock', ['entity', 'service'])
 WorkspaceMock = collections.namedtuple('WorkspaceMock', ['entity', 'service'])
+ProjectMock = collections.namedtuple('ProjectMock', ['entity', 'service'])
+TEST_WORKSPACE_DEFINITION = {
+    "name": "newWorkspace",
+    "format": "1.0",
+    "description": "",
+    "createdBy": "local-installation-user-id",
+    "createdAt": 1659072911361,
+    "defaultProjectId": "bf1e2f2a2fd55dcfd844bc1f252528f707254425",
+    "projects": [
+        {
+            "reference": {"id": "bf1e2f2a2fd55dcfd844bc1f252528f707254425"},
+            "disabled": False,
+            "disabledContent": [],
+        }
+    ],
+    "dependencies": [
+        {
+            "reference": {
+                "id": "84fb1c37abe6ed97a53972fb7239630e1212438b",
+                "name": "MSL",
+                "version": "3.2.3",
+            },
+            "disabled": True,
+            "disabledContent": [],
+        },
+        {
+            "reference": {
+                "id": "cdbde8922bd2c48c392b1b4bb740adc0273c737c",
+                "name": "MSL",
+                "version": "4.0.0",
+            },
+            "disabled": False,
+            "disabledContent": [],
+        },
+    ],
+}
 
 
 def json_request_list_item(json_response, status_code=200, extra_headers=None):
@@ -250,8 +287,10 @@ def jupyterhub_api(mock_server_base):
 
 @pytest.fixture
 def create_workspace(user_with_license):
-    json = {'id': 'newWorkspace'}
-
+    json = {
+        "definition": TEST_WORKSPACE_DEFINITION,
+        "id": "newWorkspace",
+    }
     return with_json_route(user_with_license, 'POST', 'api/workspaces', json)
 
 
@@ -298,8 +337,7 @@ def delete_workspace(user_with_license):
 
 @pytest.fixture
 def single_workspace(user_with_license):
-    json = {'id': 'AwesomeWorkspace'}
-
+    json = {"definition": TEST_WORKSPACE_DEFINITION, "id": "AwesomeWorkspace"}
     return with_json_route(
         user_with_license, 'GET', 'api/workspaces/AwesomeWorkspace', json
     )
@@ -307,7 +345,18 @@ def single_workspace(user_with_license):
 
 @pytest.fixture
 def multiple_workspace(user_with_license):
-    json = {'data': {'items': [{'id': 'AwesomeWorkspace'}, {'id': 'BoringWorkspace'}]}}
+    workspace_1_def = TEST_WORKSPACE_DEFINITION.copy()
+    workspace_1_def["name"] = 'workspace_1'
+    workspace_2_def = TEST_WORKSPACE_DEFINITION.copy()
+    workspace_2_def["name"] = 'workspace_2'
+    json = {
+        'data': {
+            'items': [
+                {'id': 'workspace_1', "definition": workspace_1_def},
+                {'id': 'workspace_2', "definition": workspace_2_def},
+            ]
+        }
+    }
 
     return with_json_route(user_with_license, 'GET', 'api/workspaces', json)
 
@@ -524,13 +573,14 @@ def download_workspace(sem_ver_check, mock_server_base, get_export_id):
     )
 
 
-@pytest.fixture
-def clone_workspace(sem_ver_check, mock_server_base):
-    json = {"workspace_id": "clone_44e8ad8c036"}
+# TODO: Cloning workspace is not implemented on feature branch
+# @pytest.fixture
+# def clone_workspace(sem_ver_check, mock_server_base):
+#     json = {"workspace_id": "clone_44e8ad8c036"}
 
-    return with_json_route(
-        mock_server_base, 'POST', 'api/workspaces/Workspace/clone', json
-    )
+#     return with_json_route(
+#         mock_server_base, 'POST', 'api/workspaces/Workspace/clone', json
+#     )
 
 
 @pytest.fixture
@@ -563,6 +613,59 @@ def download_fmu(sem_ver_check, mock_server_base):
         'GET',
         'api/workspaces/WS/model-executables/pid_20090615_134/binary',
         content,
+    )
+
+
+@pytest.fixture
+def get_projects(sem_ver_check, mock_server_base):
+    json = {
+        "data": {
+            "items": [
+                {
+                    "id": "659573e31fcd7e6809a00171f734c13497acdf7f",
+                    "definition": {},
+                    "projectType": "LOCAL",
+                }
+            ]
+        }
+    }
+
+    return with_json_route(mock_server_base, 'GET', 'api/workspaces/WS/projects', json)
+
+
+@pytest.fixture
+def create_project(sem_ver_check, mock_server_base):
+    json = {
+        "id": "2d45026ab0733e7dc4eca0510369144e46caf1f6",
+        "definition": {
+            "name": "my_project",
+            "format": "1.0",
+            "dependencies": [],
+            "content": [],
+            "executionOptions": [],
+        },
+        "projectType": "LOCAL",
+    }
+
+    return with_json_route(mock_server_base, 'POST', 'api/workspaces/WS/projects', json)
+
+
+@pytest.fixture
+def get_dependencies(sem_ver_check, mock_server_base):
+    json = {
+        "data": {
+            "items": [
+                {
+                    "id": "84fb1c37abe6ed97a53972fb7239630e1212438b",
+                    "definition": {},
+                    "projectType": "SYSTEM",
+                },
+            ]
+        }
+    }
+
+    return with_json_route(
+        mock_server_base, 'GET', 'api/workspaces/WS/dependencies', json
     )
 
 
@@ -980,22 +1083,153 @@ def workspace():
     ws_service = MagicMock()
     custom_function_service = MagicMock()
     exp_service = MagicMock()
+    project_service = MagicMock()
     ws_service.experiment_create.return_value = {"experiment_id": "pid_2009"}
     ws_service.library_import.return_value = {
         "name": "Single",
         "uses": {"Modelica": {"version": "3.2.2"}},
     }
-    ws_service.workspace_clone.return_value = {"workspace_id": "MyClonedWorkspace"}
+    # TODO: Cloning workspace is not implemented on feature branch
+    # ws_service.workspace_clone.return_value = {"workspace_id": "MyClonedWorkspace"}
     ws_service.fmus_get.return_value = {
         'data': {'items': [{'id': 'as9f-3df5'}, {'id': 'as9D-4df5'}]}
     }
     ws_service.fmu_get.return_value = {'id': 'pid_20090615_134'}
+    ws_service.project_create.return_value = {
+        "id": "bf1e2f2a2fd55dcfd844bc1f252528f707254425",
+        "definition": {
+            "name": "my_project",
+            "format": "1.0",
+            "dependencies": [{"name": "MSL", "versionSpecifier": "4.0.0"}],
+            "content": [
+                {
+                    "id": "81ac23172d7a479db85126691e090b34",
+                    "relpath": "MyPackage",
+                    "contentType": "MODELICA",
+                    "name": "MyPackage",
+                    "defaultDisabled": False,
+                }
+            ],
+            "executionOptions": [],
+        },
+        "projectType": "LOCAL",
+    }
     ws_service.experiment_get.return_value = {'id': 'pid_20090615_134'}
     exp_service.execute_status.return_value = {"status": "done"}
     ws_service.experiments_get.return_value = {
         'data': {'items': [{'id': 'as9f-3df5'}, {'id': 'dd9f-3df5'}]}
     }
     ws_service.workspace_download.return_value = b'\x00\x00\x00\x00'
+    ws_service.workspace_get.return_value = {
+        "definition": {
+            "name": "AwesomeWorkspace",
+            "format": "1.0",
+            "description": "",
+            "createdBy": "local-installation-user-id",
+            "createdAt": 1659072911361,
+            "defaultProjectId": "bf1e2f2a2fd55dcfd844bc1f252528f707254425",
+            "projects": [
+                {
+                    "reference": {"id": "bf1e2f2a2fd55dcfd844bc1f252528f707254425"},
+                    "disabled": False,
+                    "disabledContent": [],
+                }
+            ],
+            "dependencies": [
+                {
+                    "reference": {
+                        "id": "84fb1c37abe6ed97a53972fb7239630e1212438b",
+                        "name": "MSL",
+                        "version": "3.2.3",
+                    },
+                    "disabled": True,
+                    "disabledContent": [],
+                },
+                {
+                    "reference": {
+                        "id": "cdbde8922bd2c48c392b1b4bb740adc0273c737c",
+                        "name": "MSL",
+                        "version": "4.0.0",
+                    },
+                    "disabled": False,
+                    "disabledContent": [],
+                },
+            ],
+        },
+        "id": "test",
+        "is_clone": False,
+    }
+    ws_service.projects_get.return_value = {
+        "data": {
+            "items": [
+                {
+                    "id": "bf1e2f2a2fd55dcfd844bc1f252528f707254425",
+                    "definition": {
+                        "name": "NewProject",
+                        "format": "1.0",
+                        "dependencies": [{"name": "MSL", "versionSpecifier": "4.0.0"}],
+                        "content": [
+                            {
+                                "id": "81ac23172d7a479db85126691e090b34",
+                                "relpath": "MyPackage",
+                                "contentType": "MODELICA",
+                                "name": "MyPackage",
+                                "defaultDisabled": False,
+                            },
+                        ],
+                        "executionOptions": [],
+                    },
+                    "projectType": "LOCAL",
+                }
+            ]
+        }
+    }
+    ws_service.dependencies_get.return_value = {
+        "data": {
+            "items": [
+                {
+                    "id": "84fb1c37abe6ed97a53972fb7239630e1212438b",
+                    "definition": {
+                        "name": "MSL",
+                        "version": "3.2.3",
+                        "format": "1.0",
+                        "dependencies": [],
+                        "content": [
+                            {
+                                "id": "925cbe6daaf3ebde61dfcc2a26f93e6d0798085a",
+                                "relpath": "Modelica",
+                                "contentType": "MODELICA",
+                                "name": "Modelica",
+                                "defaultDisabled": False,
+                            }
+                        ],
+                        "executionOptions": [],
+                    },
+                    "projectType": "SYSTEM",
+                },
+                {
+                    "id": "cdbde8922bd2c48c392b1b4bb740adc0273c737c",
+                    "definition": {
+                        "name": "MSL",
+                        "version": "4.0.0",
+                        "format": "1.0",
+                        "dependencies": [],
+                        "content": [
+                            {
+                                "id": "925cbe6daaf3ebde61dfcc2a26f93e6d0798085a",
+                                "relpath": "Modelica",
+                                "contentType": "MODELICA",
+                                "name": "Modelica",
+                                "defaultDisabled": False,
+                            }
+                        ],
+                        "executionOptions": [],
+                    },
+                    "projectType": "SYSTEM",
+                },
+            ]
+        }
+    }
     custom_function_service.custom_function_get.return_value = {
         'name': 'dynamic',
         'parameters': _custom_function_parameter_list(),
@@ -1008,12 +1242,32 @@ def workspace():
         }
     }
     exp_service.experiment_execute.return_value = "pid_2009"
+    project_service.project_get.return_value = {
+        "id": "bf1e2f2a2fd55dcfd844bc1f252528f707254425",
+        "definition": {
+            "name": "NewProject",
+            "format": "1.0",
+            "dependencies": [{"name": "MSL", "versionSpecifier": "4.0.0"}],
+            "content": [
+                {
+                    "id": "81ac23172d7a479db85126691e090b34",
+                    "relpath": "MyPackage",
+                    "contentType": "MODELICA",
+                    "name": "MyPackage",
+                    "defaultDisabled": False,
+                }
+            ],
+            "executionOptions": [],
+        },
+        "projectType": "LOCAL",
+    }
     return WorkspaceMock(
         create_workspace_entity(
             'AwesomeWorkspace',
-            ws_service,
+            workspace_service=ws_service,
             experiment_service=exp_service,
             custom_function_service=custom_function_service,
+            project_service=project_service,
         ),
         ws_service,
     )
@@ -1027,7 +1281,7 @@ def workspace_execute_running():
     exp_service.experiment_execute.return_value = "pid_2009"
     exp_service.execute_status.return_value = {"status": "running"}
     return create_workspace_entity(
-        'AwesomeWorkspace', ws_service, experiment_service=exp_service
+        'AwesomeWorkspace', workspace_service=ws_service, experiment_service=exp_service
     )
 
 
@@ -1039,7 +1293,7 @@ def workspace_execute_cancelled():
     exp_service.experiment_execute.return_value = "pid_2009"
     exp_service.execute_status.return_value = {"status": "cancelled"}
     return create_workspace_entity(
-        'AwesomeWorkspace', ws_service, experiment_service=exp_service
+        'AwesomeWorkspace', workspace_service=ws_service, experiment_service=exp_service
     )
 
 
@@ -1562,3 +1816,154 @@ def cancelled_experiment():
         "Workspace", "Test", ws_service, experiment_service=exp_service
     )
 
+
+@pytest.fixture
+def single_project(user_with_license):
+    json = {
+        "id": "bf1e2f2a2fd55dcfd844bc1f252528f707254425",
+        "definition": {
+            "name": "NewProject",
+            "format": "1.0",
+            "dependencies": [{"name": "MSL", "versionSpecifier": "4.0.0"}],
+            "content": [
+                {
+                    "id": "81ac23172d7a479db85126691e090b34",
+                    "relpath": "MyPackage",
+                    "contentType": "MODELICA",
+                    "name": "MyPackage",
+                    "defaultDisabled": False,
+                }
+            ],
+            "executionOptions": [],
+        },
+        "projectType": "LOCAL",
+    }
+    return with_json_route(
+        user_with_license, 'GET', 'api/projects/0ecf178e8b7d4a8b9c5d605e966e9096', json
+    )
+
+
+@pytest.fixture
+def multiple_projects(user_with_license):
+    json = {
+        "data": {
+            "items": [
+                {
+                    "id": "bf1e2f2a2fd55dcfd844bc1f252528f707254425",
+                    "definition": {
+                        "name": "NewProject",
+                        "format": "1.0",
+                        "dependencies": [{"name": "MSL", "versionSpecifier": "4.0.0"}],
+                        "content": [
+                            {
+                                "id": "81ac23172d7a479db85126691e090b34",
+                                "relpath": "MyPackage",
+                                "contentType": "MODELICA",
+                                "name": "MyPackage",
+                                "defaultDisabled": False,
+                            }
+                        ],
+                        "executionOptions": [],
+                    },
+                    "projectType": "LOCAL",
+                }
+            ]
+        }
+    }
+    return with_json_route(user_with_license, 'GET', 'api/projects', json)
+
+
+@pytest.fixture
+def delete_project(user_with_license):
+    return with_json_route_no_resp(
+        user_with_license, 'DELETE', 'api/projects/0ecf178e8b7d4a8b9c5d605e966e9096'
+    )
+
+
+@pytest.fixture
+def delete_project_content(user_with_license):
+    return with_json_route_no_resp(
+        user_with_license,
+        'DELETE',
+        'api/projects/0ecf178e8b7d4a8b9c5d605e966e9096/content/dfdd9d2175e59ba02e2e188703cfb30b949abc71',
+    )
+
+
+@pytest.fixture
+def project():
+    project_service = MagicMock()
+    project_service.projects_get.return_value = {
+        "data": {
+            "items": [
+                {
+                    "id": "bf1e2f2a2fd55dcfd844bc1f252528f707254425",
+                    "definition": {
+                        "name": "NewProject",
+                        "format": "1.0",
+                        "dependencies": [{"name": "MSL", "versionSpecifier": "4.0.0"}],
+                        "content": [
+                            {
+                                "id": "81ac23172d7a479db85126691e090b34",
+                                "relpath": "MyPackage",
+                                "contentType": "MODELICA",
+                                "name": "MyPackage",
+                                "defaultDisabled": False,
+                            }
+                        ],
+                        "executionOptions": [],
+                    },
+                    "projectType": "LOCAL",
+                }
+            ]
+        }
+    }
+    project_service.project_get.return_value = {
+        "id": "bf1e2f2a2fd55dcfd844bc1f252528f707254425",
+        "definition": {
+            "name": "NewProject",
+            "format": "1.0",
+            "dependencies": [{"name": "MSL", "versionSpecifier": "4.0.0"}],
+            "content": [
+                {
+                    "id": "81ac23172d7a479db85126691e090b34",
+                    "relpath": "MyPackage",
+                    "contentType": "MODELICA",
+                    "name": "MyPackage",
+                    "defaultDisabled": False,
+                }
+            ],
+            "executionOptions": [],
+        },
+        "projectType": "LOCAL",
+    }
+    project_service.project_content_upload.return_value = {
+        "id": "f727f04210b94a0fac81f17f83b869e6",
+        "relpath": "test.mo",
+        "contentType": "MODELICA",
+        "name": "test",
+        "defaultDisabled": False,
+    }
+    return ProjectMock(
+        create_project_entity(
+            'bf1e2f2a2fd55dcfd844bc1f252528f707254425', project_service=project_service
+        ),
+        service=project_service,
+    )
+
+
+@pytest.fixture
+def upload_project_content(sem_ver_check, mock_server_base):
+    json = {
+        "id": "f727f04210b94a0fac81f17f83b869e6",
+        "relpath": "test.mo",
+        "contentType": "MODELICA",
+        "name": "test",
+        "defaultDisabled": False,
+    }
+
+    return with_json_route(
+        mock_server_base,
+        'POST',
+        'api/projects/f727f04210b94a0fac81f17f83b869e6/content',
+        json,
+    )

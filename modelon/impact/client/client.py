@@ -2,8 +2,8 @@
 import logging
 from semantic_version import SimpleSpec, Version  # type: ignore
 import modelon.impact.client.configuration
-import modelon.impact.client.entities.workspace
-import modelon.impact.client.exceptions
+from modelon.impact.client.entities.workspace import WorkspaceDefinition, Workspace
+from modelon.impact.client.entities.project import ProjectDefinition, Project
 import modelon.impact.client.sal.service
 import modelon.impact.client.sal.exceptions
 import modelon.impact.client.credential_manager
@@ -166,12 +166,14 @@ class Client:
             client.get_workspace('my_workspace')
         """
         resp = self._sal.workspace.workspace_get(workspace_id)
-        return modelon.impact.client.entities.workspace.Workspace(
+        return Workspace(
             resp["id"],
+            WorkspaceDefinition(resp["definition"]),
             self._sal.workspace,
             self._sal.model_executable,
             self._sal.experiment,
             self._sal.custom_function,
+            self._sal.project,
         )
 
     def get_workspaces(self):
@@ -189,12 +191,58 @@ class Client:
         """
         resp = self._sal.workspace.workspaces_get()
         return [
-            modelon.impact.client.entities.workspace.Workspace(
+            Workspace(
                 item["id"],
+                WorkspaceDefinition(item["definition"]),
                 self._sal.workspace,
                 self._sal.model_executable,
                 self._sal.experiment,
                 self._sal.custom_function,
+                self._sal.project,
+            )
+            for item in resp["data"]["items"]
+        ]
+
+    def get_project(self, project_id):
+        """
+        Returns a project class object.
+
+        Parameters:
+
+            project_id --
+                The id of the project.
+
+        Returns:
+
+            project --
+                Project class objects.
+
+        Example::
+
+            client.get_project('hcbhsb11313321')
+        """
+        resp = self._sal.project.project_get(project_id)
+        return Project(
+            resp["id"], ProjectDefinition(resp["definition"]), self._sal.project,
+        )
+
+    def get_projects(self):
+        """
+        Returns a list of project class object.
+
+        Returns:
+
+            project --
+                A list of Project class objects.
+
+        Example::
+
+            client.get_projects()
+        """
+        resp = self._sal.project.projects_get()
+        return [
+            Project(
+                item["id"], ProjectDefinition(item["definition"]), self._sal.project,
             )
             for item in resp["data"]["items"]
         ]
@@ -218,12 +266,14 @@ class Client:
             client.create_workspace('my_workspace')
         """
         resp = self._sal.workspace.workspace_create(workspace_id)
-        return modelon.impact.client.entities.workspace.Workspace(
+        return Workspace(
             resp["id"],
+            WorkspaceDefinition(resp["definition"]),
             self._sal.workspace,
             self._sal.model_executable,
             self._sal.experiment,
             self._sal.custom_function,
+            self._sal.project,
         )
 
     def upload_workspace(self, path_to_workspace):
@@ -245,10 +295,12 @@ class Client:
             client.upload_workspace(path_to_workspace)
         """
         resp = self._sal.workspace.workspace_upload(path_to_workspace)
-        return modelon.impact.client.entities.workspace.Workspace(
+        return Workspace(
             resp["id"],
+            WorkspaceDefinition(resp["definition"]),
             self._sal.workspace,
             self._sal.model_executable,
             self._sal.experiment,
             self._sal.custom_function,
+            self._sal.project,
         )

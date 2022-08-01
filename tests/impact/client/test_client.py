@@ -9,7 +9,7 @@ from tests.impact.client.helpers import create_workspace_entity
 
 def test_create_workspace(create_workspace):
     client = Client(url=create_workspace.url, context=create_workspace.context)
-    workspace = client.create_workspace('AwesomeWorkspace')
+    workspace = client.create_workspace('newWorkspace')
     assert workspace == create_workspace_entity('newWorkspace')
     assert workspace.id == 'newWorkspace'
 
@@ -17,18 +17,24 @@ def test_create_workspace(create_workspace):
 def test_get_workspace(single_workspace):
     client = Client(url=single_workspace.url, context=single_workspace.context)
     workspace = client.get_workspace('AwesomeWorkspace')
-    assert workspace == create_workspace_entity('AwesomeWorkspace')
+    assert workspace == create_workspace_entity(
+        'AwesomeWorkspace', definition=TEST_WORKSPACE_DEFINITION
+    )
     assert workspace.id == 'AwesomeWorkspace'
 
 
 def test_get_workspaces(multiple_workspace):
     client = Client(url=multiple_workspace.url, context=multiple_workspace.context)
     workspaces = client.get_workspaces()
+    workspace_1_def = TEST_WORKSPACE_DEFINITION.copy()
+    workspace_1_def["name"] = 'workspace_1'
+    workspace_2_def = TEST_WORKSPACE_DEFINITION.copy()
+    workspace_2_def["name"] = 'workspace_2'
     assert workspaces == [
-        create_workspace_entity('AwesomeWorkspace'),
-        create_workspace_entity('BoringWorkspace'),
+        create_workspace_entity('workspace_1', definition=workspace_1_def),
+        create_workspace_entity('workspace_2', definition=workspace_2_def),
     ]
-    workspace_id = ['AwesomeWorkspace', 'BoringWorkspace']
+    workspace_id = ['workspace_1', 'workspace_2']
     assert [workspace.id for workspace in workspaces] == workspace_id
 
 
