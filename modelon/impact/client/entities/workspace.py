@@ -1,4 +1,3 @@
-from pathlib import Path
 import logging
 import os
 from typing import Any, List, Dict, Optional, Union
@@ -183,25 +182,6 @@ class Workspace:
             workspace.delete()
         """
         self._workspace_sal.workspace_delete(self._workspace_id)
-
-    def upload_model_library(self, path_to_lib: str):
-        """Uploads a modelica library or a modelica model to the workspace.
-
-        Parameters:
-
-            path_to_lib --
-                The path for the library to be imported.
-
-        Example::
-
-            workspace.upload_model_library('C:/A.mo')
-            workspace.upload_model_library('C:/B.mol')
-        """
-        logger.warning(
-            "The 'upload_model_library' is deprecated and will be removed in a future"
-            " release. Use 'upload_dependency' method instead!"
-        )
-        self._workspace_sal.library_import(self._workspace_id, path_to_lib)
 
     def upload_result(
         self,

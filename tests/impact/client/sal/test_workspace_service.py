@@ -60,20 +60,6 @@ class TestWorkspaceService:
             }
         }
 
-    def test_library_import(self, import_lib):
-        uri = URI(import_lib.url)
-        service = modelon.impact.client.sal.service.Service(
-            uri=uri, context=import_lib.context
-        )
-        service.workspace.library_import('AwesomeWorkspace', SINGLE_FILE_LIBRARY_PATH)
-        assert import_lib.adapter.called
-        import_call = import_lib.adapter.request_history[0]
-        assert (
-            'http://mock-impact.com/api/workspaces/AwesomeWorkspace/libraries'
-            == import_call.url
-        )
-        assert 'POST' == import_call.method
-
     def test_workspace_upload(self, upload_workspace):
         uri = URI(upload_workspace.url)
         service = modelon.impact.client.sal.service.Service(

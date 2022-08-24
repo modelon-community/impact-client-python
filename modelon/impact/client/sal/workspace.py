@@ -39,11 +39,6 @@ class WorkspaceService:
         url = (self._base_uri / f"api/workspaces/{workspace_id}").resolve()
         return self._http_client.get_json(url)
 
-    def library_import(self, workspace_id: str, path_to_lib: str):
-        url = (self._base_uri / f"api/workspaces/{workspace_id}/libraries").resolve()
-        with open(path_to_lib, "rb") as f:
-            self._http_client.post_json(url, files={"file": f})
-
     def fmu_import(
         self,
         workspace_id: str,

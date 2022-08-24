@@ -34,17 +34,6 @@ class TestWorkspace:
         workspace.delete()
         workspace_sal.workspace_delete.assert_called_with("toDeleteWorkspace")
 
-    def test_import_library(self):
-        workspace_sal = mock.MagicMock()
-        workspace = create_workspace_entity(
-            "importLibraryWorkspace", workspace_service=workspace_sal
-        )
-
-        workspace.upload_model_library(SINGLE_FILE_LIBRARY_PATH)
-        workspace_sal.library_import.assert_called_with(
-            "importLibraryWorkspace", SINGLE_FILE_LIBRARY_PATH
-        )
-
     def test_import_fmu(self):
         workspace_sal = mock.MagicMock()
         workspace = create_workspace_entity(
