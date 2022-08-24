@@ -1085,10 +1085,6 @@ def workspace():
     exp_service = MagicMock()
     project_service = MagicMock()
     ws_service.experiment_create.return_value = {"experiment_id": "pid_2009"}
-    ws_service.library_import.return_value = {
-        "name": "Single",
-        "uses": {"Modelica": {"version": "3.2.2"}},
-    }
     # TODO: Cloning workspace is not implemented on feature branch
     # ws_service.workspace_clone.return_value = {"workspace_id": "MyClonedWorkspace"}
     ws_service.fmus_get.return_value = {
