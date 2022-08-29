@@ -1,3 +1,10 @@
+# [2.3.0-feature-workspace.1](https://github.com/modelon-community/impact-client-python/compare/v2.2.2...v2.3.0-feature-workspace.1) (2022-08-29)
+
+
+### Features
+
+* added possibility to set defaults for custom functions and specify variable filter as a list of strings ([6e0f20a](https://github.com/modelon-community/impact-client-python/commit/6e0f20a361e78eec32eb5700423fd8e5677d43ec))
+
 ## [2.2.2](https://github.com/modelon-community/impact-client-python/compare/v2.2.1...v2.2.2) (2022-06-13)
 
 
