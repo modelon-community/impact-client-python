@@ -1,18 +1,36 @@
 {
-  "branches":[
-    {"name": "master"},
-    {"name": "beta", "prerelease": true}
+  "branches": [
+    {
+      "name": "master"
+    },
+    {
+      "name": "beta",
+      "prerelease": true
+    },
+    {
+      "name": "dev",
+      "prerelease": true
+    }
   ],
   "plugins": [
     "@semantic-release/commit-analyzer",
     "@semantic-release/release-notes-generator",
     "@semantic-release/changelog",
-    ["@semantic-release/git", {
-      "assets": ["CHANGELOG.md", "pyproject.toml"]
-    }],
-    ["@semantic-release/exec", {
-      "prepareCmd": "poetry version ${nextRelease.version}",
-      "publishCmd": "/home/dev/src/release.sh"
-    }]
+    [
+      "@semantic-release/git",
+      {
+        "assets": [
+          "CHANGELOG.md",
+          "pyproject.toml"
+        ]
+      }
+    ],
+    [
+      "@semantic-release/exec",
+      {
+        "prepareCmd": "poetry version ${nextRelease.version}",
+        "publishCmd": "/home/dev/src/release.sh"
+      }
+    ]
   ]
 }
