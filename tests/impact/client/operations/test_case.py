@@ -1,6 +1,6 @@
 import pytest
 from modelon.impact.client import exceptions
-from tests.impact.client.helpers import create_case_entity
+from tests.impact.client.helpers import create_case_entity, IDs
 from modelon.impact.client.operations.base import Status
 from tests.impact.client.fixtures import *
 
@@ -13,7 +13,7 @@ class TestCaseOperation:
         assert case_ops.status() == Status.DONE
         assert case_ops.is_complete()
         assert case_ops.wait() == create_case_entity(
-            'case_1', 'Workspace', 'Test', 'pid_2009'
+            'case_1', IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY
         )
 
     def test_execute_wait_cancel_timeout(self, experiment):
@@ -33,7 +33,7 @@ class TestCaseOperation:
         assert case_ops.status() == Status.RUNNING
         assert not case_ops.is_complete()
         assert case_ops.wait(status=Status.RUNNING) == create_case_entity(
-            'case_1', 'Workspace', 'Test', 'pid_2009',
+            'case_1', IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY,
         )
 
     def test_execute_wait_cancelled(self, experiment_cancelled):
@@ -42,7 +42,7 @@ class TestCaseOperation:
         assert case.id == "case_1"
         assert case.status() == Status.CANCELLED
         assert case.wait(status=Status.CANCELLED) == create_case_entity(
-            'case_1', 'Workspace', 'Test', 'pid_2009',
+            'case_1', IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY,
         )
 
     def test_execute_wait_timeout(self, experiment_cancelled):

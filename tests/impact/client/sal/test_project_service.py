@@ -1,5 +1,6 @@
 from modelon.impact.client.sal.uri import URI
 import modelon.impact.client.sal.service
+from tests.impact.client.helpers import IDs
 from tests.files.paths import SINGLE_FILE_LIBRARY_PATH
 from tests.impact.client.fixtures import *
 
@@ -10,11 +11,11 @@ class TestProjectService:
         service = modelon.impact.client.sal.service.Service(
             uri=uri, context=delete_project.context
         )
-        service.project.project_delete('0ecf178e8b7d4a8b9c5d605e966e9096')
+        service.project.project_delete(IDs.PROJECT_PRIMARY)
         assert delete_project.adapter.called
         delete_call = delete_project.adapter.request_history[0]
         assert (
-            'http://mock-impact.com/api/projects/0ecf178e8b7d4a8b9c5d605e966e9096'
+            f'http://mock-impact.com/api/projects/{IDs.PROJECT_PRIMARY}'
             == delete_call.url
         )
         assert 'DELETE' == delete_call.method
@@ -24,16 +25,16 @@ class TestProjectService:
         service = modelon.impact.client.sal.service.Service(
             uri=uri, context=single_project.context
         )
-        data = service.project.project_get('0ecf178e8b7d4a8b9c5d605e966e9096')
+        data = service.project.project_get(IDs.PROJECT_PRIMARY)
         assert data == {
-            "id": "bf1e2f2a2fd55dcfd844bc1f252528f707254425",
+            "id": IDs.PROJECT_PRIMARY,
             "definition": {
                 "name": "NewProject",
                 "format": "1.0",
                 "dependencies": [{"name": "MSL", "versionSpecifier": "4.0.0"}],
                 "content": [
                     {
-                        "id": "81ac23172d7a479db85126691e090b34",
+                        "id": IDs.PROJECT_CONTENT_PRIMARY,
                         "relpath": "MyPackage",
                         "contentType": "MODELICA",
                         "name": "MyPackage",
@@ -55,7 +56,7 @@ class TestProjectService:
             "data": {
                 "items": [
                     {
-                        "id": "bf1e2f2a2fd55dcfd844bc1f252528f707254425",
+                        "id": IDs.PROJECT_PRIMARY,
                         "definition": {
                             "name": "NewProject",
                             "format": "1.0",
@@ -64,7 +65,7 @@ class TestProjectService:
                             ],
                             "content": [
                                 {
-                                    "id": "81ac23172d7a479db85126691e090b34",
+                                    "id": IDs.PROJECT_CONTENT_PRIMARY,
                                     "relpath": "MyPackage",
                                     "contentType": "MODELICA",
                                     "name": "MyPackage",
@@ -85,13 +86,12 @@ class TestProjectService:
             uri=uri, context=delete_project_content.context
         )
         service.project.project_content_delete(
-            '0ecf178e8b7d4a8b9c5d605e966e9096',
-            'dfdd9d2175e59ba02e2e188703cfb30b949abc71',
+            IDs.PROJECT_PRIMARY, IDs.PROJECT_CONTENT_PRIMARY,
         )
         assert delete_project_content.adapter.called
         delete_call = delete_project_content.adapter.request_history[0]
         assert (
-            'http://mock-impact.com/api/projects/0ecf178e8b7d4a8b9c5d605e966e9096/content/dfdd9d2175e59ba02e2e188703cfb30b949abc71'
+            f'http://mock-impact.com/api/projects/{IDs.PROJECT_PRIMARY}/content/{IDs.PROJECT_CONTENT_PRIMARY}'
             == delete_call.url
         )
         assert 'DELETE' == delete_call.method
@@ -102,10 +102,10 @@ class TestProjectService:
             uri=uri, context=upload_project_content.context
         )
         data = service.project.project_content_upload(
-            SINGLE_FILE_LIBRARY_PATH, "f727f04210b94a0fac81f17f83b869e6", "MODELICA",
+            SINGLE_FILE_LIBRARY_PATH, IDs.PROJECT_CONTENT_SECONDARY, "MODELICA",
         )
         assert data == {
-            "id": "f727f04210b94a0fac81f17f83b869e6",
+            "id": IDs.PROJECT_CONTENT_SECONDARY,
             "relpath": "test.mo",
             "contentType": "MODELICA",
             "name": "test",

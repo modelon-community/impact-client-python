@@ -4,38 +4,32 @@ from modelon.impact.client import Client
 import modelon.impact.client.exceptions as exceptions
 import modelon.impact.client.sal.exceptions as sal_exceptions
 from tests.impact.client.fixtures import *
-from tests.impact.client.helpers import create_workspace_entity
+from tests.impact.client.helpers import (
+    create_workspace_entity,
+    IDs,
+    get_test_workspace_definition,
+)
 
 
 def test_create_workspace(create_workspace):
     client = Client(url=create_workspace.url, context=create_workspace.context)
-    workspace = client.create_workspace('newWorkspace')
-    assert workspace == create_workspace_entity('newWorkspace')
-    assert workspace.id == 'newWorkspace'
+    workspace = client.create_workspace(IDs.WORKSPACE_PRIMARY)
+    assert workspace == create_workspace_entity(IDs.WORKSPACE_PRIMARY)
+    assert workspace.id == IDs.WORKSPACE_PRIMARY
 
 
 def test_get_workspace(single_workspace):
     client = Client(url=single_workspace.url, context=single_workspace.context)
-    workspace = client.get_workspace('AwesomeWorkspace')
-    assert workspace == create_workspace_entity(
-        'AwesomeWorkspace', definition=TEST_WORKSPACE_DEFINITION
-    )
-    assert workspace.id == 'AwesomeWorkspace'
+    workspace = client.get_workspace(IDs.WORKSPACE_PRIMARY)
+    assert workspace.id == IDs.WORKSPACE_PRIMARY
 
 
 def test_get_workspaces(multiple_workspace):
     client = Client(url=multiple_workspace.url, context=multiple_workspace.context)
     workspaces = client.get_workspaces()
-    workspace_1_def = TEST_WORKSPACE_DEFINITION.copy()
-    workspace_1_def["name"] = 'workspace_1'
-    workspace_2_def = TEST_WORKSPACE_DEFINITION.copy()
-    workspace_2_def["name"] = 'workspace_2'
-    assert workspaces == [
-        create_workspace_entity('workspace_1', definition=workspace_1_def),
-        create_workspace_entity('workspace_2', definition=workspace_2_def),
-    ]
-    workspace_id = ['workspace_1', 'workspace_2']
-    assert [workspace.id for workspace in workspaces] == workspace_id
+    assert len(workspaces) == 2
+    assert workspaces[0].id == IDs.WORKSPACE_PRIMARY
+    assert workspaces[1].id == IDs.WORKSPACE_SECONDARY
 
 
 def test_get_workspaces_error(workspaces_error):
@@ -166,7 +160,7 @@ def test_client_connect_against_jupyterhub_can_authorize(jupyterhub_api):
     jupyterhub_cred_manager = MagicMock()
     jupyterhub_cred_manager.get_key.return_value = 'secret-token'
 
-    client = Client(
+    Client(
         url=jupyterhub_api.url,
         context=jupyterhub_api.context,
         credential_manager=cred_manager,

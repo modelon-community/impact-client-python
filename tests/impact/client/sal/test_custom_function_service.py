@@ -1,6 +1,6 @@
 from modelon.impact.client.sal.uri import URI
 import modelon.impact.client.sal.service
-from modelon.impact.client.sal.experiment import ResultFormat
+from tests.impact.client.helpers import IDs
 from tests.impact.client.fixtures import *
 
 
@@ -10,7 +10,9 @@ class TestCustomFunctionService:
         service = modelon.impact.client.sal.service.Service(
             uri=uri, context=get_custom_function.context
         )
-        data = service.custom_function.custom_function_get('WS', 'cust_func')
+        data = service.custom_function.custom_function_get(
+            IDs.WORKSPACE_PRIMARY, 'cust_func'
+        )
         assert data == {'name': 'cust_func', 'version': '0.0.1'}
 
     def test_get_custom_functions(self, get_custom_functions):
@@ -18,7 +20,7 @@ class TestCustomFunctionService:
         service = modelon.impact.client.sal.service.Service(
             uri=uri, context=get_custom_functions.context
         )
-        data = service.custom_function.custom_functions_get('WS')
+        data = service.custom_function.custom_functions_get(IDs.WORKSPACE_PRIMARY)
         assert data == {"data": {"items": []}}
 
     def test_get_custom_function_default_options(
@@ -29,7 +31,7 @@ class TestCustomFunctionService:
             uri=uri, context=get_custom_function_default_options.context
         )
         data = service.custom_function.custom_function_default_options_get(
-            'WS', 'cust_func'
+            IDs.WORKSPACE_PRIMARY, 'cust_func'
         )
         assert data == {'compiler': {'c_compiler': 'gcc'}}
 
@@ -38,6 +40,8 @@ class TestCustomFunctionService:
         service = modelon.impact.client.sal.service.Service(
             uri=uri, context=get_custom_function_options.context
         )
-        data = service.custom_function.custom_function_options_get('WS', 'cust_func')
+        data = service.custom_function.custom_function_options_get(
+            IDs.WORKSPACE_PRIMARY, 'cust_func'
+        )
         assert data == {"compiler": {"generate_html_diagnostics": True}}
 

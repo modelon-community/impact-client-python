@@ -1,10 +1,7 @@
 import pytest
 from modelon.impact.client import exceptions
 from tests.impact.client.helpers import create_external_result_entity
-from modelon.impact.client.operations.base import (
-    Status,
-    AsyncOperationStatus,
-)
+from modelon.impact.client.operations.base import AsyncOperationStatus
 from modelon.impact.client.operations.external_result import (
     ExternalResultUploadOperation,
 )
@@ -46,7 +43,7 @@ class TestExternalResultUploadOperation:
         assert meta.id == "2f036b9fab6f45c788cc466da327cc78workspace"
         assert meta.name == "result_for_PID"
         assert meta.description == "This is a result file for PID controller"
-        assert meta.workspace_id == "workspace"
+        assert meta.workspace_id == IDs.WORKSPACE_PRIMARY
         assert result.id == "2f036b9fab6f45c788cc466da327cc78workspace"
 
     def test_give_status_ready_when_cancel_then_raises_not_implemented(

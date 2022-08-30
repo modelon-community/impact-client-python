@@ -26,7 +26,6 @@ logger = logging.getLogger(__name__)
 ExperimentDefinition = Union[
     SimpleModelicaExperimentDefinition, SimpleFMUExperimentDefinition, Dict[str, Any],
 ]
-DEFAULT_PROJECT_NAME = 'NewProject'
 
 
 class ProjectEntry:
@@ -66,10 +65,6 @@ class WorkspaceDefinition:
     @property
     def created_by(self) -> str:
         return self._data.get('createdBy')
-
-    @property
-    def created_at(self) -> str:
-        return self._data.get('createdAt')
 
     @property
     def default_project_id(self) -> str:

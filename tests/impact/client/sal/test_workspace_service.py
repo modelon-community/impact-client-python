@@ -1,7 +1,8 @@
 import unittest.mock as mock
 from modelon.impact.client.sal.uri import URI
 import modelon.impact.client.sal.service
-from tests.files.paths import SINGLE_FILE_LIBRARY_PATH, TEST_WORKSPACE_PATH
+from tests.impact.client.helpers import IDs, get_test_workspace_definition
+from tests.files.paths import TEST_WORKSPACE_PATH
 from tests.impact.client.fixtures import *
 
 
@@ -11,10 +12,10 @@ class TestWorkspaceService:
         service = modelon.impact.client.sal.service.Service(
             uri=uri, context=create_workspace.context
         )
-        data = service.workspace.workspace_create('newWorkspace')
+        data = service.workspace.workspace_create(IDs.WORKSPACE_PRIMARY)
         assert data == {
-            'definition': TEST_WORKSPACE_DEFINITION,
-            'id': 'newWorkspace',
+            'definition': get_test_workspace_definition(),
+            'id': IDs.WORKSPACE_PRIMARY,
         }
 
     def test_delete_workspace(self, delete_workspace):
@@ -22,11 +23,12 @@ class TestWorkspaceService:
         service = modelon.impact.client.sal.service.Service(
             uri=uri, context=delete_workspace.context
         )
-        service.workspace.workspace_delete('AwesomeWorkspace')
+        service.workspace.workspace_delete(IDs.WORKSPACE_PRIMARY)
         assert delete_workspace.adapter.called
         delete_call = delete_workspace.adapter.request_history[0]
         assert (
-            'http://mock-impact.com/api/workspaces/AwesomeWorkspace' == delete_call.url
+            f'http://mock-impact.com/api/workspaces/{IDs.WORKSPACE_PRIMARY}'
+            == delete_call.url
         )
         assert 'DELETE' == delete_call.method
 
@@ -35,10 +37,10 @@ class TestWorkspaceService:
         service = modelon.impact.client.sal.service.Service(
             uri=uri, context=single_workspace.context
         )
-        data = service.workspace.workspace_get('AwesomeWorkspace')
+        data = service.workspace.workspace_get(IDs.WORKSPACE_PRIMARY)
         assert data == {
-            "definition": TEST_WORKSPACE_DEFINITION,
-            "id": "AwesomeWorkspace",
+            "definition": get_test_workspace_definition(),
+            "id": IDs.WORKSPACE_PRIMARY,
         }
 
     def test_get_workspaces(self, multiple_workspace):
@@ -47,15 +49,13 @@ class TestWorkspaceService:
             uri=uri, context=multiple_workspace.context
         )
         data = service.workspace.workspaces_get()
-        workspace_1_def = TEST_WORKSPACE_DEFINITION.copy()
-        workspace_1_def["name"] = 'workspace_1'
-        workspace_2_def = TEST_WORKSPACE_DEFINITION.copy()
-        workspace_2_def["name"] = 'workspace_2'
+        workspace_1_def = get_test_workspace_definition(IDs.WORKSPACE_PRIMARY)
+        workspace_2_def = get_test_workspace_definition(IDs.WORKSPACE_SECONDARY)
         assert data == {
             'data': {
                 'items': [
-                    {'id': 'workspace_1', 'definition': workspace_1_def},
-                    {'id': 'workspace_2', 'definition': workspace_2_def},
+                    {'id': IDs.WORKSPACE_PRIMARY, 'definition': workspace_1_def},
+                    {'id': IDs.WORKSPACE_SECONDARY, 'definition': workspace_2_def},
                 ]
             }
         }
@@ -66,7 +66,7 @@ class TestWorkspaceService:
             uri=uri, context=upload_workspace.context
         )
         data = service.workspace.workspace_upload(TEST_WORKSPACE_PATH)
-        assert data == {'id': 'newWorkspace'}
+        assert data == {'id': IDs.WORKSPACE_PRIMARY}
 
     def test_result_upload(self, upload_result):
         uri = URI(upload_result.url)
@@ -74,7 +74,7 @@ class TestWorkspaceService:
             uri=uri, context=upload_result.context
         )
         with mock.patch("builtins.open", mock.mock_open()) as mock_file:
-            data = service.workspace.result_upload("AwesomeWorkspace", "test.mat")
+            data = service.workspace.result_upload(IDs.WORKSPACE_PRIMARY, "test.mat")
             mock_file.assert_called_with("test.mat", "rb")
 
         assert data == {
@@ -118,7 +118,7 @@ class TestWorkspaceService:
                 "createdAt": "2021-09-02T08:26:49.612000",
                 "name": "result_for_PID",
                 "description": "This is a result file for PID controller",
-                "workspaceId": "workspace",
+                "workspaceId": IDs.WORKSPACE_PRIMARY,
             }
         }
 
@@ -139,7 +139,7 @@ class TestWorkspaceService:
         )
         with mock.patch("builtins.open", mock.mock_open()) as mock_file:
             data = service.workspace.fmu_import(
-                "AwesomeWorkspace", "test.fmu", "Workspace"
+                IDs.WORKSPACE_PRIMARY, "test.fmu", "Workspace"
             )
             mock_file.assert_called_with("test.fmu", "rb")
 
@@ -153,7 +153,7 @@ class TestWorkspaceService:
 
         import_fmu_call = import_fmu.adapter.request_history[0]
         assert (
-            'http://mock-impact.com/api/workspaces/AwesomeWorkspace/libraries/Workspace/models'
+            f'http://mock-impact.com/api/workspaces/{IDs.WORKSPACE_PRIMARY}/libraries/Workspace/models'
             == import_fmu_call.url
         )
         assert 'POST' == import_fmu_call.method
@@ -163,7 +163,7 @@ class TestWorkspaceService:
         service = modelon.impact.client.sal.service.Service(
             uri=uri, context=download_workspace.context
         )
-        data = service.workspace.workspace_download("Workspace", '0d96b08c8d')
+        data = service.workspace.workspace_download(IDs.WORKSPACE_PRIMARY, '0d96b08c8d')
         assert data == b'\x00\x00\x00\x00'
 
     # TODO: Cloning workspace is not implemented on feature branch
@@ -180,23 +180,25 @@ class TestWorkspaceService:
         service = modelon.impact.client.sal.service.Service(
             uri=uri, context=get_fmu.context
         )
-        data = service.workspace.fmu_get("WS", "pid_20090615_134")
-        assert data == {'id': 'pid_20090615_134'}
+        data = service.workspace.fmu_get(IDs.WORKSPACE_PRIMARY, IDs.FMU_PRIMARY)
+        assert data == {'id': IDs.FMU_PRIMARY}
 
     def test_get_fmus(self, get_all_fmu):
         uri = URI(get_all_fmu.url)
         service = modelon.impact.client.sal.service.Service(
             uri=uri, context=get_all_fmu.context
         )
-        data = service.workspace.fmus_get("WS")
-        assert data == {'data': {'items': [{'id': 'as9f-3df5'}, {'id': 'as9f-3df5'}]}}
+        data = service.workspace.fmus_get(IDs.WORKSPACE_PRIMARY)
+        assert data == {
+            'data': {'items': [{'id': IDs.FMU_PRIMARY}, {'id': IDs.FMU_SECONDARY}]}
+        }
 
     def test_fmu_download(self, download_fmu):
         uri = URI(download_fmu.url)
         service = modelon.impact.client.sal.service.Service(
             uri=uri, context=download_fmu.context
         )
-        data = service.workspace.fmu_download("WS", 'pid_20090615_134')
+        data = service.workspace.fmu_download(IDs.WORKSPACE_PRIMARY, IDs.FMU_PRIMARY)
         assert data == b'\x00\x00\x00\x00'
 
     def test_get_experiment(self, get_experiment):
@@ -204,28 +206,37 @@ class TestWorkspaceService:
         service = modelon.impact.client.sal.service.Service(
             uri=uri, context=get_experiment.context
         )
-        data = service.workspace.experiment_get("WS", 'pid_20090615_134')
-        assert data == {'id': 'pid_20090615_134'}
+        data = service.workspace.experiment_get(
+            IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY
+        )
+        assert data == {'id': IDs.EXPERIMENT_PRIMARY}
 
     def test_get_experiments(self, get_all_experiments):
         uri = URI(get_all_experiments.url)
         service = modelon.impact.client.sal.service.Service(
             uri=uri, context=get_all_experiments.context
         )
-        data = service.workspace.experiments_get("WS")
-        assert data == {'data': {'items': [{'id': 'as9f-3df5'}, {'id': 'as9f-3df5'}]}}
+        data = service.workspace.experiments_get(IDs.WORKSPACE_PRIMARY)
+        assert data == {
+            'data': {
+                'items': [
+                    {'id': IDs.EXPERIMENT_PRIMARY},
+                    {'id': IDs.EXPERIMENT_SECONDARY},
+                ]
+            }
+        }
 
     def test_create_experiment(self, experiment_create):
         uri = URI(experiment_create.url)
         service = modelon.impact.client.sal.service.Service(
             uri=uri, context=experiment_create.context
         )
-        data = service.workspace.experiment_create("WS", {})
+        data = service.workspace.experiment_create(IDs.WORKSPACE_PRIMARY, {})
         assert experiment_create.adapter.called
-        assert data == {"experiment_id": "pid_2009"}
+        assert data == {"experiment_id": IDs.EXPERIMENT_PRIMARY}
 
         user_data = {"value": 42}
-        data = service.workspace.experiment_create("WS", {}, user_data)
+        data = service.workspace.experiment_create(IDs.WORKSPACE_PRIMARY, {}, user_data)
         request_data = experiment_create.adapter.request_history[1].json()
         assert request_data == {'userData': user_data}
 
@@ -234,12 +245,12 @@ class TestWorkspaceService:
         service = modelon.impact.client.sal.service.Service(
             uri=uri, context=get_projects.context
         )
-        data = service.workspace.projects_get("WS")
+        data = service.workspace.projects_get(IDs.WORKSPACE_PRIMARY)
         assert data == {
             "data": {
                 "items": [
                     {
-                        "id": "659573e31fcd7e6809a00171f734c13497acdf7f",
+                        "id": IDs.PROJECT_PRIMARY,
                         "definition": {},
                         "projectType": "LOCAL",
                     }
@@ -252,9 +263,9 @@ class TestWorkspaceService:
         service = modelon.impact.client.sal.service.Service(
             uri=uri, context=create_project.context
         )
-        data = service.workspace.project_create("WS", "my_project")
+        data = service.workspace.project_create(IDs.WORKSPACE_PRIMARY, "my_project")
         assert data == {
-            "id": "2d45026ab0733e7dc4eca0510369144e46caf1f6",
+            "id": IDs.PROJECT_PRIMARY,
             "definition": {
                 "name": "my_project",
                 "format": "1.0",
@@ -270,12 +281,12 @@ class TestWorkspaceService:
         service = modelon.impact.client.sal.service.Service(
             uri=uri, context=get_dependencies.context
         )
-        data = service.workspace.dependencies_get("WS")
+        data = service.workspace.dependencies_get(IDs.WORKSPACE_PRIMARY)
         assert data == {
             "data": {
                 "items": [
                     {
-                        "id": "84fb1c37abe6ed97a53972fb7239630e1212438b",
+                        "id": IDs.MSL_300_CONTENT_ID,
                         "definition": {},
                         "projectType": "SYSTEM",
                     },
