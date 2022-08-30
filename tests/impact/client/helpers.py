@@ -18,6 +18,59 @@ from modelon.impact.client.operations.model_executable import (
 from unittest.mock import MagicMock
 
 
+class IDs:
+    WORKSPACE_PRIMARY = 'workspace_1'
+    WORKSPACE_SECONDARY = 'workspace_2'
+    PROJECT_PRIMARY = 'bf1e2f2a2fd55dcfd844bc1f252528f707254425'
+    PROJECT_SECONDARY = 'xbhcdhcbdbchdbhcbdhbchdchdhcbhdbchdbch'
+    PROJECT_CONTENT_PRIMARY = '81ac23172d7a479db85126691e090b34'
+    PROJECT_CONTENT_SECONDARY = 'f727f04210b94a0fac81f17f83b869e6'
+    MSL_400_CONTENT_ID = 'cdbde8922bd2c48c392b1b4bb740adc0273c737c'
+    MSL_300_CONTENT_ID = '84fb1c37abe6ed97a53972fb7239630e1212438b'
+    FMU_PRIMARY = 'test_pid_fmu_id'
+    FMU_SECONDARY = 'test_filter_fmu_id'
+    EXPERIMENT_PRIMARY = 'pid_20090615_134'
+    EXPERIMENT_SECONDARY = 'filter_20090615_135'
+
+
+def get_test_workspace_definition(name=None):
+    return {
+        "name": name if name else IDs.WORKSPACE_PRIMARY,
+        "format": "1.0",
+        "description": "",
+        "createdBy": "local-installation-user-id",
+        "createdAt": "1659072911361",
+        "defaultProjectId": IDs.PROJECT_PRIMARY,
+        "projects": [
+            {
+                "reference": {"id": IDs.PROJECT_PRIMARY},
+                "disabled": False,
+                "disabledContent": [],
+            }
+        ],
+        "dependencies": [
+            {
+                "reference": {
+                    "id": IDs.MSL_300_CONTENT_ID,
+                    "name": "MSL",
+                    "version": "3.2.3",
+                },
+                "disabled": True,
+                "disabledContent": [],
+            },
+            {
+                "reference": {
+                    "id": IDs.MSL_400_CONTENT_ID,
+                    "name": "MSL",
+                    "version": "4.0.0",
+                },
+                "disabled": False,
+                "disabledContent": [],
+            },
+        ],
+    }
+
+
 def create_workspace_entity(
     name,
     definition=None,
@@ -28,41 +81,7 @@ def create_workspace_entity(
     project_service=None,
 ):
     if not definition:
-        definition = {
-            "name": name,
-            "format": "1.0",
-            "description": "",
-            "createdBy": "local-installation-user-id",
-            "createdAt": 1659072911361,
-            "defaultProjectId": "bf1e2f2a2fd55dcfd844bc1f252528f707254425",
-            "projects": [
-                {
-                    "reference": {"id": "bf1e2f2a2fd55dcfd844bc1f252528f707254425"},
-                    "disabled": False,
-                    "disabledContent": [],
-                }
-            ],
-            "dependencies": [
-                {
-                    "reference": {
-                        "id": "84fb1c37abe6ed97a53972fb7239630e1212438b",
-                        "name": "MSL",
-                        "version": "3.2.3",
-                    },
-                    "disabled": True,
-                    "disabledContent": [],
-                },
-                {
-                    "reference": {
-                        "id": "cdbde8922bd2c48c392b1b4bb740adc0273c737c",
-                        "name": "MSL",
-                        "version": "4.0.0",
-                    },
-                    "disabled": False,
-                    "disabledContent": [],
-                },
-            ],
-        }
+        definition = get_test_workspace_definition(name)
     return Workspace(
         name,
         WorkspaceDefinition(definition),
@@ -131,7 +150,7 @@ def create_project_entity(
             "dependencies": [{"name": "MSL", "versionSpecifier": "4.0.0"}],
             "content": [
                 {
-                    "id": "81ac23172d7a479db85126691e090b34",
+                    "id": IDs.PROJECT_CONTENT_PRIMARY,
                     "relpath": "MyPackage",
                     "contentType": "MODELICA",
                     "name": "MyPackage",
@@ -147,7 +166,7 @@ def create_project_entity(
 
 def create_project_content_entity(
     project_id,
-    content_id="81ac23172d7a479db85126691e090b34",
+    content_id=IDs.PROJECT_CONTENT_PRIMARY,
     content=None,
     project_service=None,
 ):

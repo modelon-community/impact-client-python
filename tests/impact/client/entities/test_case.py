@@ -6,6 +6,7 @@ from modelon.impact.client.entities.case import CaseStatus
 from tests.impact.client.helpers import (
     create_case_entity,
     create_external_result_entity,
+    IDs,
 )
 from tests.impact.client.fixtures import *
 
@@ -35,7 +36,7 @@ class TestCase:
         assert case.is_successful()
         assert case.get_trajectories()['inertia.I'] == [1, 2, 3, 4]
         fmu = case.get_fmu()
-        assert fmu.id == "modelica_fluid_examples_heatingsystem_20210130_114628_bbd91f1"
+        assert fmu.id == IDs.FMU_PRIMARY
 
     def test_multiple_cases(self, batch_experiment):
         case = batch_experiment.get_case("case_2")
@@ -80,14 +81,14 @@ class TestCase:
         exp_sal.case_put.assert_has_calls(
             [
                 mock.call(
-                    'Workspace',
-                    'Test',
+                    IDs.WORKSPACE_PRIMARY,
+                    IDs.EXPERIMENT_PRIMARY,
                     'case_1',
                     {
                         'id': 'case_1',
                         'run_info': {'status': 'successful', 'consistent': True},
                         'input': {
-                            'fmu_id': 'modelica_fluid_examples_heatingsystem_20210130_114628_bbd91f1',
+                            'fmu_id': IDs.FMU_PRIMARY,
                             'analysis': {
                                 'analysis_function': 'dynamic',
                                 'parameters': {'start_time': 1, 'final_time': 200000.0},
@@ -99,7 +100,7 @@ class TestCase:
                             'structural_parametrization': {},
                             'fmu_base_parametrization': {},
                             'initialize_from_case': {
-                                'experimentId': 'Test',
+                                'experimentId': IDs.EXPERIMENT_PRIMARY,
                                 'caseId': 'case_2',
                             },
                             "initialize_from_external_result": None,
@@ -110,7 +111,9 @@ class TestCase:
             ]
         )
         result = case.execute().wait()
-        assert result == create_case_entity('case_1', 'AwesomeWorkspace', 'pid_2009')
+        assert result == create_case_entity(
+            'case_1', IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY
+        )
 
     def test_case_execute_with_no_sync(self, experiment):
         exp = experiment.entity
@@ -119,7 +122,9 @@ class TestCase:
         case = exp.get_case("case_1")
         result = case.execute(sync_case_changes=True).wait()
         exp_sal.case_put.assert_called_once()
-        assert result == create_case_entity('case_1', 'AwesomeWorkspace', 'pid_2009')
+        assert result == create_case_entity(
+            'case_1', IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY
+        )
 
     def test_case_execute_with_auto_sync(self, experiment):
         exp = experiment.entity
@@ -128,7 +133,9 @@ class TestCase:
         case = exp.get_case("case_1")
         result = case.execute(sync_case_changes=False).wait()
         exp_sal.case_put.assert_not_called()
-        assert result == create_case_entity('case_1', 'AwesomeWorkspace', 'pid_2009')
+        assert result == create_case_entity(
+            'case_1', IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY
+        )
 
     def test_case_sync_second_time_should_call_with_consistent_false(self, experiment):
         exp = experiment.entity
@@ -153,14 +160,14 @@ class TestCase:
         exp_sal.case_put.assert_has_calls(
             [
                 mock.call(
-                    'Workspace',
-                    'Test',
+                    IDs.WORKSPACE_PRIMARY,
+                    IDs.EXPERIMENT_PRIMARY,
                     'case_1',
                     {
                         'id': 'case_1',
                         'run_info': {'status': 'successful', 'consistent': True},
                         'input': {
-                            'fmu_id': 'modelica_fluid_examples_heatingsystem_20210130_114628_bbd91f1',
+                            'fmu_id': IDs.FMU_PRIMARY,
                             'analysis': {
                                 'analysis_function': 'dynamic',
                                 'parameters': {'start_time': 0, 'final_time': 1},
@@ -184,7 +191,9 @@ class TestCase:
 
     def test_reinitiazlizing_result_initialized_case_from_case(self, experiment):
         result = create_external_result_entity('upload_id')
-        case_to_init = create_case_entity('Case_2', 'ws_id', 'exp_id')
+        case_to_init = create_case_entity(
+            'Case_2', IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY
+        )
         case = experiment.entity.get_case("case_1")
         case.initialize_from_external_result = result
         with pytest.raises(Exception) as err:
@@ -198,7 +207,9 @@ class TestCase:
 
     def test_reinitiazlizing_case_initialized_case_from_result(self, experiment):
         result = create_external_result_entity('upload_id')
-        case_to_init = create_case_entity('Case_2', 'ws_id', 'exp_id')
+        case_to_init = create_case_entity(
+            'Case_2', IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY
+        )
         case = experiment.entity.get_case("case_1")
         case.initialize_from_case = case_to_init
         with pytest.raises(Exception) as err:
@@ -215,7 +226,7 @@ class TestCase:
         exp_sal = experiment.service
         exp.set_label('Label')
         exp_sal.experiment_set_label.assert_has_calls(
-            [mock.call('Workspace', 'Test', 'Label')]
+            [mock.call(IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY, 'Label')]
         )
 
     def test_case_input(self, experiment):
@@ -236,4 +247,3 @@ class TestCase:
     def test_get_result_invalid_format(self, experiment):
         case = experiment.entity.get_case("case_1")
         pytest.raises(ValueError, case.get_result, 'ma')
-

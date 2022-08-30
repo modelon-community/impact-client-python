@@ -1,9 +1,7 @@
-import unittest.mock
-
 from modelon.impact.client.sal.uri import URI
 from modelon.impact.client.jupyterhub.sal import JupyterHubService, JupyterContext
-from tests.impact.client.jupyterhub.fixtures import *
 import modelon.impact.client.jupyterhub.exceptions as exceptions
+from tests.impact.client.jupyterhub.fixtures import *
 
 
 def test_given_no_jupyter_error_when_get_user(get_user_ok):

@@ -18,6 +18,7 @@ from modelon.impact.client import exceptions
 from tests.impact.client.helpers import (
     create_external_result_entity,
     create_case_entity,
+    IDs,
 )
 from tests.impact.client.fixtures import *
 
@@ -25,10 +26,10 @@ _EXPECTED_FMU_EXP = {
     "experiment": {
         "version": 2,
         "base": {
-            "model": {"fmu": {"id": "Test"}},
+            "model": {"fmu": {"id": IDs.FMU_PRIMARY}},
             "modifiers": {
                 'variables': {'h0': 'range(0.1,0.5,3)'},
-                'initializeFrom': "Test",
+                'initializeFrom': IDs.EXPERIMENT_PRIMARY,
             },
             "analysis": {
                 "type": "dynamic",
@@ -58,7 +59,7 @@ _EXPECTED_MODELICA_EXP = {
             },
             "modifiers": {
                 'variables': {'h0': 'range(0.1,0.5,3)'},
-                "initializeFrom": "Test",
+                "initializeFrom": IDs.EXPERIMENT_PRIMARY,
             },
             "analysis": {
                 "type": "dynamic",
@@ -83,7 +84,7 @@ def get_experiment_extension_with_case_label_init_modifier():
             'simulationLogLevel': 'Warning',
         },
         "modifiers": {
-            'initializeFrom': 'Test',
+            'initializeFrom': IDs.EXPERIMENT_PRIMARY,
             "variables": {'PI.k': 10, 'P': 5, 'd': 15},
         },
         'caseData': [{'label': 'Cruise condition'}],
@@ -153,7 +154,7 @@ class TestSimpleFMUExperimentDefinition:
             "experiment": {
                 "version": 2,
                 "base": {
-                    "model": {"fmu": {"id": "Test"}},
+                    "model": {"fmu": {"id": IDs.FMU_PRIMARY}},
                     "modifiers": {'variables': {}},
                     "analysis": {
                         "type": "dynamic",
@@ -1149,14 +1150,16 @@ class TestSimpleModelicaExperimentDefinition:
         ).initialize_from(experiment)
 
         # Reinitializing with case entity
-        case_to_init = create_case_entity('Case_2', 'ws_id', 'exp_id')
+        case_to_init = create_case_entity(
+            'Case_2', IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY
+        )
         err_str = "An experiment can only be initialized from one entity. "
         with pytest.raises(Exception) as err:
             definition = definition.initialize_from(case_to_init)
         assert (
             str(err.value)
             == err_str
-            + "Experiment is configured to initialize from Experiment with id 'Test' "
+            + f"Experiment is configured to initialize from Experiment with id '{IDs.EXPERIMENT_PRIMARY}' "
             + "and Case with id 'Case_2'"
         )
 
@@ -1166,7 +1169,7 @@ class TestSimpleModelicaExperimentDefinition:
             definition = definition.initialize_from(result_to_init)
         assert str(err.value) == (
             err_str
-            + "Experiment is configured to initialize from Experiment with id 'Test' "
+            + f"Experiment is configured to initialize from Experiment with id '{IDs.EXPERIMENT_PRIMARY}' "
             + "and Result id 'result_id'"
         )
 
@@ -1253,7 +1256,10 @@ class TestSimpleModelicaExperimentDefinition:
         )
 
         # Reinitializing with experiment entity
-        expected_err = "An experiment can only be initialized from one entity. Experiment is configured to initialize from Experiment with id 'Test' and Case with id 'case_1'"
+        expected_err = (
+            "An experiment can only be initialized from one entity. "
+            f"Experiment is configured to initialize from Experiment with id '{IDs.EXPERIMENT_PRIMARY}' and Case with id 'case_1'"
+        )
         with pytest.raises(Exception) as err:
             ext1 = ext1.initialize_from(experiment)
         assert str(err.value) == expected_err
