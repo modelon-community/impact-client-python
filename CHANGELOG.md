@@ -1,3 +1,10 @@
+# [2.3.0-dev.2](https://github.com/modelon-community/impact-client-python/compare/v2.3.0-dev.1...v2.3.0-dev.2) (2022-09-01)
+
+
+### Bug Fixes
+
+* added support for new endpoints ([36a64f0](https://github.com/modelon-community/impact-client-python/commit/36a64f07e2c0cebec2a79473a70781b0024915f4))
+
 # [2.3.0-dev.1](https://github.com/modelon-community/impact-client-python/compare/v2.2.2...v2.3.0-dev.1) (2022-08-29)
 
 
