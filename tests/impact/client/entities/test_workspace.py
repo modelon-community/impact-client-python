@@ -139,8 +139,8 @@ class TestWorkspace:
     def test_get_all_dependencies(self, workspace):
         dependencies = workspace.entity.get_dependencies()
         assert len(dependencies) == 2
-        assert dependencies[0].id == IDs.PROJECT_PRIMARY
-        assert dependencies[1].id == IDs.PROJECT_SECONDARY
+        assert dependencies[0].id == IDs.MSL_300_PROJECT_ID
+        assert dependencies[1].id == IDs.MSL_400_PROJECT_ID
 
     def test_create_project(self, workspace):
         project = workspace.entity.create_project("my_project")

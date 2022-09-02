@@ -1,7 +1,12 @@
 import unittest.mock as mock
 from modelon.impact.client.sal.uri import URI
 import modelon.impact.client.sal.service
-from tests.impact.client.helpers import IDs, get_test_workspace_definition
+from tests.impact.client.helpers import (
+    IDs,
+    get_test_workspace_definition,
+    VERSIONED_PROJECT_TRUNK,
+    VERSIONED_PROJECT_BRANCH,
+)
 from tests.files.paths import TEST_WORKSPACE_PATH
 from tests.impact.client.fixtures import *
 
@@ -286,9 +291,94 @@ class TestWorkspaceService:
             "data": {
                 "items": [
                     {
-                        "id": IDs.MSL_300_CONTENT_ID,
+                        "id": IDs.MSL_300_PROJECT_ID,
                         "definition": {},
                         "projectType": "SYSTEM",
+                    },
+                ]
+            }
+        }
+
+    def test_get_shared_definition(self, shared_definition_get):
+        uri = URI(shared_definition_get.url)
+        service = modelon.impact.client.sal.service.Service(
+            uri=uri, context=shared_definition_get.context
+        )
+        data = service.workspace.shared_definition_get(IDs.WORKSPACE_PRIMARY, True)
+        assert shared_definition_get.adapter.called
+        assert data == {
+            "definition": {
+                "name": "test",
+                "projects": [
+                    {
+                        "reference": {
+                            "id": IDs.VERSIONED_PROJECT_REFERENCE,
+                            "vcsUri": "git+https://github.com/project/test.git@main:da6abb188a089527df1b54b27ace84274b819e4a",
+                        },
+                        "disabled": True,
+                        "disabledContent": [],
+                    }
+                ],
+                "dependencies": [],
+            }
+        }
+
+    def test_get_workspace_upload_status(self, get_workspace_upload_status):
+        uri = URI(get_workspace_upload_status.url)
+        service = modelon.impact.client.sal.service.Service(
+            uri=uri, context=get_workspace_upload_status.context
+        )
+        data = service.workspace.get_workspace_upload_status(
+            "api/workspace-imports/05c7c0c45a084f079682eaf443287901"
+        )
+        assert get_workspace_upload_status.adapter.called
+        assert data == {
+            "data": {
+                'id': 'efa5cc60e3d04049ad0566bc53b431f8',
+                'status': 'ready',
+                'data': {'resourceUri': 'api/workspaces/test', 'workspaceId': 'test'},
+            }
+        }
+
+    def test_import_from_shared_definition(self, import_from_shared_definition):
+        uri = URI(import_from_shared_definition.url)
+        service = modelon.impact.client.sal.service.Service(
+            uri=uri, context=import_from_shared_definition.context
+        )
+        data = service.workspace.import_from_shared_definition(
+            {"definition": {"name": "test", "projects": []}}
+        )
+        assert data == {
+            "data": {
+                "location": "api/workspace-imports/05c7c0c45a084f079682eaf443287901"
+            }
+        }
+
+    def test_get_vcs_matchings(self, get_project_matchings):
+        uri = URI(get_project_matchings.url)
+        service = modelon.impact.client.sal.service.Service(
+            uri=uri, context=get_project_matchings.context
+        )
+        data = service.workspace.get_project_matchings(
+            {"definition": {"name": "test", "projects": []}}
+        )
+        assert data == {
+            "data": {
+                "vcs": [
+                    {
+                        "entryId": IDs.VERSIONED_PROJECT_REFERENCE,
+                        "uri": {
+                            "serviceKind": "git",
+                            "serviceUrl": "https://github.com",
+                            "repoUrl": {
+                                "url": "github.com/project/test.git",
+                                "refname": "main",
+                                "sha1": "da6abb188a089527df1b54b27ace84274b819e4a",
+                            },
+                            "protocol": "https",
+                            "subdir": ".",
+                        },
+                        "projects": [VERSIONED_PROJECT_TRUNK, VERSIONED_PROJECT_BRANCH],
                     },
                 ]
             }

@@ -1,6 +1,7 @@
 import pytest
 from unittest.mock import MagicMock
 from modelon.impact.client import Client
+from modelon.impact.client.entities.workspace import Workspace, WorkspaceDefinition
 import modelon.impact.client.exceptions as exceptions
 import modelon.impact.client.sal.exceptions as sal_exceptions
 from tests.impact.client.fixtures import *
@@ -8,6 +9,8 @@ from tests.impact.client.helpers import (
     create_workspace_entity,
     IDs,
     get_test_workspace_definition,
+    VERSIONED_PROJECT_BRANCH,
+    VERSIONED_PROJECT_TRUNK,
 )
 
 
@@ -173,3 +176,50 @@ def test_client_connect_against_jupyterhub_can_authorize(jupyterhub_api):
 def test_no_assigned_license_error(user_with_no_license):
     with pytest.raises(exceptions.NoAssignedLicenseError):
         Client(url=user_with_no_license.url, context=user_with_no_license.context)
+
+
+def test_get_project_matchings(
+    get_project_matchings,
+    get_versioned_projects,
+    get_versioned_new_project_trunk,
+    get_versioned_new_project_branch,
+):
+    client = Client(
+        url=get_project_matchings.url, context=get_project_matchings.context
+    )
+    definition = WorkspaceDefinition(get_test_workspace_definition())
+    project_matching_entries = client.get_project_matchings(definition).entries
+
+    assert len(project_matching_entries) == 1
+    assert project_matching_entries[0].entry_id == IDs.VERSIONED_PROJECT_REFERENCE
+    assert (
+        project_matching_entries[0].vcs_uri
+        == "git+https://github.com/project/test.git@main:da6abb188a089527df1b54b27ace84274b819e4a"
+    )
+    assert len(project_matching_entries[0].projects) == 2
+    assert project_matching_entries[0].projects[0].id == IDs.VERSIONED_PROJECT_PRIMARY
+    assert project_matching_entries[0].projects[1].id == IDs.VERSIONED_PROJECT_SECONDARY
+
+
+def test_import_from_shared_definition(
+    import_from_shared_definition, get_successful_workspace_upload_status
+):
+    client = Client(
+        url=import_from_shared_definition.url,
+        context=import_from_shared_definition.context,
+    )
+    definition = WorkspaceDefinition(get_test_workspace_definition())
+    imported_workspace = client.import_from_shared_definition(definition).wait()
+    assert isinstance(imported_workspace, Workspace)
+
+
+def test_failed_import_from_shared_definition(
+    import_from_shared_definition, get_failed_workspace_upload_status
+):
+    client = Client(
+        url=import_from_shared_definition.url,
+        context=import_from_shared_definition.context,
+    )
+    definition = WorkspaceDefinition(get_test_workspace_definition())
+    with pytest.raises(exceptions.IllegalWorkspaceImport):
+        client.import_from_shared_definition(definition).wait()

@@ -19,5 +19,6 @@ from modelon.impact.client.experiment_definition.expansion import (
     LatinHypercube,
 )
 from modelon.impact.client.entities.project import ContentType
+from modelon.impact.client.entities.workspace import WorkspaceDefinition
 
 SimpleExperimentDefinition = SimpleFMUExperimentDefinition  # For compability

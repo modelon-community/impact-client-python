@@ -1,5 +1,7 @@
+from dataclasses import dataclass
 import logging
 import os
+import json
 from typing import Any, List, Dict, Optional, Union
 from modelon.impact.client.sal.project import ProjectService
 from modelon.impact.client.sal.workspace import WorkspaceService
@@ -18,7 +20,7 @@ from modelon.impact.client.operations.external_result import (
 from modelon.impact.client.entities.model import Model
 from modelon.impact.client.entities.model_executable import ModelExecutable
 from modelon.impact.client.entities.experiment import Experiment
-from modelon.impact.client.entities.project import Project, ProjectDefinition
+from modelon.impact.client.entities.project import Project, ProjectDefinition, VcsUri
 
 
 logger = logging.getLogger(__name__)
@@ -28,14 +30,50 @@ ExperimentDefinition = Union[
 ]
 
 
+@dataclass
+class Reference:
+    id: str
+
+
+@dataclass
+class ReleasedProjectReference:
+    id: str
+    name: str
+    version: Optional[str] = None
+    build: Optional[str] = None
+
+
+@dataclass
+class VcsReference:
+    id: str
+    vcs_uri: str
+
+
+def _get_project_entry_reference(reference):
+    if "name" in reference:
+        return ReleasedProjectReference(
+            id=reference.get('id'),
+            name=reference.get('name'),
+            version=reference.get('version'),
+            build=reference.get('build'),
+        )
+    elif "vcsUri" in reference:
+        return VcsReference(id=reference.get('id'), vcs_uri=reference.get('vcsUri'),)
+    else:
+        return Reference(id=reference.get('id'))
+
+
 class ProjectEntry:
     def __init__(self, data) -> None:
         self._data = data
 
     @property
+    def reference(self):
+        return _get_project_entry_reference(self._data.get('reference'))
+
+    @property
     def id(self):
-        reference = self._data.get('reference')
-        return reference.get('id')
+        return self.reference.id
 
     @property
     def disabled(self):
@@ -79,6 +117,22 @@ class WorkspaceDefinition:
     def dependencies(self) -> List[ProjectEntry]:
         dependencies = self._data.get('dependencies', [])
         return [ProjectEntry(dependency) for dependency in dependencies]
+
+    def to_file(self, path: str) -> str:
+        os.makedirs(path, exist_ok=True)
+        definition_path = os.path.join(path, self.name + ".json")
+        with open(definition_path, "w", encoding='utf-8') as f:
+            json.dump(self._data, f, indent=4)
+        return definition_path
+
+    @classmethod
+    def from_file(cls, path: str):
+        with open(path) as json_file:
+            data = json.load(json_file)
+        return cls(data)
+
+    def to_dict(self):
+        return self._data
 
 
 class Workspace:
@@ -592,6 +646,15 @@ class Workspace:
             self._exp_sal,
         )
 
+    def _create_project_entity_from_dict(self, data):
+        return Project(
+            data["id"],
+            ProjectDefinition(data),
+            data["projectType"],
+            VcsUri.from_dict(data["vcsUri"]) if data.get("vcsUri") else None,
+            self._project_sal,
+        )
+
     def get_projects(self):
         """Return the list of projects for a workspace.
 
@@ -607,9 +670,7 @@ class Workspace:
         """
         resp = self._workspace_sal.projects_get(self._workspace_id)
         projects = [
-            Project(
-                item["id"], ProjectDefinition(item['definition']), self._project_sal,
-            )
+            self._create_project_entity_from_dict(item)
             for item in resp["data"]["items"]
         ]
         return projects
@@ -629,9 +690,7 @@ class Workspace:
         """
         resp = self._workspace_sal.dependencies_get(self._workspace_id)
         return [
-            Project(
-                item["id"], ProjectDefinition(item['definition']), self._project_sal,
-            )
+            self._create_project_entity_from_dict(item)
             for item in resp["data"]["items"]
         ]
 
@@ -649,9 +708,7 @@ class Workspace:
             project = workspace.create_project("test")
         """
         resp = self._workspace_sal.project_create(self._workspace_id, name)
-        return Project(
-            resp["id"], ProjectDefinition(resp['definition']), self._project_sal,
-        )
+        return self._create_project_entity_from_dict(resp)
 
     def get_default_project(self):
         """Return the default project for a workspace.
@@ -673,7 +730,11 @@ class Workspace:
         resp = self._project_sal.project_get(
             self._workspace_definition.default_project_id
         )
-        return Project(
-            resp["id"], ProjectDefinition(resp["definition"]), self._project_sal,
-        )
+        return self._create_project_entity_from_dict(resp)
 
+    def get_shared_definition(self, strict: bool = False):
+        return WorkspaceDefinition(
+            self._workspace_sal.shared_definition_get(
+                self._workspace_id, strict=strict
+            )["definition"]
+        )
