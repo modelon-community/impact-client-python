@@ -35,6 +35,8 @@ Revoking the token will cause the prompt to be shown again and a new token needs
 Once the JupyterHub API has been authenticated, the user need to authenticate the client for Modelon Impact 
 following the section :ref:`below<Authentication with API keys>`.
 
+For non-interactive usage, the API token can be set as the ``MODELON_IMPACT_JUPYTERHUB_CLIENT_API_TOKEN`` environment variable.
+
 Authentication with API keys
 ****************************
 
