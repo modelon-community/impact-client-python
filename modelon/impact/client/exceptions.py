@@ -35,3 +35,7 @@ class OperationNotCompleteError(Error):
 
 class OperationCompleteError(Error):
     pass
+
+
+class IllegalWorkspaceImport(Error):
+    pass

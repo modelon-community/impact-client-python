@@ -1,18 +1,89 @@
 """This module provides an entry-point to the client APIs."""
 import logging
+from typing import List, Optional
+from dataclasses import dataclass
 from semantic_version import SimpleSpec, Version  # type: ignore
 import modelon.impact.client.configuration
-from modelon.impact.client.entities.workspace import WorkspaceDefinition, Workspace
-from modelon.impact.client.entities.project import ProjectDefinition, Project
+from modelon.impact.client.entities.project import Project, ProjectDefinition, VcsUri
+from modelon.impact.client.entities.workspace import (
+    WorkspaceDefinition,
+    Workspace,
+)
 import modelon.impact.client.sal.service
 import modelon.impact.client.sal.exceptions
 import modelon.impact.client.credential_manager
 import modelon.impact.client.jupyterhub
+from modelon.impact.client.operations.workspace import WorkspaceImportOperation
 from modelon.impact.client.sal.uri import URI
 from modelon.impact.client import exceptions
 
 
 logger = logging.getLogger(__name__)
+
+
+@dataclass
+class Selection:
+    entry_id: str
+    project: Project
+
+    def to_dict(self):
+        return {'id': self.entry_id, 'project': {'id': self.project.id}}
+
+
+@dataclass
+class ProjectMatching:
+    entry_id: str
+    vcs_uri: str
+    projects: List[Project]
+
+    def get_selection(self, index: int) -> Selection:
+        return Selection(entry_id=self.entry_id, project=self.projects[index])
+
+    def make_selection_interactive(self) -> Selection:
+        if len(self.projects) == 1:
+            print(f"Only one project matches the URI {self.vcs_uri}!")
+            selection = self.get_selection(index=0)
+            print(
+                f"Resolving conflict automatically using project with ID: "
+                f"{selection.project.id} for repository with URI: {self.vcs_uri}."
+            )
+            return selection
+
+        print(
+            f"\nThe URI {self.vcs_uri} in the workspace definition matched with"
+            " multiple projects during import:"
+        )
+        for i, project in enumerate(self.projects):
+            choice = f"[{i}]:"
+            vcs_uri = f"{' ' * len(choice)} Project URI: {str(project.vcs_uri)}"
+            print("_" * 60)
+            print(f"{choice} Project name: {project.definition.name}")
+            print(vcs_uri)
+
+        while True:
+            try:
+                chosen_index = int(input('\nPlease enter one of the above choices:-'))
+                selection = self.get_selection(index=chosen_index)
+                break
+            except (KeyError, ValueError, IndexError):
+                allowed_choices = map(str, range(len(self.projects)))
+                print(
+                    f"Invalid choice. Please select one of {','.join(allowed_choices)}!"
+                )
+
+        print(
+            f"Resolving conflict using project with ID: {selection.project.id}"
+            f" for repository with URI: {self.vcs_uri}."
+        )
+        return selection
+
+
+@dataclass
+class ProjectMatchings:
+    entries: List[ProjectMatching]
+
+    def make_selections_interactive(self) -> List[Selection]:
+        return [e.make_selection_interactive() for e in self.entries]
 
 
 class Client:
@@ -223,12 +294,22 @@ class Client:
         """
         resp = self._sal.project.project_get(project_id)
         return Project(
-            resp["id"], ProjectDefinition(resp["definition"]), self._sal.project,
+            resp["id"],
+            ProjectDefinition(resp["definition"]),
+            resp["projectType"],
+            VcsUri.from_dict(resp["vcsUri"]) if resp.get("vcsUri") else None,
+            self._sal.project,
         )
 
-    def get_projects(self):
+    def get_projects(self, vcs_info=False):
         """
         Returns a list of project class object.
+
+        Parameters:
+
+            vcs_info --
+                If True, the versioning details are returned for the
+                projects under version control.
 
         Returns:
 
@@ -239,10 +320,14 @@ class Client:
 
             client.get_projects()
         """
-        resp = self._sal.project.projects_get()
+        resp = self._sal.project.projects_get(vcs_info=vcs_info)
         return [
             Project(
-                item["id"], ProjectDefinition(item["definition"]), self._sal.project,
+                item["id"],
+                ProjectDefinition(item["definition"]),
+                item["projectType"],
+                VcsUri.from_dict(item["vcsUri"]) if item.get("vcsUri") else None,
+                self._sal.project,
             )
             for item in resp["data"]["items"]
         ]
@@ -304,3 +389,50 @@ class Client:
             self._sal.custom_function,
             self._sal.project,
         )
+
+    def import_from_shared_definition(
+        self,
+        shared_definition: WorkspaceDefinition,
+        selections: Optional[List[Selection]] = None,
+    ):
+        resp = self._sal.workspace.import_from_shared_definition(
+            {"definition": shared_definition.to_dict()},
+            selected_matchings=[selection.to_dict() for selection in selections]
+            if selections
+            else None,
+        )
+        return WorkspaceImportOperation(
+            resp["data"]["location"],
+            shared_definition,
+            self._sal.workspace,
+            self._sal.model_executable,
+            self._sal.experiment,
+            self._sal.custom_function,
+            self._sal.project,
+        )
+
+    def get_project_matchings(
+        self, shared_definition: WorkspaceDefinition
+    ) -> ProjectMatchings:
+        project_matchings = []
+        matchings = self._sal.workspace.get_project_matchings(
+            {"definition": shared_definition.to_dict()}
+        )['data']['vcs']
+        for entry in matchings:
+            projects = [
+                Project(
+                    project["id"],
+                    ProjectDefinition(project["definition"]),
+                    project["projectType"],
+                    VcsUri.from_dict(project["vcsUri"]),
+                    self._sal.project,
+                )
+                for project in entry['projects']
+            ]
+
+            project_matchings.append(
+                ProjectMatching(
+                    entry["entryId"], str(VcsUri.from_dict(entry["uri"])), projects
+                )
+            )
+        return ProjectMatchings(project_matchings)

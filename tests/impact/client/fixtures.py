@@ -20,6 +20,8 @@ from tests.impact.client.helpers import (
     create_model_entity,
     get_test_workspace_definition,
     IDs,
+    VERSIONED_PROJECT_BRANCH,
+    VERSIONED_PROJECT_TRUNK,
 )
 
 MockedServer = collections.namedtuple('MockedServer', ['url', 'context', 'adapter'])
@@ -636,7 +638,7 @@ def get_dependencies(sem_ver_check, mock_server_base):
         "data": {
             "items": [
                 {
-                    "id": IDs.MSL_300_CONTENT_ID,
+                    "id": IDs.MSL_300_PROJECT_ID,
                     "definition": {},
                     "projectType": "SYSTEM",
                 },
@@ -1132,7 +1134,9 @@ def workspace():
     ws_service.experiment_get.return_value = {'id': IDs.EXPERIMENT_PRIMARY}
     exp_service.execute_status.return_value = {"status": "done"}
     ws_service.experiments_get.return_value = {
-        'data': {'items': [{'id': IDs.EXPERIMENT_PRIMARY}, {'id': IDs.EXPERIMENT_SECONDARY}]}
+        'data': {
+            'items': [{'id': IDs.EXPERIMENT_PRIMARY}, {'id': IDs.EXPERIMENT_SECONDARY}]
+        }
     }
     ws_service.workspace_download.return_value = b'\x00\x00\x00\x00'
     ws_service.workspace_get.return_value = get_test_workspace_definition()
@@ -1165,7 +1169,7 @@ def workspace():
         "data": {
             "items": [
                 {
-                    "id": IDs.PROJECT_PRIMARY,
+                    "id": IDs.MSL_300_PROJECT_ID,
                     "definition": {
                         "name": "MSL",
                         "version": "3.2.3",
@@ -1173,7 +1177,7 @@ def workspace():
                         "dependencies": [],
                         "content": [
                             {
-                                "id": IDs.MSL_300_CONTENT_ID,
+                                "id": IDs.MSL_CONTENT_ID,
                                 "relpath": "Modelica",
                                 "contentType": "MODELICA",
                                 "name": "Modelica",
@@ -1185,7 +1189,7 @@ def workspace():
                     "projectType": "SYSTEM",
                 },
                 {
-                    "id": IDs.PROJECT_SECONDARY,
+                    "id": IDs.MSL_400_PROJECT_ID,
                     "definition": {
                         "name": "MSL",
                         "version": "4.0.0",
@@ -1193,7 +1197,7 @@ def workspace():
                         "dependencies": [],
                         "content": [
                             {
-                                "id": IDs.MSL_400_CONTENT_ID,
+                                "id": IDs.MSL_CONTENT_ID,
                                 "relpath": "Modelica",
                                 "contentType": "MODELICA",
                                 "name": "Modelica",
@@ -2001,4 +2005,156 @@ def upload_project_content(sem_ver_check, mock_server_base):
         'POST',
         F'api/projects/{IDs.PROJECT_CONTENT_SECONDARY}/content',
         json,
+    )
+
+
+@pytest.fixture
+def shared_definition_get(user_with_license, mock_server_base):
+    json = {
+        "definition": {
+            "name": "test",
+            "projects": [
+                {
+                    "reference": {
+                        "id": IDs.VERSIONED_PROJECT_REFERENCE,
+                        "vcsUri": "git+https://github.com/project/test.git@main:da6abb188a089527df1b54b27ace84274b819e4a",
+                    },
+                    "disabled": True,
+                    "disabledContent": [],
+                }
+            ],
+            "dependencies": [],
+        }
+    }
+
+    return with_json_route(
+        mock_server_base,
+        'GET',
+        f'api/workspaces/{IDs.WORKSPACE_PRIMARY}/sharing-definition?strict=true',
+        json,
+    )
+
+
+@pytest.fixture
+def get_workspace_upload_status(user_with_license, mock_server_base):
+    json = {
+        "data": {
+            'id': 'efa5cc60e3d04049ad0566bc53b431f8',
+            'status': 'ready',
+            'data': {'resourceUri': 'api/workspaces/test', 'workspaceId': 'test'},
+        }
+    }
+
+    return with_json_route(
+        mock_server_base,
+        'GET',
+        'api/workspace-imports/05c7c0c45a084f079682eaf443287901',
+        json,
+    )
+
+
+@pytest.fixture
+def get_successful_workspace_upload_status(user_with_license, mock_server_base):
+    json = {
+        "data": {
+            "id": "05c7c0c45a084f079682eaf443287901",
+            "status": "ready",
+            "data": {
+                'resourceUri': 'api/workspaces/123456780',
+                'workspaceId': "123456780",
+            },
+        }
+    }
+
+    return with_json_route(
+        mock_server_base,
+        'GET',
+        'api/workspace-imports/05c7c0c45a084f079682eaf443287901',
+        json,
+    )
+
+
+@pytest.fixture
+def get_failed_workspace_upload_status(user_with_license, mock_server_base):
+    json = {
+        "data": {
+            "id": "05c7c0c45a084f079682eaf443287901",
+            "status": "error",
+            "error": {
+                "message": "Could not import workspace 'test'. Multiple existing projects matches the URI git+https://github.com/project/test.git@main:da6abb188a089527df1b54b27ace84274b819e4a and no selected matching was given",
+                "code": 12102,
+            },
+        }
+    }
+
+    return with_json_route(
+        mock_server_base,
+        'GET',
+        'api/workspace-imports/05c7c0c45a084f079682eaf443287901',
+        json,
+    )
+
+
+@pytest.fixture
+def import_from_shared_definition(user_with_license, mock_server_base):
+    json = {
+        "data": {"location": "api/workspace-imports/05c7c0c45a084f079682eaf443287901"}
+    }
+
+    return with_json_route(mock_server_base, 'POST', 'api/workspace-imports', json)
+
+
+@pytest.fixture
+def get_project_matchings(user_with_license, mock_server_base):
+    json = {
+        "data": {
+            "vcs": [
+                {
+                    "entryId": IDs.VERSIONED_PROJECT_REFERENCE,
+                    "uri": {
+                        "serviceKind": "git",
+                        "serviceUrl": "https://github.com",
+                        "repoUrl": {
+                            "url": "github.com/project/test.git",
+                            "refname": "main",
+                            "sha1": "da6abb188a089527df1b54b27ace84274b819e4a",
+                        },
+                        "protocol": "https",
+                        "subdir": ".",
+                    },
+                    "projects": [VERSIONED_PROJECT_TRUNK, VERSIONED_PROJECT_BRANCH],
+                },
+            ]
+        }
+    }
+
+    return with_json_route(
+        mock_server_base, 'POST', 'api/workspace-imports-matchings', json
+    )
+
+
+@pytest.fixture
+def get_versioned_projects(user_with_license, mock_server_base):
+    json = {"data": {"items": [VERSIONED_PROJECT_TRUNK, VERSIONED_PROJECT_BRANCH]}}
+
+    return with_json_route(mock_server_base, 'GET', 'api/projects?vcsInfo=true', json)
+
+
+@pytest.fixture
+def get_versioned_new_project_trunk(user_with_license, mock_server_base):
+    return with_json_route(
+        mock_server_base,
+        'GET',
+        f'api/projects/{IDs.VERSIONED_PROJECT_PRIMARY}?vcsInfo=true',
+        VERSIONED_PROJECT_TRUNK,
+    )
+
+
+@pytest.fixture
+def get_versioned_new_project_branch(user_with_license, mock_server_base):
+    return with_json_route(
+        mock_server_base,
+        'GET',
+        f'api/projects/{IDs.VERSIONED_PROJECT_SECONDARY}?vcsInfo=true',
+        VERSIONED_PROJECT_BRANCH,
     )

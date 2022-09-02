@@ -10,8 +10,8 @@ class ProjectService:
         self._base_uri = uri
         self._http_client = http_client
 
-    def projects_get(self):
-        url = (self._base_uri / "api/projects").resolve()
+    def projects_get(self, vcs_info=False):
+        url = (self._base_uri / f"api/projects?vcsInfo={vcs_info}").resolve()
         return self._http_client.get_json(url)
 
     def project_get(self, project_id: str):

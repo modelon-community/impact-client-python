@@ -177,3 +177,31 @@ class WorkspaceService:
             **({"userData": user_data} if user_data is not None else {}),
         }
         return self._http_client.post_json(url, body=body)
+
+    def shared_definition_get(self, workspace_id: str, strict: bool = False):
+        url = (
+            self._base_uri / f"api/workspaces/{workspace_id}/"
+            f"sharing-definition?strict={'true' if strict else 'false'}"
+        ).resolve()
+        return self._http_client.get_json(url)
+
+    def import_from_shared_definition(
+        self,
+        shared_definition: Dict[str, Any],
+        selected_matchings: Optional[List[Dict[str, Any]]] = None,
+    ):
+        if selected_matchings:
+            shared_definition = {
+                **shared_definition,
+                **{"selectedMatchings": {"entries": selected_matchings}},
+            }
+        url = (self._base_uri / "api/workspace-imports").resolve()
+        return self._http_client.post_json(url, body=shared_definition)
+
+    def get_workspace_upload_status(self, location: str):
+        url = (self._base_uri / location).resolve()
+        return self._http_client.get_json(url)
+
+    def get_project_matchings(self, shared_definition: Dict[str, Any]):
+        url = (self._base_uri / "api/workspace-imports-matchings").resolve()
+        return self._http_client.post_json(url, body=shared_definition)
