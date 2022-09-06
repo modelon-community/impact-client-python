@@ -386,13 +386,16 @@ def import_fmu(sem_ver_check):
         "importWarnings": [
             "Specified argument for 'top_level_inputs=['a']' does not match any variable"
         ],
-        "library": {"id": "Workspace", "uses": {}, "name": "Workspace"},
+        "library": {
+            'project_id': IDs.PROJECT_PRIMARY,
+            'content_id': IDs.PROJECT_CONTENT_PRIMARY,
+        },
     }
 
     return with_json_route(
         sem_ver_check,
         'POST',
-        f'api/workspaces/{IDs.WORKSPACE_PRIMARY}/libraries/Workspace/models',
+        f'api/workspaces/{IDs.WORKSPACE_PRIMARY}/projects/{IDs.PROJECT_PRIMARY}/content/{IDs.PROJECT_CONTENT_PRIMARY}/models',
         json,
     )
 
@@ -1983,6 +1986,16 @@ def project():
         "contentType": "MODELICA",
         "name": "test",
         "defaultDisabled": False,
+    }
+    project_service.fmu_upload.return_value = {
+        "fmuClassPath": "Workspace.PID_Controller.Model",
+        "importWarnings": [
+            "Specified argument for 'top_level_inputs=['a']' does not match any variable"
+        ],
+        "library": {
+            'project_id': IDs.PROJECT_PRIMARY,
+            'content_id': IDs.PROJECT_CONTENT_PRIMARY,
+        },
     }
     return ProjectMock(
         create_project_entity(IDs.PROJECT_PRIMARY, project_service=project_service),

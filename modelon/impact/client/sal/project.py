@@ -1,6 +1,7 @@
 """Project service module"""
 import json
-from typing import Dict, Any
+import os
+from typing import Dict, Any, Optional, Union, List
 from modelon.impact.client.sal.http import HTTPClient
 from modelon.impact.client.sal.uri import URI
 
@@ -38,6 +39,48 @@ class ProjectService:
         url = (self._base_uri / f"/api/projects/{project_id}/content").resolve()
         options = {"contentType": content_type}
         with open(path_to_result, "rb") as f:
+            multipart_form_data = {
+                'file': f,
+                'options': json.dumps(options),
+            }
+            return self._http_client.post_json(url, files=multipart_form_data)
+
+    def fmu_upload(
+        self,
+        workspace_id: str,
+        project_id: str,
+        content_id: str,
+        fmu_path: str,
+        library: str,
+        class_name: Optional[str] = None,
+        overwrite: bool = False,
+        include_patterns: Optional[Union[str, List[str]]] = None,
+        exclude_patterns: Optional[Union[str, List[str]]] = None,
+        top_level_inputs: Optional[Union[str, List[str]]] = None,
+        step_size: float = 0.0,
+    ):
+        url = (
+            self._base_uri
+            / f"api/workspaces/{workspace_id}/projects/{project_id}/content/"
+            f"{content_id}/models"
+        ).resolve()
+        default_class_name = ".".join(
+            [library, os.path.split(fmu_path)[-1].strip('.fmu')]
+        )
+        options = {
+            "className": class_name if class_name else default_class_name,
+            "overwrite": overwrite,
+            "stepSize": step_size,
+        }
+
+        if include_patterns:
+            options["includePatterns"] = include_patterns
+        if exclude_patterns:
+            options["excludePatterns"] = exclude_patterns
+        if top_level_inputs:
+            options["topLevelInputs"] = top_level_inputs
+
+        with open(fmu_path, "rb") as f:
             multipart_form_data = {
                 'file': f,
                 'options': json.dumps(options),

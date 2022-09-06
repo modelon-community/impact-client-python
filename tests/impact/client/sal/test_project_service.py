@@ -1,3 +1,4 @@
+import unittest.mock as mock
 from modelon.impact.client.sal.uri import URI
 import modelon.impact.client.sal.service
 from tests.impact.client.helpers import IDs
@@ -111,3 +112,36 @@ class TestProjectService:
             "name": "test",
             "defaultDisabled": False,
         }
+
+    def test_fmu_upload(self, import_fmu):
+        uri = URI(import_fmu.url)
+        service = modelon.impact.client.sal.service.Service(
+            uri=uri, context=import_fmu.context
+        )
+        with mock.patch("builtins.open", mock.mock_open()) as mock_file:
+            data = service.project.fmu_upload(
+                IDs.WORKSPACE_PRIMARY,
+                IDs.PROJECT_PRIMARY,
+                IDs.PROJECT_CONTENT_PRIMARY,
+                "test.fmu",
+                "Workspace",
+            )
+            mock_file.assert_called_with("test.fmu", "rb")
+
+        assert data == {
+            "fmuClassPath": "Workspace.PID_Controller.Model",
+            "importWarnings": [
+                "Specified argument for 'top_level_inputs=['a']' does not match any variable"
+            ],
+            "library": {
+                'project_id': IDs.PROJECT_PRIMARY,
+                'content_id': IDs.PROJECT_CONTENT_PRIMARY,
+            },
+        }
+
+        import_fmu_call = import_fmu.adapter.request_history[0]
+        assert (
+            f'http://mock-impact.com/api/workspaces/{IDs.WORKSPACE_PRIMARY}/projects/{IDs.PROJECT_PRIMARY}/content/{IDs.PROJECT_CONTENT_PRIMARY}/models'
+            == import_fmu_call.url
+        )
+        assert 'POST' == import_fmu_call.method
