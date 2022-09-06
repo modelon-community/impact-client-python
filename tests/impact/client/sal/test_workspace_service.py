@@ -137,32 +137,6 @@ class TestWorkspaceService:
         )
         assert upload_result_delete.adapter.called
 
-    def test_fmu_upload(self, import_fmu):
-        uri = URI(import_fmu.url)
-        service = modelon.impact.client.sal.service.Service(
-            uri=uri, context=import_fmu.context
-        )
-        with mock.patch("builtins.open", mock.mock_open()) as mock_file:
-            data = service.workspace.fmu_import(
-                IDs.WORKSPACE_PRIMARY, "test.fmu", "Workspace"
-            )
-            mock_file.assert_called_with("test.fmu", "rb")
-
-        assert data == {
-            "fmuClassPath": "Workspace.PID_Controller.Model",
-            "importWarnings": [
-                "Specified argument for 'top_level_inputs=['a']' does not match any variable"
-            ],
-            "library": {"id": "Workspace", "uses": {}, "name": "Workspace"},
-        }
-
-        import_fmu_call = import_fmu.adapter.request_history[0]
-        assert (
-            f'http://mock-impact.com/api/workspaces/{IDs.WORKSPACE_PRIMARY}/libraries/Workspace/models'
-            == import_fmu_call.url
-        )
-        assert 'POST' == import_fmu_call.method
-
     def test_workspace_download(self, download_workspace):
         uri = URI(download_workspace.url)
         service = modelon.impact.client.sal.service.Service(

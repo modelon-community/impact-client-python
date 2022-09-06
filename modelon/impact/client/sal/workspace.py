@@ -1,7 +1,6 @@
 """Workspace service module"""
-import os
 import json
-from typing import Optional, Union, List, Dict, Any
+from typing import Optional, Dict, Any, List
 from modelon.impact.client.sal.http import HTTPClient
 from modelon.impact.client.sal.uri import URI
 
@@ -38,44 +37,6 @@ class WorkspaceService:
     def workspace_get(self, workspace_id: str):
         url = (self._base_uri / f"api/workspaces/{workspace_id}").resolve()
         return self._http_client.get_json(url)
-
-    def fmu_import(
-        self,
-        workspace_id: str,
-        fmu_path: str,
-        library: str,
-        class_name: Optional[str] = None,
-        overwrite: bool = False,
-        include_patterns: Optional[Union[str, List[str]]] = None,
-        exclude_patterns: Optional[Union[str, List[str]]] = None,
-        top_level_inputs: Optional[Union[str, List[str]]] = None,
-        step_size: float = 0.0,
-    ):
-        url = (
-            self._base_uri / f"api/workspaces/{workspace_id}/libraries/{library}/models"
-        ).resolve()
-        default_class_name = ".".join(
-            [library, os.path.split(fmu_path)[-1].strip('.fmu')]
-        )
-        options = {
-            "className": class_name if class_name else default_class_name,
-            "overwrite": overwrite,
-            "stepSize": step_size,
-        }
-
-        if include_patterns:
-            options["includePatterns"] = include_patterns
-        if exclude_patterns:
-            options["excludePatterns"] = exclude_patterns
-        if top_level_inputs:
-            options["topLevelInputs"] = top_level_inputs
-
-        with open(fmu_path, "rb") as f:
-            multipart_form_data = {
-                'file': f,
-                'options': json.dumps(options),
-            }
-            return self._http_client.post_json(url, files=multipart_form_data)
 
     def workspace_upload(self, path_to_workspace: str):
         url = (self._base_uri / "api/workspaces").resolve()

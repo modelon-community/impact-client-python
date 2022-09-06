@@ -33,24 +33,6 @@ class TestWorkspace:
         workspace.delete()
         workspace_sal.workspace_delete.assert_called_with(IDs.WORKSPACE_PRIMARY)
 
-    def test_import_fmu(self):
-        workspace_sal = mock.MagicMock()
-        workspace = create_workspace_entity(
-            IDs.WORKSPACE_PRIMARY, workspace_service=workspace_sal
-        )
-        workspace.upload_fmu("test.fmu", "Workspace")
-        workspace_sal.fmu_import.assert_called_with(
-            IDs.WORKSPACE_PRIMARY,
-            "test.fmu",
-            "Workspace",
-            None,
-            False,
-            None,
-            None,
-            None,
-            step_size=0.0,
-        )
-
     def test_upload_result(self, workspace_sal_upload_base):
         workspace_service = workspace_sal_upload_base
         workspace = create_workspace_entity(
