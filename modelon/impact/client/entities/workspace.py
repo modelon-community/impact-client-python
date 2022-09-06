@@ -262,98 +262,6 @@ class Workspace:
         )
         return ExternalResultUploadOperation(resp["data"]["id"], self._workspace_sal)
 
-    def upload_fmu(
-        self,
-        fmu_path: str,
-        library_path: str,
-        class_name: Optional[str] = None,
-        overwrite: bool = False,
-        include_patterns: Optional[Union[str, List[str]]] = None,
-        exclude_patterns: Optional[Union[str, List[str]]] = None,
-        top_level_inputs: Optional[Union[str, List[str]]] = None,
-        step_size: float = 0.0,
-    ) -> Model:
-        """Uploads a FMU to the workspace.
-
-        Parameters:
-
-            fmu_path --
-                The path for the FMU to be imported.
-
-            library_path --
-                The library identifier, '{name} {version}' or '{name}' if version is
-                missing.
-
-            class_name --
-                Qualified name of generated class. By default, 'class_name' is
-                set to the name of the library followed by a name based
-                on the filename of the imported FMU.
-
-            overwrite --
-                Determines if any already existing files should be overwritten.
-                Default: False.
-
-            include_patterns, exclude_patterns --
-                Specifies what variables from the FMU to include and/or exclude in the
-                wrapper model. These two arguments are patterns or lists of patterns as
-                the same kind as the argument 'filter' for the function
-                'get_model_variables' in PyFMI. If both 'include_patterns' and
-                'exclude_patterns' are given, then all variables that matches
-                'include_patterns' but does not match 'exclude_patterns' are included.
-                Derivatives and variables with a leading underscore in the name are
-                always excluded.
-                Default value: None (which means to include all the variables).
-
-            top_level_inputs --
-                Specify what inputs that should be kept as inputs, i.e. with or without
-                the input keyword. The argument is a pattern similar to the arguments
-                include_patterns and exclude_patterns. Example: If
-                top_level_inputs = 'my_inputs*', then all input variables matching the
-                pattern 'my_inputs*' will be generated as inputs, and all other inputs
-                not matching the pattern as model variables. If top_level_inputs = '',
-                then no input is imported as an input.
-                Default value: None (which means all inputs are kept as inputs)
-                Type: str or a list of strings
-
-            step_size --
-                Specify what value to set for the parameter for step size in the
-                generated model. By default the parameter is set to zero, which
-                inturn means that the step size will be set during simulation based
-                on simulation properties such as the time interval.
-                This can also be manually set to any real non-negative number.
-                The value of the step size parameter can also be set via the function
-                set_step_size, which must be invoked before importing the model.
-                Default value: 0.0 (which during simulation is set according to the
-                description above).
-                Type: number
-
-        Example::
-
-            workspace.upload_fmu('C:/A.fmu',"Workspace")
-            workspace.upload_fmu('C:/B.fmu',"Workspace",class_name="Workspace.Model")
-        """
-        resp = self._workspace_sal.fmu_import(
-            self._workspace_id,
-            fmu_path,
-            library_path,
-            class_name,
-            overwrite,
-            include_patterns,
-            exclude_patterns,
-            top_level_inputs,
-            step_size=step_size,
-        )
-
-        if resp["importWarnings"]:
-            logger.warning(f"Import Warnings: {'. '.join(resp['importWarnings'])}")
-
-        return Model(
-            resp['fmuClassPath'],
-            self._workspace_id,
-            self._workspace_sal,
-            self._model_exe_sal,
-        )
-
     def download(self, options: Dict[str, Any], path: str) -> str:
         """Downloads the workspace as a binary compressed archive.
         Returns the local path to the downloaded workspace archive.
@@ -730,7 +638,13 @@ class Workspace:
         resp = self._project_sal.project_get(
             self._workspace_definition.default_project_id
         )
-        return self._create_project_entity_from_dict(resp)
+        return Project(
+            resp["id"],
+            ProjectDefinition(resp["definition"]),
+            resp["projectType"],
+            VcsUri.from_dict(resp["vcsUri"]) if resp.get("vcsUri") else None,
+            self._project_sal,
+        )
 
     def get_shared_definition(self, strict: bool = False):
         return WorkspaceDefinition(
