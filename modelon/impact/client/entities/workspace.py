@@ -561,6 +561,8 @@ class Workspace:
             data["projectType"],
             VcsUri.from_dict(data["vcsUri"]) if data.get("vcsUri") else None,
             self._project_sal,
+            self._workspace_sal,
+            self._model_exe_sal,
         )
 
     def get_projects(self):
@@ -578,7 +580,15 @@ class Workspace:
         """
         resp = self._workspace_sal.projects_get(self._workspace_id)
         projects = [
-            self._create_project_entity_from_dict(item)
+            Project(
+                item["id"],
+                ProjectDefinition(item['definition']),
+                item["projectType"],
+                VcsUri.from_dict(item["vcsUri"]) if item.get("vcsUri") else None,
+                self._project_sal,
+                self._workspace_sal,
+                self._model_exe_sal,
+            )
             for item in resp["data"]["items"]
         ]
         return projects
@@ -598,7 +608,15 @@ class Workspace:
         """
         resp = self._workspace_sal.dependencies_get(self._workspace_id)
         return [
-            self._create_project_entity_from_dict(item)
+            Project(
+                item["id"],
+                ProjectDefinition(item['definition']),
+                item["projectType"],
+                VcsUri.from_dict(item["vcsUri"]) if item.get("vcsUri") else None,
+                self._project_sal,
+                self._workspace_sal,
+                self._model_exe_sal,
+            )
             for item in resp["data"]["items"]
         ]
 
@@ -616,7 +634,15 @@ class Workspace:
             project = workspace.create_project("test")
         """
         resp = self._workspace_sal.project_create(self._workspace_id, name)
-        return self._create_project_entity_from_dict(resp)
+        return Project(
+            resp["id"],
+            ProjectDefinition(resp['definition']),
+            resp["projectType"],
+            VcsUri.from_dict(resp["vcsUri"]) if resp.get("vcsUri") else None,
+            self._project_sal,
+            self._workspace_sal,
+            self._model_exe_sal,
+        )
 
     def get_default_project(self):
         """Return the default project for a workspace.
@@ -644,6 +670,8 @@ class Workspace:
             resp["projectType"],
             VcsUri.from_dict(resp["vcsUri"]) if resp.get("vcsUri") else None,
             self._project_sal,
+            self._workspace_sal,
+            self._model_exe_sal,
         )
 
     def get_shared_definition(self, strict: bool = False):

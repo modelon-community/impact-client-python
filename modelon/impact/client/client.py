@@ -299,6 +299,8 @@ class Client:
             resp["projectType"],
             VcsUri.from_dict(resp["vcsUri"]) if resp.get("vcsUri") else None,
             self._sal.project,
+            self._sal.workspace,
+            self._sal.model_executable,
         )
 
     def get_projects(self, vcs_info=False):
@@ -328,6 +330,8 @@ class Client:
                 item["projectType"],
                 VcsUri.from_dict(item["vcsUri"]) if item.get("vcsUri") else None,
                 self._sal.project,
+                self._sal.workspace,
+                self._sal.model_executable,
             )
             for item in resp["data"]["items"]
         ]
@@ -426,6 +430,8 @@ class Client:
                     project["projectType"],
                     VcsUri.from_dict(project["vcsUri"]),
                     self._sal.project,
+                    self._sal.workspace,
+                    self._sal.model_executable,
                 )
                 for project in entry['projects']
             ]

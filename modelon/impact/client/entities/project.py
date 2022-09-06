@@ -2,17 +2,22 @@
 # Copyright (c) 2022 Modelon AB
 #
 import enum
+import logging
 from pathlib import Path
 from dataclasses import dataclass
-from typing import Optional, List, Union, Dict
-from modelon.impact.client.sal.project import ProjectService
+from typing import List, Dict, Optional, Union
 from modelon.impact.client.options import (
     CompilerOptions,
     RuntimeOptions,
     SimulationOptions,
     SolverOptions,
 )
+from modelon.impact.client.entities.model import Model
+from modelon.impact.client.sal.project import ProjectService
+from modelon.impact.client.sal.workspace import WorkspaceService
+from modelon.impact.client.sal.model_executable import ModelExecutableService
 
+logger = logging.getLogger(__name__)
 RepoURL = Union['GitRepoURL', 'SvnRepoURL']
 
 
@@ -159,23 +164,21 @@ class ProjectContent:
     """Content entry in a project."""
 
     def __init__(
-        self, content: Dict[str, str], project_id: str, project_sal: ProjectService
+        self,
+        content: Dict[str, str],
+        project_id: str,
+        project_service: ProjectService,
+        workspace_service: WorkspaceService,
+        model_executable_service: ModelExecutableService,
     ):
         self._content = content
         self._project_id = project_id
-        self._project_sal = project_sal
+        self._project_sal = project_service
+        self._workspace_sal = workspace_service
+        self._model_exe_sal = model_executable_service
 
     def __repr__(self):
         return f"Project content with id '{self.id}'"
-
-    def delete(self):
-        """Deletes a project content.
-
-        Example::
-
-            content.delete()
-        """
-        self._project_sal.project_content_delete(self._project_id, self.id)
 
     def __eq__(self, obj):
         return isinstance(obj, ProjectContent) and obj.id == self.id
@@ -195,7 +198,7 @@ class ProjectContent:
     @property
     def id(self):
         """Content ID."""
-        return self._content.get('id')
+        return self._content['id']
 
     @property
     def name(self):
@@ -205,6 +208,110 @@ class ProjectContent:
     @property
     def default_disabled(self):
         return self._content.get('defaultDisabled')
+
+    def delete(self):
+        """Deletes a project content.
+
+        Example::
+
+            content.delete()
+        """
+        self._project_sal.project_content_delete(self._project_id, self.id)
+
+    def upload_fmu(
+        self,
+        workspace,
+        fmu_path: str,
+        library_path: str,
+        class_name: Optional[str] = None,
+        overwrite: bool = False,
+        include_patterns: Optional[Union[str, List[str]]] = None,
+        exclude_patterns: Optional[Union[str, List[str]]] = None,
+        top_level_inputs: Optional[Union[str, List[str]]] = None,
+        step_size: float = 0.0,
+    ) -> Model:
+        """Uploads a FMU to the workspace.
+
+        Parameters:
+
+            fmu_path --
+                The path for the FMU to be imported.
+
+            library_path --
+                The library identifier, '{name} {version}' or '{name}' if version is
+                missing.
+
+            class_name --
+                Qualified name of generated class. By default, 'class_name' is
+                set to the name of the library followed by a name based
+                on the filename of the imported FMU.
+
+            overwrite --
+                Determines if any already existing files should be overwritten.
+                Default: False.
+
+            include_patterns, exclude_patterns --
+                Specifies what variables from the FMU to include and/or exclude in the
+                wrapper model. These two arguments are patterns or lists of patterns as
+                the same kind as the argument 'filter' for the function
+                'get_model_variables' in PyFMI. If both 'include_patterns' and
+                'exclude_patterns' are given, then all variables that matches
+                'include_patterns' but does not match 'exclude_patterns' are included.
+                Derivatives and variables with a leading underscore in the name are
+                always excluded.
+                Default value: None (which means to include all the variables).
+
+            top_level_inputs --
+                Specify what inputs that should be kept as inputs, i.e. with or without
+                the input keyword. The argument is a pattern similar to the arguments
+                include_patterns and exclude_patterns. Example: If
+                top_level_inputs = 'my_inputs*', then all input variables matching the
+                pattern 'my_inputs*' will be generated as inputs, and all other inputs
+                not matching the pattern as model variables. If top_level_inputs = '',
+                then no input is imported as an input.
+                Default value: None (which means all inputs are kept as inputs)
+                Type: str or a list of strings
+
+            step_size --
+                Specify what value to set for the parameter for step size in the
+                generated model. By default the parameter is set to zero, which
+                inturn means that the step size will be set during simulation based
+                on simulation properties such as the time interval.
+                This can also be manually set to any real non-negative number.
+                The value of the step size parameter can also be set via the function
+                set_step_size, which must be invoked before importing the model.
+                Default value: 0.0 (which during simulation is set according to the
+                description above).
+                Type: number
+
+        Example::
+            workspace = client.get_workspace("test")
+            content.upload_fmu(workspace, 'C:/A.fmu',"Test")
+            content.upload_fmu(workspace, 'C:/B.fmu',"Test",class_name="Test.Model")
+        """
+        resp = self._project_sal.fmu_upload(
+            workspace.id,
+            self._project_id,
+            self.id,
+            fmu_path,
+            library_path,
+            class_name,
+            overwrite,
+            include_patterns,
+            exclude_patterns,
+            top_level_inputs,
+            step_size=step_size,
+        )
+
+        if resp["importWarnings"]:
+            logger.warning(f"Import Warnings: {'. '.join(resp['importWarnings'])}")
+
+        return Model(
+            resp['fmuClassPath'],
+            workspace.id,
+            self._workspace_sal,
+            self._model_exe_sal,
+        )
 
 
 class ProjectDependency:
@@ -299,12 +406,16 @@ class Project:
         project_type: ProjectType,
         vcs_uri: Optional[VcsUri],
         project_service: ProjectService,
+        workspace_service: WorkspaceService,
+        model_executable_service: ModelExecutableService,
     ):
         self._project_id = project_id
         self._project_definition = project_definition
         self._vcs_uri = vcs_uri or None
         self._project_type = project_type
         self._project_sal = project_service
+        self._workspace_sal = workspace_service
+        self._model_exe_sal = model_executable_service
 
     def __repr__(self):
         return f"Project with id '{self._project_id}'"
@@ -336,7 +447,13 @@ class Project:
         self._project_sal.project_delete(self._project_id)
 
     def _get_project_content(self, content):
-        return ProjectContent(content, self._project_id, self._project_sal)
+        return ProjectContent(
+            content,
+            self._project_id,
+            self._project_sal,
+            self._workspace_sal,
+            self._model_exe_sal,
+        )
 
     def get_contents(self) -> List[ProjectContent]:
         """Get project contents.
@@ -349,6 +466,19 @@ class Project:
             self._get_project_content(content)
             for content in self._project_definition.content
         ]
+
+    def get_content_by_name(self, name: str) -> Optional[ProjectContent]:
+        """Gets the first matching project content with the given name.
+
+        Example::
+
+            project.get_content_by_name(name)
+        """
+        contents = self.get_contents()
+        for content in contents:
+            if content.name == name:
+                return content
+        return None
 
     def upload_content(
         self, path_to_content: str, content_type: ContentType

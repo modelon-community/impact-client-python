@@ -219,6 +219,8 @@ def create_project_entity(
     project_type=ProjectType.LOCAL,
     vcs_uri=None,
     project_service=None,
+    workspace_service=None,
+    model_exe_service=None,
 ):
     if not definition:
         definition = {
@@ -242,6 +244,8 @@ def create_project_entity(
         project_type,
         VcsUri.from_dict(vcs_uri) if vcs_uri else None,
         project_service or MagicMock(),
+        workspace_service or MagicMock(),
+        model_exe_service or MagicMock(),
     )
 
 
@@ -250,6 +254,8 @@ def create_project_content_entity(
     content_id=IDs.PROJECT_CONTENT_PRIMARY,
     content=None,
     project_service=None,
+    workspace_service=None,
+    model_exe_service=None,
 ):
     if not content:
         content = {
@@ -259,7 +265,13 @@ def create_project_content_entity(
             "name": "MyPackage",
             "defaultDisabled": False,
         }
-    return ProjectContent(content, project_id, project_service or MagicMock())
+    return ProjectContent(
+        content,
+        project_id,
+        project_service or MagicMock(),
+        workspace_service or MagicMock(),
+        model_exe_service or MagicMock(),
+    )
 
 
 def create_case_entity(
