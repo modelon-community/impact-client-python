@@ -1,3 +1,10 @@
+# [2.3.0-dev.3](https://github.com/modelon-community/impact-client-python/compare/v2.3.0-dev.2...v2.3.0-dev.3) (2022-09-06)
+
+
+### Features
+
+* added support to import shared workspaces ([6223512](https://github.com/modelon-community/impact-client-python/commit/6223512e5ef76a753808e7beba90db67a643aebc))
+
 # [2.3.0-dev.2](https://github.com/modelon-community/impact-client-python/compare/v2.3.0-dev.1...v2.3.0-dev.2) (2022-09-01)
 
 
