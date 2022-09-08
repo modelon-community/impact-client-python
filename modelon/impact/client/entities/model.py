@@ -2,6 +2,7 @@ import logging
 from typing import Any, Dict, Optional, Union
 from modelon.impact.client.sal.model_executable import ModelExecutableService
 from modelon.impact.client.sal.workspace import WorkspaceService
+from modelon.impact.client.sal.project import ProjectService
 from modelon.impact.client.operations.model_executable import (
     ModelExecutableOperation,
     CachedModelExecutableOperation,
@@ -9,6 +10,7 @@ from modelon.impact.client.operations.model_executable import (
 
 from modelon.impact.client.experiment_definition import base
 from modelon.impact.client.entities.custom_function import CustomFunction
+from modelon.impact.client.entities.project import Project, ProjectDefinition
 from modelon.impact.client.options import (
     CompilerOptions,
     RuntimeOptions,
@@ -36,13 +38,17 @@ class Model:
         self,
         class_name: str,
         workspace_id: str,
+        project_id: str,
         workspace_service: WorkspaceService,
         model_exe_service: ModelExecutableService,
+        project_service: ProjectService,
     ):
         self._class_name = class_name
         self._workspace_id = workspace_id
+        self._project_id = project_id
         self._workspace_sal = workspace_service
         self._model_exe_sal = model_exe_service
+        self._project_sal = project_service
 
     def __repr__(self):
         return f"Class name '{self._class_name}'"
@@ -181,11 +187,11 @@ class Model:
         self,
         custom_function: CustomFunction,
         *,
-        compiler_options: Optional[CompilerOptionsOrDict] = None,
         fmi_target: str = "me",
         fmi_version: str = "2.0",
         platform: str = "auto",
         compiler_log_level: str = "warning",
+        compiler_options: Optional[CompilerOptionsOrDict] = None,
         runtime_options: Optional[RuntimeOptionsOrDict] = None,
         solver_options: Optional[SolverOptionsOrDict] = None,
         simulation_options: Optional[SimulationOptionsOrDict] = None,
@@ -198,11 +204,6 @@ class Model:
 
             custom_function --
                 The custom function to use for this experiment.
-
-            compiler_options --
-                An compilation options class instance of
-                modelon.impact.client.options.CompilerOptions or
-                a dictionary object containing the compiler options.
 
             fmi_target --
                 Compiler target. Possible values are 'me' and 'cs'. Default: 'me'.
@@ -227,6 +228,11 @@ class Model:
             compiler_log_level --
                 The logging for the compiler. Possible values are "error",
                 "warning", "info", "verbose" and "debug". Default: 'warning'.
+
+            compiler_options --
+                An compilation options class instance of
+                modelon.impact.client.options.CompilerOptions or
+                a dictionary object containing the compiler options.
 
             runtime_options --
                 An runtime options class instance of
@@ -260,16 +266,25 @@ class Model:
             )
             experiment = workspace.execute(experiment_definition).wait()
         """
+        resp = self._project_sal.project_get(self._project_id)
+        project = Project(
+            resp["id"],
+            ProjectDefinition(resp["definition"]),
+            self._project_sal,
+            self._workspace_sal,
+            self._model_exe_sal,
+        )
+        options = project.get_options(custom_function)
         return base.SimpleModelicaExperimentDefinition(
             model=self,
             custom_function=custom_function,
-            compiler_options=compiler_options,
+            compiler_options=compiler_options or options.compiler_options,
             fmi_target=fmi_target,
             fmi_version=fmi_version,
             platform=platform,
             compiler_log_level=compiler_log_level,
-            runtime_options=runtime_options,
-            solver_options=solver_options,
-            simulation_options=simulation_options,
+            runtime_options=runtime_options or options.runtime_options,
+            solver_options=solver_options or options.solver_options,
+            simulation_options=simulation_options or options.simulation_options,
             simulation_log_level=simulation_log_level,
         )

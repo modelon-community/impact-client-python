@@ -166,13 +166,20 @@ def create_workspace_entity(
 
 
 def create_model_entity(
-    class_name, workspace_id, workspace_service=None, model_exe_service=None,
+    class_name,
+    workspace_id,
+    project_id,
+    workspace_service=None,
+    model_exe_service=None,
+    project_service=None,
 ):
     return Model(
         class_name,
         workspace_id,
+        project_id,
         workspace_service or MagicMock(),
         model_exe_service or MagicMock(),
+        project_service or MagicMock(),
     )
 
 

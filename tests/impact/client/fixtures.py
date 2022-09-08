@@ -1101,6 +1101,37 @@ def _custom_function_parameter_list():
 
 
 @pytest.fixture
+def project_options_get(sem_ver_check, mock_server_base):
+    json = {
+        "compiler": {
+            "c_compiler": "gcc",
+            "generate_html_diagnostics": False,
+            "include_protected_variables": False,
+        },
+        "runtime": {"log_level": 2},
+        "simulation": {'dynamic_diagnostics': False, 'ncp': 500},
+        "solver": {"rtol": 1e-5},
+    }
+    return with_json_route(
+        mock_server_base,
+        'GET',
+        f'api/projects/{IDs.PROJECT_PRIMARY}/custom-functions/dynamic/options',
+        json,
+    )
+
+
+@pytest.fixture
+def project_default_options_get(sem_ver_check, mock_server_base):
+    json = {"compiler": {"c_compiler": "gcc"}}
+    return with_json_route(
+        mock_server_base,
+        'GET',
+        f'api/projects/{IDs.PROJECT_PRIMARY}/custom-functions/dynamic/default-options',
+        json,
+    )
+
+
+@pytest.fixture
 def workspace():
     ws_service = MagicMock()
     custom_function_service = MagicMock()
@@ -1345,7 +1376,11 @@ def model_compiled():
     model_exe_service.compile_model.return_value = IDs.FMU_PRIMARY
     model_exe_service.compile_status.return_value = {"status": "done"}
     return create_model_entity(
-        'Test.PID', IDs.WORKSPACE_PRIMARY, ws_service, model_exe_service
+        'Test.PID',
+        IDs.WORKSPACE_PRIMARY,
+        IDs.PROJECT_PRIMARY,
+        ws_service,
+        model_exe_service,
     )
 
 
@@ -1356,7 +1391,11 @@ def model_cached():
     model_exe_service.fmu_setup.return_value = (IDs.FMU_PRIMARY, {})
     model_exe_service.compile_status.return_value = {"status": "done"}
     return create_model_entity(
-        'Test.PID', IDs.WORKSPACE_PRIMARY, ws_service, model_exe_service
+        'Test.PID',
+        IDs.WORKSPACE_PRIMARY,
+        IDs.PROJECT_PRIMARY,
+        ws_service,
+        model_exe_service,
     )
 
 
@@ -1368,7 +1407,11 @@ def model_compiling():
     model_exe_service.compile_model.return_value = IDs.FMU_PRIMARY
     model_exe_service.compile_status.return_value = {"status": "running"}
     return create_model_entity(
-        'Test.PID', IDs.WORKSPACE_PRIMARY, ws_service, model_exe_service
+        'Test.PID',
+        IDs.WORKSPACE_PRIMARY,
+        IDs.PROJECT_PRIMARY,
+        ws_service,
+        model_exe_service,
     )
 
 
@@ -1380,7 +1423,11 @@ def model_compile_cancelled():
     model_exe_service.compile_model.return_value = IDs.FMU_PRIMARY
     model_exe_service.compile_status.return_value = {"status": "cancelled"}
     return create_model_entity(
-        'Test.PID', IDs.WORKSPACE_PRIMARY, ws_service, model_exe_service
+        'Test.PID',
+        IDs.WORKSPACE_PRIMARY,
+        IDs.PROJECT_PRIMARY,
+        ws_service,
+        model_exe_service,
     )
 
 
@@ -1533,8 +1580,55 @@ def fmu_with_modifiers():
 def model():
     ws_service = MagicMock()
     model_exe_service = MagicMock()
+    project_service = MagicMock()
+    project_service.project_get.return_value = {
+        "id": IDs.PROJECT_PRIMARY,
+        "definition": {
+            "name": "NewProject",
+            "format": "1.0",
+            "dependencies": [{"name": "MSL", "versionSpecifier": "4.0.0"}],
+            "content": [
+                {
+                    "id": IDs.PROJECT_CONTENT_PRIMARY,
+                    "relpath": "MyPackage",
+                    "contentType": "MODELICA",
+                    "name": "MyPackage",
+                    "defaultDisabled": False,
+                }
+            ],
+            "executionOptions": [
+                {
+                    "customFunction": "dynamic",
+                    "compiler": {
+                        "c_compiler": "gcc",
+                        "generate_html_diagnostics": False,
+                        "include_protected_variables": False,
+                    },
+                    "runtime": {"log_level": 2},
+                    "simulation": {"ncp": 500, "dynamic_diagnostics": False},
+                    "solver": {"rtol": 1e-5},
+                }
+            ],
+        },
+        "projectType": "LOCAL",
+    }
+    project_service.project_options_get.return_value = {
+        "compiler": {
+            "c_compiler": "gcc",
+            "generate_html_diagnostics": False,
+            "include_protected_variables": False,
+        },
+        "runtime": {"log_level": 2},
+        "simulation": {'dynamic_diagnostics': False, 'ncp': 500},
+        "solver": {"rtol": 1e-5},
+    }
     return create_model_entity(
-        'Test.PID', IDs.WORKSPACE_PRIMARY, ws_service, model_exe_service
+        'Test.PID',
+        IDs.WORKSPACE_PRIMARY,
+        IDs.PROJECT_PRIMARY,
+        ws_service,
+        model_exe_service,
+        project_service,
     )
 
 
@@ -1996,6 +2090,19 @@ def project():
             'project_id': IDs.PROJECT_PRIMARY,
             'content_id': IDs.PROJECT_CONTENT_PRIMARY,
         },
+    }
+    project_service.project_options_get.return_value = {
+        "compiler": {
+            "c_compiler": "gcc",
+            "generate_html_diagnostics": False,
+            "include_protected_variables": False,
+        },
+        "runtime": {"log_level": 2},
+        "simulation": {'dynamic_diagnostics': False, 'ncp': 500},
+        "solver": {"rtol": 1e-5},
+    }
+    project_service.project_default_options_get.return_value = {
+        "compiler": {"c_compiler": "gcc"}
     }
     return ProjectMock(
         create_project_entity(IDs.PROJECT_PRIMARY, project_service=project_service),
