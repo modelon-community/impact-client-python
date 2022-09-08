@@ -335,7 +335,7 @@ class Workspace:
             self._project_sal,
         )
 
-    def get_model(self, class_name: str) -> Model:
+    def get_model(self, class_name: str, project: Optional[Project] = None) -> Model:
         """
         Returns a Model class object.
 
@@ -343,6 +343,9 @@ class Workspace:
 
             class_name --
                 The modelica class path of the model.
+
+            project --
+                Project class object
 
         Returns:
 
@@ -353,8 +356,14 @@ class Workspace:
 
             workspace.get_model(class_name)
         """
+        project = project or self.get_default_project()
         return Model(
-            class_name, self._workspace_id, self._workspace_sal, self._model_exe_sal
+            class_name,
+            self._workspace_id,
+            project.id,
+            self._workspace_sal,
+            self._model_exe_sal,
+            self._project_sal,
         )
 
     def get_fmus(self) -> List[ModelExecutable]:

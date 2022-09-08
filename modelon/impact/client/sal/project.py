@@ -27,6 +27,21 @@ class ProjectService:
         url = (self._base_uri / f"api/projects/{project_id}").resolve()
         self._http_client.put_json(url, body=project_data)
 
+    def project_options_get(self, project_id: str, custom_function: str):
+        url = (
+            self._base_uri
+            / f"api/projects/{project_id}/custom-functions/{custom_function}/options"
+        ).resolve()
+        return self._http_client.get_json(url)
+
+    def project_default_options_get(self, project_id: str, custom_function: str):
+        url = (
+            self._base_uri
+            / f"api/projects/{project_id}/custom-functions/{custom_function}/"
+            "default-options"
+        ).resolve()
+        return self._http_client.get_json(url)
+
     def project_content_delete(self, project_id: str, content_id: str):
         url = (
             self._base_uri / f"api/projects/{project_id}/content/{content_id}"

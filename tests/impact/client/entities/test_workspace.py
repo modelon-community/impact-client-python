@@ -62,10 +62,14 @@ class TestWorkspace:
 
     def test_get_model(self, workspace):
         model = workspace.entity.get_model("Modelica.Blocks.PID")
-        assert model == create_model_entity("Modelica.Blocks.PID", workspace.entity.id)
+        assert model == create_model_entity(
+            "Modelica.Blocks.PID", workspace.entity.id, IDs.PROJECT_PRIMARY,
+        )
 
     def test_model_repr(self, workspace):
-        model = create_model_entity("Modelica.Blocks.PID", workspace.entity.id)
+        model = create_model_entity(
+            "Modelica.Blocks.PID", workspace.entity.id, IDs.PROJECT_PRIMARY,
+        )
         assert "Class name 'Modelica.Blocks.PID'" == model.__repr__()
 
     def test_get_fmus(self, workspace):

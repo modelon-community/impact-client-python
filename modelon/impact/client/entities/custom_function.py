@@ -1,5 +1,5 @@
 import logging
-from typing import Any, List, Dict
+from typing import Any, List, Dict, Optional
 from modelon.impact.client.sal.custom_function import CustomFunctionService
 from modelon.impact.client.options import (
     CompilerOptions,
@@ -7,6 +7,7 @@ from modelon.impact.client.options import (
     SimulationOptions,
     SolverOptions,
 )
+from modelon.impact.client.options import ProjectExecutionOptions
 
 logger = logging.getLogger(__name__)
 
@@ -116,14 +117,28 @@ class CustomFunction:
         """Custom_function parameters and value as a dictionary"""
         return {p.name: p.value for p in self._param_by_name.values()}
 
-    def _get_options(self, use_defaults):
+    def get_options(self, use_defaults: Optional[bool] = False):
+        """Get project execution option.
+
+        Parameters:
+
+            use_defaults --
+                If true, default compiler options are used.
+
+        Example::
+            opts = custom_function.get_compiler_options()
+            opts_2 = opts.compiler_options.with_values(c_compiler='gcc')
+        """
         if use_defaults:
-            return self._custom_func_sal.custom_function_default_options_get(
+            options = self._custom_func_sal.custom_function_default_options_get(
                 self._workspace_id, self._name
             )
-        return self._custom_func_sal.custom_function_options_get(
-            self._workspace_id, self._name
-        )
+        else:
+            options = self._custom_func_sal.custom_function_options_get(
+                self._workspace_id, self._name
+            )
+        options['customFunction'] = self.name
+        return ProjectExecutionOptions(options)
 
     def get_compiler_options(self, use_defaults: bool = False) -> CompilerOptions:
         """
@@ -139,10 +154,9 @@ class CustomFunction:
         Example::
 
             opts = custom_function.get_compiler_options()
-            opts_2 = opts.with_values(c_compiler='gcc')
+            compiler_options = opts.with_values(c_compiler='gcc')
         """
-        options = self._get_options(use_defaults=use_defaults)
-        return CompilerOptions(options["compiler"], self._name)
+        return self.get_options(use_defaults=use_defaults).compiler_options
 
     def get_runtime_options(self, use_defaults: bool = False) -> RuntimeOptions:
         """
@@ -160,8 +174,7 @@ class CustomFunction:
             opts = custom_function.get_runtime_options()
             opts_2 = opts.with_values(cs_solver=0)
         """
-        options = self._get_options(use_defaults=use_defaults)
-        return RuntimeOptions(options["runtime"], self._name)
+        return self.get_options(use_defaults=use_defaults).runtime_options
 
     def get_solver_options(self, use_defaults: bool = False) -> SolverOptions:
         """
@@ -180,8 +193,7 @@ class CustomFunction:
             opts = custom_function.get_solver_options()
             opts_2 = opts.with_values(rtol=1e-7)
         """
-        options = self._get_options(use_defaults=use_defaults)
-        return SolverOptions(options["solver"], self._name)
+        return self.get_options(use_defaults=use_defaults).solver_options
 
     def get_simulation_options(self, use_defaults: bool = False) -> SimulationOptions:
         """
@@ -199,5 +211,4 @@ class CustomFunction:
             opts = custom_function.get_simulation_options()
             opts_2 = opts.with_values(ncp=500)
         """
-        options = self._get_options(use_defaults=use_defaults)
-        return SimulationOptions(options["simulation"], self._name)
+        return self.get_options(use_defaults=use_defaults).simulation_options

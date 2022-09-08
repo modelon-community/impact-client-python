@@ -12,6 +12,27 @@ from tests.files.paths import SINGLE_FILE_LIBRARY_PATH
 
 
 class TestProject:
+    def test_get_project_options(self, project, custom_function):
+        options = project.entity.get_options(custom_function)
+        assert options.to_dict() == {
+            "compiler": {
+                "c_compiler": "gcc",
+                "generate_html_diagnostics": False,
+                "include_protected_variables": False,
+            },
+            "runtime": {"log_level": 2},
+            "simulation": {'dynamic_diagnostics': False, 'ncp': 500},
+            "solver": {"rtol": 1e-5},
+            'customFunction': 'dynamic',
+        }
+
+    def test_get_project_default_options(self, project, custom_function):
+        options = project.entity.get_options(custom_function, use_defaults=True)
+        assert options.to_dict() == {
+            'compiler': {'c_compiler': 'gcc'},
+            'customFunction': 'dynamic',
+        }
+
     def test_get_project_contents(self, project):
         contents = project.entity.get_contents()
         assert len(contents) == 1

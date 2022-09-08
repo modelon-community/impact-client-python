@@ -145,3 +145,30 @@ class TestProjectService:
             == import_fmu_call.url
         )
         assert 'POST' == import_fmu_call.method
+
+    def test_get_project_options(self, project_options_get):
+        uri = URI(project_options_get.url)
+        service = modelon.impact.client.sal.service.Service(
+            uri=uri, context=project_options_get.context
+        )
+        data = service.project.project_options_get(IDs.PROJECT_PRIMARY, 'dynamic')
+        assert data == {
+            "compiler": {
+                "c_compiler": "gcc",
+                "generate_html_diagnostics": False,
+                "include_protected_variables": False,
+            },
+            "runtime": {"log_level": 2},
+            "simulation": {'dynamic_diagnostics': False, 'ncp': 500},
+            "solver": {"rtol": 1e-5},
+        }
+
+    def test_get_default_project_options(self, project_default_options_get):
+        uri = URI(project_default_options_get.url)
+        service = modelon.impact.client.sal.service.Service(
+            uri=uri, context=project_default_options_get.context
+        )
+        data = service.project.project_default_options_get(
+            IDs.PROJECT_PRIMARY, 'dynamic'
+        )
+        assert data == {'compiler': {'c_compiler': 'gcc'}}

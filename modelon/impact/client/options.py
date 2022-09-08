@@ -88,3 +88,31 @@ class SimulationOptions(BaseExecutionOptions):
         if not isinstance(pattern, str):
             pattern = str(pattern)
         return self.with_values(filter=pattern)
+
+
+class ProjectExecutionOptions:
+    def __init__(self, data):
+        self._data = data
+
+    @property
+    def custom_function(self):
+        return self._data.get('customFunction')
+
+    @property
+    def compiler_options(self):
+        return CompilerOptions(self._data.get("compiler", {}), self.custom_function)
+
+    @property
+    def runtime_options(self):
+        return RuntimeOptions(self._data.get("runtime", {}), self.custom_function)
+
+    @property
+    def simulation_options(self):
+        return SimulationOptions(self._data.get("simulation", {}), self.custom_function)
+
+    @property
+    def solver_options(self):
+        return SolverOptions(self._data.get("solver", {}), self.custom_function)
+
+    def to_dict(self):
+        return self._data

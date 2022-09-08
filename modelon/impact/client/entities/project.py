@@ -6,13 +6,9 @@ import logging
 from pathlib import Path
 from dataclasses import dataclass
 from typing import List, Dict, Optional, Union
-from modelon.impact.client.options import (
-    CompilerOptions,
-    RuntimeOptions,
-    SimulationOptions,
-    SolverOptions,
-)
-from modelon.impact.client.entities.model import Model
+from modelon.impact.client.options import ProjectExecutionOptions
+import modelon.impact.client.entities.model
+from modelon.impact.client.entities.custom_function import CustomFunction
 from modelon.impact.client.sal.project import ProjectService
 from modelon.impact.client.sal.workspace import WorkspaceService
 from modelon.impact.client.sal.model_executable import ModelExecutableService
@@ -229,10 +225,13 @@ class ProjectContent:
         exclude_patterns: Optional[Union[str, List[str]]] = None,
         top_level_inputs: Optional[Union[str, List[str]]] = None,
         step_size: float = 0.0,
-    ) -> Model:
+    ):
         """Uploads a FMU to the workspace.
 
         Parameters:
+
+            workspace --
+                Workspace class object
 
             fmu_path --
                 The path for the FMU to be imported.
@@ -305,12 +304,13 @@ class ProjectContent:
 
         if resp["importWarnings"]:
             logger.warning(f"Import Warnings: {'. '.join(resp['importWarnings'])}")
-
-        return Model(
+        return modelon.impact.client.entities.model.Model(
             resp['fmuClassPath'],
             workspace.id,
+            self._project_id,
             self._workspace_sal,
             self._model_exe_sal,
+            self._project_sal,
         )
 
 
@@ -329,31 +329,6 @@ class ProjectDependency:
     def version_specifier(self):
         """Version specifier"""
         return self._data.get('versionSpecifier')
-
-
-class ProjectExecutionOptions:
-    def __init__(self, data):
-        self._data = data
-
-    @property
-    def custom_function(self):
-        return self._data.get('customFunction')
-
-    @property
-    def compiler_options(self):
-        return CompilerOptions(self._data.get("compiler"), self.custom_function)
-
-    @property
-    def runtime_options(self):
-        return RuntimeOptions(self._data.get("runtime"), self.custom_function)
-
-    @property
-    def simulation_options(self):
-        return SimulationOptions(self._data.get("simulation"), self.custom_function)
-
-    @property
-    def solver_options(self):
-        return SolverOptions(self._data.get("solver"), self.custom_function)
 
 
 class ProjectDefinition:
@@ -523,3 +498,31 @@ class Project:
                 "Modelica content into project."
             )
         return self.upload_content(path_to_lib, ContentType.MODELICA)
+
+    def get_options(
+        self, custom_function: CustomFunction, use_defaults: Optional[bool] = False
+    ):
+        """Get project execution option.
+
+        Parameters:
+
+            custom_function --
+                The CustomFunction class object.
+
+            use_defaults --
+                If true, default options are used.
+
+        Example::
+            dynamic = workspace.get_custom_function('dynamic')
+            project.get_options(dynamic)
+        """
+        if use_defaults:
+            options = self._project_sal.project_default_options_get(
+                self._project_id, custom_function=custom_function.name
+            )
+        else:
+            options = self._project_sal.project_options_get(
+                self._project_id, custom_function=custom_function.name
+            )
+        options['customFunction'] = custom_function.name
+        return ProjectExecutionOptions(options)
