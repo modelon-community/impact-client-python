@@ -51,22 +51,22 @@ class TestProject:
         assert not content.default_disabled
 
     def test_delete_project_contents(self, project):
-        project_service = project.service
+        service = project.service
         content = create_project_content_entity(
-            project_id=IDs.PROJECT_PRIMARY, project_service=project.service,
+            project_id=IDs.PROJECT_PRIMARY, service=project.service,
         )
         content.delete()
-        project_service.project_content_delete.assert_called_with(
+        service.project.project_content_delete.assert_called_with(
             IDs.PROJECT_PRIMARY, IDs.PROJECT_CONTENT_PRIMARY,
         )
 
     def test_delete_project(self, project):
-        project_service = project.service
+        service = project.service
         project = create_project_entity(
-            project_id=IDs.PROJECT_PRIMARY, project_service=project_service,
+            project_id=IDs.PROJECT_PRIMARY, service=service,
         )
         project.delete()
-        project_service.project_delete.assert_called_with(IDs.PROJECT_PRIMARY)
+        service.project.project_delete.assert_called_with(IDs.PROJECT_PRIMARY)
 
     def test_upload_project_content(self, project):
         content = project.entity.upload_content(

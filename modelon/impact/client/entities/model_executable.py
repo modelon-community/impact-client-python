@@ -2,8 +2,7 @@ import logging
 import os
 import tempfile
 from typing import Any, List, Dict, Optional, Union
-from modelon.impact.client.sal.workspace import WorkspaceService
-from modelon.impact.client.sal.model_executable import ModelExecutableService
+from modelon.impact.client.sal.service import Service
 from modelon.impact.client.entities.asserts import assert_successful_operation
 from modelon.impact.client.entities.custom_function import CustomFunction
 from modelon.impact.client.entities.log import Log
@@ -51,15 +50,13 @@ class ModelExecutable:
         self,
         workspace_id: str,
         fmu_id: str,
-        workspace_service: WorkspaceService,
-        model_exe_service: ModelExecutableService,
+        service: Service,
         info: Optional[Dict[str, Any]] = None,
         modifiers: Optional[Dict[str, Any]] = None,
     ):
         self._workspace_id = workspace_id
         self._fmu_id = fmu_id
-        self._workspace_sal = workspace_service
-        self._model_exe_sal = model_exe_service
+        self._sal = service
         self._info = info
         self._modifiers = modifiers
 
@@ -82,7 +79,7 @@ class ModelExecutable:
 
     def _get_info(self) -> Dict[str, Any]:
         if self._info is None:
-            self._info = self._workspace_sal.fmu_get(self._workspace_id, self._fmu_id)
+            self._info = self._sal.workspace.fmu_get(self._workspace_id, self._fmu_id)
 
         return self._info
 
@@ -106,7 +103,7 @@ class ModelExecutable:
         only for steady state model compiled as an FMU"""
         assert_successful_operation(self.is_successful(), "Compilation")
         parameter_state = {"parameterState": self._variable_modifiers()}
-        return self._model_exe_sal.ss_fmu_metadata_get(
+        return self._sal.model_executable.ss_fmu_metadata_get(
             self._workspace_id, self._fmu_id, parameter_state
         )
 
@@ -146,7 +143,9 @@ class ModelExecutable:
             log.show()
         """
         _assert_compilation_is_complete(self.run_info.status, "Compilation")
-        return Log(self._model_exe_sal.compile_log(self._workspace_id, self._fmu_id))
+        return Log(
+            self._sal.model_executable.compile_log(self._workspace_id, self._fmu_id)
+        )
 
     def delete(self):
         """Deletes an FMU.
@@ -155,7 +154,7 @@ class ModelExecutable:
 
             fmu.delete()
         """
-        self._model_exe_sal.fmu_delete(self._workspace_id, self._fmu_id)
+        self._sal.model_executable.fmu_delete(self._workspace_id, self._fmu_id)
 
     def get_settable_parameters(self) -> List[str]:
         """
@@ -176,7 +175,7 @@ class ModelExecutable:
             fmu.get_settable_parameters()
         """
         assert_successful_operation(self.is_successful(), "Compilation")
-        return self._model_exe_sal.settable_parameters_get(
+        return self._sal.model_executable.settable_parameters_get(
             self._workspace_id, self._fmu_id
         )
 
@@ -244,7 +243,7 @@ class ModelExecutable:
             fmu_path = model.compile().wait().download()
             fmu_path = model.compile().wait().download('C:/Downloads')
         """
-        data = self._workspace_sal.fmu_download(self._workspace_id, self._fmu_id)
+        data = self._sal.workspace.fmu_download(self._workspace_id, self._fmu_id)
         if path is None:
             path = os.path.join(tempfile.gettempdir(), "impact-downloads")
         os.makedirs(path, exist_ok=True)

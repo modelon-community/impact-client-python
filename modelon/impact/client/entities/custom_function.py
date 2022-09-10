@@ -1,6 +1,6 @@
 import logging
 from typing import Any, List, Dict, Optional
-from modelon.impact.client.sal.custom_function import CustomFunctionService
+from modelon.impact.client.sal.service import Service
 from modelon.impact.client.options import (
     CompilerOptions,
     RuntimeOptions,
@@ -60,7 +60,7 @@ class CustomFunction:
         workspace_id: str,
         name: str,
         parameter_data: List[Dict[str, Any]],
-        custom_function_service: CustomFunctionService,
+        service: Service,
     ):
         self._name = name
         self._workspace_id = workspace_id
@@ -71,7 +71,7 @@ class CustomFunction:
             )
             for p in parameter_data
         }
-        self._custom_func_sal = custom_function_service
+        self._sal = service
 
     def __repr__(self):
         return f"Custom function '{self._name}'"
@@ -98,7 +98,7 @@ class CustomFunction:
             custom_function.with_parameters(start_time=0.0, final_time=2.0)
         """
         new = CustomFunction(
-            self._workspace_id, self._name, self._parameter_data, self._custom_func_sal
+            self._workspace_id, self._name, self._parameter_data, self._sal
         )
         for name, value in modified.items():
             if name not in new._param_by_name:
@@ -130,11 +130,11 @@ class CustomFunction:
             opts_2 = opts.compiler_options.with_values(c_compiler='gcc')
         """
         if use_defaults:
-            options = self._custom_func_sal.custom_function_default_options_get(
+            options = self._sal.custom_function.custom_function_default_options_get(
                 self._workspace_id, self._name
             )
         else:
-            options = self._custom_func_sal.custom_function_options_get(
+            options = self._sal.custom_function.custom_function_options_get(
                 self._workspace_id, self._name
             )
         options['customFunction'] = self.name

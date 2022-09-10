@@ -26,17 +26,15 @@ class TestWorkspace:
         assert ['dynamic'] == custom_function_list
 
     def test_delete(self):
-        workspace_sal = mock.MagicMock()
-        workspace = create_workspace_entity(
-            IDs.WORKSPACE_PRIMARY, workspace_service=workspace_sal
-        )
+        service = mock.MagicMock()
+        workspace = create_workspace_entity(IDs.WORKSPACE_PRIMARY, service=service)
         workspace.delete()
-        workspace_sal.workspace_delete.assert_called_with(IDs.WORKSPACE_PRIMARY)
+        service.workspace.workspace_delete.assert_called_with(IDs.WORKSPACE_PRIMARY)
 
     def test_upload_result(self, workspace_sal_upload_base):
-        workspace_service = workspace_sal_upload_base
+        workspace_service = workspace_sal_upload_base.workspace
         workspace = create_workspace_entity(
-            IDs.WORKSPACE_PRIMARY, workspace_service=workspace_service
+            IDs.WORKSPACE_PRIMARY, service=workspace_sal_upload_base
         )
         upload_op = workspace.upload_result("test.mat", "Workspace")
         workspace_service.result_upload.assert_called_with(
@@ -97,10 +95,13 @@ class TestWorkspace:
         assert exp.id == IDs.EXPERIMENT_PRIMARY
 
     def test_create_experiment_with_user_data(self, workspace):
+        workspace_entity = workspace.entity
+        service = workspace.service
+        workspace_service = service.workspace
         user_data = {"customWsGetKey": "customWsGetValue"}
-        workspace.entity.create_experiment({}, user_data)
+        workspace_entity.create_experiment({}, user_data)
 
-        workspace.service.experiment_create.assert_has_calls(
+        workspace_service.experiment_create.assert_has_calls(
             [mock.call(IDs.WORKSPACE_PRIMARY, {}, user_data)]
         )
 

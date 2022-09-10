@@ -237,15 +237,7 @@ class Client:
             client.get_workspace('my_workspace')
         """
         resp = self._sal.workspace.workspace_get(workspace_id)
-        return Workspace(
-            resp["id"],
-            WorkspaceDefinition(resp["definition"]),
-            self._sal.workspace,
-            self._sal.model_executable,
-            self._sal.experiment,
-            self._sal.custom_function,
-            self._sal.project,
-        )
+        return Workspace(resp["id"], WorkspaceDefinition(resp["definition"]), self._sal)
 
     def get_workspaces(self):
         """
@@ -262,15 +254,7 @@ class Client:
         """
         resp = self._sal.workspace.workspaces_get()
         return [
-            Workspace(
-                item["id"],
-                WorkspaceDefinition(item["definition"]),
-                self._sal.workspace,
-                self._sal.model_executable,
-                self._sal.experiment,
-                self._sal.custom_function,
-                self._sal.project,
-            )
+            Workspace(item["id"], WorkspaceDefinition(item["definition"]), self._sal)
             for item in resp["data"]["items"]
         ]
 
@@ -298,9 +282,7 @@ class Client:
             ProjectDefinition(resp["definition"]),
             resp["projectType"],
             VcsUri.from_dict(resp["vcsUri"]) if resp.get("vcsUri") else None,
-            self._sal.project,
-            self._sal.workspace,
-            self._sal.model_executable,
+            self._sal,
         )
 
     def get_projects(self, vcs_info=False):
@@ -329,9 +311,7 @@ class Client:
                 ProjectDefinition(item["definition"]),
                 item["projectType"],
                 VcsUri.from_dict(item["vcsUri"]) if item.get("vcsUri") else None,
-                self._sal.project,
-                self._sal.workspace,
-                self._sal.model_executable,
+                self._sal,
             )
             for item in resp["data"]["items"]
         ]
@@ -355,15 +335,7 @@ class Client:
             client.create_workspace('my_workspace')
         """
         resp = self._sal.workspace.workspace_create(workspace_id)
-        return Workspace(
-            resp["id"],
-            WorkspaceDefinition(resp["definition"]),
-            self._sal.workspace,
-            self._sal.model_executable,
-            self._sal.experiment,
-            self._sal.custom_function,
-            self._sal.project,
-        )
+        return Workspace(resp["id"], WorkspaceDefinition(resp["definition"]), self._sal)
 
     def upload_workspace(self, path_to_workspace):
         """Uploads a Workspace
@@ -384,15 +356,7 @@ class Client:
             client.upload_workspace(path_to_workspace)
         """
         resp = self._sal.workspace.workspace_upload(path_to_workspace)
-        return Workspace(
-            resp["id"],
-            WorkspaceDefinition(resp["definition"]),
-            self._sal.workspace,
-            self._sal.model_executable,
-            self._sal.experiment,
-            self._sal.custom_function,
-            self._sal.project,
-        )
+        return Workspace(resp["id"], WorkspaceDefinition(resp["definition"]), self._sal)
 
     def import_from_shared_definition(
         self,
@@ -406,13 +370,7 @@ class Client:
             else None,
         )
         return WorkspaceImportOperation(
-            resp["data"]["location"],
-            shared_definition,
-            self._sal.workspace,
-            self._sal.model_executable,
-            self._sal.experiment,
-            self._sal.custom_function,
-            self._sal.project,
+            resp["data"]["location"], shared_definition, self._sal
         )
 
     def get_project_matchings(
@@ -429,9 +387,7 @@ class Client:
                     ProjectDefinition(project["definition"]),
                     project["projectType"],
                     VcsUri.from_dict(project["vcsUri"]),
-                    self._sal.project,
-                    self._sal.workspace,
-                    self._sal.model_executable,
+                    self._sal,
                 )
                 for project in entry['projects']
             ]

@@ -1,5 +1,5 @@
 from modelon.impact.client.entities.external_result import ExternalResult
-from modelon.impact.client.sal.workspace import WorkspaceService
+from modelon.impact.client.sal.service import Service
 from modelon.impact.client.operations.base import AsyncOperation, AsyncOperationStatus
 
 
@@ -9,10 +9,10 @@ class ExternalResultUploadOperation(AsyncOperation):
     external_result.ExternalResult class.
     """
 
-    def __init__(self, result_id: str, workspace_service: WorkspaceService):
+    def __init__(self, result_id: str, service: Service):
         super().__init__()
         self._result_id = result_id
-        self._workspace_sal = workspace_service
+        self._sal = service
 
     def __repr__(self):
         return f"Result upload operations for id '{self._result_id}'"
@@ -45,7 +45,7 @@ class ExternalResultUploadOperation(AsyncOperation):
             external_result --
                 A ExternalResult class instance.
         """
-        return ExternalResult(self._result_id, self._workspace_sal)
+        return ExternalResult(self._result_id, self._sal)
 
     def status(self):
         """
@@ -63,7 +63,7 @@ class ExternalResultUploadOperation(AsyncOperation):
             workspace.upload_result('C:/A.mat').status()
         """
         return AsyncOperationStatus(
-            self._workspace_sal.get_result_upload_status(self._result_id)["data"][
+            self._sal.workspace.get_result_upload_status(self._result_id)["data"][
                 "status"
             ]
         )

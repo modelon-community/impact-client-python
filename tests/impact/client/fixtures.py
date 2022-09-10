@@ -447,16 +447,18 @@ def get_external_result_data():
 
 @pytest.fixture
 def workspace_sal_upload_base():
-    workspace_service = MagicMock()
+    service = MagicMock()
+    workspace_service = service.workspace
     workspace_service.result_upload.return_value = get_result_upload_post_data()
     workspace_service.get_uploaded_result_meta.return_value = get_external_result_data()
 
-    return workspace_service
+    return service
 
 
 @pytest.fixture
 def workspace_sal_upload_result_ready(workspace_sal_upload_base):
-    workspace_sal_upload_base.get_result_upload_status.return_value = (
+    workspace_service = workspace_sal_upload_base.workspace
+    workspace_service.get_result_upload_status.return_value = (
         get_upload_result_ready_data()
     )
 
@@ -465,7 +467,8 @@ def workspace_sal_upload_result_ready(workspace_sal_upload_base):
 
 @pytest.fixture
 def workspace_sal_upload_result_running(workspace_sal_upload_base):
-    workspace_sal_upload_base.get_result_upload_status.return_value = (
+    workspace_service = workspace_sal_upload_base.workspace
+    workspace_service.get_result_upload_status.return_value = (
         get_upload_result_running_data()
     )
 
@@ -1133,10 +1136,11 @@ def project_default_options_get(sem_ver_check, mock_server_base):
 
 @pytest.fixture
 def workspace():
-    ws_service = MagicMock()
-    custom_function_service = MagicMock()
-    exp_service = MagicMock()
-    project_service = MagicMock()
+    service = MagicMock()
+    ws_service = service.workspace
+    custom_function_service = service.custom_function
+    exp_service = service.experiment
+    project_service = service.project
     ws_service.experiment_create.return_value = {
         "experiment_id": IDs.EXPERIMENT_PRIMARY
     }
@@ -1277,47 +1281,34 @@ def workspace():
         "projectType": "LOCAL",
     }
     return WorkspaceMock(
-        create_workspace_entity(
-            IDs.WORKSPACE_PRIMARY,
-            workspace_service=ws_service,
-            experiment_service=exp_service,
-            custom_function_service=custom_function_service,
-            project_service=project_service,
-        ),
-        ws_service,
+        create_workspace_entity(IDs.WORKSPACE_PRIMARY, service=service), service,
     )
 
 
 @pytest.fixture
 def workspace_execute_running():
-    ws_service = MagicMock()
-    exp_service = MagicMock()
+    service = MagicMock()
+    ws_service = service.workspace
+    exp_service = service.experiment
     ws_service.experiment_create.return_value = {
         "experiment_id": IDs.EXPERIMENT_PRIMARY
     }
     exp_service.experiment_execute.return_value = IDs.EXPERIMENT_PRIMARY
     exp_service.execute_status.return_value = {"status": "running"}
-    return create_workspace_entity(
-        IDs.WORKSPACE_PRIMARY,
-        workspace_service=ws_service,
-        experiment_service=exp_service,
-    )
+    return create_workspace_entity(IDs.WORKSPACE_PRIMARY, service=service)
 
 
 @pytest.fixture
 def workspace_execute_cancelled():
-    ws_service = MagicMock()
-    exp_service = MagicMock()
+    service = MagicMock()
+    ws_service = service.workspace
+    exp_service = service.experiment
     ws_service.experiment_create.return_value = {
         "experiment_id": IDs.EXPERIMENT_PRIMARY
     }
     exp_service.experiment_execute.return_value = IDs.EXPERIMENT_PRIMARY
     exp_service.execute_status.return_value = {"status": "cancelled"}
-    return create_workspace_entity(
-        IDs.WORKSPACE_PRIMARY,
-        workspace_service=ws_service,
-        experiment_service=exp_service,
-    )
+    return create_workspace_entity(IDs.WORKSPACE_PRIMARY, service=service,)
 
 
 @pytest.fixture
@@ -1328,7 +1319,8 @@ def workspace_ops(single_workspace):
 
 @pytest.fixture
 def custom_function():
-    custom_function_service = MagicMock()
+    service = MagicMock()
+    custom_function_service = service.custom_function
     custom_function_service.custom_function_get.return_value = {
         'name': 'dynamic',
         'parameters': _custom_function_parameter_list(),
@@ -1346,16 +1338,14 @@ def custom_function():
         "solver": {"rtol": 1e-5},
     }
     return create_custom_function_entity(
-        IDs.WORKSPACE_PRIMARY,
-        'dynamic',
-        _custom_function_parameter_list(),
-        custom_function_service,
+        IDs.WORKSPACE_PRIMARY, 'dynamic', _custom_function_parameter_list(), service,
     )
 
 
 @pytest.fixture
 def custom_function_no_param():
-    custom_function_service = MagicMock()
+    service = MagicMock()
+    custom_function_service = service.custom_function
     opts = {
         "compiler": {"c_compiler": "gcc"},
         "runtime": {},
@@ -1364,76 +1354,61 @@ def custom_function_no_param():
     }
     custom_function_service.custom_function_options_get.return_value = opts
     return create_custom_function_entity(
-        IDs.WORKSPACE_PRIMARY, 'dynamic', [], custom_function_service
+        IDs.WORKSPACE_PRIMARY, 'dynamic', [], service=service
     )
 
 
 @pytest.fixture
 def model_compiled():
-    ws_service = MagicMock()
-    model_exe_service = MagicMock()
+    service = MagicMock()
+    model_exe_service = service.model_executable
     model_exe_service.fmu_setup.return_value = (None, {})
     model_exe_service.compile_model.return_value = IDs.FMU_PRIMARY
     model_exe_service.compile_status.return_value = {"status": "done"}
     return create_model_entity(
-        'Test.PID',
-        IDs.WORKSPACE_PRIMARY,
-        IDs.PROJECT_PRIMARY,
-        ws_service,
-        model_exe_service,
+        'Test.PID', IDs.WORKSPACE_PRIMARY, IDs.PROJECT_PRIMARY, service,
     )
 
 
 @pytest.fixture
 def model_cached():
-    ws_service = MagicMock()
-    model_exe_service = MagicMock()
+    service = MagicMock()
+    model_exe_service = service.model_executable
     model_exe_service.fmu_setup.return_value = (IDs.FMU_PRIMARY, {})
     model_exe_service.compile_status.return_value = {"status": "done"}
     return create_model_entity(
-        'Test.PID',
-        IDs.WORKSPACE_PRIMARY,
-        IDs.PROJECT_PRIMARY,
-        ws_service,
-        model_exe_service,
+        'Test.PID', IDs.WORKSPACE_PRIMARY, IDs.PROJECT_PRIMARY, service,
     )
 
 
 @pytest.fixture
 def model_compiling():
-    ws_service = MagicMock()
-    model_exe_service = MagicMock()
+    service = MagicMock()
+    model_exe_service = service.model_executable
     model_exe_service.fmu_setup.return_value = (None, {})
     model_exe_service.compile_model.return_value = IDs.FMU_PRIMARY
     model_exe_service.compile_status.return_value = {"status": "running"}
     return create_model_entity(
-        'Test.PID',
-        IDs.WORKSPACE_PRIMARY,
-        IDs.PROJECT_PRIMARY,
-        ws_service,
-        model_exe_service,
+        'Test.PID', IDs.WORKSPACE_PRIMARY, IDs.PROJECT_PRIMARY, service
     )
 
 
 @pytest.fixture
 def model_compile_cancelled():
-    ws_service = MagicMock()
-    model_exe_service = MagicMock()
+    service = MagicMock()
+    model_exe_service = service.model_executable
     model_exe_service.fmu_setup.return_value = (None, {})
     model_exe_service.compile_model.return_value = IDs.FMU_PRIMARY
     model_exe_service.compile_status.return_value = {"status": "cancelled"}
     return create_model_entity(
-        'Test.PID',
-        IDs.WORKSPACE_PRIMARY,
-        IDs.PROJECT_PRIMARY,
-        ws_service,
-        model_exe_service,
+        'Test.PID', IDs.WORKSPACE_PRIMARY, IDs.PROJECT_PRIMARY, service,
     )
 
 
 @pytest.fixture
 def compiler_options():
-    custom_function_service = MagicMock()
+    service = MagicMock()
+    custom_function_service = service.custom_function
     opts = {
         "compiler": {"c_compiler": "gcc"},
         "runtime": {"log_level": 3},
@@ -1446,7 +1421,8 @@ def compiler_options():
 
 @pytest.fixture
 def runtime_options():
-    custom_function_service = MagicMock()
+    service = MagicMock()
+    custom_function_service = service.custom_function
     opts = {
         "compiler": {"c_compiler": "gcc"},
         "runtime": {"log_level": 3},
@@ -1459,7 +1435,8 @@ def runtime_options():
 
 @pytest.fixture
 def simulation_options():
-    custom_function_service = MagicMock()
+    service = MagicMock()
+    custom_function_service = service.custom_function
     opts = {
         "compiler": {"c_compiler": "gcc"},
         "runtime": {"log_level": 3},
@@ -1472,7 +1449,8 @@ def simulation_options():
 
 @pytest.fixture
 def solver_options():
-    custom_function_service = MagicMock()
+    service = MagicMock()
+    custom_function_service = service.custom_function
     opts = {
         "compiler": {"c_compiler": "gcc"},
         "runtime": {"log_level": 3},
@@ -1485,8 +1463,9 @@ def solver_options():
 
 @pytest.fixture
 def fmu():
-    ws_service = MagicMock()
-    model_exe_service = MagicMock()
+    service = MagicMock()
+    ws_service = service.workspace
+    model_exe_service = service.model_executable
     ws_service.fmu_get.return_value = {
         'id': IDs.FMU_PRIMARY,
         'input': {
@@ -1522,17 +1501,15 @@ def fmu():
         "steady_state": {"residual_variable_count": 1, "iteration_variable_count": 2}
     }
     return create_model_exe_entity(
-        IDs.WORKSPACE_PRIMARY,
-        IDs.FMU_PRIMARY,
-        ws_service,
-        model_exe_service=model_exe_service,
+        IDs.WORKSPACE_PRIMARY, IDs.FMU_PRIMARY, service=service
     )
 
 
 @pytest.fixture
 def fmu_with_modifiers():
-    ws_service = MagicMock()
-    model_exe_service = MagicMock()
+    service = MagicMock()
+    ws_service = service.workspace
+    model_exe_service = service.model_executable
     ws_service.fmu_get.return_value = {
         'id': IDs.FMU_PRIMARY,
         'input': {
@@ -1568,19 +1545,14 @@ def fmu_with_modifiers():
         "steady_state": {"residual_variable_count": 1, "iteration_variable_count": 2}
     }
     return create_model_exe_entity(
-        IDs.WORKSPACE_PRIMARY,
-        IDs.FMU_PRIMARY,
-        workspace_service=ws_service,
-        model_exe_service=model_exe_service,
-        modifiers={'PI.K': 20},
+        IDs.WORKSPACE_PRIMARY, IDs.FMU_PRIMARY, service=service, modifiers={'PI.K': 20},
     )
 
 
 @pytest.fixture
 def model():
-    ws_service = MagicMock()
-    model_exe_service = MagicMock()
-    project_service = MagicMock()
+    service = MagicMock()
+    project_service = service.project
     project_service.project_get.return_value = {
         "id": IDs.PROJECT_PRIMARY,
         "definition": {
@@ -1623,63 +1595,46 @@ def model():
         "solver": {"rtol": 1e-5},
     }
     return create_model_entity(
-        'Test.PID',
-        IDs.WORKSPACE_PRIMARY,
-        IDs.PROJECT_PRIMARY,
-        ws_service,
-        model_exe_service,
-        project_service,
+        'Test.PID', IDs.WORKSPACE_PRIMARY, IDs.PROJECT_PRIMARY, service,
     )
 
 
 @pytest.fixture
 def fmu_compile_running():
-    ws_service = MagicMock()
-    model_exe_service = MagicMock()
+    service = MagicMock()
+    ws_service = service.workspace
+    model_exe_service = service.model_executable
     ws_service.fmu_get.return_value = {"run_info": {"status": "not_started"}}
     model_exe_service.compile_status.return_value = {"status": "running"}
-    return create_model_exe_entity(
-        IDs.WORKSPACE_PRIMARY,
-        IDs.FMU_PRIMARY,
-        ws_service,
-        model_exe_service=model_exe_service,
-    )
+    return create_model_exe_entity(IDs.WORKSPACE_PRIMARY, IDs.FMU_PRIMARY, service)
 
 
 @pytest.fixture
 def fmu_compile_failed():
-    ws_service = MagicMock()
-    model_exe_service = MagicMock()
+    service = MagicMock()
+    ws_service = service.workspace
+    model_exe_service = service.model_executable
     ws_service.fmu_get.return_value = {"run_info": {"status": "failed"}}
     model_exe_service.compile_status.return_value = {"status": "done"}
     model_exe_service.compile_log.return_value = "Failed Log"
-    return create_model_exe_entity(
-        IDs.WORKSPACE_PRIMARY,
-        IDs.FMU_PRIMARY,
-        ws_service,
-        model_exe_service=model_exe_service,
-    )
+    return create_model_exe_entity(IDs.WORKSPACE_PRIMARY, IDs.FMU_PRIMARY, service)
 
 
 @pytest.fixture
 def fmu_compile_cancelled():
-    ws_service = MagicMock()
-    model_exe_service = MagicMock()
+    service = MagicMock()
+    ws_service = service.workspace
+    model_exe_service = service.model_executable
     ws_service.fmu_get.return_value = {"run_info": {"status": "cancelled"}}
     model_exe_service.compile_status.return_value = {"status": "cancelled"}
-    return create_model_exe_entity(
-        IDs.WORKSPACE_PRIMARY,
-        IDs.FMU_PRIMARY,
-        ws_service,
-        model_exe_service=model_exe_service,
-    )
+    return create_model_exe_entity(IDs.WORKSPACE_PRIMARY, IDs.FMU_PRIMARY, service)
 
 
 @pytest.fixture
 def experiment():
-    ws_service = MagicMock()
-    model_exe_service = MagicMock()
-    exp_service = MagicMock()
+    service = MagicMock()
+    ws_service = service.workspace
+    exp_service = service.experiment
     ws_service.experiment_get.return_value = {
         "run_info": {"status": "done", "failed": 0, "successful": 1, "cancelled": 0}
     }
@@ -1719,51 +1674,41 @@ def experiment():
     exp_service.case_trajectories_get.return_value = [[1, 2, 3, 4], [5, 2, 9, 4]]
     return ExperimentMock(
         create_experiment_entity(
-            IDs.WORKSPACE_PRIMARY,
-            IDs.EXPERIMENT_PRIMARY,
-            ws_service,
-            model_exe_service,
-            exp_service,
+            IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY, service=service,
         ),
-        exp_service,
+        service,
     )
 
 
 @pytest.fixture
 def experiment_running():
-    ws_service = MagicMock()
-    exp_service = MagicMock()
+    service = MagicMock()
+    exp_service = service.experiment
     exp_service.experiment_execute.return_value = IDs.EXPERIMENT_PRIMARY
     exp_service.case_get.return_value = {"id": "case_1"}
     exp_service.execute_status.return_value = {"status": "running"}
     return create_experiment_entity(
-        IDs.WORKSPACE_PRIMARY,
-        IDs.EXPERIMENT_PRIMARY,
-        workspace_service=ws_service,
-        experiment_service=exp_service,
+        IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY, service,
     )
 
 
 @pytest.fixture
 def experiment_cancelled():
-    ws_service = MagicMock()
-    exp_service = MagicMock()
+    service = MagicMock()
+    exp_service = service.experiment
     exp_service.experiment_execute.return_value = IDs.EXPERIMENT_PRIMARY
     exp_service.case_get.return_value = {"id": "case_1"}
     exp_service.execute_status.return_value = {"status": "cancelled"}
     return create_experiment_entity(
-        IDs.WORKSPACE_PRIMARY,
-        IDs.EXPERIMENT_PRIMARY,
-        workspace_service=ws_service,
-        experiment_service=exp_service,
+        IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY, service=service,
     )
 
 
 @pytest.fixture
 def batch_experiment_with_case_filter():
-    ws_service = MagicMock()
-    model_exe_service = MagicMock()
-    exp_service = MagicMock()
+    service = MagicMock()
+    ws_service = service.workspace
+    exp_service = service.experiment
     ws_service.experiment_get.return_value = {
         "run_info": {
             "status": "done",
@@ -1792,20 +1737,17 @@ def batch_experiment_with_case_filter():
     }
     return ExperimentMock(
         create_experiment_entity(
-            IDs.WORKSPACE_PRIMARY,
-            IDs.EXPERIMENT_PRIMARY,
-            ws_service,
-            model_exe_service,
-            exp_service,
+            IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY, service,
         ),
-        exp_service,
+        service,
     )
 
 
 @pytest.fixture
 def batch_experiment():
-    ws_service = MagicMock()
-    exp_service = MagicMock()
+    service = MagicMock()
+    ws_service = service.workspace
+    exp_service = service.experiment
     ws_service.experiment_get.return_value = {
         "run_info": {"status": "done", "failed": 0, "successful": 2, "cancelled": 0}
     }
@@ -1827,17 +1769,15 @@ def batch_experiment():
     ]
     exp_service.case_trajectories_get.return_value = [[14, 4, 4, 74], [11, 22, 32, 44]]
     return create_experiment_entity(
-        IDs.WORKSPACE_PRIMARY,
-        IDs.EXPERIMENT_PRIMARY,
-        ws_service,
-        experiment_service=exp_service,
+        IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY, service=service,
     )
 
 
 @pytest.fixture
 def batch_experiment_some_successful():
-    ws_service = MagicMock()
-    exp_service = MagicMock()
+    service = MagicMock()
+    ws_service = service.workspace
+    exp_service = service.experiment
     ws_service.experiment_get.return_value = {
         "run_info": {
             "status": "done",
@@ -1860,31 +1800,27 @@ def batch_experiment_some_successful():
         }
     }
     return create_experiment_entity(
-        IDs.WORKSPACE_PRIMARY,
-        IDs.EXPERIMENT_PRIMARY,
-        workspace_service=ws_service,
-        experiment_service=exp_service,
+        IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY, service=service
     )
 
 
 @pytest.fixture
 def running_experiment():
-    ws_service = MagicMock()
-    exp_service = MagicMock()
+    service = MagicMock()
+    ws_service = service.workspace
+    exp_service = service.experiment
     ws_service.experiment_get.return_value = {"run_info": {"status": "not_started"}}
     exp_service.execute_status.return_value = {"status": "running"}
     return create_experiment_entity(
-        IDs.WORKSPACE_PRIMARY,
-        IDs.EXPERIMENT_PRIMARY,
-        workspace_service=ws_service,
-        experiment_service=exp_service,
+        IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY, service=service,
     )
 
 
 @pytest.fixture
 def experiment_with_failed_case():
-    ws_service = MagicMock()
-    exp_service = MagicMock()
+    service = MagicMock()
+    ws_service = service.workspace
+    exp_service = service.experiment
     ws_service.experiment_get.return_value = {
         "run_info": {"status": "done", "failed": 1, "successful": 0, "cancelled": 0}
     }
@@ -1898,17 +1834,15 @@ def experiment_with_failed_case():
     exp_service.trajectories_get.return_value = [[[1, 2, 3, 4]], [[5, 2, 9, 4]]]
     exp_service.case_trajectories_get.return_value = [[1, 2, 3, 4], [5, 2, 9, 4]]
     return create_experiment_entity(
-        IDs.WORKSPACE_PRIMARY,
-        IDs.EXPERIMENT_PRIMARY,
-        workspace_service=ws_service,
-        experiment_service=exp_service,
+        IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY, service=service,
     )
 
 
 @pytest.fixture
 def failed_experiment():
-    ws_service = MagicMock()
-    exp_service = MagicMock()
+    service = MagicMock()
+    ws_service = service.workspace
+    exp_service = service.experiment
     ws_service.experiment_get.return_value = {
         "run_info": {
             "status": "failed",
@@ -1922,17 +1856,15 @@ def failed_experiment():
     exp_service.cases_get.return_value = {"data": {"items": []}}
     exp_service.case_get.return_value = {}
     return create_experiment_entity(
-        IDs.WORKSPACE_PRIMARY,
-        IDs.EXPERIMENT_PRIMARY,
-        ws_service,
-        experiment_service=exp_service,
+        IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY, service=service,
     )
 
 
 @pytest.fixture
 def cancelled_experiment():
-    ws_service = MagicMock()
-    exp_service = MagicMock()
+    service = MagicMock()
+    ws_service = service.workspace
+    exp_service = service.experiment
     ws_service.experiment_get.return_value = {
         "run_info": {
             "status": "cancelled",
@@ -1948,10 +1880,7 @@ def cancelled_experiment():
         "consistent": True,
     }
     return create_experiment_entity(
-        IDs.WORKSPACE_PRIMARY,
-        IDs.EXPERIMENT_PRIMARY,
-        ws_service,
-        experiment_service=exp_service,
+        IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY, service,
     )
 
 
@@ -2029,7 +1958,8 @@ def delete_project_content(user_with_license):
 
 @pytest.fixture
 def project():
-    project_service = MagicMock()
+    service = MagicMock()
+    project_service = service.project
     project_service.projects_get.return_value = {
         "data": {
             "items": [
@@ -2105,8 +2035,7 @@ def project():
         "compiler": {"c_compiler": "gcc"}
     }
     return ProjectMock(
-        create_project_entity(IDs.PROJECT_PRIMARY, project_service=project_service),
-        service=project_service,
+        create_project_entity(IDs.PROJECT_PRIMARY, service=service), service=service,
     )
 
 

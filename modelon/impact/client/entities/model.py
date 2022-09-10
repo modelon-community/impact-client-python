@@ -1,16 +1,13 @@
 import logging
 from typing import Any, Dict, Optional, Union
-from modelon.impact.client.sal.model_executable import ModelExecutableService
-from modelon.impact.client.sal.workspace import WorkspaceService
-from modelon.impact.client.sal.project import ProjectService
+from modelon.impact.client.sal.service import Service
 from modelon.impact.client.operations.model_executable import (
     ModelExecutableOperation,
     CachedModelExecutableOperation,
 )
-
 from modelon.impact.client.experiment_definition import base
 from modelon.impact.client.entities.custom_function import CustomFunction
-from modelon.impact.client.entities.project import Project, ProjectDefinition
+from modelon.impact.client.entities.project import Project, ProjectDefinition, VcsUri
 from modelon.impact.client.options import (
     CompilerOptions,
     RuntimeOptions,
@@ -35,20 +32,12 @@ class Model:
     """
 
     def __init__(
-        self,
-        class_name: str,
-        workspace_id: str,
-        project_id: str,
-        workspace_service: WorkspaceService,
-        model_exe_service: ModelExecutableService,
-        project_service: ProjectService,
+        self, class_name: str, workspace_id: str, project_id: str, service: Service,
     ):
         self._class_name = class_name
         self._workspace_id = workspace_id
         self._project_id = project_id
-        self._workspace_sal = workspace_service
-        self._model_exe_sal = model_exe_service
-        self._project_sal = project_service
+        self._sal = service
 
     def __repr__(self):
         return f"Class name '{self._class_name}'"
@@ -160,27 +149,23 @@ class Model:
             }
         }
         if not force_compilation:
-            fmu_id, modifiers = self._model_exe_sal.fmu_setup(
+            fmu_id, modifiers = self._sal.model_executable.fmu_setup(
                 self._workspace_id, body, True
             )
             if fmu_id:
                 return CachedModelExecutableOperation(
-                    self._workspace_id,
-                    fmu_id,
-                    self._workspace_sal,
-                    self._model_exe_sal,
-                    None,
-                    modifiers,
+                    self._workspace_id, fmu_id, self._sal, None, modifiers,
                 )
 
         # No cached FMU, setup up a new one
-        fmu_id, _ = self._model_exe_sal.fmu_setup(self._workspace_id, body, False)
+        fmu_id, _ = self._sal.model_executable.fmu_setup(
+            self._workspace_id, body, False
+        )
 
         return ModelExecutableOperation(
             self._workspace_id,
-            self._model_exe_sal.compile_model(self._workspace_id, fmu_id),
-            self._workspace_sal,
-            self._model_exe_sal,
+            self._sal.model_executable.compile_model(self._workspace_id, fmu_id),
+            self._sal,
         )
 
     def new_experiment_definition(
@@ -266,13 +251,13 @@ class Model:
             )
             experiment = workspace.execute(experiment_definition).wait()
         """
-        resp = self._project_sal.project_get(self._project_id)
+        resp = self._sal.project.project_get(self._project_id)
         project = Project(
             resp["id"],
             ProjectDefinition(resp["definition"]),
-            self._project_sal,
-            self._workspace_sal,
-            self._model_exe_sal,
+            resp["projectType"],
+            VcsUri.from_dict(resp["vcsUri"]) if resp.get("vcsUri") else None,
+            self._sal,
         )
         options = project.get_options(custom_function)
         return base.SimpleModelicaExperimentDefinition(

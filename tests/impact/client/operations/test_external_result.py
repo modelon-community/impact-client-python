@@ -1,6 +1,6 @@
 import pytest
 from modelon.impact.client import exceptions
-from tests.impact.client.helpers import create_external_result_entity
+from tests.impact.client.helpers import create_external_result_entity, IDs
 from modelon.impact.client.operations.base import AsyncOperationStatus
 from modelon.impact.client.operations.external_result import (
     ExternalResultUploadOperation,
@@ -13,9 +13,9 @@ class TestExternalResultUploadOperation:
         self, workspace_sal_upload_result_running
     ):
         # Given
-        workspace_service = workspace_sal_upload_result_running
         upload_op = ExternalResultUploadOperation(
-            '2f036b9fab6f45c788cc466da327cc78workspace', workspace_service
+            '2f036b9fab6f45c788cc466da327cc78workspace',
+            workspace_sal_upload_result_running,
         )
 
         # When, then
@@ -23,9 +23,9 @@ class TestExternalResultUploadOperation:
 
     def test_given_ready_when_wait_then_ok(self, workspace_sal_upload_result_ready):
         # Given
-        workspace_service = workspace_sal_upload_result_ready
         upload_op = ExternalResultUploadOperation(
-            '2f036b9fab6f45c788cc466da327cc78workspace', workspace_service
+            '2f036b9fab6f45c788cc466da327cc78workspace',
+            workspace_sal_upload_result_ready,
         )
 
         # When
@@ -50,9 +50,9 @@ class TestExternalResultUploadOperation:
         self, workspace_sal_upload_result_ready
     ):
         # Given
-        workspace_service = workspace_sal_upload_result_ready
         upload_op = ExternalResultUploadOperation(
-            '2f036b9fab6f45c788cc466da327cc78workspace', workspace_service
+            '2f036b9fab6f45c788cc466da327cc78workspace',
+            workspace_sal_upload_result_ready,
         )
 
         # When, then

@@ -7,11 +7,10 @@ from pathlib import Path
 from dataclasses import dataclass
 from typing import List, Dict, Optional, Union
 from modelon.impact.client.options import ProjectExecutionOptions
+
 import modelon.impact.client.entities.model
 from modelon.impact.client.entities.custom_function import CustomFunction
-from modelon.impact.client.sal.project import ProjectService
-from modelon.impact.client.sal.workspace import WorkspaceService
-from modelon.impact.client.sal.model_executable import ModelExecutableService
+from modelon.impact.client.sal.service import Service
 
 logger = logging.getLogger(__name__)
 RepoURL = Union['GitRepoURL', 'SvnRepoURL']
@@ -160,18 +159,11 @@ class ProjectContent:
     """Content entry in a project."""
 
     def __init__(
-        self,
-        content: Dict[str, str],
-        project_id: str,
-        project_service: ProjectService,
-        workspace_service: WorkspaceService,
-        model_executable_service: ModelExecutableService,
+        self, content: Dict[str, str], project_id: str, service: Service,
     ):
         self._content = content
         self._project_id = project_id
-        self._project_sal = project_service
-        self._workspace_sal = workspace_service
-        self._model_exe_sal = model_executable_service
+        self._sal = service
 
     def __repr__(self):
         return f"Project content with id '{self.id}'"
@@ -212,7 +204,7 @@ class ProjectContent:
 
             content.delete()
         """
-        self._project_sal.project_content_delete(self._project_id, self.id)
+        self._sal.project.project_content_delete(self._project_id, self.id)
 
     def upload_fmu(
         self,
@@ -288,7 +280,7 @@ class ProjectContent:
             content.upload_fmu(workspace, 'C:/A.fmu',"Test")
             content.upload_fmu(workspace, 'C:/B.fmu',"Test",class_name="Test.Model")
         """
-        resp = self._project_sal.fmu_upload(
+        resp = self._sal.project.fmu_upload(
             workspace.id,
             self._project_id,
             self.id,
@@ -305,12 +297,7 @@ class ProjectContent:
         if resp["importWarnings"]:
             logger.warning(f"Import Warnings: {'. '.join(resp['importWarnings'])}")
         return modelon.impact.client.entities.model.Model(
-            resp['fmuClassPath'],
-            workspace.id,
-            self._project_id,
-            self._workspace_sal,
-            self._model_exe_sal,
-            self._project_sal,
+            resp['fmuClassPath'], workspace.id, self._project_id, self._sal,
         )
 
 
@@ -380,17 +367,13 @@ class Project:
         project_definition: ProjectDefinition,
         project_type: ProjectType,
         vcs_uri: Optional[VcsUri],
-        project_service: ProjectService,
-        workspace_service: WorkspaceService,
-        model_executable_service: ModelExecutableService,
+        service: Service,
     ):
         self._project_id = project_id
         self._project_definition = project_definition
         self._vcs_uri = vcs_uri or None
         self._project_type = project_type
-        self._project_sal = project_service
-        self._workspace_sal = workspace_service
-        self._model_exe_sal = model_executable_service
+        self._sal = service
 
     def __repr__(self):
         return f"Project with id '{self._project_id}'"
@@ -419,16 +402,10 @@ class Project:
 
             project.delete()
         """
-        self._project_sal.project_delete(self._project_id)
+        self._sal.project.project_delete(self._project_id)
 
     def _get_project_content(self, content):
-        return ProjectContent(
-            content,
-            self._project_id,
-            self._project_sal,
-            self._workspace_sal,
-            self._model_exe_sal,
-        )
+        return ProjectContent(content, self._project_id, self._sal)
 
     def get_contents(self) -> List[ProjectContent]:
         """Get project contents.
@@ -473,7 +450,7 @@ class Project:
 
             project.upload_content('/home/test.mo', ContentType.MODELICA)
         """
-        resp = self._project_sal.project_content_upload(
+        resp = self._sal.project.project_content_upload(
             path_to_content, self._project_id, content_type.value
         )
         return self._get_project_content(resp)
@@ -517,11 +494,11 @@ class Project:
             project.get_options(dynamic)
         """
         if use_defaults:
-            options = self._project_sal.project_default_options_get(
+            options = self._sal.project.project_default_options_get(
                 self._project_id, custom_function=custom_function.name
             )
         else:
-            options = self._project_sal.project_options_get(
+            options = self._sal.project.project_options_get(
                 self._project_id, custom_function=custom_function.name
             )
         options['customFunction'] = custom_function.name

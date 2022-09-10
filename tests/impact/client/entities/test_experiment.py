@@ -21,7 +21,8 @@ class TestExperiment:
 
     def test_execute_with_case_filter(self, batch_experiment_with_case_filter):
         experiment = batch_experiment_with_case_filter.entity
-        exp_sal = batch_experiment_with_case_filter.service
+        service = batch_experiment_with_case_filter.service
+        exp_sal = service.experiment
         case_generated = experiment.execute(with_cases=[]).wait()
         exp_sal.experiment_execute.assert_has_calls(
             [mock.call(IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY, [])]
@@ -56,7 +57,8 @@ class TestExperiment:
 
     def test_execute_with_case_filter_no_sync(self, batch_experiment_with_case_filter):
         experiment = batch_experiment_with_case_filter.entity
-        exp_sal = batch_experiment_with_case_filter.service
+        service = batch_experiment_with_case_filter.service
+        exp_sal = service.experiment
         case_generated = experiment.execute(with_cases=[]).wait()
         case_to_execute = case_generated.get_cases()[2]
         experiment.execute(with_cases=[case_to_execute], sync_case_changes=False).wait()
@@ -176,9 +178,12 @@ class TestExperiment:
         pytest.raises(ValueError, experiment.entity.get_trajectories, ['s'])
 
     def test_execute_with_user_data(self, workspace):
+        workspace_entity = workspace.entity
+        service = workspace.service
+        workspace_service = service.workspace
         user_data = {"workspaceExecuteKey": "workspaceExecuteValue"}
-        workspace.entity.execute({}, user_data).wait()
+        workspace_entity.execute({}, user_data).wait()
 
-        workspace.service.experiment_create.assert_has_calls(
+        workspace_service.experiment_create.assert_has_calls(
             [mock.call(IDs.WORKSPACE_PRIMARY, {}, user_data)]
         )

@@ -1,8 +1,6 @@
 import logging
 from typing import Any, List, Dict, Optional
-from modelon.impact.client.sal.workspace import WorkspaceService
-from modelon.impact.client.sal.model_executable import ModelExecutableService
-from modelon.impact.client.sal.experiment import ExperimentService
+from modelon.impact.client.sal.service import Service
 from modelon.impact.client.operations import experiment
 from modelon.impact.client.entities.case import Case
 from modelon.impact.client.entities.asserts import assert_variable_in_result
@@ -86,16 +84,12 @@ class Experiment:
         self,
         workspace_id: str,
         exp_id: str,
-        workspace_service: WorkspaceService,
-        model_exe_service: ModelExecutableService,
-        exp_service: ExperimentService,
+        service: Service,
         info: Optional[Dict[str, Any]] = None,
     ):
         self._workspace_id = workspace_id
         self._exp_id = exp_id
-        self._workspace_sal = workspace_service
-        self._model_exe_sal = model_exe_service
-        self._exp_sal = exp_service
+        self._sal = service
         self._info = info
 
     def __repr__(self):
@@ -111,7 +105,7 @@ class Experiment:
 
     def _get_info(self) -> Dict[str, Any]:
         if self._info is None:
-            self._info = self._workspace_sal.experiment_get(
+            self._info = self._sal.workspace.experiment_get(
                 self._workspace_id, self._exp_id
             )
 
@@ -192,12 +186,10 @@ class Experiment:
         case_ids = [case.id for case in with_cases] if with_cases is not None else None
         return experiment.ExperimentOperation(
             self._workspace_id,
-            self._exp_sal.experiment_execute(
+            self._sal.experiment.experiment_execute(
                 self._workspace_id, self._exp_id, case_ids
             ),
-            self._workspace_sal,
-            self._model_exe_sal,
-            self._exp_sal,
+            self._sal,
         )
 
     def is_successful(self) -> bool:
@@ -239,7 +231,9 @@ class Experiment:
             experiment.get_variables()
         """
         _assert_experiment_is_complete(self.run_info.status, "Simulation")
-        return self._exp_sal.result_variables_get(self._workspace_id, self._exp_id)
+        return self._sal.experiment.result_variables_get(
+            self._workspace_id, self._exp_id
+        )
 
     def get_cases(self) -> List[Case]:
         """
@@ -254,17 +248,9 @@ class Experiment:
 
             experiment.get_cases()
         """
-        resp = self._exp_sal.cases_get(self._workspace_id, self._exp_id)
+        resp = self._sal.experiment.cases_get(self._workspace_id, self._exp_id)
         return [
-            Case(
-                case["id"],
-                self._workspace_id,
-                self._exp_id,
-                self._exp_sal,
-                self._model_exe_sal,
-                self._workspace_sal,
-                case,
-            )
+            Case(case["id"], self._workspace_id, self._exp_id, self._sal, case,)
             for case in resp["data"]["items"]
         ]
 
@@ -286,15 +272,11 @@ class Experiment:
 
             experiment.get_case('case_1')
         """
-        case_data = self._exp_sal.case_get(self._workspace_id, self._exp_id, case_id)
+        case_data = self._sal.experiment.case_get(
+            self._workspace_id, self._exp_id, case_id
+        )
         return Case(
-            case_data["id"],
-            self._workspace_id,
-            self._exp_id,
-            self._exp_sal,
-            self._model_exe_sal,
-            self._workspace_sal,
-            case_data,
+            case_data["id"], self._workspace_id, self._exp_id, self._sal, case_data,
         )
 
     def get_cases_with_label(self, case_label: str) -> List[Case]:
@@ -353,7 +335,7 @@ class Experiment:
         _assert_experiment_is_complete(self.run_info.status, "Simulation")
         assert_variable_in_result(variables, self.get_variables())
 
-        response = self._exp_sal.trajectories_get(
+        response = self._sal.experiment.trajectories_get(
             self._workspace_id, self._exp_id, variables
         )
 
@@ -376,7 +358,7 @@ class Experiment:
 
             experiment.delete()
         """
-        self._exp_sal.experiment_delete(self._workspace_id, self._exp_id)
+        self._sal.experiment.experiment_delete(self._workspace_id, self._exp_id)
 
     def set_label(self, label: str):
         """Sets a label (string) for an experiment to distinguish it.
@@ -385,4 +367,6 @@ class Experiment:
 
             experiment.set_label("Engine run with Oil type B")
         """
-        self._exp_sal.experiment_set_label(self._workspace_id, self._exp_id, label)
+        self._sal.experiment.experiment_set_label(
+            self._workspace_id, self._exp_id, label
+        )
