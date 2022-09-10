@@ -1,5 +1,6 @@
 from modelon.impact.client.entities import case
 from modelon.impact.client.operations.base import ExecutionOperation, Status
+from modelon.impact.client.sal.service import Service
 
 
 class CaseOperation(ExecutionOperation):
@@ -7,22 +8,12 @@ class CaseOperation(ExecutionOperation):
     An operation class for the modelon.impact.client.entities.Case class.
     """
 
-    def __init__(
-        self,
-        workspace_id,
-        exp_id,
-        case_id,
-        workspace_service=None,
-        model_exe_service=None,
-        exp_service=None,
-    ):
+    def __init__(self, workspace_id, exp_id, case_id, service: Service):
         super().__init__()
         self._workspace_id = workspace_id
         self._exp_id = exp_id
         self._case_id = case_id
-        self._workspace_sal = workspace_service
-        self._model_exe_sal = model_exe_service
-        self._exp_sal = exp_service
+        self._sal = service
 
     def __repr__(self):
         return f"Case operation for id '{self._case_id}'"
@@ -49,17 +40,11 @@ class CaseOperation(ExecutionOperation):
             experiment --
                 An Case class instance.
         """
-        case_data = self._exp_sal.case_get(
+        case_data = self._sal.experiment.case_get(
             self._workspace_id, self._exp_id, self._case_id
         )
         return case.Case(
-            self._case_id,
-            self._workspace_id,
-            self._exp_id,
-            self._exp_sal,
-            self._model_exe_sal,
-            self._workspace_sal,
-            case_data,
+            self._case_id, self._workspace_id, self._exp_id, self._sal, case_data,
         )
 
     def status(self):
@@ -78,7 +63,9 @@ class CaseOperation(ExecutionOperation):
             case.execute().status()
         """
         return Status(
-            self._exp_sal.execute_status(self._workspace_id, self._exp_id)["status"]
+            self._sal.experiment.execute_status(self._workspace_id, self._exp_id)[
+                "status"
+            ]
         )
 
     def cancel(self):
@@ -89,4 +76,4 @@ class CaseOperation(ExecutionOperation):
 
             case.execute().cancel()
         """
-        self._exp_sal.execute_cancel(self._workspace_id, self._exp_id)
+        self._sal.experiment.execute_cancel(self._workspace_id, self._exp_id)

@@ -1,8 +1,6 @@
 import logging
 from typing import Any, Dict, Tuple, Optional
-from modelon.impact.client.sal.experiment import ExperimentService
-from modelon.impact.client.sal.model_executable import ModelExecutableService
-from modelon.impact.client.sal.workspace import WorkspaceService
+from modelon.impact.client.sal.service import Service
 from modelon.impact.client.sal.experiment import ResultFormat
 from modelon.impact.client.operations.case import CaseOperation
 from modelon.impact.client.entities.external_result import ExternalResult
@@ -177,17 +175,13 @@ class Case:
         case_id: str,
         workspace_id: str,
         exp_id: str,
-        exp_service: ExperimentService,
-        model_exe_service: ModelExecutableService,
-        workspace_service: WorkspaceService,
+        service: Service,
         info: Dict[str, Any],
     ):
         self._case_id = case_id
         self._workspace_id = workspace_id
         self._exp_id = exp_id
-        self._exp_sal = exp_service
-        self._model_exe_sal = model_exe_service
-        self._workspace_sal = workspace_service
+        self._sal = service
         self._info = info
 
     def __repr__(self):
@@ -258,15 +252,11 @@ class Case:
         experiment_id = init_from_dict.get('experimentId')
         case_id = init_from_dict.get('caseId')
 
-        case_data = self._exp_sal.case_get(self._workspace_id, experiment_id, case_id)
+        case_data = self._sal.experiment.case_get(
+            self._workspace_id, experiment_id, case_id
+        )
         return Case(
-            case_data["id"],
-            self._workspace_id,
-            experiment_id,
-            self._exp_sal,
-            self._model_exe_sal,
-            self._workspace_sal,
-            case_data,
+            case_data["id"], self._workspace_id, experiment_id, self._sal, case_data,
         )
 
     @initialize_from_case.setter
@@ -291,7 +281,7 @@ class Case:
 
         result_id = init_from_dict.get('uploadId')
 
-        return ExternalResult(result_id, self._workspace_sal)
+        return ExternalResult(result_id, self._sal.workspace)
 
     @initialize_from_external_result.setter
     def initialize_from_external_result(self, result: ExternalResult):
@@ -333,7 +323,9 @@ class Case:
             log.show()
         """
         return Log(
-            self._exp_sal.case_get_log(self._workspace_id, self._exp_id, self._case_id)
+            self._sal.experiment.case_get_log(
+                self._workspace_id, self._exp_id, self._case_id
+            )
         )
 
     def get_result(self, format: str = 'mat') -> Tuple[bytes, str]:
@@ -371,7 +363,7 @@ class Case:
         """
         assert_successful_operation(self.is_successful(), self._case_id)
         result_format = ResultFormat(format)
-        result, file_name = self._exp_sal.case_result_get(
+        result, file_name = self._sal.experiment.case_result_get(
             self._workspace_id, self._exp_id, self._case_id, result_format
         )
         return result, file_name
@@ -399,12 +391,11 @@ class Case:
         """
         _assert_case_is_complete(self.run_info.status, "Simulation")
         return Result(
-            self._exp_sal.result_variables_get(self._workspace_id, self._exp_id),
+            self._sal.experiment.result_variables_get(self._workspace_id, self._exp_id),
             self._case_id,
             self._workspace_id,
             self._exp_id,
-            self._workspace_sal,
-            self._exp_sal,
+            self._sal,
         )
 
     def get_artifact(self, artifact_id: str) -> Tuple[bytes, str]:
@@ -437,7 +428,7 @@ class Case:
                 f.write(result)
         """
         assert_successful_operation(self.is_successful(), self._case_id)
-        result, file_name = self._exp_sal.case_artifact_get(
+        result, file_name = self._sal.experiment.case_artifact_get(
             self._workspace_id, self._exp_id, self._case_id, artifact_id
         )
 
@@ -460,9 +451,7 @@ class Case:
         """
         fmu_id = self.input.fmu_id
 
-        return ModelExecutable(
-            self._workspace_id, fmu_id, self._workspace_sal, self._model_exe_sal
-        )
+        return ModelExecutable(self._workspace_id, fmu_id, self._sal)
 
     def sync(self):
         """Sync case state against server, pushing any changes that has been
@@ -472,7 +461,7 @@ class Case:
             case.input.parametrization = {'PI.k': 120}
             case.sync()
         """
-        self._info = self._exp_sal.case_put(
+        self._info = self._sal.experiment.case_put(
             self._workspace_id, self._exp_id, self._case_id, self._info
         )
 
@@ -506,13 +495,11 @@ class Case:
 
         return CaseOperation(
             self._workspace_id,
-            self._exp_sal.experiment_execute(
+            self._sal.experiment.experiment_execute(
                 self._workspace_id, self._exp_id, [self._case_id]
             ),
             self._case_id,
-            self._workspace_sal,
-            self._model_exe_sal,
-            self._exp_sal,
+            self._sal,
         )
 
     def _assert_unique_case_initialization(self, unsupported_init):

@@ -1,4 +1,4 @@
-from modelon.impact.client.sal.workspace import WorkspaceService
+from modelon.impact.client.sal.service import Service
 
 
 class _ExternalResultMetaData:
@@ -38,9 +38,9 @@ class ExternalResult:
     Class containing  external result.
     """
 
-    def __init__(self, result_id: str, workspace_service: WorkspaceService):
+    def __init__(self, result_id: str, service: Service):
         self._result_id = result_id
-        self._workspace_sal = workspace_service
+        self._sal = service
 
     def __repr__(self):
         return f"Result id '{self._result_id}'"
@@ -56,7 +56,7 @@ class ExternalResult:
     @property
     def metadata(self) -> _ExternalResultMetaData:
         """External result metadata."""
-        upload_meta = self._workspace_sal.get_uploaded_result_meta(self._result_id)[
+        upload_meta = self._sal.workspace.get_uploaded_result_meta(self._result_id)[
             "data"
         ]
         id = upload_meta.get("id")
@@ -66,4 +66,4 @@ class ExternalResult:
         return _ExternalResultMetaData(id, name, description, workspace_id)
 
     def delete(self):
-        self._workspace_sal.delete_uploaded_result(self._result_id)
+        self._sal.workspace.delete_uploaded_result(self._result_id)

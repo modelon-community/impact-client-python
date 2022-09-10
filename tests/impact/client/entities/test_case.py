@@ -66,7 +66,8 @@ class TestCase:
 
     def test_case_sync(self, experiment, batch_experiment):
         exp = experiment.entity
-        exp_sal = experiment.service
+        service = experiment.service
+        exp_sal = service.experiment
 
         case = exp.get_case("case_1")
         case.input.parametrization = {'PI.k': 120}
@@ -117,7 +118,8 @@ class TestCase:
 
     def test_case_execute_with_no_sync(self, experiment):
         exp = experiment.entity
-        exp_sal = experiment.service
+        service = experiment.service
+        exp_sal = service.experiment
 
         case = exp.get_case("case_1")
         result = case.execute(sync_case_changes=True).wait()
@@ -139,13 +141,13 @@ class TestCase:
 
     def test_case_sync_second_time_should_call_with_consistent_false(self, experiment):
         exp = experiment.entity
-        exp_sal = experiment.service
+        service = experiment.service
 
         case = exp.get_case("case_1")
         case.input.parametrization = {'PI.k': 120}
         case.sync()
         case.sync()
-        case_put_calls = exp_sal.case_put.call_args_list
+        case_put_calls = service.experiment.case_put.call_args_list
         assert len(case_put_calls) == 2
         assert get_case_put_call_consistent_value(case_put_calls[0]) is True
         assert get_case_put_call_consistent_value(case_put_calls[1]) is False
@@ -156,7 +158,8 @@ class TestCase:
         case.initialize_from_external_result = result
         assert case.initialize_from_external_result == result
         case.sync()
-        exp_sal = experiment.service
+        service = experiment.service
+        exp_sal = service.experiment
         exp_sal.case_put.assert_has_calls(
             [
                 mock.call(
@@ -223,7 +226,8 @@ class TestCase:
 
     def test_set_case_label(self, experiment):
         exp = experiment.entity
-        exp_sal = experiment.service
+        service = experiment.service
+        exp_sal = service.experiment
         exp.set_label('Label')
         exp_sal.experiment_set_label.assert_has_calls(
             [mock.call(IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY, 'Label')]

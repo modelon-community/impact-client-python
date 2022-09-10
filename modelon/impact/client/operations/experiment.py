@@ -1,8 +1,6 @@
 from modelon.impact.client.operations import base
 import modelon.impact.client.entities.experiment
-from modelon.impact.client.sal.workspace import WorkspaceService
-from modelon.impact.client.sal.model_executable import ModelExecutableService
-from modelon.impact.client.sal.experiment import ExperimentService
+from modelon.impact.client.sal.service import Service
 
 
 class ExperimentOperation(base.ExecutionOperation):
@@ -11,20 +9,11 @@ class ExperimentOperation(base.ExecutionOperation):
     class.
     """
 
-    def __init__(
-        self,
-        workspace_id: str,
-        exp_id: str,
-        workspace_service: WorkspaceService,
-        model_exe_service: ModelExecutableService,
-        exp_service: ExperimentService,
-    ):
+    def __init__(self, workspace_id: str, exp_id: str, service: Service):
         super().__init__()
         self._workspace_id = workspace_id
         self._exp_id = exp_id
-        self._workspace_sal = workspace_service
-        self._model_exe_sal = model_exe_service
-        self._exp_sal = exp_service
+        self._sal = service
 
     def __repr__(self):
         return f"Experiment operation for id '{self._exp_id}'"
@@ -52,11 +41,7 @@ class ExperimentOperation(base.ExecutionOperation):
                 An experiment class instance.
         """
         return modelon.impact.client.entities.experiment.Experiment(
-            self._workspace_id,
-            self._exp_id,
-            self._workspace_sal,
-            self._model_exe_sal,
-            self._exp_sal,
+            self._workspace_id, self._exp_id, self._sal,
         )
 
     def status(self):
@@ -75,7 +60,9 @@ class ExperimentOperation(base.ExecutionOperation):
             workspace.execute(definition).status()
         """
         return base.Status(
-            self._exp_sal.execute_status(self._workspace_id, self._exp_id)["status"]
+            self._sal.experiment.execute_status(self._workspace_id, self._exp_id)[
+                "status"
+            ]
         )
 
     def cancel(self):
@@ -86,4 +73,4 @@ class ExperimentOperation(base.ExecutionOperation):
 
             workspace.execute(definition).cancel()
         """
-        self._exp_sal.execute_cancel(self._workspace_id, self._exp_id)
+        self._sal.experiment.execute_cancel(self._workspace_id, self._exp_id)

@@ -143,80 +143,30 @@ def get_test_workspace_definition(name=None):
     }
 
 
-def create_workspace_entity(
-    name,
-    definition=None,
-    workspace_service=None,
-    model_exe_service=None,
-    experiment_service=None,
-    custom_function_service=None,
-    project_service=None,
-):
+def create_workspace_entity(name, definition=None, service=None):
     if not definition:
         definition = get_test_workspace_definition(name)
-    return Workspace(
-        name,
-        WorkspaceDefinition(definition),
-        workspace_service or MagicMock(),
-        model_exe_service or MagicMock(),
-        experiment_service or MagicMock(),
-        custom_function_service or MagicMock(),
-        project_service=project_service or MagicMock(),
-    )
+    return Workspace(name, WorkspaceDefinition(definition), service or MagicMock())
 
 
 def create_model_entity(
-    class_name,
-    workspace_id,
-    project_id,
-    workspace_service=None,
-    model_exe_service=None,
-    project_service=None,
+    class_name, workspace_id, project_id, service=None,
 ):
-    return Model(
-        class_name,
-        workspace_id,
-        project_id,
-        workspace_service or MagicMock(),
-        model_exe_service or MagicMock(),
-        project_service or MagicMock(),
-    )
+    return Model(class_name, workspace_id, project_id, service or MagicMock())
 
 
 def create_model_exe_entity(
-    workspace_id,
-    fmu_id,
-    workspace_service=None,
-    model_exe_service=None,
-    info=None,
-    modifiers=None,
+    workspace_id, fmu_id, service=None, info=None, modifiers=None,
 ):
     return ModelExecutable(
-        workspace_id,
-        fmu_id,
-        workspace_service or MagicMock(),
-        model_exe_service or MagicMock(),
-        info,
-        modifiers,
+        workspace_id, fmu_id, service or MagicMock(), info, modifiers,
     )
 
 
 def create_experiment_entity(
-    workspace_id,
-    exp_id,
-    workspace_service=None,
-    model_exe_service=None,
-    experiment_service=None,
-    info=None,
+    workspace_id, exp_id, service=None, info=None,
 ):
-    return Experiment(
-        workspace_id,
-        exp_id,
-        workspace_service or MagicMock(),
-        model_exe_service or MagicMock(),
-        experiment_service or MagicMock(),
-        info,
-    )
+    return Experiment(workspace_id, exp_id, service or MagicMock(), info)
 
 
 def create_project_entity(
@@ -225,9 +175,7 @@ def create_project_entity(
     definition=None,
     project_type=ProjectType.LOCAL,
     vcs_uri=None,
-    project_service=None,
-    workspace_service=None,
-    model_exe_service=None,
+    service=None,
 ):
     if not definition:
         definition = {
@@ -250,19 +198,12 @@ def create_project_entity(
         ProjectDefinition(definition),
         project_type,
         VcsUri.from_dict(vcs_uri) if vcs_uri else None,
-        project_service or MagicMock(),
-        workspace_service or MagicMock(),
-        model_exe_service or MagicMock(),
+        service or MagicMock(),
     )
 
 
 def create_project_content_entity(
-    project_id,
-    content_id=IDs.PROJECT_CONTENT_PRIMARY,
-    content=None,
-    project_service=None,
-    workspace_service=None,
-    model_exe_service=None,
+    project_id, content_id=IDs.PROJECT_CONTENT_PRIMARY, content=None, service=None,
 ):
     if not content:
         content = {
@@ -272,87 +213,42 @@ def create_project_content_entity(
             "name": "MyPackage",
             "defaultDisabled": False,
         }
-    return ProjectContent(
-        content,
-        project_id,
-        project_service or MagicMock(),
-        workspace_service or MagicMock(),
-        model_exe_service or MagicMock(),
-    )
+    return ProjectContent(content, project_id, service or MagicMock())
 
 
 def create_case_entity(
-    case_id,
-    workspace_id,
-    exp_id,
-    workspace_service=None,
-    model_exe_service=None,
-    experiment_service=None,
-    info=None,
+    case_id, workspace_id, exp_id, service=None, info=None,
 ):
-    return Case(
-        case_id,
-        workspace_id,
-        exp_id,
-        experiment_service or MagicMock(),
-        model_exe_service or MagicMock(),
-        workspace_service or MagicMock(),
-        info,
-    )
+    return Case(case_id, workspace_id, exp_id, service or MagicMock(), info)
 
 
-def create_external_result_entity(result_id, workspace_service=None):
-    return ExternalResult(result_id, workspace_service or MagicMock())
+def create_external_result_entity(result_id, service=None):
+    return ExternalResult(result_id, service or MagicMock())
 
 
 def create_custom_function_entity(
-    workspace_id, name, parameter_data=None, custom_function_service=None
+    workspace_id, name, parameter_data=None, service=None
 ):
     return CustomFunction(
-        workspace_id, name, parameter_data, custom_function_service or MagicMock()
+        workspace_id, name, parameter_data or [], service or MagicMock()
     )
 
 
 def create_experiment_operation(
-    workspace_id,
-    exp_id,
-    workspace_service=None,
-    model_exe_service=None,
-    exp_service=None,
+    workspace_id, exp_id, service=None,
 ):
-    return ExperimentOperation(
-        workspace_id,
-        exp_id,
-        workspace_service or MagicMock(),
-        model_exe_service or MagicMock(),
-        exp_service or MagicMock(),
-    )
+    return ExperimentOperation(workspace_id, exp_id, service or MagicMock())
 
 
 def create_cached_model_exe_operation(
-    workspace_id,
-    fmu_id,
-    workspace_service=None,
-    model_exe_service=None,
-    info=None,
-    modifiers=None,
+    workspace_id, fmu_id, service=None, info=None, modifiers=None,
 ):
     return CachedModelExecutableOperation(
-        workspace_id,
-        fmu_id,
-        workspace_service or MagicMock(),
-        model_exe_service or MagicMock(),
-        info=info,
-        modifiers=modifiers,
+        workspace_id, fmu_id, service or MagicMock(), info=info, modifiers=modifiers,
     )
 
 
 def create_model_exe_operation(
-    workspace_id, fmu_id, workspace_service=None, model_exe_service=None,
+    workspace_id, fmu_id, service=None,
 ):
-    return ModelExecutableOperation(
-        workspace_id,
-        fmu_id,
-        workspace_service or MagicMock(),
-        model_exe_service or MagicMock(),
-    )
+    return ModelExecutableOperation(workspace_id, fmu_id, service or MagicMock())

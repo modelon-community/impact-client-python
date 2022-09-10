@@ -1,7 +1,6 @@
 from collections.abc import Mapping
 from typing import List
-from modelon.impact.client.sal.workspace import WorkspaceService
-from modelon.impact.client.sal.experiment import ExperimentService
+from modelon.impact.client.sal.service import Service
 from modelon.impact.client.entities.asserts import assert_variable_in_result
 
 
@@ -25,19 +24,17 @@ class Result(Mapping):
         case_id: str,
         workspace_id: str,
         exp_id: str,
-        workspace_service: WorkspaceService,
-        exp_service: ExperimentService,
+        service: Service,
     ):
         self._case_id = case_id
         self._workspace_id = workspace_id
         self._exp_id = exp_id
-        self._workspace_sal = workspace_service
-        self._exp_sal = exp_service
+        self._sal = service
         self._variables = variables
 
     def __getitem__(self, key):
         assert_variable_in_result([key], self._variables)
-        response = self._exp_sal.case_trajectories_get(
+        response = self._sal.experiment.case_trajectories_get(
             self._workspace_id, self._exp_id, self._case_id, [key]
         )
         return response[0]
@@ -48,7 +45,7 @@ class Result(Mapping):
             self._workspace_id,
             self._exp_id,
             self._case_id,
-            self._exp_sal,
+            self._sal.experiment,
         )
         return data.__iter__()
 

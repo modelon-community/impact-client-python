@@ -3,11 +3,7 @@ import logging
 import os
 import json
 from typing import Any, List, Dict, Optional, Union
-from modelon.impact.client.sal.project import ProjectService
-from modelon.impact.client.sal.workspace import WorkspaceService
-from modelon.impact.client.sal.model_executable import ModelExecutableService
-from modelon.impact.client.sal.experiment import ExperimentService
-from modelon.impact.client.sal.custom_function import CustomFunctionService
+from modelon.impact.client.sal.service import Service
 from modelon.impact.client.experiment_definition.base import (
     SimpleModelicaExperimentDefinition,
     SimpleFMUExperimentDefinition,
@@ -144,19 +140,11 @@ class Workspace:
         self,
         workspace_id: str,
         workspace_definition: WorkspaceDefinition,
-        workspace_service: WorkspaceService,
-        model_exe_service: ModelExecutableService,
-        experiment_service: ExperimentService,
-        custom_function_service: CustomFunctionService,
-        project_service: ProjectService,
+        service: Service,
     ):
         self._workspace_id = workspace_id
         self._workspace_definition = workspace_definition
-        self._workspace_sal = workspace_service
-        self._model_exe_sal = model_exe_service
-        self._exp_sal = experiment_service
-        self._custom_func_sal = custom_function_service
-        self._project_sal = project_service
+        self._sal = service
 
     def __repr__(self):
         return f"Workspace with id '{self._workspace_id}'"
@@ -187,14 +175,14 @@ class Workspace:
 
             workspace.get_custom_function('dynamic')
         """
-        custom_function = self._custom_func_sal.custom_function_get(
+        custom_function = self._sal.custom_function.custom_function_get(
             self._workspace_id, name
         )
         return CustomFunction(
             self._workspace_id,
             custom_function["name"],
             custom_function["parameters"],
-            self._custom_func_sal,
+            self._sal,
         )
 
     def get_custom_functions(self) -> List[CustomFunction]:
@@ -210,7 +198,7 @@ class Workspace:
 
             workspace.get_custom_functions()
         """
-        custom_functions = self._custom_func_sal.custom_functions_get(
+        custom_functions = self._sal.custom_function.custom_functions_get(
             self._workspace_id
         )
         return [
@@ -218,7 +206,7 @@ class Workspace:
                 self._workspace_id,
                 custom_function["name"],
                 custom_function["parameters"],
-                self._custom_func_sal,
+                self._sal,
             )
             for custom_function in custom_functions["data"]["items"]
         ]
@@ -230,7 +218,7 @@ class Workspace:
 
             workspace.delete()
         """
-        self._workspace_sal.workspace_delete(self._workspace_id)
+        self._sal.workspace.workspace_delete(self._workspace_id)
 
     def upload_result(
         self,
@@ -257,10 +245,10 @@ class Workspace:
             workspace.upload_result('C:/B.mat', label = "result_for_PID.mat",
             description = "This is a result file for PID controller")
         """
-        resp = self._workspace_sal.result_upload(
+        resp = self._sal.workspace.result_upload(
             self._workspace_id, path_to_result, label=label, description=description
         )
-        return ExternalResultUploadOperation(resp["data"]["id"], self._workspace_sal)
+        return ExternalResultUploadOperation(resp["data"]["id"], self._sal)
 
     def download(self, options: Dict[str, Any], path: str) -> str:
         """Downloads the workspace as a binary compressed archive.
@@ -303,7 +291,7 @@ class Workspace:
             }
             workspace.download(options, path)
         """
-        data = self._workspace_sal.workspace_download(self._workspace_id, options)
+        data = self._sal.workspace.workspace_download(self._workspace_id, options)
         ws_path = os.path.join(path, self._workspace_id + ".zip")
 
         os.makedirs(os.path.dirname(path), exist_ok=True)
@@ -324,15 +312,9 @@ class Workspace:
 
             workspace.clone()
         """
-        resp = self._workspace_sal.workspace_clone(self._workspace_id)
+        resp = self._sal.workspace.workspace_clone(self._workspace_id)
         return Workspace(
-            resp["workspace_id"],
-            WorkspaceDefinition(resp["definition"]),
-            self._workspace_sal,
-            self._model_exe_sal,
-            self._exp_sal,
-            self._custom_func_sal,
-            self._project_sal,
+            resp["workspace_id"], WorkspaceDefinition(resp["definition"]), self._sal
         )
 
     def get_model(self, class_name: str, project: Optional[Project] = None) -> Model:
@@ -357,14 +339,7 @@ class Workspace:
             workspace.get_model(class_name)
         """
         project = project or self.get_default_project()
-        return Model(
-            class_name,
-            self._workspace_id,
-            project.id,
-            self._workspace_sal,
-            self._model_exe_sal,
-            self._project_sal,
-        )
+        return Model(class_name, self._workspace_id, project.id, self._sal)
 
     def get_fmus(self) -> List[ModelExecutable]:
         """
@@ -379,15 +354,9 @@ class Workspace:
 
             workspace.get_fmus()
         """
-        resp = self._workspace_sal.fmus_get(self._workspace_id)
+        resp = self._sal.workspace.fmus_get(self._workspace_id)
         return [
-            ModelExecutable(
-                self._workspace_id,
-                item["id"],
-                self._workspace_sal,
-                self._model_exe_sal,
-                item,
-            )
+            ModelExecutable(self._workspace_id, item["id"], self._sal, item)
             for item in resp["data"]["items"]
         ]
 
@@ -404,14 +373,8 @@ class Workspace:
 
             workspace.get_fmu(fmu_id)
         """
-        resp = self._workspace_sal.fmu_get(self._workspace_id, fmu_id)
-        return ModelExecutable(
-            self._workspace_id,
-            resp["id"],
-            self._workspace_sal,
-            self._model_exe_sal,
-            resp,
-        )
+        resp = self._sal.workspace.fmu_get(self._workspace_id, fmu_id)
+        return ModelExecutable(self._workspace_id, resp["id"], self._sal, resp)
 
     def get_experiments(self) -> List[Experiment]:
         """
@@ -426,16 +389,9 @@ class Workspace:
 
             workspace.get_experiments()
         """
-        resp = self._workspace_sal.experiments_get(self._workspace_id)
+        resp = self._sal.workspace.experiments_get(self._workspace_id)
         return [
-            Experiment(
-                self._workspace_id,
-                item["id"],
-                self._workspace_sal,
-                self._model_exe_sal,
-                self._exp_sal,
-                item,
-            )
+            Experiment(self._workspace_id, item["id"], self._sal, item)
             for item in resp["data"]["items"]
         ]
 
@@ -457,15 +413,8 @@ class Workspace:
 
             workspace.get_experiment(experiment_id)
         """
-        resp = self._workspace_sal.experiment_get(self._workspace_id, experiment_id)
-        return Experiment(
-            self._workspace_id,
-            resp["id"],
-            self._workspace_sal,
-            self._model_exe_sal,
-            self._exp_sal,
-            resp,
-        )
+        resp = self._sal.workspace.experiment_get(self._workspace_id, experiment_id)
+        return Experiment(self._workspace_id, resp["id"], self._sal, resp)
 
     def create_experiment(
         self,
@@ -508,16 +457,10 @@ class Workspace:
                 "SimpleModelicaExperimentDefinition class or modelon.impact.client."
                 "experiment_definition.base.SimpleFMUExperimentDefinition.!"
             )
-        resp = self._workspace_sal.experiment_create(
+        resp = self._sal.workspace.experiment_create(
             self._workspace_id, definition_as_dict, user_data
         )
-        return Experiment(
-            self._workspace_id,
-            resp["experiment_id"],
-            self._workspace_sal,
-            self._model_exe_sal,
-            self._exp_sal,
-        )
+        return Experiment(self._workspace_id, resp["experiment_id"], self._sal)
 
     def execute(
         self,
@@ -557,10 +500,8 @@ class Workspace:
         exp_id = self.create_experiment(definition, user_data).id
         return ExperimentOperation(
             self._workspace_id,
-            self._exp_sal.experiment_execute(self._workspace_id, exp_id),
-            self._workspace_sal,
-            self._model_exe_sal,
-            self._exp_sal,
+            self._sal.experiment.experiment_execute(self._workspace_id, exp_id),
+            self._sal,
         )
 
     def _create_project_entity_from_dict(self, data):
@@ -569,9 +510,7 @@ class Workspace:
             ProjectDefinition(data),
             data["projectType"],
             VcsUri.from_dict(data["vcsUri"]) if data.get("vcsUri") else None,
-            self._project_sal,
-            self._workspace_sal,
-            self._model_exe_sal,
+            self._sal,
         )
 
     def get_projects(self):
@@ -587,16 +526,14 @@ class Workspace:
 
             projects = workspace.get_projects()
         """
-        resp = self._workspace_sal.projects_get(self._workspace_id)
+        resp = self._sal.workspace.projects_get(self._workspace_id)
         projects = [
             Project(
                 item["id"],
                 ProjectDefinition(item['definition']),
                 item["projectType"],
                 VcsUri.from_dict(item["vcsUri"]) if item.get("vcsUri") else None,
-                self._project_sal,
-                self._workspace_sal,
-                self._model_exe_sal,
+                self._sal,
             )
             for item in resp["data"]["items"]
         ]
@@ -615,16 +552,14 @@ class Workspace:
 
             dependencies = workspace.get_dependencies()
         """
-        resp = self._workspace_sal.dependencies_get(self._workspace_id)
+        resp = self._sal.workspace.dependencies_get(self._workspace_id)
         return [
             Project(
                 item["id"],
                 ProjectDefinition(item['definition']),
                 item["projectType"],
                 VcsUri.from_dict(item["vcsUri"]) if item.get("vcsUri") else None,
-                self._project_sal,
-                self._workspace_sal,
-                self._model_exe_sal,
+                self._sal,
             )
             for item in resp["data"]["items"]
         ]
@@ -642,15 +577,13 @@ class Workspace:
 
             project = workspace.create_project("test")
         """
-        resp = self._workspace_sal.project_create(self._workspace_id, name)
+        resp = self._sal.workspace.project_create(self._workspace_id, name)
         return Project(
             resp["id"],
             ProjectDefinition(resp['definition']),
             resp["projectType"],
             VcsUri.from_dict(resp["vcsUri"]) if resp.get("vcsUri") else None,
-            self._project_sal,
-            self._workspace_sal,
-            self._model_exe_sal,
+            self._sal,
         )
 
     def get_default_project(self):
@@ -670,7 +603,7 @@ class Workspace:
             raise ValueError(
                 f'No default project exists for the workspace {self._workspace_id}!'
             )
-        resp = self._project_sal.project_get(
+        resp = self._sal.project.project_get(
             self._workspace_definition.default_project_id
         )
         return Project(
@@ -678,14 +611,12 @@ class Workspace:
             ProjectDefinition(resp["definition"]),
             resp["projectType"],
             VcsUri.from_dict(resp["vcsUri"]) if resp.get("vcsUri") else None,
-            self._project_sal,
-            self._workspace_sal,
-            self._model_exe_sal,
+            self._sal,
         )
 
     def get_shared_definition(self, strict: bool = False):
         return WorkspaceDefinition(
-            self._workspace_sal.shared_definition_get(
+            self._sal.workspace.shared_definition_get(
                 self._workspace_id, strict=strict
             )["definition"]
         )
