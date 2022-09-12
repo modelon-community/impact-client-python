@@ -1,12 +1,6 @@
 import logging
 from typing import Any, List, Dict, Optional
 from modelon.impact.client.sal.service import Service
-from modelon.impact.client.options import (
-    CompilerOptions,
-    RuntimeOptions,
-    SimulationOptions,
-    SolverOptions,
-)
 from modelon.impact.client.options import ProjectExecutionOptions
 
 logger = logging.getLogger(__name__)
@@ -140,7 +134,7 @@ class CustomFunction:
         options['customFunction'] = self.name
         return ProjectExecutionOptions(options)
 
-    def get_compiler_options(self, use_defaults: bool = False) -> CompilerOptions:
+    def get_compiler_options(self, use_defaults: bool = False):
         """
         Return a modelon.impact.client.options.CompilerOptions object.
 
@@ -158,7 +152,7 @@ class CustomFunction:
         """
         return self.get_options(use_defaults=use_defaults).compiler_options
 
-    def get_runtime_options(self, use_defaults: bool = False) -> RuntimeOptions:
+    def get_runtime_options(self, use_defaults: bool = False):
         """
         Return a modelon.impact.client.options.RuntimeOptions object.
 
@@ -176,7 +170,7 @@ class CustomFunction:
         """
         return self.get_options(use_defaults=use_defaults).runtime_options
 
-    def get_solver_options(self, use_defaults: bool = False) -> SolverOptions:
+    def get_solver_options(self, use_defaults: bool = False):
         """
         Return a modelon.impact.client.options.SolverOptions object.
 
@@ -195,7 +189,7 @@ class CustomFunction:
         """
         return self.get_options(use_defaults=use_defaults).solver_options
 
-    def get_simulation_options(self, use_defaults: bool = False) -> SimulationOptions:
+    def get_simulation_options(self, use_defaults: bool = False):
         """
         Return a modelon.impact.client.options.SimulationOptions object.
 

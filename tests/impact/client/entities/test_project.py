@@ -87,10 +87,12 @@ class TestProject:
         assert not content.default_disabled
 
     def test_upload_fmu(self, project):
-        content: ProjectContent = project.entity.get_content_by_name('MyPackage')
+        project_entity = project.entity
+        project_service = project.service
+        content: ProjectContent = project_entity.get_content_by_name('MyPackage')
         test_workspace = create_workspace_entity(IDs.WORKSPACE_PRIMARY)
         content.upload_fmu(test_workspace, "test.fmu", "Workspace")
-        project.service.fmu_upload.assert_called_with(
+        project_service.project.fmu_upload.assert_called_with(
             IDs.WORKSPACE_PRIMARY,
             IDs.PROJECT_PRIMARY,
             IDs.PROJECT_CONTENT_PRIMARY,
