@@ -1,7 +1,7 @@
 import pytest
 import unittest.mock as mock
+from datetime import datetime
 from modelon.impact.client import exceptions
-
 from modelon.impact.client.entities.case import CaseStatus
 from tests.impact.client.helpers import (
     create_case_entity,
@@ -27,7 +27,9 @@ class TestCase:
         case = experiment.entity.get_case("case_1")
         assert case.id == "case_1"
         assert case.run_info.status == CaseStatus.SUCCESSFUL
-        assert case.run_info.consistent is True
+        assert case.run_info.consistent
+        assert case.run_info.started == datetime(2022, 9, 12, 6, 42, 36, 945000)
+        assert case.run_info.finished == datetime(2022, 9, 12, 6, 42, 37, 990000)
         assert case.get_log() == "Successful Log"
         result, name = case.get_result()
         assert (result, name) == (b'\x00\x00\x00\x00', 'result.mat')
@@ -86,7 +88,12 @@ class TestCase:
                     'case_1',
                     {
                         'id': 'case_1',
-                        'run_info': {'status': 'successful', 'consistent': True},
+                        'run_info': {
+                            'status': 'successful',
+                            'consistent': True,
+                            "datetime_started": 1662964956945,
+                            "datetime_finished": 1662964957990,
+                        },
                         'input': {
                             'fmu_id': IDs.FMU_PRIMARY,
                             'analysis': {
@@ -147,8 +154,8 @@ class TestCase:
         case.sync()
         case_put_calls = exp_sal.case_put.call_args_list
         assert len(case_put_calls) == 2
-        assert get_case_put_call_consistent_value(case_put_calls[0]) is True
-        assert get_case_put_call_consistent_value(case_put_calls[1]) is False
+        assert get_case_put_call_consistent_value(case_put_calls[0])
+        assert not get_case_put_call_consistent_value(case_put_calls[1])
 
     def test_case_initialize_from_external_result(self, experiment):
         result = create_external_result_entity('upload_id')
@@ -165,7 +172,12 @@ class TestCase:
                     'case_1',
                     {
                         'id': 'case_1',
-                        'run_info': {'status': 'successful', 'consistent': True},
+                        'run_info': {
+                            'status': 'successful',
+                            'consistent': True,
+                            "datetime_started": 1662964956945,
+                            "datetime_finished": 1662964957990,
+                        },
                         'input': {
                             'fmu_id': IDs.FMU_PRIMARY,
                             'analysis': {
