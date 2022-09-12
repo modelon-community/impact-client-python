@@ -1,4 +1,5 @@
 import logging
+from datetime import datetime
 from typing import Any, Dict, Tuple, Optional
 from modelon.impact.client.sal.service import Service
 from modelon.impact.client.sal.experiment import ResultFormat
@@ -21,14 +22,27 @@ def _assert_case_is_complete(status, operation_name="Operation"):
         raise exceptions.OperationFailureError.for_operation(operation_name)
 
 
+def _datetime_from_unix_time(unix_time: Optional[int]):
+    if unix_time:
+        return datetime.fromtimestamp(unix_time / 1e3)
+
+
 class _CaseRunInfo:
     """
     Class containing Case run info.
     """
 
-    def __init__(self, status: CaseStatus, consistent: bool):
+    def __init__(
+        self,
+        status: CaseStatus,
+        consistent: bool,
+        datetime_started: Optional[datetime],
+        datetime_finished: Optional[datetime],
+    ):
         self._status = status
         self._consistent = consistent
+        self._datetime_started = datetime_started
+        self._datetime_finished = datetime_finished
 
     @property
     def status(self) -> CaseStatus:
@@ -40,6 +54,20 @@ class _CaseRunInfo:
         """True if the case has not been synced since it was executed,
         false otherwise."""
         return self._consistent
+
+    @property
+    def started(self):
+        """
+        Case execution start time. Returns None if case execution hasn't started.
+        """
+        return self._datetime_started
+
+    @property
+    def finished(self):
+        """
+        Case execution finish time. Returns None if case execution hasn't finished.
+        """
+        return self._datetime_finished
 
 
 class _CaseAnalysis:
@@ -210,7 +238,11 @@ class Case:
     def run_info(self) -> _CaseRunInfo:
         """Case run information"""
         run_info = self._info["run_info"]
-        return _CaseRunInfo(CaseStatus(run_info["status"]), run_info["consistent"])
+        started = _datetime_from_unix_time(run_info.get("datetime_started"))
+        finished = _datetime_from_unix_time(run_info.get("datetime_finished"))
+        return _CaseRunInfo(
+            CaseStatus(run_info["status"]), run_info["consistent"], started, finished,
+        )
 
     @property
     def input(self) -> _CaseInput:

@@ -1644,7 +1644,12 @@ def experiment():
     exp_service.cases_get.return_value = {"data": {"items": [{"id": "case_1"}]}}
     case_get_data = {
         "id": "case_1",
-        "run_info": {"status": "successful", "consistent": True},
+        "run_info": {
+            "status": "successful",
+            "consistent": True,
+            "datetime_started": 1662964956945,
+            "datetime_finished": 1662964957990,
+        },
         "input": {
             "fmu_id": IDs.FMU_PRIMARY,
             "analysis": {
@@ -1732,7 +1737,12 @@ def batch_experiment_with_case_filter():
     }
     exp_service.case_get.return_value = {
         "id": "case_3",
-        "run_info": {"status": "successful", "consistent": True},
+        "run_info": {
+            "status": "successful",
+            "consistent": True,
+            "datetime_started": 1662964956945,
+            "datetime_finished": 1662964957990,
+        },
         "input": {"fmu_id": IDs.FMU_PRIMARY},
     }
     return ExperimentMock(
@@ -1758,7 +1768,12 @@ def batch_experiment():
     }
     exp_service.case_get.return_value = {
         "id": "case_2",
-        "run_info": {"status": "successful", "consistent": True},
+        "run_info": {
+            "status": "successful",
+            "consistent": True,
+            "datetime_started": 1662964956945,
+            "datetime_finished": 1662964957990,
+        },
     }
     exp_service.case_get_log.return_value = "Successful Log"
     exp_service.case_result_get.return_value = (bytes(4), 'result.mat')
@@ -1828,7 +1843,12 @@ def experiment_with_failed_case():
     exp_service.cases_get.return_value = {"data": {"items": [{"id": "case_1"}]}}
     exp_service.case_get.return_value = {
         "id": "case_1",
-        "run_info": {"status": "failed", "consistent": True},
+        "run_info": {
+            "status": "failed",
+            "consistent": True,
+            "datetime_started": 1662964956945,
+            "datetime_finished": 1662964957990,
+        },
     }
     exp_service.result_variables_get.return_value = ["inertia.I", "time"]
     exp_service.trajectories_get.return_value = [[[1, 2, 3, 4]], [[5, 2, 9, 4]]]
