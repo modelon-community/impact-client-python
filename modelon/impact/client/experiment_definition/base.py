@@ -15,10 +15,10 @@ from modelon.impact.client.experiment_definition.util import (
     get_options,
     case_to_identifier_dict,
 )
-from modelon.impact.client.asserts import assert_valid_args
 from modelon.impact.client.experiment_definition.asserts import (
     validate_and_set_initialize_from,
     assert_unique_exp_initialization,
+    assert_valid_args,
 )
 
 logger = logging.getLogger(__name__)

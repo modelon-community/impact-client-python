@@ -7,14 +7,13 @@ from modelon.impact.client.operations.model_executable import (
 )
 from modelon.impact.client.experiment_definition import base
 from modelon.impact.client.entities.custom_function import CustomFunction
-from modelon.impact.client.entities.project import Project, ProjectDefinition, VcsUri
 from modelon.impact.client.options import (
+    ProjectExecutionOptions,
     CompilerOptions,
     RuntimeOptions,
     SimulationOptions,
     SolverOptions,
 )
-from modelon.impact.client import asserts
 
 logger = logging.getLogger(__name__)
 
@@ -24,6 +23,25 @@ RuntimeOptionsOrDict = Union[RuntimeOptions, Dict[str, Any]]
 CompilerOptionsOrDict = Union[CompilerOptions, Dict[str, Any]]
 SimulationOptionsOrDict = Union[SimulationOptions, Dict[str, Any]]
 SolverOptionsOrDict = Union[SolverOptions, Dict[str, Any]]
+
+
+def _assert_valid_compilation_options(
+    compiler_options=None, runtime_options=None,
+):
+    if compiler_options is not None and not isinstance(
+        compiler_options, (CompilerOptions, dict)
+    ):
+        raise TypeError(
+            "Compiler options object must either be a dictionary or an "
+            "instance of modelon.impact.client.options.CompilerOptions class!"
+        )
+    if runtime_options is not None and not isinstance(
+        runtime_options, (RuntimeOptions, dict)
+    ):
+        raise TypeError(
+            "Runtime options object must either be a dictionary or an "
+            "instance of modelon.impact.client.options.RuntimeOptions class!"
+        )
 
 
 class Model:
@@ -119,7 +137,7 @@ class Model:
             model.compile(compiler_options, runtime_options).wait()
             model.compile({'c_compiler':'gcc'}).wait()
         """
-        asserts.assert_valid_args(
+        _assert_valid_compilation_options(
             compiler_options=compiler_options, runtime_options=runtime_options
         )
         compiler_options = (
@@ -251,15 +269,11 @@ class Model:
             )
             experiment = workspace.execute(experiment_definition).wait()
         """
-        resp = self._sal.project.project_get(self._project_id)
-        project = Project(
-            resp["id"],
-            ProjectDefinition(resp["definition"]),
-            resp["projectType"],
-            VcsUri.from_dict(resp["vcsUri"]) if resp.get("vcsUri") else None,
-            self._sal,
+        options = self._sal.project.project_options_get(
+            self._project_id, custom_function=custom_function.name
         )
-        options = project.get_options(custom_function)
+        options['customFunction'] = custom_function.name
+        options = ProjectExecutionOptions(options)
         return base.SimpleModelicaExperimentDefinition(
             model=self,
             custom_function=custom_function,

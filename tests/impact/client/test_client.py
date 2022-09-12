@@ -9,8 +9,6 @@ from tests.impact.client.helpers import (
     create_workspace_entity,
     IDs,
     get_test_workspace_definition,
-    VERSIONED_PROJECT_BRANCH,
-    VERSIONED_PROJECT_TRUNK,
 )
 
 

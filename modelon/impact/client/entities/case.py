@@ -6,7 +6,7 @@ from modelon.impact.client.operations.case import CaseOperation
 from modelon.impact.client.entities.external_result import ExternalResult
 from modelon.impact.client.entities.log import Log
 from modelon.impact.client.entities.result import Result
-from modelon.impact.client.entities.model_executable import ModelExecutable
+import modelon.impact.client.entities.model_executable
 from modelon.impact.client.entities.status import CaseStatus
 from modelon.impact.client.entities.asserts import assert_successful_operation
 from modelon.impact.client import exceptions
@@ -281,7 +281,7 @@ class Case:
 
         result_id = init_from_dict.get('uploadId')
 
-        return ExternalResult(result_id, self._sal.workspace)
+        return ExternalResult(result_id, self._sal)
 
     @initialize_from_external_result.setter
     def initialize_from_external_result(self, result: ExternalResult):
@@ -434,7 +434,7 @@ class Case:
 
         return result, file_name
 
-    def get_fmu(self) -> ModelExecutable:
+    def get_fmu(self):
         """
         Returns the ModelExecutable class object simulated for the case.
 
@@ -451,7 +451,9 @@ class Case:
         """
         fmu_id = self.input.fmu_id
 
-        return ModelExecutable(self._workspace_id, fmu_id, self._sal)
+        return modelon.impact.client.entities.model_executable.ModelExecutable(
+            self._workspace_id, fmu_id, self._sal
+        )
 
     def sync(self):
         """Sync case state against server, pushing any changes that has been
