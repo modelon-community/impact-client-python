@@ -1,3 +1,15 @@
+# [2.3.0-dev.4](https://github.com/modelon-community/impact-client-python/compare/v2.3.0-dev.3...v2.3.0-dev.4) (2022-09-14)
+
+
+### Bug Fixes
+
+* added method for FMU import from ProjectContent ([d058dfb](https://github.com/modelon-community/impact-client-python/commit/d058dfb348b00e40e7f9d2a6053c58d9e3add774))
+* added support to fetch project options and refactored model entity to have project_id ([740c9fb](https://github.com/modelon-community/impact-client-python/commit/740c9fb906bc2f3e8d7973698cf0ef00f853e388))
+* adding datetimestamps to run_info ([7084e27](https://github.com/modelon-community/impact-client-python/commit/7084e27729525aca67a0468ab2f48f87e15ca6e0))
+* import fixes ([13c1dc2](https://github.com/modelon-community/impact-client-python/commit/13c1dc247a8a2dd042299cb6f5182450f89c0982))
+* minor fixes ([e3ca047](https://github.com/modelon-community/impact-client-python/commit/e3ca04786e8f65bee94f7de08123cafa2bece9f1))
+* refactored entities to use a single service class ([0719729](https://github.com/modelon-community/impact-client-python/commit/07197292db0c2aa023d21639fbd96039fac73ab5))
+
 # [2.3.0-dev.3](https://github.com/modelon-community/impact-client-python/compare/v2.3.0-dev.2...v2.3.0-dev.3) (2022-09-06)
 
 
