@@ -2,6 +2,7 @@
 # Copyright (c) 2022 Modelon AB
 #
 import enum
+import os
 import logging
 from pathlib import Path
 from dataclasses import dataclass
@@ -176,12 +177,12 @@ class ProjectContent:
         """
         Relative path in the project. Can be file (e.g., SomeLib.mo) or folder
         """
-        return self._content.get('relpath')
+        return Path(self._content['relpath'])
 
     @property
     def content_type(self) -> ContentType:
         """Type of content"""
-        return ContentType(self._content.get('contentType'))
+        return ContentType(self._content['contentType'])
 
     @property
     def id(self):
@@ -195,7 +196,7 @@ class ProjectContent:
 
     @property
     def default_disabled(self):
-        return self._content.get('defaultDisabled')
+        return self._content['defaultDisabled']
 
     def delete(self):
         """Deletes a project content.
@@ -210,7 +211,6 @@ class ProjectContent:
         self,
         workspace,
         fmu_path: str,
-        library_path: str,
         class_name: Optional[str] = None,
         overwrite: bool = False,
         include_patterns: Optional[Union[str, List[str]]] = None,
@@ -227,10 +227,6 @@ class ProjectContent:
 
             fmu_path --
                 The path for the FMU to be imported.
-
-            library_path --
-                The library identifier, '{name} {version}' or '{name}' if version is
-                missing.
 
             class_name --
                 Qualified name of generated class. By default, 'class_name' is
@@ -280,12 +276,14 @@ class ProjectContent:
             content.upload_fmu(workspace, 'C:/A.fmu',"Test")
             content.upload_fmu(workspace, 'C:/B.fmu',"Test",class_name="Test.Model")
         """
+        class_name = class_name or ".".join(
+            [self.relpath.stem.split(' ')[0], os.path.split(fmu_path)[-1].strip('.fmu')]
+        )
         resp = self._sal.project.fmu_upload(
             workspace.id,
             self._project_id,
             self.id,
             fmu_path,
-            library_path,
             class_name,
             overwrite,
             include_patterns,
@@ -351,7 +349,9 @@ class ProjectDefinition:
     def execution_options(self):
         execution_options = self._data.get('executionOptions', [])
         return [
-            ProjectExecutionOptions(execution_option)
+            ProjectExecutionOptions(
+                execution_option, execution_option['customFunction']
+            )
             for execution_option in execution_options
         ]
 
@@ -407,7 +407,7 @@ class Project:
     def _get_project_content(self, content):
         return ProjectContent(content, self._project_id, self._sal)
 
-    def get_contents(self) -> List[ProjectContent]:
+    def get_contents(self):
         """Get project contents.
 
         Example::
@@ -419,18 +419,43 @@ class Project:
             for content in self._project_definition.content
         ]
 
-    def get_content_by_name(self, name: str) -> Optional[ProjectContent]:
+    def get_content_by_name(
+        self, name: str, content_type: Optional[ContentType] = None
+    ) -> Optional[ProjectContent]:
         """Gets the first matching project content with the given name.
+
+        Parameters:
+
+            name --
+                The name of the content.
+
+            content_type --
+                The type of the project content.
+        Example::
+            from modelon.impact.client import ContentType
+            project.get_content_by_name(name, ContentType.MODELICA)
+        """
+        contents = self.get_contents()
+        if content_type:
+            contents = (c for c in contents if c.content_type == content_type)
+        try:
+            return next(c for c in contents if c.name == name)
+        except StopIteration:
+            return None
+
+    def get_modelica_library_by_name(self, name: str) -> Optional[ProjectContent]:
+        """Gets the first matching modelica library with the given name.
+
+        Parameters:
+
+            name --
+                The modelica library name.
 
         Example::
 
             project.get_content_by_name(name)
         """
-        contents = self.get_contents()
-        for content in contents:
-            if content.name == name:
-                return content
-        return None
+        return self.get_content_by_name(name, ContentType.MODELICA)
 
     def upload_content(
         self, path_to_content: str, content_type: ContentType
@@ -501,5 +526,4 @@ class Project:
             options = self._sal.project.project_options_get(
                 self._project_id, custom_function=custom_function.name
             )
-        options['customFunction'] = custom_function.name
-        return ProjectExecutionOptions(options)
+        return ProjectExecutionOptions(options, custom_function.name)

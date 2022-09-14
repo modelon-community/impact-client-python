@@ -131,8 +131,7 @@ class CustomFunction:
             options = self._sal.custom_function.custom_function_options_get(
                 self._workspace_id, self._name
             )
-        options['customFunction'] = self.name
-        return ProjectExecutionOptions(options)
+        return ProjectExecutionOptions(options, self.name)
 
     def get_compiler_options(self, use_defaults: bool = False):
         """

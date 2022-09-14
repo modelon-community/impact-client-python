@@ -1,4 +1,4 @@
-import unittest.mock as mock
+from pathlib import Path
 from modelon.impact.client.entities.project import ProjectContent
 from tests.impact.client.fixtures import *
 from tests.impact.client.helpers import (
@@ -37,15 +37,23 @@ class TestProject:
         contents = project.entity.get_contents()
         assert len(contents) == 1
         assert contents[0].id == IDs.PROJECT_CONTENT_PRIMARY
-        assert contents[0].relpath == 'MyPackage'
+        assert contents[0].relpath == Path('MyPackage')
         assert contents[0].content_type == ContentType.MODELICA
         assert contents[0].name == 'MyPackage'
         assert not contents[0].default_disabled
 
     def test_get_project_content_by_name(self, project):
-        content = project.entity.get_content_by_name('MyPackage')
+        content = project.entity.get_content_by_name('MyPackage', ContentType.MODELICA)
         assert content.id == IDs.PROJECT_CONTENT_PRIMARY
-        assert content.relpath == 'MyPackage'
+        assert content.relpath == Path('MyPackage')
+        assert content.content_type == ContentType.MODELICA
+        assert content.name == 'MyPackage'
+        assert not content.default_disabled
+
+    def test_get_modelica_library_by_name(self, project):
+        content = project.entity.get_modelica_library_by_name('MyPackage')
+        assert content.id == IDs.PROJECT_CONTENT_PRIMARY
+        assert content.relpath == Path('MyPackage')
         assert content.content_type == ContentType.MODELICA
         assert content.name == 'MyPackage'
         assert not content.default_disabled
@@ -73,7 +81,7 @@ class TestProject:
             SINGLE_FILE_LIBRARY_PATH, content_type=ContentType.MODELICA
         )
         assert content.id == IDs.PROJECT_CONTENT_SECONDARY
-        assert content.relpath == 'test.mo'
+        assert content.relpath == Path('test.mo')
         assert content.content_type == ContentType.MODELICA
         assert content.name == 'test'
         assert not content.default_disabled
@@ -81,7 +89,7 @@ class TestProject:
     def test_upload_modelica_library(self, project):
         content = project.entity.upload_modelica_library(SINGLE_FILE_LIBRARY_PATH)
         assert content.id == IDs.PROJECT_CONTENT_SECONDARY
-        assert content.relpath == 'test.mo'
+        assert content.relpath == Path('test.mo')
         assert content.content_type == ContentType.MODELICA
         assert content.name == 'test'
         assert not content.default_disabled
@@ -98,7 +106,6 @@ class TestProject:
             IDs.PROJECT_CONTENT_PRIMARY,
             'test.fmu',
             'Workspace',
-            None,
             False,
             None,
             None,
