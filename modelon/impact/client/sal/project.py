@@ -1,6 +1,5 @@
 """Project service module"""
 import json
-import os
 from typing import Dict, Any, Optional, Union, List
 from modelon.impact.client.sal.http import HTTPClient
 from modelon.impact.client.sal.uri import URI
@@ -66,8 +65,7 @@ class ProjectService:
         project_id: str,
         content_id: str,
         fmu_path: str,
-        library: str,
-        class_name: Optional[str] = None,
+        class_name: str,
         overwrite: bool = False,
         include_patterns: Optional[Union[str, List[str]]] = None,
         exclude_patterns: Optional[Union[str, List[str]]] = None,
@@ -79,11 +77,8 @@ class ProjectService:
             / f"api/workspaces/{workspace_id}/projects/{project_id}/content/"
             f"{content_id}/models"
         ).resolve()
-        default_class_name = ".".join(
-            [library, os.path.split(fmu_path)[-1].strip('.fmu')]
-        )
         options = {
-            "className": class_name if class_name else default_class_name,
+            "className": class_name,
             "overwrite": overwrite,
             "stepSize": step_size,
         }

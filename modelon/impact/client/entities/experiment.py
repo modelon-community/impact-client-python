@@ -250,7 +250,7 @@ class Experiment:
         """
         resp = self._sal.experiment.cases_get(self._workspace_id, self._exp_id)
         return [
-            Case(case["id"], self._workspace_id, self._exp_id, self._sal, case,)
+            Case(case["id"], self._workspace_id, self._exp_id, self._sal, case)
             for case in resp["data"]["items"]
         ]
 

@@ -506,15 +506,6 @@ class Workspace:
             self._sal,
         )
 
-    def _create_project_entity_from_dict(self, data):
-        return Project(
-            data["id"],
-            ProjectDefinition(data),
-            data["projectType"],
-            VcsUri.from_dict(data["vcsUri"]) if data.get("vcsUri") else None,
-            self._sal,
-        )
-
     def get_projects(self):
         """Return the list of projects for a workspace.
 

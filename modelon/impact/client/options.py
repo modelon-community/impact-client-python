@@ -91,12 +91,13 @@ class SimulationOptions(BaseExecutionOptions):
 
 
 class ProjectExecutionOptions:
-    def __init__(self, data):
+    def __init__(self, data: Dict[str, Any], name: str):
         self._data = data
+        self._name = name
 
     @property
     def custom_function(self):
-        return self._data.get('customFunction')
+        return self._name
 
     @property
     def compiler_options(self):
@@ -115,4 +116,4 @@ class ProjectExecutionOptions:
         return SolverOptions(self._data.get("solver", {}), self.custom_function)
 
     def to_dict(self):
-        return self._data
+        return {"customFunction": self._name, **self._data}

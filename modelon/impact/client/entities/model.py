@@ -272,8 +272,7 @@ class Model:
         options = self._sal.project.project_options_get(
             self._project_id, custom_function=custom_function.name
         )
-        options['customFunction'] = custom_function.name
-        options = ProjectExecutionOptions(options)
+        options = ProjectExecutionOptions(options, custom_function.name)
         return base.SimpleModelicaExperimentDefinition(
             model=self,
             custom_function=custom_function,
