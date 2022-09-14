@@ -5,7 +5,7 @@ node('docker'){
   }
 
   stage ('test') {
-    sh 'make test'
+    sh 'make test-with-coverage'
   }
 
   stage ('publish') {
@@ -16,6 +16,14 @@ node('docker'){
         env.PYPI_PASSWORD = "${PYPI_PASSWORD}"
         sh 'make publish'
       }
+    publishHTML (target: [
+        allowMissing: false,
+        alwaysLinkToLastBuild: false,
+        keepAll: true,
+        reportDir: 'htmlcov',
+        reportFiles: 'index.html',
+        reportName: "Test coverage report"
+      ])
     }
   }
 }

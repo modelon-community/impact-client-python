@@ -3,6 +3,10 @@ USER_ID := $(shell id -u)
 GROUP_ID := $(shell id -g)
 IN_DOCKER_IMG := $(shell test -f /.dockerenv && echo 1 || echo 0)
 
+ifdef WITH_COVERAGE
+EXTRA_PYTEST_FLAGS+=--cov-config=.coveragerc --cov-report=html:htmlcov --cov-report=term --cov=modelon/impact/client
+endif
+
 define _run
 	@if [ $(IN_DOCKER_IMG) -eq 1 ]; then \
 		$(2);\
@@ -42,9 +46,12 @@ poetry:
 	$(call _run_interactive, //bin/sh -c "poetry shell")
 
 unit-test:
-	$(call _run_bare, poetry run pytest -vv)
+	$(call _run_bare, poetry run pytest -vv ${EXTRA_PYTEST_FLAGS})
 
 test: build unit-test lint
+
+test-with-coverage:
+	$(MAKE) WITH_COVERAGE=YES test
 
 test-watch: build
 	$(call _run_interactive, poetry run pytest-watch -- -vv)
