@@ -97,13 +97,13 @@ class TestProjectService:
         )
         assert 'DELETE' == delete_call.method
 
-    def test_project_content_upload(self, upload_project_content):
-        uri = URI(upload_project_content.url)
+    def test_get_project_content(self, get_project_content):
+        uri = URI(get_project_content.url)
         service = modelon.impact.client.sal.service.Service(
-            uri=uri, context=upload_project_content.context
+            uri=uri, context=get_project_content.context
         )
-        data = service.project.project_content_upload(
-            SINGLE_FILE_LIBRARY_PATH, IDs.PROJECT_CONTENT_SECONDARY, "MODELICA",
+        data = service.project.project_content_get(
+            IDs.PROJECT_PRIMARY, IDs.PROJECT_CONTENT_SECONDARY,
         )
         assert data == {
             "id": IDs.PROJECT_CONTENT_SECONDARY,
@@ -112,6 +112,16 @@ class TestProjectService:
             "name": "test",
             "defaultDisabled": False,
         }
+
+    def test_project_content_upload(self, upload_project_content):
+        uri = URI(upload_project_content.url)
+        service = modelon.impact.client.sal.service.Service(
+            uri=uri, context=upload_project_content.context
+        )
+        data = service.project.project_content_upload(
+            SINGLE_FILE_LIBRARY_PATH, IDs.PROJECT_PRIMARY, "MODELICA",
+        )
+        assert 'data' in data
 
     def test_fmu_upload(self, import_fmu):
         uri = URI(import_fmu.url)

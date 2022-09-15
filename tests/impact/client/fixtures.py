@@ -1977,6 +1977,20 @@ def delete_project_content(user_with_license):
 
 
 @pytest.fixture
+def content_upload():
+    json = {
+        "data": {"location": "api/workspace-imports/05c7c0c45a084f079682eaf443287901"}
+    }
+
+    return with_json_route(
+        mock_server_base,
+        'POST',
+        f'api/projects/{IDs.PROJECT_PRIMARY}/content-imports',
+        json,
+    )
+
+
+@pytest.fixture
 def project():
     service = MagicMock()
     project_service = service.project
@@ -2024,12 +2038,28 @@ def project():
         },
         "projectType": "LOCAL",
     }
-    project_service.project_content_upload.return_value = {
+    project_service.project_content_get.return_value = {
         "id": IDs.PROJECT_CONTENT_SECONDARY,
         "relpath": "test.mo",
         "contentType": "MODELICA",
         "name": "test",
         "defaultDisabled": False,
+    }
+    project_url = f'api/projects/{IDs.PROJECT_PRIMARY}'
+    project_service.project_content_upload.return_value = {
+        "data": {"location": f'{project_url}/content-imports/{IDs.IMPORT}'}
+    }
+    content_url = f'{project_url}/content/{IDs.PROJECT_CONTENT_PRIMARY}'
+    project_service.project_content_upload_status.return_value = {
+        "data": {
+            'id': IDs.IMPORT,
+            'status': 'ready',
+            'data': {
+                'resourceUri': content_url,
+                'projectId': IDs.PROJECT_PRIMARY,
+                'contentId': IDs.PROJECT_CONTENT_PRIMARY,
+            },
+        }
     }
     project_service.fmu_upload.return_value = {
         "fmuClassPath": "Workspace.PID_Controller.Model",
@@ -2060,7 +2090,7 @@ def project():
 
 
 @pytest.fixture
-def upload_project_content(sem_ver_check, mock_server_base):
+def get_project_content(sem_ver_check, mock_server_base):
     json = {
         "id": IDs.PROJECT_CONTENT_SECONDARY,
         "relpath": "test.mo",
@@ -2068,13 +2098,16 @@ def upload_project_content(sem_ver_check, mock_server_base):
         "name": "test",
         "defaultDisabled": False,
     }
+    base_url = f'api/projects/{IDs.PROJECT_PRIMARY}'
+    url = f'{base_url}/content/{IDs.PROJECT_CONTENT_SECONDARY}'
+    return with_json_route(mock_server_base, 'GET', url, json,)
 
-    return with_json_route(
-        mock_server_base,
-        'POST',
-        F'api/projects/{IDs.PROJECT_CONTENT_SECONDARY}/content',
-        json,
-    )
+
+@pytest.fixture
+def upload_project_content(sem_ver_check, mock_server_base):
+    json = {"data": {"location": "some/location"}}
+    url = f'api/projects/{IDs.PROJECT_PRIMARY}/content-imports'
+    return with_json_route(mock_server_base, 'POST', url, json)
 
 
 @pytest.fixture
