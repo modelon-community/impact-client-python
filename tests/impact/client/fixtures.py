@@ -189,15 +189,8 @@ def mock_server_base():
 
 
 @pytest.fixture
-def api_get_metadata(mock_server_base):
-    json = {"version": "1.1.0"}
-
-    return with_json_route(mock_server_base, 'GET', 'api/', json)
-
-
-@pytest.fixture
 def sem_ver_check(mock_server_base):
-    json = {"version": "1.21.3"}
+    json = {"version": "4.0.0"}
     return with_json_route(mock_server_base, 'GET', 'api/', json)
 
 
@@ -224,7 +217,7 @@ def login_fails(mock_server_base):
 def jupyterhub_api(mock_server_base):
     jupyter_api_json = {"version": "1.3.0"}
     jupyter_user_json = {'name': 'user-name', 'server': 'ok'}
-    impact_api_json = {"version": "1.99.99"}
+    impact_api_json = {"version": "4.0.0"}
 
     mock_server = with_json_route(
         mock_server_base,
@@ -344,7 +337,7 @@ def create_workspace_error(user_with_license):
 
 @pytest.fixture
 def semantic_version_error(mock_server_base):
-    json = {"version": "4.1.0"}
+    json = {"version": "1.0.0"}
 
     return with_json_route(mock_server_base, 'GET', 'api/', json)
 

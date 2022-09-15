@@ -7,13 +7,13 @@ from tests.impact.client.fixtures import *
 
 
 class TestService:
-    def test_api_get_metadata(self, api_get_metadata):
-        uri = URI(api_get_metadata.url)
+    def test_api_get_metadata(self, sem_ver_check):
+        uri = URI(sem_ver_check.url)
         service = modelon.impact.client.sal.service.Service(
-            uri=uri, context=api_get_metadata.context
+            uri=uri, context=sem_ver_check.context
         )
         data = service.api_get_metadata()
-        assert data == {'version': '1.1.0'}
+        assert data == {'version': '4.0.0'}
 
     def test_given_no_error_when_access_then_no_login_and_ok(self, create_workspace):
         # Given
