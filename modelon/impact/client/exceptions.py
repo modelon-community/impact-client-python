@@ -39,3 +39,7 @@ class OperationCompleteError(Error):
 
 class IllegalWorkspaceImport(Error):
     pass
+
+
+class IllegalContentImport(Error):
+    pass

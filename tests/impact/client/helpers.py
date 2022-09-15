@@ -37,6 +37,7 @@ class IDs:
     FMU_SECONDARY = 'test_filter_fmu_id'
     EXPERIMENT_PRIMARY = 'pid_20090615_134'
     EXPERIMENT_SECONDARY = 'filter_20090615_135'
+    IMPORT = '9a8fg798a7g'
 
 
 VERSIONED_PROJECT_TRUNK = {

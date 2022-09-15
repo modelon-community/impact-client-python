@@ -48,16 +48,25 @@ class ProjectService:
         self._http_client.delete_json(url)
 
     def project_content_upload(
-        self, path_to_result: str, project_id: str, content_type: str,
+        self, path_to_result: str, project_id: str, content_type: str
     ):
-        url = (self._base_uri / f"/api/projects/{project_id}/content").resolve()
-        options = {"contentType": content_type}
+        url = (self._base_uri / f"/api/projects/{project_id}/content-imports").resolve()
         with open(path_to_result, "rb") as f:
             multipart_form_data = {
                 'file': f,
-                'options': json.dumps(options),
+                'options': json.dumps({'contentType': content_type}),
             }
             return self._http_client.post_json(url, files=multipart_form_data)
+
+    def project_content_upload_status(self, location: str):
+        url = (self._base_uri / location).resolve()
+        return self._http_client.get_json(url)
+
+    def project_content_get(self, project_id: str, content_id: str):
+        url = (
+            self._base_uri / f"/api/projects/{project_id}/content/{content_id}"
+        ).resolve()
+        return self._http_client.get_json(url)
 
     def fmu_upload(
         self,

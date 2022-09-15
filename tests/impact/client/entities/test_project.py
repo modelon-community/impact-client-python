@@ -1,4 +1,5 @@
 from pathlib import Path
+from xml.dom.minidom import ReadOnlySequentialNamedNodeMap
 from modelon.impact.client.entities.project import ProjectContent
 from tests.impact.client.fixtures import *
 from tests.impact.client.helpers import (
@@ -9,6 +10,7 @@ from tests.impact.client.helpers import (
 )
 from modelon.impact.client import ContentType
 from tests.files.paths import SINGLE_FILE_LIBRARY_PATH
+from modelon.impact.client.operations.base import AsyncOperationStatus
 
 
 class TestProject:
@@ -77,9 +79,12 @@ class TestProject:
         service.project.project_delete.assert_called_with(IDs.PROJECT_PRIMARY)
 
     def test_upload_project_content(self, project):
-        content = project.entity.upload_content(
+        content_operation = project.entity.upload_content(
             SINGLE_FILE_LIBRARY_PATH, content_type=ContentType.MODELICA
         )
+        assert content_operation.status() == AsyncOperationStatus.READY
+        content = content_operation.data()
+
         assert content.id == IDs.PROJECT_CONTENT_SECONDARY
         assert content.relpath == Path('test.mo')
         assert content.content_type == ContentType.MODELICA
@@ -87,7 +92,12 @@ class TestProject:
         assert not content.default_disabled
 
     def test_upload_modelica_library(self, project):
-        content = project.entity.upload_modelica_library(SINGLE_FILE_LIBRARY_PATH)
+        content_operation = project.entity.upload_modelica_library(
+            SINGLE_FILE_LIBRARY_PATH
+        )
+        assert content_operation.status() == AsyncOperationStatus.READY
+
+        content = content_operation.data()
         assert content.id == IDs.PROJECT_CONTENT_SECONDARY
         assert content.relpath == Path('test.mo')
         assert content.content_type == ContentType.MODELICA
