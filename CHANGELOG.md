@@ -1,3 +1,18 @@
+# [3.0.0-dev.1](https://github.com/modelon-community/impact-client-python/compare/v2.3.0-dev.5...v3.0.0-dev.1) (2022-09-16)
+
+
+### Bug Fixes
+
+* set correct supported version range ([e7e2939](https://github.com/modelon-community/impact-client-python/commit/e7e2939297e44d81e4863f230ff6ce9d179e7fcd))
+* upload content with using latest API ([6531cf3](https://github.com/modelon-community/impact-client-python/commit/6531cf31be558512e4b12eee766e11c639b93469))
+
+
+### BREAKING CHANGES
+
+* any API version less than 4.0.0 is not supported
+* the upload_fmu method has been replaced
+* the upload_model_library method has been replaced
+
 # [2.3.0-dev.5](https://github.com/modelon-community/impact-client-python/compare/v2.3.0-dev.4...v2.3.0-dev.5) (2022-09-16)
 
 
