@@ -1,3 +1,10 @@
+# [2.3.0-dev.5](https://github.com/modelon-community/impact-client-python/compare/v2.3.0-dev.4...v2.3.0-dev.5) (2022-09-16)
+
+
+### Features
+
+* added test coverage ([5e989a4](https://github.com/modelon-community/impact-client-python/commit/5e989a4bb4fbec8f1bdf2ae4dba8b6d94d83d3f6))
+
 # [2.3.0-dev.4](https://github.com/modelon-community/impact-client-python/compare/v2.3.0-dev.3...v2.3.0-dev.4) (2022-09-14)
 
 
