@@ -1,7 +1,7 @@
 from pathlib import Path
 from xml.dom.minidom import ReadOnlySequentialNamedNodeMap
 from modelon.impact.client.entities.project import ProjectContent
-from tests.impact.client.fixtures import *
+
 from tests.impact.client.helpers import (
     create_project_content_entity,
     create_project_entity,

@@ -1,6 +1,3 @@
-from tests.impact.client.fixtures import *
-
-
 def test_modify_options(
     compiler_options, runtime_options, solver_options, simulation_options
 ):

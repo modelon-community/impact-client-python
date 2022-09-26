@@ -3,13 +3,23 @@ import copy
 from unittest.mock import MagicMock
 import pytest
 import requests
-import requests_mock
 from modelon.impact.client import Client
 from modelon.impact.client.options import (
     CompilerOptions,
     SimulationOptions,
     SolverOptions,
     RuntimeOptions,
+)
+from tests.impact.client.helpers import (
+    with_csv_route,
+    with_exception,
+    with_json_request_list_route,
+    with_json_route,
+    with_json_route_no_resp,
+    with_octet_stream_route,
+    with_text_route,
+    with_zip_route,
+    json_request_list_item,
 )
 from tests.impact.client.helpers import (
     create_project_entity,
@@ -24,168 +34,10 @@ from tests.impact.client.helpers import (
     VERSIONED_PROJECT_TRUNK,
 )
 
-MockedServer = collections.namedtuple('MockedServer', ['url', 'context', 'adapter'])
+
 ExperimentMock = collections.namedtuple('ExperimentMock', ['entity', 'service'])
 WorkspaceMock = collections.namedtuple('WorkspaceMock', ['entity', 'service'])
 ProjectMock = collections.namedtuple('ProjectMock', ['entity', 'service'])
-
-
-def json_request_list_item(json_response, status_code=200, extra_headers=None):
-    extra_headers = extra_headers or {}
-    json_header = {'content-type': 'application/json', **extra_headers}
-    return {'json': json_response, 'status_code': status_code, 'headers': json_header}
-
-
-def with_json_route(
-    mock_server_base, method, url, json_response, status_code=200, extra_headers=None
-):
-    request_list = [json_request_list_item(json_response, status_code, extra_headers)]
-    return with_json_request_list_route(mock_server_base, method, url, request_list)
-
-
-def with_json_request_list_route(mock_server_base, method, url, request_list):
-    mock_server_base.adapter.register_uri(
-        method, f'{mock_server_base.url}/{url}', request_list
-    )
-    return mock_server_base
-
-
-def with_exception(mock_server_base, method, url, exce):
-    mock_server_base.adapter.register_uri(
-        method, f'{mock_server_base.url}/{url}', exc=exce
-    )
-    return mock_server_base
-
-
-def with_json_route_no_resp(mock_server_base, method, url, status_code=200):
-    mock_server_base.adapter.register_uri(
-        method, f'{mock_server_base.url}/{url}', status_code=status_code,
-    )
-    return mock_server_base
-
-
-def with_zip_route(mock_server_base, method, url, zip_response, status_code=200):
-    content = zip_response
-    content_header = {'content-type': 'application/zip'}
-    mock_server_base.adapter.register_uri(
-        method,
-        f'{mock_server_base.url}/{url}',
-        content=content,
-        headers=content_header,
-        status_code=status_code,
-    )
-    return mock_server_base
-
-
-def with_text_route(mock_server_base, method, url, text_response, status_code=200):
-    text = text_response
-    text_header = {'content-type': 'text/plain'}
-    mock_server_base.adapter.register_uri(
-        method,
-        f'{mock_server_base.url}/{url}',
-        text=text,
-        headers=text_header,
-        status_code=status_code,
-    )
-    return mock_server_base
-
-
-def with_csv_route(
-    mock_server_base, method, url, text_response, status_code=200, content_header=None
-):
-    text = text_response
-    content_header = (
-        {
-            'content-type': 'text/csv',
-            'content-disposition': 'attachment; '
-            'filename="BouncingBall_2020-09-01_14-33_case_1.csv"',
-            'connection': 'close',
-            'date': 'Tue, 01 Sep 2020 14:33:56 GMT',
-            'server': '127.0.0.1',
-            'Transfer-Encoding': 'chunked',
-        }
-        if content_header is None
-        else content_header
-    )
-    mock_server_base.adapter.register_uri(
-        method,
-        f'{mock_server_base.url}/{url}',
-        text=text,
-        headers=content_header,
-        status_code=status_code,
-    )
-    return mock_server_base
-
-
-def with_mat_stream_route(
-    mock_server_base, method, url, mat_response, status_code=200, content_header=None
-):
-    content = mat_response
-    content_header = (
-        {
-            'content-type': 'application/vnd.impact.mat.v1+octet-stream',
-            'content-disposition': 'attachment; '
-            'filename="BouncingBall_2020-09-01_14-33_case_1.mat"',
-            'connection': 'close',
-            'date': 'Tue, 01 Sep 2020 14:33:56 GMT',
-            'server': '127.0.0.1',
-            'Transfer-Encoding': 'chunked',
-        }
-        if content_header is None
-        else content_header
-    )
-    mock_server_base.adapter.register_uri(
-        method,
-        f'{mock_server_base.url}/{url}',
-        content=content,
-        headers=content_header,
-        status_code=status_code,
-    )
-    return mock_server_base
-
-
-def with_octet_stream_route(
-    mock_server_base, method, url, octet_response, status_code=200, content_header=None
-):
-    content = octet_response
-    content_header = (
-        {
-            'content-type': 'application/octet-stream',
-            'content-disposition': 'attachment; '
-            'filename="BouncingBall_2020-09-01_14-33_case_1.mat"',
-            'connection': 'close',
-            'date': 'Tue, 01 Sep 2020 14:33:56 GMT',
-            'server': '127.0.0.1',
-            'Transfer-Encoding': 'chunked',
-        }
-        if content_header is None
-        else content_header
-    )
-    mock_server_base.adapter.register_uri(
-        method,
-        f'{mock_server_base.url}/{url}',
-        content=content,
-        headers=content_header,
-        status_code=status_code,
-    )
-    return mock_server_base
-
-
-class MockContex:
-    def __init__(self, session):
-        self.session = session
-
-
-@pytest.fixture
-def mock_server_base():
-    session = requests.Session()
-    adapter = requests_mock.Adapter()
-    session.mount('http://', adapter)
-    mock_url = 'http://mock-impact.com'
-
-    mock_server_base = MockedServer(mock_url, MockContex(session), adapter)
-
-    return with_json_route(mock_server_base, 'POST', 'api/login', {})
 
 
 @pytest.fixture
@@ -1966,20 +1818,6 @@ def delete_project_content(user_with_license):
         user_with_license,
         'DELETE',
         f'api/projects/{IDs.PROJECT_PRIMARY}/content/{IDs.PROJECT_CONTENT_PRIMARY}',
-    )
-
-
-@pytest.fixture
-def content_upload():
-    json = {
-        "data": {"location": "api/workspace-imports/05c7c0c45a084f079682eaf443287901"}
-    }
-
-    return with_json_route(
-        mock_server_base,
-        'POST',
-        f'api/projects/{IDs.PROJECT_PRIMARY}/content-imports',
-        json,
     )
 
 

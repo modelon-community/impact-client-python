@@ -10,7 +10,6 @@ from tests.impact.client.helpers import (
     create_project_entity,
     IDs,
 )
-from tests.impact.client.fixtures import *
 
 
 class TestWorkspace:

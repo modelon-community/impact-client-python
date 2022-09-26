@@ -4,7 +4,7 @@ from modelon.impact.client import Client
 from modelon.impact.client.entities.workspace import Workspace, WorkspaceDefinition
 import modelon.impact.client.exceptions as exceptions
 import modelon.impact.client.sal.exceptions as sal_exceptions
-from tests.impact.client.fixtures import *
+
 from tests.impact.client.helpers import (
     create_workspace_entity,
     IDs,

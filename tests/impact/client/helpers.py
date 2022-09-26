@@ -20,6 +20,120 @@ from modelon.impact.client.operations.model_executable import (
 from unittest.mock import MagicMock
 
 
+def json_request_list_item(json_response, status_code=200, extra_headers=None):
+    extra_headers = extra_headers or {}
+    json_header = {'content-type': 'application/json', **extra_headers}
+    return {'json': json_response, 'status_code': status_code, 'headers': json_header}
+
+
+def with_json_route(
+    mock_server_base, method, url, json_response, status_code=200, extra_headers=None
+):
+    request_list = [json_request_list_item(json_response, status_code, extra_headers)]
+    return with_json_request_list_route(mock_server_base, method, url, request_list)
+
+
+def with_json_request_list_route(mock_server_base, method, url, request_list):
+    mock_server_base.adapter.register_uri(
+        method, f'{mock_server_base.url}/{url}', request_list
+    )
+    return mock_server_base
+
+
+def with_exception(mock_server_base, method, url, exce):
+    mock_server_base.adapter.register_uri(
+        method, f'{mock_server_base.url}/{url}', exc=exce
+    )
+    return mock_server_base
+
+
+def with_json_route_no_resp(mock_server_base, method, url, status_code=200):
+    mock_server_base.adapter.register_uri(
+        method, f'{mock_server_base.url}/{url}', status_code=status_code,
+    )
+    return mock_server_base
+
+
+def with_zip_route(mock_server_base, method, url, zip_response, status_code=200):
+    content = zip_response
+    content_header = {'content-type': 'application/zip'}
+    mock_server_base.adapter.register_uri(
+        method,
+        f'{mock_server_base.url}/{url}',
+        content=content,
+        headers=content_header,
+        status_code=status_code,
+    )
+    return mock_server_base
+
+
+def with_text_route(mock_server_base, method, url, text_response, status_code=200):
+    text = text_response
+    text_header = {'content-type': 'text/plain'}
+    mock_server_base.adapter.register_uri(
+        method,
+        f'{mock_server_base.url}/{url}',
+        text=text,
+        headers=text_header,
+        status_code=status_code,
+    )
+    return mock_server_base
+
+
+def with_csv_route(
+    mock_server_base, method, url, text_response, status_code=200, content_header=None
+):
+    text = text_response
+    content_header = (
+        {
+            'content-type': 'text/csv',
+            'content-disposition': 'attachment; '
+            'filename="BouncingBall_2020-09-01_14-33_case_1.csv"',
+            'connection': 'close',
+            'date': 'Tue, 01 Sep 2020 14:33:56 GMT',
+            'server': '127.0.0.1',
+            'Transfer-Encoding': 'chunked',
+        }
+        if content_header is None
+        else content_header
+    )
+    mock_server_base.adapter.register_uri(
+        method,
+        f'{mock_server_base.url}/{url}',
+        text=text,
+        headers=content_header,
+        status_code=status_code,
+    )
+    return mock_server_base
+
+
+def with_octet_stream_route(
+    mock_server_base, method, url, octet_response, status_code=200, content_header=None
+):
+    content = octet_response
+    content_header = (
+        {
+            'content-type': 'application/octet-stream',
+            'content-disposition': 'attachment; '
+            'filename="BouncingBall_2020-09-01_14-33_case_1.mat"',
+            'connection': 'close',
+            'date': 'Tue, 01 Sep 2020 14:33:56 GMT',
+            'server': '127.0.0.1',
+            'Transfer-Encoding': 'chunked',
+        }
+        if content_header is None
+        else content_header
+    )
+    mock_server_base.adapter.register_uri(
+        method,
+        f'{mock_server_base.url}/{url}',
+        content=content,
+        headers=content_header,
+        status_code=status_code,
+    )
+    return mock_server_base
+
+
 class IDs:
     WORKSPACE_PRIMARY = 'workspace_1'
     WORKSPACE_SECONDARY = 'workspace_2'

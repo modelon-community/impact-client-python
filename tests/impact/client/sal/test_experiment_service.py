@@ -2,7 +2,6 @@ from modelon.impact.client.sal.uri import URI
 import modelon.impact.client.sal.service
 from modelon.impact.client.sal.experiment import ResultFormat
 from tests.impact.client.helpers import IDs
-from tests.impact.client.fixtures import *
 
 
 class TestExperimentService:
