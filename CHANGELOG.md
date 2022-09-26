@@ -1,3 +1,10 @@
+# [3.0.0-dev.2](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.1...v3.0.0-dev.2) (2022-09-26)
+
+
+### Bug Fixes
+
+* added convinience methods and arguments for fetching projects ([110035d](https://github.com/modelon-community/impact-client-python/commit/110035dbce62e00297b58986cbf675b7681f4e8d))
+
 # [3.0.0-dev.1](https://github.com/modelon-community/impact-client-python/compare/v2.3.0-dev.5...v3.0.0-dev.1) (2022-09-16)
 
 
