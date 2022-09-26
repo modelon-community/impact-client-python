@@ -8,7 +8,6 @@ from tests.impact.client.helpers import (
     VERSIONED_PROJECT_BRANCH,
 )
 from tests.files.paths import TEST_WORKSPACE_PATH
-from tests.impact.client.fixtures import *
 
 
 class TestWorkspaceService:

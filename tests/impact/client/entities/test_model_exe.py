@@ -5,7 +5,6 @@ from modelon.impact.client import exceptions
 
 from modelon.impact.client.entities.model_executable import ModelExecutableStatus
 from tests.impact.client.helpers import IDs
-from tests.impact.client.fixtures import *
 
 
 class TestModelExecutable:

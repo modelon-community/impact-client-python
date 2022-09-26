@@ -5,7 +5,6 @@ from modelon.impact.client.operations.base import AsyncOperationStatus
 from modelon.impact.client.operations.external_result import (
     ExternalResultUploadOperation,
 )
-from tests.impact.client.fixtures import *
 
 
 class TestExternalResultUploadOperation:

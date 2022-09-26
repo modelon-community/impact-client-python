@@ -20,7 +20,7 @@ from tests.impact.client.helpers import (
     create_case_entity,
     IDs,
 )
-from tests.impact.client.fixtures import *
+
 
 _EXPECTED_FMU_EXP = {
     "experiment": {

@@ -6,8 +6,6 @@ from modelon.impact.client.options import (
     RuntimeOptions,
 )
 
-from tests.impact.client.fixtures import *
-
 
 class TestCustomFunction:
     def test_custom_function_with_parameters_ok(self, custom_function):

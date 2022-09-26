@@ -9,7 +9,6 @@ from tests.impact.client.helpers import (
     create_experiment_operation,
     IDs,
 )
-from tests.impact.client.fixtures import *
 
 
 class TestExperiment:

@@ -8,7 +8,6 @@ from tests.impact.client.helpers import (
     create_external_result_entity,
     IDs,
 )
-from tests.impact.client.fixtures import *
 
 
 def get_case_put_json_input(mock_method_call):
