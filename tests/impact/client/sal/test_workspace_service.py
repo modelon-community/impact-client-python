@@ -224,7 +224,9 @@ class TestWorkspaceService:
         service = modelon.impact.client.sal.service.Service(
             uri=uri, context=get_projects.context
         )
-        data = service.workspace.projects_get(IDs.WORKSPACE_PRIMARY)
+        data = service.workspace.projects_get(
+            IDs.WORKSPACE_PRIMARY, include_disabled=False, vcs_info=False
+        )
         assert data == {
             "data": {
                 "items": [
@@ -260,7 +262,9 @@ class TestWorkspaceService:
         service = modelon.impact.client.sal.service.Service(
             uri=uri, context=get_dependencies.context
         )
-        data = service.workspace.dependencies_get(IDs.WORKSPACE_PRIMARY)
+        data = service.workspace.dependencies_get(
+            IDs.WORKSPACE_PRIMARY, vcs_info=False, include_disabled=False
+        )
         assert data == {
             "data": {
                 "items": [

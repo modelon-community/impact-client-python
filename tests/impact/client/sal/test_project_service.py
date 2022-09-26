@@ -26,7 +26,7 @@ class TestProjectService:
         service = modelon.impact.client.sal.service.Service(
             uri=uri, context=single_project.context
         )
-        data = service.project.project_get(IDs.PROJECT_PRIMARY)
+        data = service.project.project_get(IDs.PROJECT_PRIMARY, vcs_info=False)
         assert data == {
             "id": IDs.PROJECT_PRIMARY,
             "definition": {
@@ -52,7 +52,7 @@ class TestProjectService:
         service = modelon.impact.client.sal.service.Service(
             uri=uri, context=multiple_projects.context
         )
-        data = service.project.projects_get()
+        data = service.project.projects_get(vcs_info=False)
         assert data == {
             "data": {
                 "items": [

@@ -157,6 +157,10 @@ class Workspace:
         """Workspace id"""
         return self._workspace_id
 
+    @property
+    def definition(self):
+        return self._workspace_definition
+
     def get_custom_function(self, name: str) -> CustomFunction:
         """
         Returns a CustomFunction class object.
@@ -506,7 +510,7 @@ class Workspace:
             self._sal,
         )
 
-    def get_projects(self):
+    def get_projects(self, vcs_info: bool = True, include_disabled: bool = False):
         """Return the list of projects for a workspace.
 
         Returns:
@@ -519,7 +523,9 @@ class Workspace:
 
             projects = workspace.get_projects()
         """
-        resp = self._sal.workspace.projects_get(self._workspace_id)
+        resp = self._sal.workspace.projects_get(
+            self._workspace_id, vcs_info=vcs_info, include_disabled=include_disabled
+        )
         projects = [
             Project(
                 item["id"],
@@ -532,7 +538,7 @@ class Workspace:
         ]
         return projects
 
-    def get_dependencies(self):
+    def get_dependencies(self, vcs_info: bool = True, include_disabled: bool = False):
         """Return the list of project dependencies for a workspace.
 
         Returns:
@@ -545,7 +551,9 @@ class Workspace:
 
             dependencies = workspace.get_dependencies()
         """
-        resp = self._sal.workspace.dependencies_get(self._workspace_id)
+        resp = self._sal.workspace.dependencies_get(
+            self._workspace_id, vcs_info, include_disabled
+        )
         return [
             Project(
                 item["id"],
