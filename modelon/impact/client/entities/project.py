@@ -199,6 +199,9 @@ class ProjectDefinition:
             for execution_option in execution_options
         ]
 
+    def to_dict(self):
+        return self._data
+
 
 class Project:
     """
@@ -238,6 +241,10 @@ class Project:
     def vcs_uri(self) -> Optional[VcsUri]:
         """Project vcs uri"""
         return self._vcs_uri
+
+    @property
+    def project_type(self):
+        return self._project_type
 
     def delete(self):
         """Deletes a project.

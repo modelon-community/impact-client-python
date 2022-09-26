@@ -258,7 +258,7 @@ class Client:
             for item in resp["data"]["items"]
         ]
 
-    def get_project(self, project_id):
+    def get_project(self, project_id: str, vcs_info: bool = True):
         """
         Returns a project class object.
 
@@ -276,7 +276,7 @@ class Client:
 
             client.get_project('hcbhsb11313321')
         """
-        resp = self._sal.project.project_get(project_id)
+        resp = self._sal.project.project_get(project_id, vcs_info)
         return Project(
             resp["id"],
             ProjectDefinition(resp["definition"]),
@@ -285,7 +285,7 @@ class Client:
             self._sal,
         )
 
-    def get_projects(self, vcs_info=False):
+    def get_projects(self, vcs_info=True):
         """
         Returns a list of project class object.
 

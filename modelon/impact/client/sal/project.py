@@ -10,12 +10,14 @@ class ProjectService:
         self._base_uri = uri
         self._http_client = http_client
 
-    def projects_get(self, vcs_info=False):
+    def projects_get(self, vcs_info: bool):
         url = (self._base_uri / f"api/projects?vcsInfo={vcs_info}").resolve()
         return self._http_client.get_json(url)
 
-    def project_get(self, project_id: str):
-        url = (self._base_uri / f"api/projects/{project_id}?vcsInfo=true").resolve()
+    def project_get(self, project_id: str, vcs_info: bool):
+        url = (
+            self._base_uri / f"api/projects/{project_id}?vcsInfo={vcs_info}"
+        ).resolve()
         return self._http_client.get_json(url)
 
     def project_delete(self, project_id: str):
