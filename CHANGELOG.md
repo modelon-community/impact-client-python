@@ -1,3 +1,10 @@
+# [3.0.0-dev.3](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.2...v3.0.0-dev.3) (2022-09-26)
+
+
+### Bug Fixes
+
+* refactored fixtures ([a08e154](https://github.com/modelon-community/impact-client-python/commit/a08e1546d04852205cadb4773f040653a2e5e7a0))
+
 # [3.0.0-dev.2](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.1...v3.0.0-dev.2) (2022-09-26)
 
 
