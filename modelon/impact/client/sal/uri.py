@@ -15,7 +15,7 @@ class URI:
         return self.content.format(**kwargs)
 
     def _with_path(self, path):
-        return URI(urllib.parse.urljoin(self.content + "/", path))
+        return URI(urllib.parse.urljoin(self.content + "/", path.lstrip('/')))
 
     def __floordiv__(self, other):
         return self._with_path(other)
