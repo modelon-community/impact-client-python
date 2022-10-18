@@ -1,3 +1,10 @@
+# [3.0.0-dev.4](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.3...v3.0.0-dev.4) (2022-10-18)
+
+
+### Bug Fixes
+
+* concatination of URLs handles starting slash on relative part ([464b162](https://github.com/modelon-community/impact-client-python/commit/464b1620cd98d3af4bac8bf7bdeb8c4a05ec8f29))
+
 # [3.0.0-dev.3](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.2...v3.0.0-dev.3) (2022-09-26)
 
 
