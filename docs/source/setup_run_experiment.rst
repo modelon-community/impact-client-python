@@ -57,7 +57,7 @@ It is also possible to setup a series of experiments as shown below::
 
    experiment_definition = experiment_definition.with_modifiers({'PI.k': Range(10, 100, 3)})
 
-This would setup an experiment with 3 cases. Please refer the :doc:`mutli-execution <muti_execution_experiments>` tutorial for more information on this.
+This would setup an experiment with 3 cases. Please refer the :doc:`multi-execution <multi_execution_experiments>` tutorial for more information on this.
 
 Executing the experiment
 ************************

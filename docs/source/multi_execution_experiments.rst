@@ -1,5 +1,5 @@
-Muti-execution experiments
-==========================
+Multi-execution experiments
+===========================
 
 *This tutorial covers different ways to setup a series of simulations.*
 
