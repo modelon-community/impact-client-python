@@ -1,3 +1,10 @@
+## [2.2.3](https://github.com/modelon-community/impact-client-python/compare/v2.2.2...v2.2.3) (2022-12-02)
+
+
+### Bug Fixes
+
+* corrected minor typo fix in the docs ([8031e97](https://github.com/modelon-community/impact-client-python/commit/8031e977652bd42790b317c61bbeb7b5ac6f8c32))
+
 ## [2.2.2](https://github.com/modelon-community/impact-client-python/compare/v2.2.1...v2.2.2) (2022-06-13)
 
 
