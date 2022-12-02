@@ -36,7 +36,7 @@ Python companion library for Modelon Impact that wraps its REST API framework an
    choosing_a_model.rst
    setup_run_experiment.rst
    plotting_experiment_results.rst
-   muti_execution_experiments.rst
+   multi_execution_experiments.rst
    reexecuting_updating_experiments.rst
    fmu_based_workflow.rst
    logging_output_for_client.rst
