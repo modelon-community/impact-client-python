@@ -374,26 +374,36 @@ def upload_workspace(sem_ver_check, mock_server_base):
 
 
 @pytest.fixture
-def get_export_id(sem_ver_check, mock_server_base):
-    json = {"export_id": "0d96b08c8d", "file_size": 2156}
+def setup_export_workspace(sem_ver_check, mock_server_base):
+    json = {"data": {"location": "api/workspace-exports/79sd8-3n2a4-e3t24"}}
+    return with_json_route(mock_server_base, 'POST', 'api/workspace-exports', json)
 
+
+@pytest.fixture
+def get_export_workspace_status(sem_ver_check, mock_server_base):
+    json = {
+        "data": {
+            "id": "79sd8-3n2a4-e3t24",
+            "status": "ready",
+            "data": {"downloadUri": "api/exports/79sd8-3n2a4-e3t24", "size": 10481015},
+            "error": {
+                "message": "Could not export workspace 'my_workspace'. "
+                "Maximum allowed zip file size of 95MB exceeded",
+                "code": 12072,
+            },
+        }
+    }
     return with_json_route(
-        mock_server_base,
-        'POST',
-        f'api/workspaces/{IDs.WORKSPACE_PRIMARY}/exports',
-        json,
+        mock_server_base, 'GET', 'api/workspace-exports/79sd8-3n2a4-e3t24', json
     )
 
 
 @pytest.fixture
-def download_workspace(sem_ver_check, mock_server_base, get_export_id):
+def get_export_archive(sem_ver_check, mock_server_base):
     content = bytes(4)
 
     return with_zip_route(
-        mock_server_base,
-        'GET',
-        f'api/workspaces/{IDs.WORKSPACE_PRIMARY}/exports/0d96b08c8d',
-        content,
+        mock_server_base, 'GET', 'api/exports/79sd8-3n2a4-e3t24', content,
     )
 
 
@@ -982,10 +992,12 @@ def project_default_options_get(sem_ver_check, mock_server_base):
 @pytest.fixture
 def workspace():
     service = MagicMock()
+    export_service = service.export
     ws_service = service.workspace
     custom_function_service = service.custom_function
     exp_service = service.experiment
     project_service = service.project
+    export_service.export_download.return_value = b"undjnvsjnvj"
     ws_service.experiment_create.return_value = {
         "experiment_id": IDs.EXPERIMENT_PRIMARY
     }
@@ -1092,6 +1104,17 @@ def workspace():
                     "projectType": "SYSTEM",
                 },
             ]
+        }
+    }
+    ws_service.workspace_export_setup.return_value = {
+        "data": {"location": "api/workspace-exports/79sd8-3n2a4-e3t24"}
+    }
+    ws_service.get_workspace_export_status.return_value = {
+        "data": {
+            "id": "79sd8-3n2a4-e3t24",
+            "status": "ready",
+            "data": {"downloadUri": "api/exports/79sd8-3n2a4-e3t24", "size": 10481015},
+            "error": {},
         }
     }
     custom_function_service.custom_function_get.return_value = {

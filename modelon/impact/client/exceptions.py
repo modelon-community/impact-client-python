@@ -41,5 +41,9 @@ class IllegalWorkspaceImport(Error):
     pass
 
 
+class IllegalWorkspaceExport(Error):
+    pass
+
+
 class IllegalContentImport(Error):
     pass

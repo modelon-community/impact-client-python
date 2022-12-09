@@ -13,7 +13,7 @@ import modelon.impact.client.sal.service
 import modelon.impact.client.sal.exceptions
 import modelon.impact.client.credential_manager
 import modelon.impact.client.jupyterhub
-from modelon.impact.client.operations.workspace import WorkspaceImportOperation
+from modelon.impact.client.operations.workspace.imports import WorkspaceImportOperation
 from modelon.impact.client.sal.uri import URI
 from modelon.impact.client import exceptions
 

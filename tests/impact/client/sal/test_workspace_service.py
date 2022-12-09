@@ -136,13 +136,23 @@ class TestWorkspaceService:
         )
         assert upload_result_delete.adapter.called
 
-    def test_workspace_download(self, download_workspace):
-        uri = URI(download_workspace.url)
+    def test_workspace_export_setup(self, setup_export_workspace):
+        uri = URI(setup_export_workspace.url)
         service = modelon.impact.client.sal.service.Service(
-            uri=uri, context=download_workspace.context
+            uri=uri, context=setup_export_workspace.context
         )
-        data = service.workspace.workspace_download(IDs.WORKSPACE_PRIMARY, '0d96b08c8d')
-        assert data == b'\x00\x00\x00\x00'
+        data = service.workspace.workspace_export_setup(IDs.WORKSPACE_PRIMARY, {})
+        assert data == {"data": {"location": "api/workspace-exports/79sd8-3n2a4-e3t24"}}
+
+    def test_workspace_export_status(self, get_export_workspace_status):
+        uri = URI(get_export_workspace_status.url)
+        service = modelon.impact.client.sal.service.Service(
+            uri=uri, context=get_export_workspace_status.context
+        )
+        data = service.workspace.get_workspace_export_status(
+            "api/workspace-exports/79sd8-3n2a4-e3t24"
+        )
+        assert data["data"]["status"] == "ready"
 
     # TODO: Cloning workspace is not implemented on feature branch
     # def test_clone_workspace(self, clone_workspace):
