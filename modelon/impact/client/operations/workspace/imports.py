@@ -6,7 +6,8 @@ from modelon.impact.client import exceptions
 
 class WorkspaceImportOperation(AsyncOperation):
     """
-    An operation class for the modelon.impact.client.entities.workspace.Workspace class.
+    An import operation class for the modelon.impact.client.entities.workspace.
+    Workspace class.
     """
 
     def __init__(

@@ -13,6 +13,7 @@ from modelon.impact.client.entities.project import (
 from modelon.impact.client.entities.external_result import ExternalResult
 from modelon.impact.client.entities.model import Model
 from modelon.impact.client.operations.experiment import ExperimentOperation
+from modelon.impact.client.operations.workspace.exports import WorkspaceExportOperation
 from modelon.impact.client.operations.model_executable import (
     CachedModelExecutableOperation,
     ModelExecutableOperation,
@@ -367,3 +368,12 @@ def create_model_exe_operation(
     workspace_id, fmu_id, service=None,
 ):
     return ModelExecutableOperation(workspace_id, fmu_id, service or MagicMock())
+
+
+def create_workspace_export_operation(
+    ws_export_id, service=None,
+):
+    return WorkspaceExportOperation(
+        f"api/workspace-exports/{ws_export_id}", service or MagicMock()
+    )
+

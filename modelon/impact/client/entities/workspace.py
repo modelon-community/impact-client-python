@@ -9,6 +9,7 @@ from modelon.impact.client.experiment_definition.base import (
     SimpleFMUExperimentDefinition,
 )
 from modelon.impact.client.entities.custom_function import CustomFunction
+from modelon.impact.client.operations.workspace.exports import WorkspaceExportOperation
 from modelon.impact.client.operations.experiment import ExperimentOperation
 from modelon.impact.client.operations.external_result import (
     ExternalResultUploadOperation,
@@ -254,7 +255,51 @@ class Workspace:
         )
         return ExternalResultUploadOperation(resp["data"]["id"], self._sal)
 
-    def download(self, options: Dict[str, Any], path: str) -> str:
+    def export(self, options: Dict[str, Any]):
+        """Exports the workspace as a binary compressed archive.
+        Returns an modelon.impact.client.operations.workspace
+        .WorkspaceExportOperation class object.
+
+        Parameters:
+
+            options --
+                The definition of what workspace resources to include when
+                exporting the workspace.
+
+        Returns:
+
+            WorkspaceExportOperation --
+                An modelon.impact.client.operations.workspace.WorkspaceExportOperation
+                 class object.
+
+        Example::
+
+            options = {
+                "contents": {
+                    "libraries": [
+                        {"name": "LiquidCooling", "resources_to_exclude": []},
+                        {
+                            "name": "Workspace",
+                            "resources_to_exclude": ["my_plot.png", "my_sheet.csv"],
+                        },
+                    ],
+                    "experiment_ids": [
+                        "_nics_multibody_examples_elementary_doublependulum_20191029",
+                        "modelica_blocks_examples_pid_controller_20191023_151659_f32a30d",
+                    ],
+                    "fmu_ids": [
+                        "_nics_multibody_examples_elementary_doublependulum_20191029_089",
+                        "modelica_blocks_examples_pid_controller_20191023_151659_f32a30d",
+                    ],
+                }
+            }
+            path = workspace.download(options).wait().download_as('/home/workspace.zip')
+        """
+        options["workspaceId"] = self._workspace_id
+        resp = self._sal.workspace.workspace_export_setup(self._workspace_id, options)
+        return WorkspaceExportOperation(resp["data"]["location"], self._sal)
+
+    def download(self, options: Dict[str, Any], path: str):
         """Downloads the workspace as a binary compressed archive.
         Returns the local path to the downloaded workspace archive.
 
@@ -284,24 +329,20 @@ class Workspace:
                         },
                     ],
                     "experiment_ids": [
-                        "_nics_multibody_examples_elementary_doublependulum_20191029_084342_2c956e9",
+                        "_nics_multibody_examples_elementary_doublependulum_20191029_0",
                         "modelica_blocks_examples_pid_controller_20191023_151659_f32a30d",
                     ],
                     "fmu_ids": [
-                        "_nics_multibody_examples_elementary_doublependulum_20191029_084342_2c956e9",
+                        "_nics_multibody_examples_elementary_doublependulum_20191029_08",
                         "modelica_blocks_examples_pid_controller_20191023_151659_f32a30d",
                     ],
                 }
             }
             workspace.download(options, path)
         """
-        data = self._sal.workspace.workspace_download(self._workspace_id, options)
         ws_path = os.path.join(path, self._workspace_id + ".zip")
-
-        os.makedirs(os.path.dirname(path), exist_ok=True)
-        with open(ws_path, "wb") as f:
-            f.write(data)
-        return ws_path
+        ops = self.export(options).wait()
+        return ops.download_as(ws_path) if ops else None
 
     def clone(self) -> 'Workspace':
         """Clones the workspace.

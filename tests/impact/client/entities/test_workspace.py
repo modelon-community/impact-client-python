@@ -8,6 +8,7 @@ from tests.impact.client.helpers import (
     create_workspace_entity,
     create_experiment_operation,
     create_project_entity,
+    create_workspace_export_operation,
     IDs,
 )
 
@@ -45,6 +46,10 @@ class TestWorkspace:
         t = os.path.join(tempfile.gettempdir(), workspace.entity.id + '.zip')
         resp = workspace.entity.download({}, tempfile.gettempdir())
         assert resp == t
+
+    def test_export_workspace(self, workspace):
+        resp = workspace.entity.export({})
+        assert resp == create_workspace_export_operation("79sd8-3n2a4-e3t24")
 
     # TODO: Cloning workspace is not implemented on feature branch
     # def test_clone(self, workspace):

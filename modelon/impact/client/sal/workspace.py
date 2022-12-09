@@ -87,16 +87,14 @@ class WorkspaceService:
         url = (self._base_uri / f"api/external-result/{upload_id}").resolve()
         return self._http_client.delete_json(url)
 
-    def _workspace_get_export_id(self, workspace_id: str, options: Dict[str, Any]):
-        url = (self._base_uri / f"api/workspaces/{workspace_id}/exports").resolve()
-        return self._http_client.post_json(url, body=options)["export_id"]
+    def workspace_export_setup(self, workspace_id: str, options: Dict[str, Any]):
+        url = (self._base_uri / "api/workspace-exports").resolve()
+        options["workspaceId"] = workspace_id
+        return self._http_client.post_json(url, body=options)
 
-    def workspace_download(self, workspace_id: str, options: Dict[str, Any]):
-        export_id = self._workspace_get_export_id(workspace_id, options)
-        url = (
-            self._base_uri / f"api/workspaces/{workspace_id}/exports/{export_id}"
-        ).resolve()
-        return self._http_client.get_zip(url)
+    def get_workspace_export_status(self, location: str):
+        url = (self._base_uri / location).resolve()
+        return self._http_client.get_json(url)
 
     def workspace_clone(self, workspace_id: str):
         url = (self._base_uri / f"api/workspaces/{workspace_id}/clone").resolve()
