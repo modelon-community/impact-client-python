@@ -5,12 +5,24 @@ Subpackages
 -----------
 
 .. toctree::
-   :maxdepth: 4
+   :maxdepth: 5
 
+   modelon.impact.client.entities
+   modelon.impact.client.experiment_definition
+   modelon.impact.client.jupyterhub
+   modelon.impact.client.operations
    modelon.impact.client.sal
 
 Submodules
 ----------
+
+modelon.impact.client.asserts module
+------------------------------------
+
+.. automodule:: modelon.impact.client.asserts
+   :members:
+   :undoc-members:
+   :show-inheritance:
 
 modelon.impact.client.client module
 -----------------------------------
@@ -36,34 +48,10 @@ modelon.impact.client.credential\_manager module
    :undoc-members:
    :show-inheritance:
 
-modelon.impact.client.entities module
--------------------------------------
-
-.. automodule:: modelon.impact.client.entities
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 modelon.impact.client.exceptions module
 ---------------------------------------
 
 .. automodule:: modelon.impact.client.exceptions
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-modelon.impact.client.experiment\_definition module
----------------------------------------------------
-
-.. automodule:: modelon.impact.client.experiment_definition
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-modelon.impact.client.operations module
----------------------------------------
-
-.. automodule:: modelon.impact.client.operations
    :members:
    :undoc-members:
    :show-inheritance:
