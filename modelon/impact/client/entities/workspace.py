@@ -23,7 +23,9 @@ from modelon.impact.client.entities.project import Project, ProjectDefinition, V
 logger = logging.getLogger(__name__)
 
 ExperimentDefinition = Union[
-    SimpleModelicaExperimentDefinition, SimpleFMUExperimentDefinition, Dict[str, Any],
+    SimpleModelicaExperimentDefinition,
+    SimpleFMUExperimentDefinition,
+    Dict[str, Any],
 ]
 
 
