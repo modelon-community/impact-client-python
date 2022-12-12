@@ -85,7 +85,10 @@ class Client:
             self._validate_compatible_api_version()
         except modelon.impact.client.sal.exceptions.AccessingJupyterHubError:
             self._uri, context = modelon.impact.client.jupyterhub.authorize(
-                self._uri, interactive, context, jupyterhub_credential_manager,
+                self._uri,
+                interactive,
+                context,
+                jupyterhub_credential_manager,
             )
             self._sal = modelon.impact.client.sal.service.Service(self._uri, context)
             self._validate_compatible_api_version()

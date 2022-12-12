@@ -201,7 +201,8 @@ class SimpleExperimentExtension(BaseExperimentExtension):
         new._initialize_from_case = self._initialize_from_case
         validate_and_set_initialize_from(entity, new)
         assert_unique_exp_initialization(
-            new._initialize_from_experiment, new._initialize_from_case,
+            new._initialize_from_experiment,
+            new._initialize_from_case,
         )
         new._variable_modifiers = self._variable_modifiers
         new._case_label = self._case_label

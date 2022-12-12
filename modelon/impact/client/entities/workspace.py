@@ -22,7 +22,9 @@ from modelon.impact.client.entities.experiment import Experiment
 logger = logging.getLogger(__name__)
 
 ExperimentDefinition = Union[
-    SimpleModelicaExperimentDefinition, SimpleFMUExperimentDefinition, Dict[str, Any],
+    SimpleModelicaExperimentDefinition,
+    SimpleFMUExperimentDefinition,
+    Dict[str, Any],
 ]
 
 

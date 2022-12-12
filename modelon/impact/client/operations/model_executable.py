@@ -175,7 +175,10 @@ class ModelExecutableOperation(ExecutionOperation):
                 A model_executable class instance.
         """
         return ModelExecutable(
-            self._workspace_id, self._fmu_id, self._workspace_sal, self._model_exe_sal,
+            self._workspace_id,
+            self._fmu_id,
+            self._workspace_sal,
+            self._model_exe_sal,
         )
 
     def status(self):
