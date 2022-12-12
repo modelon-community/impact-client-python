@@ -49,7 +49,7 @@ class TestWorkspace:
 
     def test_export_workspace(self, workspace):
         resp = workspace.entity.export({})
-        assert resp == create_workspace_export_operation("79sd8-3n2a4-e3t24")
+        assert resp == create_workspace_export_operation(IDs.EXPORT)
 
     # TODO: Cloning workspace is not implemented on feature branch
     # def test_clone(self, workspace):

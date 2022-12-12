@@ -4,9 +4,10 @@ from modelon.impact.client.operations.base import AsyncOperation, AsyncOperation
 from modelon.impact.client import exceptions
 
 
-class BinaryBlob:
-    def __init__(self, binary_data):
-        self._data = binary_data
+class Export:
+    def __init__(self, export_service, download_uri):
+        self._export_sal = export_service
+        self._download_uri = download_uri
 
     def download_as(self, path_to_download):
         """Writes the binary archive to a file.
@@ -24,12 +25,13 @@ class BinaryBlob:
 
         Example::
 
-            path = workspace.download(options).wait().download_as('/home/workspace.zip')
-            path = workspace.download(options).wait().download_as('workspace.zip')
+            path = workspace.export(options).wait().download_as('/home/workspace.zip')
+            path = workspace.export(options).wait().download_as('workspace.zip')
         """
+        data = self._export_sal.export_download(self._download_uri)
         os.makedirs(os.path.dirname(path_to_download), exist_ok=True)
         with open(path_to_download, "wb") as f:
-            f.write(self._data)
+            f.write(data)
         return path_to_download
 
 
@@ -73,18 +75,18 @@ class WorkspaceExportOperation(AsyncOperation):
 
     def data(self):
         """
-        Returns a new Workspace class instance.
+        Returns a Export class instance.
 
         Returns:
 
-            A BinaryBlob class object.
+            An Export class instance.
         """
         info = self._info()
         if info['status'] == AsyncOperationStatus.ERROR.value:
             raise exceptions.IllegalWorkspaceExport(
                 f"Workspace export failed! Cause: {info['error'].get('message')}"
             )
-        return BinaryBlob(self._sal.export.export_download(info["data"]["downloadUri"]))
+        return Export(self._sal.export, info["data"]["downloadUri"])
 
     def status(self):
         """

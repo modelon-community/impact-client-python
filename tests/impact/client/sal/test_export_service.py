@@ -1,5 +1,6 @@
-from modelon.impact.client.sal.uri import URI
 import modelon.impact.client.sal.service
+from modelon.impact.client.sal.uri import URI
+from tests.impact.client.helpers import IDs
 
 
 class TestWorkspaceService:
@@ -8,5 +9,5 @@ class TestWorkspaceService:
         service = modelon.impact.client.sal.service.Service(
             uri=uri, context=get_export_archive.context
         )
-        data = service.export.export_download('api/exports/79sd8-3n2a4-e3t24')
+        data = service.export.export_download(f'api/exports/{IDs.EXPORT}')
         assert data == b'\x00\x00\x00\x00'
