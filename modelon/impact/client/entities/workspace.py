@@ -23,7 +23,9 @@ from modelon.impact.client.entities.project import Project, ProjectDefinition, V
 logger = logging.getLogger(__name__)
 
 ExperimentDefinition = Union[
-    SimpleModelicaExperimentDefinition, SimpleFMUExperimentDefinition, Dict[str, Any],
+    SimpleModelicaExperimentDefinition,
+    SimpleFMUExperimentDefinition,
+    Dict[str, Any],
 ]
 
 
@@ -55,7 +57,10 @@ def _get_project_entry_reference(reference):
             build=reference.get('build'),
         )
     elif "vcsUri" in reference:
-        return VcsReference(id=reference.get('id'), vcs_uri=reference.get('vcsUri'),)
+        return VcsReference(
+            id=reference.get('id'),
+            vcs_uri=reference.get('vcsUri'),
+        )
     else:
         return Reference(id=reference.get('id'))
 
@@ -256,7 +261,9 @@ class Workspace:
         return ExternalResultUploadOperation(resp["data"]["id"], self._sal)
 
     def export(self, options: Dict[str, Any]):
-        """Exports the workspace as a binary compressed archive.
+        """Exports the workspace as a binary compressed archive. Similar to
+        :obj:`~modelon.impact.client.entities.workspace.Workspace.download`,
+        but gives more control for getting the workspace async.
         Returns an modelon.impact.client.operations.workspace
         .WorkspaceExportOperation class object.
 
@@ -293,7 +300,7 @@ class Workspace:
                     ],
                 }
             }
-            path = workspace.download(options).wait().download_as('/home/workspace.zip')
+            path = workspace.export(options).wait().download_as('/home/workspace.zip')
         """
         options["workspaceId"] = self._workspace_id
         resp = self._sal.workspace.workspace_export_setup(self._workspace_id, options)
@@ -302,6 +309,8 @@ class Workspace:
     def download(self, options: Dict[str, Any], path: str):
         """Downloads the workspace as a binary compressed archive.
         Returns the local path to the downloaded workspace archive.
+        Similar to :obj:`~modelon.impact.client.entities.workspace.Workspace.export`,
+        but does the entire setup and download in one go.
 
         Parameters:
 

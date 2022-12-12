@@ -375,7 +375,7 @@ def upload_workspace(sem_ver_check, mock_server_base):
 
 @pytest.fixture
 def setup_export_workspace(sem_ver_check, mock_server_base):
-    json = {"data": {"location": "api/workspace-exports/79sd8-3n2a4-e3t24"}}
+    json = {"data": {"location": f"api/workspace-exports/{IDs.EXPORT}"}}
     return with_json_route(mock_server_base, 'POST', 'api/workspace-exports', json)
 
 
@@ -383,9 +383,9 @@ def setup_export_workspace(sem_ver_check, mock_server_base):
 def get_export_workspace_status(sem_ver_check, mock_server_base):
     json = {
         "data": {
-            "id": "79sd8-3n2a4-e3t24",
+            "id": IDs.EXPORT,
             "status": "ready",
-            "data": {"downloadUri": "api/exports/79sd8-3n2a4-e3t24", "size": 10481015},
+            "data": {"downloadUri": f"api/exports/{IDs.EXPORT}", "size": 10481015},
             "error": {
                 "message": "Could not export workspace 'my_workspace'. "
                 "Maximum allowed zip file size of 95MB exceeded",
@@ -394,7 +394,7 @@ def get_export_workspace_status(sem_ver_check, mock_server_base):
         }
     }
     return with_json_route(
-        mock_server_base, 'GET', 'api/workspace-exports/79sd8-3n2a4-e3t24', json
+        mock_server_base, 'GET', f'api/workspace-exports/{IDs.EXPORT}', json
     )
 
 
@@ -403,7 +403,7 @@ def get_export_archive(sem_ver_check, mock_server_base):
     content = bytes(4)
 
     return with_zip_route(
-        mock_server_base, 'GET', 'api/exports/79sd8-3n2a4-e3t24', content,
+        mock_server_base, 'GET', f'api/exports/{IDs.EXPORT}', content,
     )
 
 
@@ -1107,13 +1107,13 @@ def workspace():
         }
     }
     ws_service.workspace_export_setup.return_value = {
-        "data": {"location": "api/workspace-exports/79sd8-3n2a4-e3t24"}
+        "data": {"location": f"api/workspace-exports/{IDs.EXPORT}"}
     }
     ws_service.get_workspace_export_status.return_value = {
         "data": {
-            "id": "79sd8-3n2a4-e3t24",
+            "id": IDs.EXPORT,
             "status": "ready",
-            "data": {"downloadUri": "api/exports/79sd8-3n2a4-e3t24", "size": 10481015},
+            "data": {"downloadUri": f"api/exports/{IDs.EXPORT}", "size": 10481015},
             "error": {},
         }
     }

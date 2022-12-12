@@ -142,7 +142,7 @@ class TestWorkspaceService:
             uri=uri, context=setup_export_workspace.context
         )
         data = service.workspace.workspace_export_setup(IDs.WORKSPACE_PRIMARY, {})
-        assert data == {"data": {"location": "api/workspace-exports/79sd8-3n2a4-e3t24"}}
+        assert data == {"data": {"location": f"api/workspace-exports/{IDs.EXPORT}"}}
 
     def test_workspace_export_status(self, get_export_workspace_status):
         uri = URI(get_export_workspace_status.url)
@@ -150,7 +150,7 @@ class TestWorkspaceService:
             uri=uri, context=get_export_workspace_status.context
         )
         data = service.workspace.get_workspace_export_status(
-            "api/workspace-exports/79sd8-3n2a4-e3t24"
+            f"api/workspace-exports/{IDs.EXPORT}"
         )
         assert data["data"]["status"] == "ready"
 
