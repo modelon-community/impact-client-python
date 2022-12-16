@@ -380,6 +380,12 @@ def setup_export_workspace(sem_ver_check, mock_server_base):
 
 
 @pytest.fixture
+def setup_workspace_conversion(sem_ver_check, user_with_license, mock_server_base):
+    json = {"data": {"location": f"api/workspace-conversions/{IDs.CONVERSION}"}}
+    return with_json_route(mock_server_base, 'POST', 'api/workspace-conversions', json)
+
+
+@pytest.fixture
 def get_export_workspace_status(sem_ver_check, mock_server_base):
     json = {
         "data": {
@@ -395,6 +401,27 @@ def get_export_workspace_status(sem_ver_check, mock_server_base):
     }
     return with_json_route(
         mock_server_base, 'GET', f'api/workspace-exports/{IDs.EXPORT}', json
+    )
+
+
+@pytest.fixture
+def get_workspace_conversion_status(sem_ver_check, mock_server_base):
+    json = {
+        "data": {
+            "id": IDs.CONVERSION,
+            "status": "ready",
+            "data": {
+                "downloadUri": f"api/workspaces/{IDs.WORKSPACE_PRIMARY}",
+                "workspaceId": IDs.WORKSPACE_PRIMARY,
+            },
+            "error": {
+                "message": "Could not convert workspace 'my_workspace'.",
+                "code": 12101,
+            },
+        }
+    }
+    return with_json_route(
+        mock_server_base, 'GET', f'api/workspace-conversions/{IDs.CONVERSION}', json
     )
 
 

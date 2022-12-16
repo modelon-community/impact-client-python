@@ -5,15 +5,15 @@ from dataclasses import dataclass
 from semantic_version import SimpleSpec, Version  # type: ignore
 import modelon.impact.client.configuration
 from modelon.impact.client.entities.project import Project, ProjectDefinition, VcsUri
-from modelon.impact.client.entities.workspace import (
-    WorkspaceDefinition,
-    Workspace,
-)
+from modelon.impact.client.entities.workspace import WorkspaceDefinition, Workspace
 import modelon.impact.client.sal.service
 import modelon.impact.client.sal.exceptions
 import modelon.impact.client.credential_manager
 import modelon.impact.client.jupyterhub
 from modelon.impact.client.operations.workspace.imports import WorkspaceImportOperation
+from modelon.impact.client.operations.workspace.conversion import (
+    WorkspaceConversionOperation,
+)
 from modelon.impact.client.sal.uri import URI
 from modelon.impact.client import exceptions
 
@@ -260,6 +260,25 @@ class Client:
             Workspace(item["id"], WorkspaceDefinition(item["definition"]), self._sal)
             for item in resp["data"]["items"]
         ]
+
+    def convert_workspace(self, workspace_id: str, backup_name: Optional[str] = None):
+        """Converts a workspace of an old version up to the new version the server
+        is using.
+
+        Args:
+            workspace_id (str): The ID of the workspace to convert to the latest
+            backup_name (Optional[str], optional): If given then a backup will be
+            created with this name. Defaults to None.
+
+        Returns:
+            WorkspaceConversionOperation: The workspace conversion operation
+
+        Example::
+            workspace = client.convert_workspace(workspace_id, backup_name='old save')
+            .wait()
+        """
+        resp = self._sal.workspace.workspace_conversion_setup(workspace_id, backup_name)
+        return WorkspaceConversionOperation(resp["data"]["location"], self._sal)
 
     def get_project(self, project_id: str, vcs_info: bool = True):
         """
