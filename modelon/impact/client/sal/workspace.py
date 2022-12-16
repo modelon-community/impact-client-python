@@ -96,6 +96,16 @@ class WorkspaceService:
         url = (self._base_uri / location).resolve()
         return self._http_client.get_json(url)
 
+    def workspace_conversion_setup(self, workspace_id: str, backup_name: Optional[str]):
+        url = (self._base_uri / "api/workspace-conversions").resolve()
+        backup_data = {'backup': {'name': backup_name}} if backup_name else {}
+        body: Dict[str, Any] = {'data': {'workspaceId': workspace_id, **backup_data}}
+        return self._http_client.post_json(url, body=body)
+
+    def get_workspace_conversion_status(self, location: str):
+        url = (self._base_uri / location).resolve()
+        return self._http_client.get_json(url)
+
     def workspace_clone(self, workspace_id: str):
         url = (self._base_uri / f"api/workspaces/{workspace_id}/clone").resolve()
         return self._http_client.post_json(url)

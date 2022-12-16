@@ -6,6 +6,7 @@ import modelon.impact.client.exceptions as exceptions
 import modelon.impact.client.sal.exceptions as sal_exceptions
 
 from tests.impact.client.helpers import (
+    create_workspace_conversion_operation,
     create_workspace_entity,
     IDs,
     get_test_workspace_definition,
@@ -50,8 +51,9 @@ def test_semantic_version_error(semantic_version_error):
         Client(url=semantic_version_error.url, context=semantic_version_error.context)
     assert (
         "Version '1.0.0' of the HTTP REST API is not supported, must be in the "
-        "range '>=4.0.0-beta.12,<5.0.0'! Updgrade or downgrade this package to a version"
-        " that supports version '1.0.0' of the HTTP REST API." in str(excinfo.value)
+        "range '>=4.0.0-beta.12,<5.0.0'! Updgrade or downgrade this package to a "
+        "version that supports version '1.0.0' of the HTTP REST API."
+        in str(excinfo.value)
     )
 
 
@@ -190,10 +192,9 @@ def test_get_project_matchings(
 
     assert len(project_matching_entries) == 1
     assert project_matching_entries[0].entry_id == IDs.VERSIONED_PROJECT_REFERENCE
-    assert (
-        project_matching_entries[0].vcs_uri
-        == "git+https://github.com/project/test.git@main:da6abb188a089527df1b54b27ace84274b819e4a"
-    )
+    url = "https://github.com/project/test"
+    expected_vcs_uri = f"git+{url}.git@main:da6abb188a089527df1b54b27ace84274b819e4a"
+    assert project_matching_entries[0].vcs_uri == expected_vcs_uri
     assert len(project_matching_entries[0].projects) == 2
     assert project_matching_entries[0].projects[0].id == IDs.VERSIONED_PROJECT_PRIMARY
     assert project_matching_entries[0].projects[1].id == IDs.VERSIONED_PROJECT_SECONDARY
@@ -221,3 +222,12 @@ def test_failed_import_from_shared_definition(
     definition = WorkspaceDefinition(get_test_workspace_definition())
     with pytest.raises(exceptions.IllegalWorkspaceImport):
         client.import_from_shared_definition(definition).wait()
+
+
+def test_workspace_conversion(setup_workspace_conversion):
+    client = Client(
+        url=setup_workspace_conversion.url, context=setup_workspace_conversion.context
+    )
+
+    conversioin_op = client.convert_workspace(IDs.CONVERSION, 'backup')
+    assert conversioin_op == create_workspace_conversion_operation(IDs.CONVERSION)

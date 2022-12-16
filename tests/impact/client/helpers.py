@@ -14,6 +14,9 @@ from modelon.impact.client.entities.external_result import ExternalResult
 from modelon.impact.client.entities.model import Model
 from modelon.impact.client.operations.experiment import ExperimentOperation
 from modelon.impact.client.operations.workspace.exports import WorkspaceExportOperation
+from modelon.impact.client.operations.workspace.conversion import (
+    WorkspaceConversionOperation,
+)
 from modelon.impact.client.operations.model_executable import (
     CachedModelExecutableOperation,
     ModelExecutableOperation,
@@ -154,6 +157,7 @@ class IDs:
     EXPERIMENT_SECONDARY = 'filter_20090615_135'
     IMPORT = '9a8fg798a7g'
     EXPORT = '79sd8-3n2a4-e3t24'
+    CONVERSION = 't24e3-a43n2-d879s'
 
 
 VERSIONED_PROJECT_TRUNK = {
@@ -215,6 +219,8 @@ VERSIONED_PROJECT_BRANCH = {
 
 
 def get_test_workspace_definition(name=None):
+    git_url = "https://github.com/project/test"
+    vcs_uri = f"git+{git_url}.git@main:da6abb188a089527df1b54b27ace84274b819e4a"
     return {
         "name": name if name else IDs.WORKSPACE_PRIMARY,
         "format": "1.0",
@@ -231,7 +237,7 @@ def get_test_workspace_definition(name=None):
             {
                 "reference": {
                     "id": IDs.VERSIONED_PROJECT_REFERENCE,
-                    "vcsUri": "git+https://github.com/project/test.git@main:da6abb188a089527df1b54b27ace84274b819e4a",
+                    "vcsUri": vcs_uri,
                 },
                 "disabled": True,
                 "disabledContent": [],
@@ -336,7 +342,9 @@ def create_project_content_entity(
 def create_case_entity(
     case_id, workspace_id, exp_id, service=None, info=None,
 ):
-    return Case(case_id, workspace_id, exp_id, service or MagicMock(), info)
+    return Case(
+        case_id, workspace_id, exp_id, service or MagicMock(), info or MagicMock()
+    )
 
 
 def create_external_result_entity(result_id, service=None):
@@ -378,3 +386,10 @@ def create_workspace_export_operation(
         f"api/workspace-exports/{ws_export_id}", service or MagicMock()
     )
 
+
+def create_workspace_conversion_operation(
+    ws_conversion_id, service=None,
+):
+    return WorkspaceConversionOperation(
+        f"api/workspace-conversions/{ws_conversion_id}", service or MagicMock()
+    )

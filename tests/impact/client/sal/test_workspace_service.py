@@ -97,13 +97,12 @@ class TestWorkspaceService:
             "2f036b9fab6f45c788cc466da327cc78workspace"
         )
 
+        resource_uri = "api/external-result/2f036b9fab6f45c788cc466da327cc78workspace"
         assert data == {
             "data": {
                 "id": "2f036b9fab6f45c788cc466da327cc78workspace",
                 "status": "ready",
-                "data": {
-                    "resourceUri": "api/external-result/2f036b9fab6f45c788cc466da327cc78workspace"
-                },
+                "data": {"resourceUri": resource_uri},
             }
         }
 
@@ -151,6 +150,28 @@ class TestWorkspaceService:
         )
         data = service.workspace.get_workspace_export_status(
             f"api/workspace-exports/{IDs.EXPORT}"
+        )
+        assert data["data"]["status"] == "ready"
+
+    def test_workspace_conversion_setup(self, setup_workspace_conversion):
+        uri = URI(setup_workspace_conversion.url)
+        service = modelon.impact.client.sal.service.Service(
+            uri=uri, context=setup_workspace_conversion.context
+        )
+        data = service.workspace.workspace_conversion_setup(
+            IDs.WORKSPACE_PRIMARY, 'backup'
+        )
+        assert data == {
+            "data": {"location": f"api/workspace-conversions/{IDs.CONVERSION}"}
+        }
+
+    def test_workspace_conversion_status(self, get_workspace_conversion_status):
+        uri = URI(get_workspace_conversion_status.url)
+        service = modelon.impact.client.sal.service.Service(
+            uri=uri, context=get_workspace_conversion_status.context
+        )
+        data = service.workspace.get_workspace_conversion_status(
+            f"api/workspace-conversions/{IDs.CONVERSION}"
         )
         assert data["data"]["status"] == "ready"
 
@@ -293,6 +314,8 @@ class TestWorkspaceService:
         )
         data = service.workspace.shared_definition_get(IDs.WORKSPACE_PRIMARY, True)
         assert shared_definition_get.adapter.called
+        git_url = "https://github.com/project/test"
+        vcs_uri = f"git+{git_url}.git@main:da6abb188a089527df1b54b27ace84274b819e4a"
         assert data == {
             "definition": {
                 "name": "test",
@@ -300,7 +323,7 @@ class TestWorkspaceService:
                     {
                         "reference": {
                             "id": IDs.VERSIONED_PROJECT_REFERENCE,
-                            "vcsUri": "git+https://github.com/project/test.git@main:da6abb188a089527df1b54b27ace84274b819e4a",
+                            "vcsUri": vcs_uri,
                         },
                         "disabled": True,
                         "disabledContent": [],
