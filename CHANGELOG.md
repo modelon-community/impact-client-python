@@ -1,3 +1,13 @@
+# [3.0.0-dev.5](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.4...v3.0.0-dev.5) (2022-12-18)
+
+
+### Bug Fixes
+
+* bump supported api version range ([be2dced](https://github.com/modelon-community/impact-client-python/commit/be2dced5c2c4bdbcfe38db86f8111eb06212e0c3))
+* feedback fixes ([7975ce0](https://github.com/modelon-community/impact-client-python/commit/7975ce02e63e188a6947e279d2407a216f075abc))
+* ops cannot be None ([88c65a4](https://github.com/modelon-community/impact-client-python/commit/88c65a470bc63a591ae5056442563dc73b8ce12e))
+* updated the codebase to use new endpoint for workspace export ([b378fc0](https://github.com/modelon-community/impact-client-python/commit/b378fc0c37192b332f1d452732fadc703a7d9d49))
+
 # [3.0.0-dev.4](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.3...v3.0.0-dev.4) (2022-10-18)
 
 
