@@ -23,9 +23,7 @@ from modelon.impact.client.entities.project import Project, ProjectDefinition, V
 logger = logging.getLogger(__name__)
 
 ExperimentDefinition = Union[
-    SimpleModelicaExperimentDefinition,
-    SimpleFMUExperimentDefinition,
-    Dict[str, Any],
+    SimpleModelicaExperimentDefinition, SimpleFMUExperimentDefinition, Dict[str, Any],
 ]
 
 
@@ -57,10 +55,7 @@ def _get_project_entry_reference(reference):
             build=reference.get('build'),
         )
     elif "vcsUri" in reference:
-        return VcsReference(
-            id=reference.get('id'),
-            vcs_uri=reference.get('vcsUri'),
-        )
+        return VcsReference(id=reference.get('id'), vcs_uri=reference.get('vcsUri'))
     else:
         return Reference(id=reference.get('id'))
 
@@ -351,7 +346,7 @@ class Workspace:
         """
         ws_path = os.path.join(path, self._workspace_id + ".zip")
         ops = self.export(options).wait()
-        return ops.download_as(ws_path) if ops else None
+        return ops.download_as(ws_path)
 
     def clone(self) -> 'Workspace':
         """Clones the workspace.
