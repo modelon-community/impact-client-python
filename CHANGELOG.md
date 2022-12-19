@@ -8,6 +8,28 @@
 * ops cannot be None ([88c65a4](https://github.com/modelon-community/impact-client-python/commit/88c65a470bc63a591ae5056442563dc73b8ce12e))
 * updated the codebase to use new endpoint for workspace export ([b378fc0](https://github.com/modelon-community/impact-client-python/commit/b378fc0c37192b332f1d452732fadc703a7d9d49))
 
+# [2.3.0](https://github.com/modelon-community/impact-client-python/compare/v2.2.3...v2.3.0) (2022-12-14)
+
+
+### Bug Fixes
+
+* bump sphinx version ([fd239dc](https://github.com/modelon-community/impact-client-python/commit/fd239dce877b62d4bd936f7968496b639e8efc19))
+* bump version of dependencies, locked spinx to 4.0.0 to have a importlib-metadata version lower than 5.1.0(https://stackoverflow.com/questions/73929564/entrypoints-object-has-no-attribute-get-digital-ocean) ([0b9c949](https://github.com/modelon-community/impact-client-python/commit/0b9c949b29efce4c63fdfa54069eed01a532c977))
+* formatting fixes ([8180c19](https://github.com/modelon-community/impact-client-python/commit/8180c19dea356493ba319020094ee34b91f3f95d))
+* generated docs for mixing modules ([55b8f4b](https://github.com/modelon-community/impact-client-python/commit/55b8f4be7115b20d4f3437dc6f3ac2e60560ada1))
+
+
+### Features
+
+* added make command to generate docs ([aae8efd](https://github.com/modelon-community/impact-client-python/commit/aae8efda046e08d05047e68955236a426d075156))
+
+## [2.2.3](https://github.com/modelon-community/impact-client-python/compare/v2.2.2...v2.2.3) (2022-12-02)
+
+
+### Bug Fixes
+
+* corrected minor typo fix in the docs ([8031e97](https://github.com/modelon-community/impact-client-python/commit/8031e977652bd42790b317c61bbeb7b5ac6f8c32))
+
 # [3.0.0-dev.4](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.3...v3.0.0-dev.4) (2022-10-18)
 
 

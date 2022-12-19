@@ -64,3 +64,6 @@ wheel: build
 
 publish: build
 	$(call _run_bare, npx semantic-release --ci false)
+
+docs: build
+	$(call _run_bare, bash -c "poetry run sphinx-apidoc -f -d 5 -o docs/source modelon && poetry run $(MAKE) -C ./docs clean && poetry run $(MAKE) -C ./docs html")

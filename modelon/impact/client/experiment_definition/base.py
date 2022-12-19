@@ -495,7 +495,8 @@ class SimpleModelicaExperimentDefinition(BaseExperimentDefinition):
         )
 
     def with_modifiers(
-        self, modifiers: Optional[Dict[str, Any]] = None,
+        self,
+        modifiers: Optional[Dict[str, Any]] = None,
     ) -> 'SimpleModelicaExperimentDefinition':
         """Sets the modifiers parameters for an experiment.
 

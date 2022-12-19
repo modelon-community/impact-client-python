@@ -8,7 +8,10 @@ logger = logging.getLogger(__name__)
 
 class _Parameter:
     _JSON_2_PY_TYPE = {
-        "Number": (float, int,),
+        "Number": (
+            float,
+            int,
+        ),
         "String": (str,),
         "Boolean": (bool,),
         "Enumeration": (str,),
@@ -61,7 +64,10 @@ class CustomFunction:
         self._parameter_data = parameter_data
         self._param_by_name = {
             p["name"]: _Parameter(
-                p["name"], p["defaultValue"], p["type"], p.get("values", []),
+                p["name"],
+                p["defaultValue"],
+                p["type"],
+                p.get("values", []),
             )
             for p in parameter_data
         }
