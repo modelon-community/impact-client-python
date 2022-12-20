@@ -41,9 +41,7 @@ class WorkspaceExportOperation(AsyncOperation):
     Workspace class.
     """
 
-    def __init__(
-        self, location: str, service: Service,
-    ):
+    def __init__(self, location: str, service: Service):
         super().__init__()
         self._location = location
         self._sal = service

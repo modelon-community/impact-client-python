@@ -16,9 +16,7 @@ class BaseExecutionOptions(Mapping, ABC):
     Base class for the simulation, compiler, solver and runtime options settings.
     """
 
-    def __init__(
-        self, values: Dict[str, Any], custom_function_name: str,
-    ):
+    def __init__(self, values: Dict[str, Any], custom_function_name: str):
         self._values = values
         self._custom_function_name = custom_function_name
 

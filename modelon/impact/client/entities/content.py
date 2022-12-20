@@ -28,9 +28,7 @@ class ContentType(enum.Enum):
 class ProjectContent:
     """Content entry in a project."""
 
-    def __init__(
-        self, content: Dict[str, str], project_id: str, service: Service,
-    ):
+    def __init__(self, content: Dict[str, str], project_id: str, service: Service):
         self._content = content
         self._project_id = project_id
         self._sal = service
@@ -164,5 +162,5 @@ class ProjectContent:
         if resp["importWarnings"]:
             logger.warning(f"Import Warnings: {'. '.join(resp['importWarnings'])}")
         return modelon.impact.client.entities.model.Model(
-            resp['fmuClassPath'], workspace.id, self._project_id, self._sal,
+            resp['fmuClassPath'], workspace.id, self._project_id, self._sal
         )

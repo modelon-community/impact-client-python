@@ -25,9 +25,7 @@ SimulationOptionsOrDict = Union[SimulationOptions, Dict[str, Any]]
 SolverOptionsOrDict = Union[SolverOptions, Dict[str, Any]]
 
 
-def _assert_valid_compilation_options(
-    compiler_options=None, runtime_options=None,
-):
+def _assert_valid_compilation_options(compiler_options=None, runtime_options=None):
     if compiler_options is not None and not isinstance(
         compiler_options, (CompilerOptions, dict)
     ):
@@ -50,7 +48,7 @@ class Model:
     """
 
     def __init__(
-        self, class_name: str, workspace_id: str, project_id: str, service: Service,
+        self, class_name: str, workspace_id: str, project_id: str, service: Service
     ):
         self._class_name = class_name
         self._workspace_id = workspace_id
@@ -172,7 +170,7 @@ class Model:
             )
             if fmu_id:
                 return CachedModelExecutableOperation(
-                    self._workspace_id, fmu_id, self._sal, None, modifiers,
+                    self._workspace_id, fmu_id, self._sal, None, modifiers
                 )
 
         # No cached FMU, setup up a new one

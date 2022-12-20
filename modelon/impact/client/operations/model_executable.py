@@ -58,7 +58,7 @@ class CachedModelExecutableOperation(ExecutionOperation):
                 A model_executable class instance.
         """
         return ModelExecutable(
-            self._workspace_id, self._fmu_id, self._sal, self._info, self._modifiers,
+            self._workspace_id, self._fmu_id, self._sal, self._info, self._modifiers
         )
 
     def status(self):
@@ -128,9 +128,7 @@ class ModelExecutableOperation(ExecutionOperation):
     model_executable.ModelExecutable class.
     """
 
-    def __init__(
-        self, workspace_id: str, fmu_id: str, service: Service,
-    ):
+    def __init__(self, workspace_id: str, fmu_id: str, service: Service):
         super().__init__()
         self._workspace_id = workspace_id
         self._fmu_id = fmu_id
