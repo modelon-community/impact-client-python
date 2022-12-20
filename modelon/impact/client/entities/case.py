@@ -241,7 +241,7 @@ class Case:
         started = _datetime_from_unix_time(run_info.get("datetime_started"))
         finished = _datetime_from_unix_time(run_info.get("datetime_finished"))
         return _CaseRunInfo(
-            CaseStatus(run_info["status"]), run_info["consistent"], started, finished,
+            CaseStatus(run_info["status"]), run_info["consistent"], started, finished
         )
 
     @property
@@ -288,7 +288,7 @@ class Case:
             self._workspace_id, experiment_id, case_id
         )
         return Case(
-            case_data["id"], self._workspace_id, experiment_id, self._sal, case_data,
+            case_data["id"], self._workspace_id, experiment_id, self._sal, case_data
         )
 
     @initialize_from_case.setter

@@ -41,7 +41,7 @@ class ExperimentOperation(base.ExecutionOperation):
                 An experiment class instance.
         """
         return modelon.impact.client.entities.experiment.Experiment(
-            self._workspace_id, self._exp_id, self._sal,
+            self._workspace_id, self._exp_id, self._sal
         )
 
     def status(self):

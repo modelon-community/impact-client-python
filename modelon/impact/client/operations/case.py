@@ -44,7 +44,7 @@ class CaseOperation(ExecutionOperation):
             self._workspace_id, self._exp_id, self._case_id
         )
         return case.Case(
-            self._case_id, self._workspace_id, self._exp_id, self._sal, case_data,
+            self._case_id, self._workspace_id, self._exp_id, self._sal, case_data
         )
 
     def status(self):

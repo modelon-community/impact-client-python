@@ -276,7 +276,7 @@ class Experiment:
             self._workspace_id, self._exp_id, case_id
         )
         return Case(
-            case_data["id"], self._workspace_id, self._exp_id, self._sal, case_data,
+            case_data["id"], self._workspace_id, self._exp_id, self._sal, case_data
         )
 
     def get_cases_with_label(self, case_label: str) -> List[Case]:

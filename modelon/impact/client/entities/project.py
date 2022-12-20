@@ -53,7 +53,7 @@ class GitRepoURL:
     @classmethod
     def from_dict(cls, data):
         return cls(
-            url=data.get("url"), refname=data.get("refname"), sha1=data.get("sha1"),
+            url=data.get("url"), refname=data.get("refname"), sha1=data.get("sha1")
         )
 
 
