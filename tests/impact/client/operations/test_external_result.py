@@ -20,6 +20,18 @@ class TestExternalResultUploadOperation:
         # When, then
         pytest.raises(exceptions.OperationTimeOutError, upload_op.wait, 1)
 
+    def test_given_error_when_wait_then_upload_error(
+        self, workspace_sal_upload_result_error
+    ):
+        # Given
+        upload_op = ExternalResultUploadOperation(
+            '2f036b9fab6f45c788cc466da327cc78workspace',
+            workspace_sal_upload_result_error,
+        )
+
+        # When, then
+        pytest.raises(exceptions.ExternalResultUploadError, upload_op.wait, 1)
+
     def test_given_ready_when_wait_then_ok(self, workspace_sal_upload_result_ready):
         # Given
         upload_op = ExternalResultUploadOperation(

@@ -1,3 +1,4 @@
+from modelon.impact.client import exceptions
 from modelon.impact.client.entities.external_result import ExternalResult
 from modelon.impact.client.sal.service import Service
 from modelon.impact.client.operations.base import AsyncOperation, AsyncOperationStatus
@@ -36,6 +37,9 @@ class ExternalResultUploadOperation(AsyncOperation):
     def cancel(self):
         raise NotImplementedError('Cancel is not supported for this operation')
 
+    def _info(self):
+        return self._sal.workspace.get_result_upload_status(self._result_id)["data"]
+
     def data(self):
         """
         Returns a new ExternalResult class instance.
@@ -45,6 +49,12 @@ class ExternalResultUploadOperation(AsyncOperation):
             external_result --
                 A ExternalResult class instance.
         """
+        info = self._info()
+        if info['status'] == AsyncOperationStatus.ERROR.value:
+            raise exceptions.ExternalResultUploadError(
+                f"External result upload failed! Cause: {info['error'].get('message')}"
+            )
+
         return ExternalResult(self._result_id, self._sal)
 
     def status(self):
@@ -62,8 +72,4 @@ class ExternalResultUploadOperation(AsyncOperation):
 
             workspace.upload_result('C:/A.mat').status()
         """
-        return AsyncOperationStatus(
-            self._sal.workspace.get_result_upload_status(self._result_id)["data"][
-                "status"
-            ]
-        )
+        return AsyncOperationStatus(self._info()["status"])
