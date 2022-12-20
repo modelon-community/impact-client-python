@@ -40,6 +40,36 @@ WorkspaceMock = collections.namedtuple('WorkspaceMock', ['entity', 'service'])
 ProjectMock = collections.namedtuple('ProjectMock', ['entity', 'service'])
 
 
+def get_model_exes_url(workspace_id):
+    return f'api/workspaces/{workspace_id}/model-executables'
+
+
+def get_model_exe_url(workspace_id, fmu_id):
+    return f'{get_model_exes_url(workspace_id)}/{fmu_id}'
+
+
+def get_experiment_url(workspace_id, experiment_id):
+    return f'api/workspaces/{workspace_id}/experiments/{experiment_id}'
+
+
+def get_case_url(workspace_id, experiment_id, case_id):
+    return f'{get_experiment_url(workspace_id, experiment_id)}/cases/{case_id}'
+
+
+def get_content_header(content_type, filename):
+    return {
+        'X-Powered-By': 'Express',
+        'content-type': content_type,
+        'content-disposition': f'attachment; filename="{filename}"',
+        'connection': 'close',
+        'date': 'Thu, 22 Oct 2020 06:03:46 GMT',
+        'server': '127.0.0.1',
+        'Content-Length': '540',
+        'ETag': 'W/"21c-YYNaLhSng67+inxuWx+DHndUdno"',
+        'Vary': 'Accept-Encoding',
+    }
+
+
 @pytest.fixture
 def sem_ver_check(mock_server_base):
     json = {"version": "4.0.0"}
@@ -229,7 +259,8 @@ def import_fmu(sem_ver_check):
     json = {
         "fmuClassPath": "Workspace.PID_Controller.Model",
         "importWarnings": [
-            "Specified argument for 'top_level_inputs=['a']' does not match any variable"
+            "Specified argument for 'top_level_inputs=['a']' "
+            "does not match any variable"
         ],
         "library": {
             'project_id': IDs.PROJECT_PRIMARY,
@@ -237,10 +268,13 @@ def import_fmu(sem_ver_check):
         },
     }
 
+    project_url = (
+        f'api/workspaces/{IDs.WORKSPACE_PRIMARY}/projects/{IDs.PROJECT_PRIMARY}'
+    )
     return with_json_route(
         sem_ver_check,
         'POST',
-        f'api/workspaces/{IDs.WORKSPACE_PRIMARY}/projects/{IDs.PROJECT_PRIMARY}/content/{IDs.PROJECT_CONTENT_PRIMARY}/models',
+        f'{project_url}/content/{IDs.PROJECT_CONTENT_PRIMARY}/models',
         json,
     )
 
@@ -460,12 +494,8 @@ def get_export_archive(sem_ver_check, mock_server_base):
 def get_fmu(sem_ver_check, mock_server_base):
     json = {"id": IDs.FMU_PRIMARY}
 
-    return with_json_route(
-        mock_server_base,
-        'GET',
-        f'api/workspaces/{IDs.WORKSPACE_PRIMARY}/model-executables/{IDs.FMU_PRIMARY}',
-        json,
-    )
+    fmu_url = get_model_exe_url(IDs.WORKSPACE_PRIMARY, IDs.FMU_PRIMARY)
+    return with_json_route(mock_server_base, 'GET', fmu_url, json)
 
 
 @pytest.fixture
@@ -473,23 +503,16 @@ def get_all_fmu(sem_ver_check, mock_server_base):
     json = {"data": {"items": [{"id": IDs.FMU_PRIMARY}, {"id": IDs.FMU_SECONDARY}]}}
 
     return with_json_route(
-        mock_server_base,
-        'GET',
-        f'api/workspaces/{IDs.WORKSPACE_PRIMARY}/model-executables',
-        json,
+        mock_server_base, 'GET', f'{get_model_exes_url(IDs.WORKSPACE_PRIMARY)}', json
     )
 
 
 @pytest.fixture
 def download_fmu(sem_ver_check, mock_server_base):
     content = bytes(4)
-
-    return with_zip_route(
-        mock_server_base,
-        'GET',
-        f'api/workspaces/{IDs.WORKSPACE_PRIMARY}/model-executables/{IDs.FMU_PRIMARY}/binary',
-        content,
-    )
+    ws_url = f'api/workspaces/{IDs.WORKSPACE_PRIMARY}'
+    url = f'{ws_url}/model-executables/{IDs.FMU_PRIMARY}/binary'
+    return with_zip_route(mock_server_base, 'GET', url, content)
 
 
 @pytest.fixture
@@ -574,12 +597,8 @@ def get_all_experiments(sem_ver_check, mock_server_base):
 def get_experiment(sem_ver_check, mock_server_base):
     json = {"id": IDs.EXPERIMENT_PRIMARY}
 
-    return with_json_route(
-        mock_server_base,
-        'GET',
-        f'api/workspaces/{IDs.WORKSPACE_PRIMARY}/experiments/{IDs.EXPERIMENT_PRIMARY}',
-        json,
-    )
+    experiment_url = get_experiment_url(IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY)
+    return with_json_route(mock_server_base, 'GET', experiment_url, json)
 
 
 @pytest.fixture
@@ -604,7 +623,7 @@ def no_cached_fmu_id(mock_server_base):
     return with_json_route(
         mock_server_base,
         'POST',
-        f'api/workspaces/{IDs.WORKSPACE_PRIMARY}/model-executables?getCached=true',
+        f'{get_model_exes_url(IDs.WORKSPACE_PRIMARY)}?getCached=true',
         json,
     )
 
@@ -617,21 +636,15 @@ def get_fmu_id(mock_server_base):
     }
 
     return with_json_route(
-        mock_server_base,
-        'POST',
-        f'api/workspaces/{IDs.WORKSPACE_PRIMARY}/model-executables',
-        json,
+        mock_server_base, 'POST', get_model_exes_url(IDs.WORKSPACE_PRIMARY), json
     )
 
 
 @pytest.fixture
 def model_compile(get_fmu_id, no_cached_fmu_id, mock_server_base):
 
-    return with_json_route_no_resp(
-        mock_server_base,
-        'POST',
-        f'api/workspaces/{IDs.WORKSPACE_PRIMARY}/model-executables/{IDs.FMU_PRIMARY}/compilation',
-    )
+    fmu_url = get_model_exe_url(IDs.WORKSPACE_PRIMARY, IDs.FMU_PRIMARY)
+    return with_json_route_no_resp(mock_server_base, 'POST', f'{fmu_url}/compilation')
 
 
 @pytest.fixture
@@ -644,7 +657,7 @@ def get_cached_fmu_id(mock_server_base):
     return with_json_route(
         mock_server_base,
         'POST',
-        f'api/workspaces/{IDs.WORKSPACE_PRIMARY}/model-executables?getCached=true',
+        f'{get_model_exes_url(IDs.WORKSPACE_PRIMARY)}?getCached=true',
         json,
     )
 
@@ -653,12 +666,8 @@ def get_cached_fmu_id(mock_server_base):
 def get_compile_log(sem_ver_check, mock_server_base):
     text = "Compiler arguments:..."
 
-    return with_text_route(
-        mock_server_base,
-        'GET',
-        f'api/workspaces/{IDs.WORKSPACE_PRIMARY}/model-executables/{IDs.FMU_PRIMARY}/compilation/log',
-        text,
-    )
+    fmu_url = get_model_exe_url(IDs.WORKSPACE_PRIMARY, IDs.FMU_PRIMARY)
+    return with_text_route(mock_server_base, 'GET', f'{fmu_url}/compilation/log', text)
 
 
 @pytest.fixture
@@ -670,33 +679,24 @@ def get_compile_status(sem_ver_check, mock_server_base):
         "progress": [{"message": "Compiling", "percentage": 0}],
     }
 
-    return with_json_route(
-        mock_server_base,
-        'GET',
-        f'api/workspaces/{IDs.WORKSPACE_PRIMARY}/model-executables/{IDs.FMU_PRIMARY}/compilation',
-        json,
-    )
+    fmu_url = get_model_exe_url(IDs.WORKSPACE_PRIMARY, IDs.FMU_PRIMARY)
+    return with_json_route(mock_server_base, 'GET', f'{fmu_url}/compilation', json)
 
 
 @pytest.fixture
 def cancel_compile(sem_ver_check, mock_server_base):
 
-    return with_json_route_no_resp(
-        mock_server_base,
-        'DELETE',
-        f'api/workspaces/{IDs.WORKSPACE_PRIMARY}/model-executables/{IDs.FMU_PRIMARY}/compilation',
-    )
+    fmu_url = get_model_exe_url(IDs.WORKSPACE_PRIMARY, IDs.FMU_PRIMARY)
+    return with_json_route_no_resp(mock_server_base, 'DELETE', f'{fmu_url}/compilation')
 
 
 @pytest.fixture
 def get_settable_parameters(sem_ver_check, mock_server_base):
     json = ["param1", "param3"]
 
+    fmu_url = get_model_exe_url(IDs.WORKSPACE_PRIMARY, IDs.FMU_PRIMARY)
     return with_json_route(
-        mock_server_base,
-        'GET',
-        f'api/workspaces/{IDs.WORKSPACE_PRIMARY}/model-executables/{IDs.FMU_PRIMARY}/settable-parameters',
-        json,
+        mock_server_base, 'GET', f'{fmu_url}/settable-parameters', json
     )
 
 
@@ -706,52 +706,36 @@ def get_ss_fmu_metadata(sem_ver_check, mock_server_base):
         "steady_state": {"residual_variable_count": 1, "iteration_variable_count": 2}
     }
 
+    fmu_url = get_model_exe_url(IDs.WORKSPACE_PRIMARY, IDs.FMU_PRIMARY)
     return with_json_route(
-        mock_server_base,
-        'POST',
-        f'api/workspaces/{IDs.WORKSPACE_PRIMARY}/model-executables/{IDs.FMU_PRIMARY}/steady-state-metadata',
-        json,
+        mock_server_base, 'POST', f'{fmu_url}/steady-state-metadata', json
     )
 
 
 @pytest.fixture
 def delete_fmu(sem_ver_check, mock_server_base):
-
-    return with_json_route_no_resp(
-        mock_server_base,
-        'DELETE',
-        f'api/workspaces/{IDs.WORKSPACE_PRIMARY}/model-executables/{IDs.FMU_PRIMARY}',
-    )
+    fmu_url = get_model_exe_url(IDs.WORKSPACE_PRIMARY, IDs.FMU_PRIMARY)
+    return with_json_route_no_resp(mock_server_base, 'DELETE', fmu_url)
 
 
 @pytest.fixture
 def experiment_execute(sem_ver_check, mock_server_base):
-
+    experiment_url = get_experiment_url(IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY)
     return with_json_route_no_resp(
-        mock_server_base,
-        'POST',
-        f'api/workspaces/{IDs.WORKSPACE_PRIMARY}/experiments/{IDs.EXPERIMENT_PRIMARY}/execution',
+        mock_server_base, 'POST', f'{experiment_url}/execution'
     )
 
 
 @pytest.fixture
 def set_experiment_label(sem_ver_check, mock_server_base):
-
-    return with_json_route_no_resp(
-        mock_server_base,
-        'PUT',
-        f'api/workspaces/{IDs.WORKSPACE_PRIMARY}/experiments/{IDs.EXPERIMENT_PRIMARY}',
-    )
+    experiment_url = get_experiment_url(IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY)
+    return with_json_route_no_resp(mock_server_base, 'PUT', f'{experiment_url}')
 
 
 @pytest.fixture
 def delete_experiment(sem_ver_check, mock_server_base):
-
-    return with_json_route_no_resp(
-        mock_server_base,
-        'DELETE',
-        f'api/workspaces/{IDs.WORKSPACE_PRIMARY}/experiments/{IDs.EXPERIMENT_PRIMARY}',
-    )
+    experiment_url = get_experiment_url(IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY)
+    return with_json_route_no_resp(mock_server_base, 'DELETE', f'{experiment_url}')
 
 
 @pytest.fixture
@@ -762,117 +746,76 @@ def experiment_status(sem_ver_check, mock_server_base):
         "status": "running",
         "progress": [{"message": "Simulating at 1.0", "percentage": 1}],
     }
-
-    return with_json_route(
-        mock_server_base,
-        'GET',
-        f'api/workspaces/{IDs.WORKSPACE_PRIMARY}/experiments/{IDs.EXPERIMENT_PRIMARY}/execution',
-        json,
-    )
+    experiment_url = get_experiment_url(IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY)
+    return with_json_route(mock_server_base, 'GET', f'{experiment_url}/execution', json)
 
 
 @pytest.fixture
 def cancel_execute(sem_ver_check, mock_server_base):
-
+    experiment_url = get_experiment_url(IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY)
     return with_json_route_no_resp(
-        mock_server_base,
-        'DELETE',
-        f'api/workspaces/{IDs.WORKSPACE_PRIMARY}/experiments/{IDs.EXPERIMENT_PRIMARY}/execution',
+        mock_server_base, 'DELETE', f'{experiment_url}/execution'
     )
 
 
 @pytest.fixture
 def get_result_variables(sem_ver_check, mock_server_base):
     json = ["PI.J", "inertia.I"]
-
-    return with_json_route(
-        mock_server_base,
-        'GET',
-        f'api/workspaces/{IDs.WORKSPACE_PRIMARY}/experiments/{IDs.EXPERIMENT_PRIMARY}/variables',
-        json,
-    )
+    experiment_url = get_experiment_url(IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY)
+    return with_json_route(mock_server_base, 'GET', f'{experiment_url}/variables', json)
 
 
 @pytest.fixture
 def get_trajectories(sem_ver_check, mock_server_base):
     json = [[[1.0, 1.0], [3.0, 3.0], [5.0, 5.0]]]
-
+    experiment_url = get_experiment_url(IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY)
     return with_json_route(
-        mock_server_base,
-        'POST',
-        f'api/workspaces/{IDs.WORKSPACE_PRIMARY}/experiments/{IDs.EXPERIMENT_PRIMARY}/trajectories',
-        json,
+        mock_server_base, 'POST', f'{experiment_url}/trajectories', json
     )
 
 
 @pytest.fixture
 def get_cases(sem_ver_check, mock_server_base):
     json = {"data": {"items": [{"id": "case_1"}]}}
-
-    return with_json_route(
-        mock_server_base,
-        'GET',
-        f'api/workspaces/{IDs.WORKSPACE_PRIMARY}/experiments/{IDs.EXPERIMENT_PRIMARY}/cases',
-        json,
-    )
+    experiment_url = get_experiment_url(IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY)
+    return with_json_route(mock_server_base, 'GET', f'{experiment_url}/cases', json)
 
 
 @pytest.fixture
 def get_case(sem_ver_check, mock_server_base):
     json = {"id": "case_1"}
-
-    return with_json_route(
-        mock_server_base,
-        'GET',
-        f'api/workspaces/{IDs.WORKSPACE_PRIMARY}/experiments/{IDs.EXPERIMENT_PRIMARY}/cases/case_1',
-        json,
-    )
+    case_url = get_case_url(IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY, "case_1")
+    return with_json_route(mock_server_base, 'GET', case_url, json)
 
 
 @pytest.fixture
 def put_case(sem_ver_check, mock_server_base):
     json = {"id": "case_1"}
-
-    return with_json_route(
-        mock_server_base,
-        'PUT',
-        f'api/workspaces/{IDs.WORKSPACE_PRIMARY}/experiments/{IDs.EXPERIMENT_PRIMARY}/cases/case_1',
-        json,
-    )
+    case_url = get_case_url(IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY, "case_1")
+    return with_json_route(mock_server_base, 'PUT', f'{case_url}', json)
 
 
 @pytest.fixture
 def get_case_log(sem_ver_check, mock_server_base):
     text = "Simulation log.."
-
-    return with_text_route(
-        mock_server_base,
-        'GET',
-        f'api/workspaces/{IDs.WORKSPACE_PRIMARY}/experiments/{IDs.EXPERIMENT_PRIMARY}/cases/case_1/log',
-        text,
-    )
+    case_url = get_case_url(IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY, "case_1")
+    return with_text_route(mock_server_base, 'GET', f'{case_url}/log', text)
 
 
 @pytest.fixture
 def get_mat_case_results(sem_ver_check, mock_server_base):
     binary = bytes(4)
 
+    case_url = get_case_url(IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY, "case_1")
     return with_octet_stream_route(
         mock_server_base,
         'GET',
-        f'api/workspaces/{IDs.WORKSPACE_PRIMARY}/experiments/{IDs.EXPERIMENT_PRIMARY}/cases/case_1/result',
+        f'{case_url}/result',
         binary,
-        content_header={
-            'X-Powered-By': 'Express',
-            'content-type': 'application/vnd.impact.mat.v1+octet-stream',
-            'content-disposition': 'attachment; filename="Modelica.Blocks.Examples.PID_Controller_2020-10-22_06-03.mat"',
-            'connection': 'close',
-            'date': 'Thu, 22 Oct 2020 06:03:46 GMT',
-            'server': '127.0.0.1',
-            'Content-Length': '540',
-            'ETag': 'W/"21c-YYNaLhSng67+inxuWx+DHndUdno"',
-            'Vary': 'Accept-Encoding',
-        },
+        content_header=get_content_header(
+            'application/vnd.impact.mat.v1+octet-stream',
+            "Modelica.Blocks.Examples.PID_Controller_2020-10-22_06-03.mat",
+        ),
     )
 
 
@@ -880,22 +823,15 @@ def get_mat_case_results(sem_ver_check, mock_server_base):
 def get_csv_case_results(sem_ver_check, mock_server_base):
     text = "1;2;3"
 
+    case_url = get_case_url(IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY, "case_1")
     return with_csv_route(
         mock_server_base,
         'GET',
-        f'api/workspaces/{IDs.WORKSPACE_PRIMARY}/experiments/{IDs.EXPERIMENT_PRIMARY}/cases/case_1/result',
+        f'{case_url}/result',
         text,
-        content_header={
-            'X-Powered-By': 'Express',
-            'content-type': 'text/csv',
-            'content-disposition': 'attachment; filename="Modelica.Blocks.Examples.PID_Controller_2020-10-22_06-03.csv"',
-            'connection': 'close',
-            'date': 'Thu, 22 Oct 2020 06:03:46 GMT',
-            'server': '127.0.0.1',
-            'Content-Length': '540',
-            'ETag': 'W/"21c-YYNaLhSng67+inxuWx+DHndUdno"',
-            'Vary': 'Accept-Encoding',
-        },
+        content_header=get_content_header(
+            'text/csv', "Modelica.Blocks.Examples.PID_Controller_2020-10-22_06-03.csv"
+        ),
     )
 
 
@@ -903,22 +839,16 @@ def get_csv_case_results(sem_ver_check, mock_server_base):
 def get_case_artifact(sem_ver_check, mock_server_base):
     binary = bytes(4)
 
+    case_url = get_case_url(IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY, "case_1")
     return with_octet_stream_route(
         mock_server_base,
         'GET',
-        f'api/workspaces/{IDs.WORKSPACE_PRIMARY}/experiments/{IDs.EXPERIMENT_PRIMARY}/cases/case_1/custom-artifacts/ABCD',
+        f'{case_url}/custom-artifacts/ABCD',
         binary,
-        content_header={
-            'X-Powered-By': 'Express',
-            'content-type': 'application/octet-stream',
-            'content-disposition': 'attachment; filename="Modelica.Blocks.Examples.PID_Controller_2020-10-22_06-03.mat"',
-            'connection': 'close',
-            'date': 'Thu, 22 Oct 2020 06:03:46 GMT',
-            'server': '127.0.0.1',
-            'Content-Length': '540',
-            'ETag': 'W/"21c-YYNaLhSng67+inxuWx+DHndUdno"',
-            'Vary': 'Accept-Encoding',
-        },
+        content_header=get_content_header(
+            'application/octet-stream',
+            "Modelica.Blocks.Examples.PID_Controller_2020-10-22_06-03.mat",
+        ),
     )
 
 
@@ -926,12 +856,8 @@ def get_case_artifact(sem_ver_check, mock_server_base):
 def get_case_trajectories(sem_ver_check, mock_server_base):
     json = [[1.0, 2.0, 7.0], [2.0, 3.0, 5.0]]
 
-    return with_json_route(
-        mock_server_base,
-        'POST',
-        f'api/workspaces/{IDs.WORKSPACE_PRIMARY}/experiments/{IDs.EXPERIMENT_PRIMARY}/cases/case_1/trajectories',
-        json,
-    )
+    case_url = get_case_url(IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY, "case_1")
+    return with_json_route(mock_server_base, 'POST', f'{case_url}/trajectories', json)
 
 
 @pytest.fixture
@@ -958,15 +884,17 @@ def get_custom_functions(sem_ver_check, mock_server_base):
     )
 
 
+def get_custom_function_url(workspace_id, custom_function_name):
+    return f'api/workspaces/{workspace_id}/custom-functions/{custom_function_name}'
+
+
 @pytest.fixture
 def get_custom_function_default_options(sem_ver_check, mock_server_base):
     json = {"compiler": {"c_compiler": "gcc"}}
 
+    custom_function_url = get_custom_function_url(IDs.WORKSPACE_PRIMARY, 'cust_func')
     return with_json_route(
-        mock_server_base,
-        'GET',
-        f'api/workspaces/{IDs.WORKSPACE_PRIMARY}/custom-functions/cust_func/default-options',
-        json,
+        mock_server_base, 'GET', f'{custom_function_url}/default-options', json
     )
 
 
@@ -974,11 +902,9 @@ def get_custom_function_default_options(sem_ver_check, mock_server_base):
 def get_custom_function_options(sem_ver_check, mock_server_base):
     json = {"compiler": {"generate_html_diagnostics": True}}
 
+    custom_function_url = get_custom_function_url(IDs.WORKSPACE_PRIMARY, 'cust_func')
     return with_json_route(
-        mock_server_base,
-        'GET',
-        f'api/workspaces/{IDs.WORKSPACE_PRIMARY}/custom-functions/cust_func/options',
-        json,
+        mock_server_base, 'GET', f'{custom_function_url}/options', json
     )
 
 
@@ -1957,7 +1883,8 @@ def project():
     project_service.fmu_upload.return_value = {
         "fmuClassPath": "Workspace.PID_Controller.Model",
         "importWarnings": [
-            "Specified argument for 'top_level_inputs=['a']' does not match any variable"
+            "Specified argument for 'top_level_inputs=['a']' "
+            "does not match any variable"
         ],
         "library": {
             'project_id': IDs.PROJECT_PRIMARY,
@@ -2005,6 +1932,8 @@ def upload_project_content(sem_ver_check, mock_server_base):
 
 @pytest.fixture
 def shared_definition_get(user_with_license, mock_server_base):
+    git_url = 'https://github.com/project/test'
+    vcs_uri = f'git+{git_url}.git@main:da6abb188a089527df1b54b27ace84274b819e4a'
     json = {
         "definition": {
             "name": "test",
@@ -2012,7 +1941,7 @@ def shared_definition_get(user_with_license, mock_server_base):
                 {
                     "reference": {
                         "id": IDs.VERSIONED_PROJECT_REFERENCE,
-                        "vcsUri": "git+https://github.com/project/test.git@main:da6abb188a089527df1b54b27ace84274b819e4a",
+                        "vcsUri": vcs_uri,
                     },
                     "disabled": True,
                     "disabledContent": [],
@@ -2071,12 +2000,16 @@ def get_successful_workspace_upload_status(user_with_license, mock_server_base):
 
 @pytest.fixture
 def get_failed_workspace_upload_status(user_with_license, mock_server_base):
+    git_url = 'https://github.com/project/test'
+    vcs_uri = f'git+{git_url}.git@main:da6abb188a089527df1b54b27ace84274b819e4a'
     json = {
         "data": {
             "id": "05c7c0c45a084f079682eaf443287901",
             "status": "error",
             "error": {
-                "message": "Could not import workspace 'test'. Multiple existing projects matches the URI git+https://github.com/project/test.git@main:da6abb188a089527df1b54b27ace84274b819e4a and no selected matching was given",
+                "message": "Could not import workspace 'test'. Multiple existing "
+                f"projects matches the URI {vcs_uri} and no selected matching was "
+                "given",
                 "code": 12102,
             },
         }
