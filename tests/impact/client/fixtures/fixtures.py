@@ -429,9 +429,7 @@ def get_workspace_conversion_status(sem_ver_check, mock_server_base):
 def get_export_archive(sem_ver_check, mock_server_base):
     content = bytes(4)
 
-    return with_zip_route(
-        mock_server_base, 'GET', f'api/exports/{IDs.EXPORT}', content,
-    )
+    return with_zip_route(mock_server_base, 'GET', f'api/exports/{IDs.EXPORT}', content)
 
 
 # TODO: Cloning workspace is not implemented on feature branch
@@ -485,7 +483,7 @@ def get_projects(sem_ver_check, mock_server_base):
     json = {
         "data": {
             "items": [
-                {"id": IDs.PROJECT_PRIMARY, "definition": {}, "projectType": "LOCAL",}
+                {"id": IDs.PROJECT_PRIMARY, "definition": {}, "projectType": "LOCAL"}
             ]
         }
     }
@@ -1176,7 +1174,7 @@ def workspace():
         "projectType": "LOCAL",
     }
     return WorkspaceMock(
-        create_workspace_entity(IDs.WORKSPACE_PRIMARY, service=service), service,
+        create_workspace_entity(IDs.WORKSPACE_PRIMARY, service=service), service
     )
 
 
@@ -1203,7 +1201,7 @@ def workspace_execute_cancelled():
     }
     exp_service.experiment_execute.return_value = IDs.EXPERIMENT_PRIMARY
     exp_service.execute_status.return_value = {"status": "cancelled"}
-    return create_workspace_entity(IDs.WORKSPACE_PRIMARY, service=service,)
+    return create_workspace_entity(IDs.WORKSPACE_PRIMARY, service=service)
 
 
 @pytest.fixture
@@ -1233,7 +1231,7 @@ def custom_function():
         "solver": {"rtol": 1e-5},
     }
     return create_custom_function_entity(
-        IDs.WORKSPACE_PRIMARY, 'dynamic', _custom_function_parameter_list(), service,
+        IDs.WORKSPACE_PRIMARY, 'dynamic', _custom_function_parameter_list(), service
     )
 
 
@@ -1261,7 +1259,7 @@ def model_compiled():
     model_exe_service.compile_model.return_value = IDs.FMU_PRIMARY
     model_exe_service.compile_status.return_value = {"status": "done"}
     return create_model_entity(
-        'Test.PID', IDs.WORKSPACE_PRIMARY, IDs.PROJECT_PRIMARY, service,
+        'Test.PID', IDs.WORKSPACE_PRIMARY, IDs.PROJECT_PRIMARY, service
     )
 
 
@@ -1272,7 +1270,7 @@ def model_cached():
     model_exe_service.fmu_setup.return_value = (IDs.FMU_PRIMARY, {})
     model_exe_service.compile_status.return_value = {"status": "done"}
     return create_model_entity(
-        'Test.PID', IDs.WORKSPACE_PRIMARY, IDs.PROJECT_PRIMARY, service,
+        'Test.PID', IDs.WORKSPACE_PRIMARY, IDs.PROJECT_PRIMARY, service
     )
 
 
@@ -1296,7 +1294,7 @@ def model_compile_cancelled():
     model_exe_service.compile_model.return_value = IDs.FMU_PRIMARY
     model_exe_service.compile_status.return_value = {"status": "cancelled"}
     return create_model_entity(
-        'Test.PID', IDs.WORKSPACE_PRIMARY, IDs.PROJECT_PRIMARY, service,
+        'Test.PID', IDs.WORKSPACE_PRIMARY, IDs.PROJECT_PRIMARY, service
     )
 
 
@@ -1440,7 +1438,7 @@ def fmu_with_modifiers():
         "steady_state": {"residual_variable_count": 1, "iteration_variable_count": 2}
     }
     return create_model_exe_entity(
-        IDs.WORKSPACE_PRIMARY, IDs.FMU_PRIMARY, service=service, modifiers={'PI.K': 20},
+        IDs.WORKSPACE_PRIMARY, IDs.FMU_PRIMARY, service=service, modifiers={'PI.K': 20}
     )
 
 
@@ -1490,7 +1488,7 @@ def model():
         "solver": {"rtol": 1e-5},
     }
     return create_model_entity(
-        'Test.PID', IDs.WORKSPACE_PRIMARY, IDs.PROJECT_PRIMARY, service,
+        'Test.PID', IDs.WORKSPACE_PRIMARY, IDs.PROJECT_PRIMARY, service
     )
 
 
@@ -1574,7 +1572,7 @@ def experiment():
     exp_service.case_trajectories_get.return_value = [[1, 2, 3, 4], [5, 2, 9, 4]]
     return ExperimentMock(
         create_experiment_entity(
-            IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY, service=service,
+            IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY, service=service
         ),
         service,
     )
@@ -1588,7 +1586,7 @@ def experiment_running():
     exp_service.case_get.return_value = {"id": "case_1"}
     exp_service.execute_status.return_value = {"status": "running"}
     return create_experiment_entity(
-        IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY, service,
+        IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY, service
     )
 
 
@@ -1600,7 +1598,7 @@ def experiment_cancelled():
     exp_service.case_get.return_value = {"id": "case_1"}
     exp_service.execute_status.return_value = {"status": "cancelled"}
     return create_experiment_entity(
-        IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY, service=service,
+        IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY, service=service
     )
 
 
@@ -1642,7 +1640,7 @@ def batch_experiment_with_case_filter():
     }
     return ExperimentMock(
         create_experiment_entity(
-            IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY, service,
+            IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY, service
         ),
         service,
     )
@@ -1679,7 +1677,7 @@ def batch_experiment():
     ]
     exp_service.case_trajectories_get.return_value = [[14, 4, 4, 74], [11, 22, 32, 44]]
     return create_experiment_entity(
-        IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY, service=service,
+        IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY, service=service
     )
 
 
@@ -1722,7 +1720,7 @@ def running_experiment():
     ws_service.experiment_get.return_value = {"run_info": {"status": "not_started"}}
     exp_service.execute_status.return_value = {"status": "running"}
     return create_experiment_entity(
-        IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY, service=service,
+        IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY, service=service
     )
 
 
@@ -1749,7 +1747,7 @@ def experiment_with_failed_case():
     exp_service.trajectories_get.return_value = [[[1, 2, 3, 4]], [[5, 2, 9, 4]]]
     exp_service.case_trajectories_get.return_value = [[1, 2, 3, 4], [5, 2, 9, 4]]
     return create_experiment_entity(
-        IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY, service=service,
+        IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY, service=service
     )
 
 
@@ -1771,7 +1769,7 @@ def failed_experiment():
     exp_service.cases_get.return_value = {"data": {"items": []}}
     exp_service.case_get.return_value = {}
     return create_experiment_entity(
-        IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY, service=service,
+        IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY, service=service
     )
 
 
@@ -1795,7 +1793,7 @@ def cancelled_experiment():
         "consistent": True,
     }
     return create_experiment_entity(
-        IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY, service,
+        IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY, service
     )
 
 
@@ -1966,7 +1964,7 @@ def project():
         "compiler": {"c_compiler": "gcc"}
     }
     return ProjectMock(
-        create_project_entity(IDs.PROJECT_PRIMARY, service=service), service=service,
+        create_project_entity(IDs.PROJECT_PRIMARY, service=service), service=service
     )
 
 
@@ -1981,7 +1979,7 @@ def get_project_content(sem_ver_check, mock_server_base):
     }
     base_url = f'api/projects/{IDs.PROJECT_PRIMARY}'
     url = f'{base_url}/content/{IDs.PROJECT_CONTENT_SECONDARY}'
-    return with_json_route(mock_server_base, 'GET', url, json,)
+    return with_json_route(mock_server_base, 'GET', url, json)
 
 
 @pytest.fixture
