@@ -245,28 +245,32 @@ def import_fmu(sem_ver_check):
     )
 
 
-def get_upload_result_ready_data():
-    return {
+def get_upload_status_data(status):
+    resource_uri = "api/external-result/2f036b9fab6f45c788cc466da327cc78workspace"
+    status_data = {
         "data": {
             "id": "2f036b9fab6f45c788cc466da327cc78workspace",
-            "status": "ready",
-            "data": {
-                "resourceUri": "api/external-result/2f036b9fab6f45c788cc466da327cc78workspace"
-            },
+            "status": status,
         }
     }
+    if status == "ready":
+        status_data["data"]["data"] = {"resourceUri": resource_uri}
+    if status == "error":
+        status_data["data"]["error"] = {"message": "Upload failed"}
+
+    return status_data
+
+
+def get_upload_result_ready_data():
+    return get_upload_status_data("ready")
 
 
 def get_upload_result_running_data():
-    return {
-        "data": {
-            "id": "2f036b9fab6f45c788cc466da327cc78workspace",
-            "status": "running",
-            "data": {
-                "resourceUri": "api/external-result/2f036b9fab6f45c788cc466da327cc78workspace"
-            },
-        }
-    }
+    return get_upload_status_data("running")
+
+
+def get_upload_result_error_data():
+    return get_upload_status_data("error")
 
 
 def get_result_upload_post_data():
@@ -315,6 +319,16 @@ def workspace_sal_upload_result_running(workspace_sal_upload_base):
     workspace_service = workspace_sal_upload_base.workspace
     workspace_service.get_result_upload_status.return_value = (
         get_upload_result_running_data()
+    )
+
+    return workspace_sal_upload_base
+
+
+@pytest.fixture
+def workspace_sal_upload_result_error(workspace_sal_upload_base):
+    workspace_service = workspace_sal_upload_base.workspace
+    workspace_service.get_result_upload_status.return_value = (
+        get_upload_result_error_data()
     )
 
     return workspace_sal_upload_base

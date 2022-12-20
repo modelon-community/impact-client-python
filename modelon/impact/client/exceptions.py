@@ -51,3 +51,7 @@ class IllegalWorkspaceConversion(Error):
 
 class IllegalContentImport(Error):
     pass
+
+
+class ExternalResultUploadError(Error):
+    pass

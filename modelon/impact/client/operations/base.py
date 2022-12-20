@@ -3,7 +3,7 @@ import time
 import logging
 
 from abc import ABC, abstractmethod
-from typing import Optional
+from typing import Any, Optional
 from modelon.impact.client import exceptions
 
 logger = logging.getLogger(__name__)
@@ -84,7 +84,7 @@ class AsyncOperation(BaseOperation):
     File operation class containing base functionality.
     """
 
-    def wait(self, timeout: Optional[float] = None):
+    def wait(self, timeout: Optional[float] = None) -> Any:
         """Waits until the operation completes.
         Returns the operation class instance if operation completes.
 
