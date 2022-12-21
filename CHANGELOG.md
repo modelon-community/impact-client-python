@@ -1,3 +1,10 @@
+# [3.0.0-dev.7](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.6...v3.0.0-dev.7) (2022-12-21)
+
+
+### Features
+
+* method for converting a workspace to latest version ([3615f0c](https://github.com/modelon-community/impact-client-python/commit/3615f0cfe063c41f12856be1a68eaea02404498d))
+
 # [3.0.0-dev.6](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.5...v3.0.0-dev.6) (2022-12-19)
 
 
