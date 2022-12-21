@@ -1,3 +1,10 @@
+# [3.0.0-dev.8](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.7...v3.0.0-dev.8) (2022-12-21)
+
+
+### Bug Fixes
+
+* ensure we capture all errors for external result upload ([6bf94ec](https://github.com/modelon-community/impact-client-python/commit/6bf94ec91ae833c4816284e8fbf123bff6ebc964))
+
 # [3.0.0-dev.7](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.6...v3.0.0-dev.7) (2022-12-21)
 
 
