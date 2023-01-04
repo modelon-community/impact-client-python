@@ -45,11 +45,11 @@ class TestWorkspace:
 
     def test_download_workspace(self, workspace):
         t = os.path.join(tempfile.gettempdir(), workspace.entity.id + '.zip')
-        resp = workspace.entity.download({}, tempfile.gettempdir())
+        resp = workspace.entity.download(tempfile.gettempdir())
         assert resp == t
 
     def test_export_workspace(self, workspace):
-        resp = workspace.entity.export({})
+        resp = workspace.entity.export()
         assert resp == create_workspace_export_operation(IDs.EXPORT)
 
     # TODO: Cloning workspace is not implemented on feature branch

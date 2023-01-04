@@ -69,7 +69,7 @@ class TestWorkspaceService:
         service = modelon.impact.client.sal.service.Service(
             uri=uri, context=setup_export_workspace.context
         )
-        data = service.workspace.workspace_export_setup(IDs.WORKSPACE_PRIMARY, {})
+        data = service.workspace.workspace_export_setup(IDs.WORKSPACE_PRIMARY)
         assert data == {"data": {"location": f"api/workspace-exports/{IDs.EXPORT}"}}
 
     def test_workspace_export_status(self, get_export_workspace_status):

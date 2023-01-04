@@ -36,8 +36,8 @@ class Export:
 
         Example::
 
-            path = workspace.export(options).wait().download_as('/home/workspace.zip')
-            path = workspace.export(options).wait().download_as('workspace.zip')
+            path = workspace.export().wait().download_as('/home/workspace.zip')
+            path = workspace.export().wait().download_as('workspace.zip')
 
         """
         data = self._export_sal.export_download(self._download_uri)
@@ -112,7 +112,7 @@ class WorkspaceExportOperation(AsyncOperation[Entity]):
 
         Example::
 
-            workspace.download(definition, False).status()
+            workspace.download().status()
 
         """
         return AsyncOperationStatus(self._info()["status"])

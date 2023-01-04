@@ -49,12 +49,10 @@ class WorkspaceService:
         url = (self._base_uri / f"api/workspaces/{workspace_id}").resolve()
         return self._http_client.get_json(url)
 
-    def workspace_export_setup(
-        self, workspace_id: str, options: Dict[str, Any]
-    ) -> Dict[str, Any]:
+    def workspace_export_setup(self, workspace_id: str) -> Dict[str, Any]:
         url = (self._base_uri / "api/workspace-exports").resolve()
-        options["workspaceId"] = workspace_id
-        return self._http_client.post_json(url, body=options)
+        body = {"workspaceId": workspace_id}
+        return self._http_client.post_json(url, body=body)
 
     def workspace_conversion_setup(
         self, workspace_id: str, backup_name: Optional[str]
