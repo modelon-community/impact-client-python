@@ -72,14 +72,8 @@ class Client:
         if interactive is None:
             interactive = modelon.impact.client.configuration.get_client_interactive()
 
-        if credential_manager is None:
-            credential_manager = (
-                modelon.impact.client.credential_manager.CredentialManager()
-            )
-
         self._uri = URI(url)
         self._sal = modelon.impact.client.sal.service.Service(self._uri, context)
-        self._credential_manager = credential_manager
 
         try:
             self._validate_compatible_api_version()
@@ -92,6 +86,16 @@ class Client:
             )
             self._sal = modelon.impact.client.sal.service.Service(self._uri, context)
             self._validate_compatible_api_version()
+
+        if credential_manager is None:
+            help_hint = f"can be generated at {self._uri / 'admin/keys'}"
+            help_text = f"Enter Modelon Impact API key ({help_hint}):"
+            credential_manager = (
+                modelon.impact.client.credential_manager.CredentialManager(
+                    interactive_help_text=help_text
+                )
+            )
+        self._credential_manager = credential_manager
 
         try:
             api_key = self._authenticate_against_api(interactive)
