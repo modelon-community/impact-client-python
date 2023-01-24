@@ -238,11 +238,18 @@ class ModelExecutable:
             path --
                 Local path to the downloaded FMU.
 
-        Example::
+        Raises:
 
-            fmu_path = model.compile().wait().download()
-            fmu_path = model.compile().wait().download('C:/Downloads')
+            OperationNotCompleteError if compilation process is in progress.
+            OperationFailureError if compilation process has failed or was cancelled.
+
+        Example::
+            fmu =  model.compile().wait()
+            if fmu.is_successful():
+                fmu_path = fmu.download()
+                fmu_path = fmu.download('C:/Downloads')
         """
+        assert_successful_operation(self.is_successful(), "Compilation")
         data = self._sal.workspace.fmu_download(self._workspace_id, self._fmu_id)
         if path is None:
             path = os.path.join(tempfile.gettempdir(), "impact-downloads")
