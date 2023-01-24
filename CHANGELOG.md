@@ -1,3 +1,10 @@
+# [3.0.0-dev.9](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.8...v3.0.0-dev.9) (2023-01-24)
+
+
+### Bug Fixes
+
+* assert compilation is successful before calling download FMU api ([cee8892](https://github.com/modelon-community/impact-client-python/commit/cee88921236bcba594075ef6a47f0210898d7c8c))
+
 # [3.0.0-dev.8](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.7...v3.0.0-dev.8) (2022-12-21)
 
 
