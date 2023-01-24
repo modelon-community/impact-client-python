@@ -68,6 +68,11 @@ class TestModelExecutable:
         resp = fmu.download(tempfile.gettempdir())
         assert resp == t
 
+    def test_download_fmu_failed_compilation(self, fmu_compile_failed):
+        pytest.raises(
+            exceptions.OperationFailureError, fmu_compile_failed.download,
+        )
+
     def test_download_fmu_no_path(self, fmu):
         t = os.path.join(tempfile.gettempdir(), 'impact-downloads', fmu.id + '.fmu')
         resp = fmu.download()
