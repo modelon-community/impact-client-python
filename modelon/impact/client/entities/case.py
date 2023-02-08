@@ -160,14 +160,14 @@ class _CaseInput:
     @property
     def parametrization(self) -> Dict[str, Any]:
         """
-        Parameterization of the case, a list of key value pairs where key
+        Parametrization of the case, a list of key value pairs where key
         is variable name and value is the value to use for that variable.
         """
         return self._data['parametrization']
 
     @parametrization.setter
-    def parametrization(self, parameterization: Dict[str, Any]):
-        self._data['parametrization'] = parameterization
+    def parametrization(self, parametrization: Dict[str, Any]):
+        self._data['parametrization'] = parametrization
 
     @property
     def fmu_id(self) -> str:
@@ -177,7 +177,7 @@ class _CaseInput:
     @property
     def structural_parametrization(self) -> Dict[str, Any]:
         """
-        Structural parameterization of the case, a list of key value pairs where
+        Structural parametrization of the case, a list of key value pairs where
         key is variable name and value is the value to use for that variable.
         These are values that cannot be applied to the FMU/Model after compilation.
         """
