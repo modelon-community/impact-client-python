@@ -75,6 +75,8 @@ class _CaseAnalysis:
     Class containing Case analysis configuration.
     """
 
+    __slots__ = ['_analysis']
+
     def __init__(self, analysis: Dict[str, Any]):
         self._analysis = analysis
 
@@ -132,6 +134,8 @@ class _CaseMeta:
     Class containing Case meta
     """
 
+    __slots__ = ['_data']
+
     def __init__(self, data: Dict[str, Any]):
         self._data = data
 
@@ -149,6 +153,8 @@ class _CaseInput:
     """
     Class containing Case input
     """
+
+    __slots__ = ['_data']
 
     def __init__(self, data: Dict[str, Any]):
         self._data = data
@@ -197,6 +203,8 @@ class Case:
     """
     Class containing Case functionalities.
     """
+
+    __slots__ = ['_case_id', '_workspace_id', '_exp_id', '_sal', '_info']
 
     def __init__(
         self,

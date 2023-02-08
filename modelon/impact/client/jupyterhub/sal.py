@@ -7,6 +7,8 @@ from modelon.impact.client.sal.context import Context
 
 
 class JupyterContext:
+    __slots__ = ['_base', '_token']
+
     def __init__(self, base=None):
         self._base = base if base else Context()
         self._token = None
