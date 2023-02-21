@@ -86,7 +86,8 @@ class TestProjectService:
             uri=uri, context=delete_project_content.context
         )
         service.project.project_content_delete(
-            IDs.PROJECT_PRIMARY, IDs.PROJECT_CONTENT_PRIMARY,
+            IDs.PROJECT_PRIMARY,
+            IDs.PROJECT_CONTENT_PRIMARY,
         )
         assert delete_project_content.adapter.called
         delete_call = delete_project_content.adapter.request_history[0]
@@ -102,7 +103,8 @@ class TestProjectService:
             uri=uri, context=get_project_content.context
         )
         data = service.project.project_content_get(
-            IDs.PROJECT_PRIMARY, IDs.PROJECT_CONTENT_SECONDARY,
+            IDs.PROJECT_PRIMARY,
+            IDs.PROJECT_CONTENT_SECONDARY,
         )
         assert data == {
             "id": IDs.PROJECT_CONTENT_SECONDARY,
@@ -118,7 +120,9 @@ class TestProjectService:
             uri=uri, context=upload_project_content.context
         )
         data = service.project.project_content_upload(
-            SINGLE_FILE_LIBRARY_PATH, IDs.PROJECT_PRIMARY, "MODELICA",
+            SINGLE_FILE_LIBRARY_PATH,
+            IDs.PROJECT_PRIMARY,
+            "MODELICA",
         )
         assert 'data' in data
 
@@ -160,7 +164,9 @@ class TestProjectService:
         service = modelon.impact.client.sal.service.Service(
             uri=uri, context=project_options_get.context
         )
-        data = service.project.project_options_get(IDs.PROJECT_PRIMARY, 'dynamic')
+        data = service.project.project_options_get(
+            IDs.PROJECT_PRIMARY, IDs.WORKSPACE_PRIMARY, IDs.DYNAMIC_CF
+        )
         assert data == {
             "compiler": {
                 "c_compiler": "gcc",
@@ -178,6 +184,6 @@ class TestProjectService:
             uri=uri, context=project_default_options_get.context
         )
         data = service.project.project_default_options_get(
-            IDs.PROJECT_PRIMARY, 'dynamic'
+            IDs.WORKSPACE_PRIMARY, IDs.DYNAMIC_CF
         )
         assert data == {'compiler': {'c_compiler': 'gcc'}}

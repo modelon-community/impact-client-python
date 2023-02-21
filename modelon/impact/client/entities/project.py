@@ -369,10 +369,10 @@ class Project:
         """
         if use_defaults:
             options = self._sal.project.project_default_options_get(
-                self._project_id, custom_function=custom_function.name
+                custom_function._workspace_id, custom_function.name
             )
         else:
             options = self._sal.project.project_options_get(
-                self._project_id, custom_function=custom_function.name
+                self._project_id, custom_function._workspace_id, custom_function.name
             )
         return ProjectExecutionOptions(options, custom_function.name)

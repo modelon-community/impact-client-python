@@ -268,7 +268,7 @@ class Model:
             experiment = workspace.execute(experiment_definition).wait()
         """
         options = self._sal.project.project_options_get(
-            self._project_id, custom_function=custom_function.name
+            self._project_id, self._workspace_id, custom_function=custom_function.name
         )
         options = ProjectExecutionOptions(options, custom_function.name)
         return base.SimpleModelicaExperimentDefinition(

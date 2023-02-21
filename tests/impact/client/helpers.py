@@ -53,7 +53,9 @@ def with_exception(mock_server_base, method, url, exce):
 
 def with_json_route_no_resp(mock_server_base, method, url, status_code=200):
     mock_server_base.adapter.register_uri(
-        method, f'{mock_server_base.url}/{url}', status_code=status_code,
+        method,
+        f'{mock_server_base.url}/{url}',
+        status_code=status_code,
     )
     return mock_server_base
 
@@ -158,6 +160,7 @@ class IDs:
     IMPORT = '9a8fg798a7g'
     EXPORT = '79sd8-3n2a4-e3t24'
     CONVERSION = 't24e3-a43n2-d879s'
+    DYNAMIC_CF = 'dynamic'
 
 
 VERSIONED_PROJECT_TRUNK = {
@@ -273,21 +276,35 @@ def create_workspace_entity(name, definition=None, service=None):
 
 
 def create_model_entity(
-    class_name, workspace_id, project_id, service=None,
+    class_name,
+    workspace_id,
+    project_id,
+    service=None,
 ):
     return Model(class_name, workspace_id, project_id, service or MagicMock())
 
 
 def create_model_exe_entity(
-    workspace_id, fmu_id, service=None, info=None, modifiers=None,
+    workspace_id,
+    fmu_id,
+    service=None,
+    info=None,
+    modifiers=None,
 ):
     return ModelExecutable(
-        workspace_id, fmu_id, service or MagicMock(), info, modifiers,
+        workspace_id,
+        fmu_id,
+        service or MagicMock(),
+        info,
+        modifiers,
     )
 
 
 def create_experiment_entity(
-    workspace_id, exp_id, service=None, info=None,
+    workspace_id,
+    exp_id,
+    service=None,
+    info=None,
 ):
     return Experiment(workspace_id, exp_id, service or MagicMock(), info)
 
@@ -326,7 +343,10 @@ def create_project_entity(
 
 
 def create_project_content_entity(
-    project_id, content_id=IDs.PROJECT_CONTENT_PRIMARY, content=None, service=None,
+    project_id,
+    content_id=IDs.PROJECT_CONTENT_PRIMARY,
+    content=None,
+    service=None,
 ):
     if not content:
         content = {
@@ -340,7 +360,11 @@ def create_project_content_entity(
 
 
 def create_case_entity(
-    case_id, workspace_id, exp_id, service=None, info=None,
+    case_id,
+    workspace_id,
+    exp_id,
+    service=None,
+    info=None,
 ):
     return Case(
         case_id, workspace_id, exp_id, service or MagicMock(), info or MagicMock()
@@ -360,27 +384,40 @@ def create_custom_function_entity(
 
 
 def create_experiment_operation(
-    workspace_id, exp_id, service=None,
+    workspace_id,
+    exp_id,
+    service=None,
 ):
     return ExperimentOperation(workspace_id, exp_id, service or MagicMock())
 
 
 def create_cached_model_exe_operation(
-    workspace_id, fmu_id, service=None, info=None, modifiers=None,
+    workspace_id,
+    fmu_id,
+    service=None,
+    info=None,
+    modifiers=None,
 ):
     return CachedModelExecutableOperation(
-        workspace_id, fmu_id, service or MagicMock(), info=info, modifiers=modifiers,
+        workspace_id,
+        fmu_id,
+        service or MagicMock(),
+        info=info,
+        modifiers=modifiers,
     )
 
 
 def create_model_exe_operation(
-    workspace_id, fmu_id, service=None,
+    workspace_id,
+    fmu_id,
+    service=None,
 ):
     return ModelExecutableOperation(workspace_id, fmu_id, service or MagicMock())
 
 
 def create_workspace_export_operation(
-    ws_export_id, service=None,
+    ws_export_id,
+    service=None,
 ):
     return WorkspaceExportOperation(
         f"api/workspace-exports/{ws_export_id}", service or MagicMock()
@@ -388,7 +425,8 @@ def create_workspace_export_operation(
 
 
 def create_workspace_conversion_operation(
-    ws_conversion_id, service=None,
+    ws_conversion_id,
+    service=None,
 ):
     return WorkspaceConversionOperation(
         f"api/workspace-conversions/{ws_conversion_id}", service or MagicMock()

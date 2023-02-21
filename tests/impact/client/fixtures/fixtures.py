@@ -938,7 +938,7 @@ def project_options_get(sem_ver_check, mock_server_base):
     return with_json_route(
         mock_server_base,
         'GET',
-        f'api/projects/{IDs.PROJECT_PRIMARY}/custom-functions/dynamic/options',
+        f'api/workspaces/{IDs.WORKSPACE_PRIMARY}/projects/{IDs.PROJECT_PRIMARY}/custom-functions/{IDs.DYNAMIC_CF}/options',
         json,
     )
 
@@ -949,7 +949,7 @@ def project_default_options_get(sem_ver_check, mock_server_base):
     return with_json_route(
         mock_server_base,
         'GET',
-        f'api/projects/{IDs.PROJECT_PRIMARY}/custom-functions/dynamic/default-options',
+        f'api/workspaces/{IDs.WORKSPACE_PRIMARY}/custom-functions/{IDs.DYNAMIC_CF}/default-options',
         json,
     )
 
