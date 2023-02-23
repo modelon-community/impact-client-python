@@ -48,11 +48,6 @@ class WorkspaceService:
         url = (self._base_uri / f"api/workspaces/{workspace_id}").resolve()
         return self._http_client.get_json(url)
 
-    def workspace_upload(self, path_to_workspace: str):
-        url = (self._base_uri / "api/workspaces").resolve()
-        with open(path_to_workspace, "rb") as f:
-            return self._http_client.post_json(url, files={"file": f})
-
     def result_upload(
         self,
         workspace_id: str,
@@ -163,6 +158,11 @@ class WorkspaceService:
             f"sharing-definition?strict={'true' if strict else 'false'}"
         ).resolve()
         return self._http_client.get_json(url)
+
+    def import_from_zip(self, path_to_workspace: str):
+        url = (self._base_uri / "api/workspace-imports").resolve()
+        with open(path_to_workspace, "rb") as f:
+            return self._http_client.post_json(url, files={"file": f})
 
     def import_from_shared_definition(
         self,

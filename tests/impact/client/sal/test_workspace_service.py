@@ -64,14 +64,6 @@ class TestWorkspaceService:
             }
         }
 
-    def test_workspace_upload(self, upload_workspace):
-        uri = URI(upload_workspace.url)
-        service = modelon.impact.client.sal.service.Service(
-            uri=uri, context=upload_workspace.context
-        )
-        data = service.workspace.workspace_upload(TEST_WORKSPACE_PATH)
-        assert data == {'id': IDs.WORKSPACE_PRIMARY}
-
     def test_result_upload(self, upload_result):
         uri = URI(upload_result.url)
         service = modelon.impact.client.sal.service.Service(
@@ -339,30 +331,37 @@ class TestWorkspaceService:
             uri=uri, context=get_workspace_upload_status.context
         )
         data = service.workspace.get_workspace_upload_status(
-            "api/workspace-imports/05c7c0c45a084f079682eaf443287901"
+            f"api/workspace-imports/{IDs.IMPORT}"
         )
         assert get_workspace_upload_status.adapter.called
         assert data == {
             "data": {
-                'id': 'efa5cc60e3d04049ad0566bc53b431f8',
+                'id': IDs.IMPORT,
                 'status': 'ready',
-                'data': {'resourceUri': 'api/workspaces/test', 'workspaceId': 'test'},
+                'data': {
+                    'resourceUri': f'api/workspaces/{IDs.WORKSPACE_PRIMARY}',
+                    'workspaceId': IDs.WORKSPACE_PRIMARY,
+                },
             }
         }
 
-    def test_import_from_shared_definition(self, import_from_shared_definition):
-        uri = URI(import_from_shared_definition.url)
+    def test_workspace_import_from_zip(self, import_workspace):
+        uri = URI(import_workspace.url)
         service = modelon.impact.client.sal.service.Service(
-            uri=uri, context=import_from_shared_definition.context
+            uri=uri, context=import_workspace.context
+        )
+        data = service.workspace.import_from_zip(TEST_WORKSPACE_PATH)
+        assert data == {"data": {"location": f"api/workspace-imports/{IDs.IMPORT}"}}
+
+    def test_import_from_shared_definition(self, import_workspace):
+        uri = URI(import_workspace.url)
+        service = modelon.impact.client.sal.service.Service(
+            uri=uri, context=import_workspace.context
         )
         data = service.workspace.import_from_shared_definition(
             {"definition": {"name": "test", "projects": []}}
         )
-        assert data == {
-            "data": {
-                "location": "api/workspace-imports/05c7c0c45a084f079682eaf443287901"
-            }
-        }
+        assert data == {"data": {"location": f"api/workspace-imports/{IDs.IMPORT}"}}
 
     def test_get_vcs_matchings(self, get_project_matchings):
         uri = URI(get_project_matchings.url)

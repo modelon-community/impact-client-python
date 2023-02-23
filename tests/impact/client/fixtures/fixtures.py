@@ -415,13 +415,6 @@ def upload_result_delete(sem_ver_check, mock_server_base):
 
 
 @pytest.fixture
-def upload_workspace(sem_ver_check, mock_server_base):
-    json = {'id': IDs.WORKSPACE_PRIMARY}
-
-    return with_json_route(mock_server_base, 'POST', 'api/workspaces', json)
-
-
-@pytest.fixture
 def setup_export_workspace(sem_ver_check, mock_server_base):
     json = {"data": {"location": f"api/workspace-exports/{IDs.EXPORT}"}}
     return with_json_route(mock_server_base, 'POST', 'api/workspace-exports', json)
@@ -1969,16 +1962,19 @@ def shared_definition_get(user_with_license, mock_server_base):
 def get_workspace_upload_status(user_with_license, mock_server_base):
     json = {
         "data": {
-            'id': 'efa5cc60e3d04049ad0566bc53b431f8',
+            'id': IDs.IMPORT,
             'status': 'ready',
-            'data': {'resourceUri': 'api/workspaces/test', 'workspaceId': 'test'},
+            'data': {
+                'resourceUri': f'api/workspaces/{IDs.WORKSPACE_PRIMARY}',
+                'workspaceId': IDs.WORKSPACE_PRIMARY,
+            },
         }
     }
 
     return with_json_route(
         mock_server_base,
         'GET',
-        'api/workspace-imports/05c7c0c45a084f079682eaf443287901',
+        f'api/workspace-imports/{IDs.IMPORT}',
         json,
     )
 
@@ -1987,11 +1983,11 @@ def get_workspace_upload_status(user_with_license, mock_server_base):
 def get_successful_workspace_upload_status(user_with_license, mock_server_base):
     json = {
         "data": {
-            "id": "05c7c0c45a084f079682eaf443287901",
+            "id": IDs.IMPORT,
             "status": "ready",
             "data": {
-                'resourceUri': 'api/workspaces/123456780',
-                'workspaceId': "123456780",
+                'resourceUri': f'api/workspaces/{IDs.WORKSPACE_PRIMARY}',
+                'workspaceId': IDs.WORKSPACE_PRIMARY,
             },
         }
     }
@@ -1999,7 +1995,7 @@ def get_successful_workspace_upload_status(user_with_license, mock_server_base):
     return with_json_route(
         mock_server_base,
         'GET',
-        'api/workspace-imports/05c7c0c45a084f079682eaf443287901',
+        f'api/workspace-imports/{IDs.IMPORT}',
         json,
     )
 
@@ -2010,7 +2006,7 @@ def get_failed_workspace_upload_status(user_with_license, mock_server_base):
     vcs_uri = f'git+{git_url}.git@main:da6abb188a089527df1b54b27ace84274b819e4a'
     json = {
         "data": {
-            "id": "05c7c0c45a084f079682eaf443287901",
+            "id": IDs.IMPORT,
             "status": "error",
             "error": {
                 "message": "Could not import workspace 'test'. Multiple existing "
@@ -2024,16 +2020,14 @@ def get_failed_workspace_upload_status(user_with_license, mock_server_base):
     return with_json_route(
         mock_server_base,
         'GET',
-        'api/workspace-imports/05c7c0c45a084f079682eaf443287901',
+        f'api/workspace-imports/{IDs.IMPORT}',
         json,
     )
 
 
 @pytest.fixture
-def import_from_shared_definition(user_with_license, mock_server_base):
-    json = {
-        "data": {"location": "api/workspace-imports/05c7c0c45a084f079682eaf443287901"}
-    }
+def import_workspace(sem_ver_check, mock_server_base):
+    json = {"data": {"location": f"api/workspace-imports/{IDs.IMPORT}"}}
 
     return with_json_route(mock_server_base, 'POST', 'api/workspace-imports', json)
 

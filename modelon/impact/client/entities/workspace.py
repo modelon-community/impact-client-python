@@ -261,7 +261,7 @@ class Workspace:
         """Exports the workspace as a binary compressed archive. Similar to
         :obj:`~modelon.impact.client.entities.workspace.Workspace.download`,
         but gives more control for getting the workspace async.
-        Returns an modelon.impact.client.operations.workspace
+        Returns an modelon.impact.client.operations.workspace.exports
         .WorkspaceExportOperation class object.
 
         Parameters:
@@ -273,8 +273,8 @@ class Workspace:
         Returns:
 
             WorkspaceExportOperation --
-                An modelon.impact.client.operations.workspace.WorkspaceExportOperation
-                 class object.
+                An modelon.impact.client.operations.workspace.exports.
+                WorkspaceExportOperation class object.
 
         Example::
 

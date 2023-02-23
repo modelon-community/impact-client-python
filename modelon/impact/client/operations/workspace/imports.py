@@ -13,12 +13,10 @@ class WorkspaceImportOperation(AsyncOperation):
     def __init__(
         self,
         location: str,
-        workspace_definition: WorkspaceDefinition,
         service: Service,
     ):
         super().__init__()
         self._location = location
-        self._workspace_definition = workspace_definition
         self._sal = service
 
     def __repr__(self):
@@ -61,7 +59,8 @@ class WorkspaceImportOperation(AsyncOperation):
                 f"Workspace import failed! Cause: {info['error'].get('message')}"
             )
         workspace_id = info["data"]["workspaceId"]
-        return Workspace(workspace_id, self._workspace_definition, self._sal)
+        resp = self._sal.workspace.workspace_get(workspace_id)
+        return Workspace(resp["id"], WorkspaceDefinition(resp["definition"]), self._sal)
 
     def status(self):
         """

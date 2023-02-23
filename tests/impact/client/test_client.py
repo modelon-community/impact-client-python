@@ -4,6 +4,7 @@ from modelon.impact.client import Client
 from modelon.impact.client.entities.workspace import Workspace, WorkspaceDefinition
 import modelon.impact.client.exceptions as exceptions
 import modelon.impact.client.sal.exceptions as sal_exceptions
+from tests.files.paths import TEST_WORKSPACE_PATH
 
 from tests.impact.client.helpers import (
     create_workspace_conversion_operation,
@@ -89,7 +90,8 @@ def test_client_login_api_key_missing(user_with_license):
     )
 
     assert_login_called(
-        adapter=user_with_license.adapter, body={},
+        adapter=user_with_license.adapter,
+        body={},
     )
 
 
@@ -200,12 +202,27 @@ def test_get_project_matchings(
     assert project_matching_entries[0].projects[1].id == IDs.VERSIONED_PROJECT_SECONDARY
 
 
-def test_import_from_shared_definition(
-    import_from_shared_definition, get_successful_workspace_upload_status
+def test_import_from_zip(
+    import_workspace,
+    get_successful_workspace_upload_status,
+    single_workspace,
 ):
     client = Client(
-        url=import_from_shared_definition.url,
-        context=import_from_shared_definition.context,
+        url=import_workspace.url,
+        context=import_workspace.context,
+    )
+    imported_workspace = client.import_from_zip(TEST_WORKSPACE_PATH).wait()
+    assert isinstance(imported_workspace, Workspace)
+
+
+def test_import_from_shared_definition(
+    import_workspace,
+    get_successful_workspace_upload_status,
+    single_workspace,
+):
+    client = Client(
+        url=import_workspace.url,
+        context=import_workspace.context,
     )
     definition = WorkspaceDefinition(get_test_workspace_definition())
     imported_workspace = client.import_from_shared_definition(definition).wait()
@@ -213,11 +230,11 @@ def test_import_from_shared_definition(
 
 
 def test_failed_import_from_shared_definition(
-    import_from_shared_definition, get_failed_workspace_upload_status
+    import_workspace, get_failed_workspace_upload_status
 ):
     client = Client(
-        url=import_from_shared_definition.url,
-        context=import_from_shared_definition.context,
+        url=import_workspace.url,
+        context=import_workspace.context,
     )
     definition = WorkspaceDefinition(get_test_workspace_definition())
     with pytest.raises(exceptions.IllegalWorkspaceImport):
