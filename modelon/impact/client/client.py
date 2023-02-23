@@ -362,7 +362,7 @@ class Client:
     def upload_workspace(self, path_to_workspace):
         """Imports a Workspace from a compressed(.zip) workspace file.
         Returns the workspace class object of the imported workspace.
-        Similar to :obj:`~modelon.impact.client.Client.import_from_zip`,
+        Similar to :obj:`~modelon.impact.client.Client.import_workspace_from_zip`,
         but does the import in one go.
 
         Parameters:
@@ -379,9 +379,9 @@ class Client:
 
             client.upload_workspace(path_to_workspace)
         """
-        return self.import_from_zip(path_to_workspace).wait()
+        return self.import_workspace_from_zip(path_to_workspace).wait()
 
-    def import_from_zip(self, path_to_workspace):
+    def import_workspace_from_zip(self, path_to_workspace):
         """Imports a Workspace from a compressed(.zip) workspace file.
         Similar to
         :obj:`~modelon.impact.client.Client.upload_workspace`,
@@ -402,12 +402,12 @@ class Client:
 
         Example::
 
-            client.import_from_zip(path_to_workspace)
+            client.import_workspace_from_zip(path_to_workspace)
         """
         resp = self._sal.workspace.import_from_zip(path_to_workspace)
         return WorkspaceImportOperation(resp["data"]["location"], self._sal)
 
-    def import_from_shared_definition(
+    def import_workspace_from_shared_definition(
         self,
         shared_definition: WorkspaceDefinition,
         selections: Optional[List[Selection]] = None,

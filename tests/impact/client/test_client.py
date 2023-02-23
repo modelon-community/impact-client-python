@@ -202,7 +202,7 @@ def test_get_project_matchings(
     assert project_matching_entries[0].projects[1].id == IDs.VERSIONED_PROJECT_SECONDARY
 
 
-def test_import_from_zip(
+def test_import_workspace_from_zip(
     import_workspace,
     get_successful_workspace_upload_status,
     single_workspace,
@@ -211,11 +211,11 @@ def test_import_from_zip(
         url=import_workspace.url,
         context=import_workspace.context,
     )
-    imported_workspace = client.import_from_zip(TEST_WORKSPACE_PATH).wait()
+    imported_workspace = client.import_workspace_from_zip(TEST_WORKSPACE_PATH).wait()
     assert isinstance(imported_workspace, Workspace)
 
 
-def test_import_from_shared_definition(
+def test_import_workspace_from_shared_definition(
     import_workspace,
     get_successful_workspace_upload_status,
     single_workspace,
@@ -225,7 +225,9 @@ def test_import_from_shared_definition(
         context=import_workspace.context,
     )
     definition = WorkspaceDefinition(get_test_workspace_definition())
-    imported_workspace = client.import_from_shared_definition(definition).wait()
+    imported_workspace = client.import_workspace_from_shared_definition(
+        definition
+    ).wait()
     assert isinstance(imported_workspace, Workspace)
 
 
@@ -238,7 +240,7 @@ def test_failed_import_from_shared_definition(
     )
     definition = WorkspaceDefinition(get_test_workspace_definition())
     with pytest.raises(exceptions.IllegalWorkspaceImport):
-        client.import_from_shared_definition(definition).wait()
+        client.import_workspace_from_shared_definition(definition).wait()
 
 
 def test_workspace_conversion(setup_workspace_conversion):
