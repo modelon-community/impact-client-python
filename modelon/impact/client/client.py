@@ -10,6 +10,7 @@ import modelon.impact.client.sal.service
 import modelon.impact.client.sal.exceptions
 import modelon.impact.client.credential_manager
 import modelon.impact.client.jupyterhub
+from modelon.impact.client.operations.project_import import ProjectImportOperation
 from modelon.impact.client.operations.workspace.imports import WorkspaceImportOperation
 from modelon.impact.client.operations.workspace.conversion import (
     WorkspaceConversionOperation,
@@ -445,3 +446,25 @@ class Client:
                 )
             )
         return ProjectMatchings(project_matchings)
+
+    def import_project_from_zip(self, path_to_project):
+        """Imports a Project from a compressed(.zip) project file.
+        Returns the project class object.
+
+        Parameters:
+
+            path_to_project --
+                The path for the compressed project(.zip) to be uploaded.
+
+        Returns:
+
+            ProjectImportOperation --
+                An modelon.impact.client.operations.project_import.
+                ProjectImportOperation class object.
+
+        Example::
+
+            client.import_project_from_zip(path_to_project)
+        """
+        resp = self._sal.project.import_from_zip(path_to_project)
+        return ProjectImportOperation(resp["data"]["location"], self._sal)

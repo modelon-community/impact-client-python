@@ -110,3 +110,12 @@ class ProjectService:
                 'options': json.dumps(options),
             }
             return self._http_client.post_json(url, files=multipart_form_data)
+
+    def import_from_zip(self, path_to_project: str):
+        url = (self._base_uri / "api/project-imports").resolve()
+        with open(path_to_project, "rb") as f:
+            return self._http_client.post_json(url, files={"file": f})
+
+    def get_project_upload_status(self, location: str):
+        url = (self._base_uri / location).resolve()
+        return self._http_client.get_json(url)

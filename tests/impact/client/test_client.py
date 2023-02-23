@@ -2,6 +2,7 @@ import pytest
 from unittest.mock import MagicMock
 from modelon.impact.client import Client
 from modelon.impact.client.entities.workspace import Workspace, WorkspaceDefinition
+from modelon.impact.client.entities.project import Project
 import modelon.impact.client.exceptions as exceptions
 import modelon.impact.client.sal.exceptions as sal_exceptions
 from tests.files.paths import TEST_WORKSPACE_PATH
@@ -250,3 +251,16 @@ def test_workspace_conversion(setup_workspace_conversion):
 
     conversioin_op = client.convert_workspace(IDs.CONVERSION, 'backup')
     assert conversioin_op == create_workspace_conversion_operation(IDs.CONVERSION)
+
+
+def test_import_project_from_zip(
+    import_project,
+    get_project_upload_status,
+    single_project,
+):
+    client = Client(
+        url=import_project.url,
+        context=import_project.context,
+    )
+    imported_project = client.import_project_from_zip(TEST_WORKSPACE_PATH).wait()
+    assert isinstance(imported_project, Project)

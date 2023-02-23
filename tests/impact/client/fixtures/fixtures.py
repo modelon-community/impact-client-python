@@ -1959,6 +1959,27 @@ def shared_definition_get(user_with_license, mock_server_base):
 
 
 @pytest.fixture
+def get_project_upload_status(user_with_license, mock_server_base):
+    json = {
+        "data": {
+            'id': IDs.IMPORT,
+            'status': 'ready',
+            'data': {
+                'resourceUri': f'api/projects/{IDs.PROJECT_PRIMARY}',
+                'projectId': IDs.PROJECT_PRIMARY,
+            },
+        }
+    }
+
+    return with_json_route(
+        mock_server_base,
+        'GET',
+        f'api/project-imports/{IDs.IMPORT}',
+        json,
+    )
+
+
+@pytest.fixture
 def get_workspace_upload_status(user_with_license, mock_server_base):
     json = {
         "data": {
@@ -2030,6 +2051,13 @@ def import_workspace(sem_ver_check, mock_server_base):
     json = {"data": {"location": f"api/workspace-imports/{IDs.IMPORT}"}}
 
     return with_json_route(mock_server_base, 'POST', 'api/workspace-imports', json)
+
+
+@pytest.fixture
+def import_project(sem_ver_check, mock_server_base):
+    json = {"data": {"location": f"api/project-imports/{IDs.IMPORT}"}}
+
+    return with_json_route(mock_server_base, 'POST', 'api/project-imports', json)
 
 
 @pytest.fixture

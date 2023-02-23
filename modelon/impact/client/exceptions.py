@@ -37,6 +37,10 @@ class OperationCompleteError(Error):
     pass
 
 
+class IllegalProjectImport(Error):
+    pass
+
+
 class IllegalWorkspaceImport(Error):
     pass
 
