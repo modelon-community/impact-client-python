@@ -140,9 +140,7 @@ class TestWorkspaceService:
         service = modelon.impact.client.sal.service.Service(
             uri=uri, context=get_export_workspace_status.context
         )
-        data = service.workspace.get_workspace_export_status(
-            f"api/workspace-exports/{IDs.EXPORT}"
-        )
+        data = service.exports.get_export_status(f"api/workspace-exports/{IDs.EXPORT}")
         assert data["data"]["status"] == "ready"
 
     def test_workspace_conversion_setup(self, setup_workspace_conversion):
@@ -330,9 +328,7 @@ class TestWorkspaceService:
         service = modelon.impact.client.sal.service.Service(
             uri=uri, context=get_workspace_upload_status.context
         )
-        data = service.workspace.get_workspace_upload_status(
-            f"api/workspace-imports/{IDs.IMPORT}"
-        )
+        data = service.imports.get_import_status(f"api/workspace-imports/{IDs.IMPORT}")
         assert get_workspace_upload_status.adapter.called
         assert data == {
             "data": {

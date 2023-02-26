@@ -87,10 +87,6 @@ class WorkspaceService:
         options["workspaceId"] = workspace_id
         return self._http_client.post_json(url, body=options)
 
-    def get_workspace_export_status(self, location: str):
-        url = (self._base_uri / location).resolve()
-        return self._http_client.get_json(url)
-
     def workspace_conversion_setup(self, workspace_id: str, backup_name: Optional[str]):
         url = (self._base_uri / "api/workspace-conversions").resolve()
         backup_data = {'backup': {'name': backup_name}} if backup_name else {}
@@ -176,10 +172,6 @@ class WorkspaceService:
             }
         url = (self._base_uri / "api/workspace-imports").resolve()
         return self._http_client.post_json(url, body=shared_definition)
-
-    def get_workspace_upload_status(self, location: str):
-        url = (self._base_uri / location).resolve()
-        return self._http_client.get_json(url)
 
     def get_project_matchings(self, shared_definition: Dict[str, Any]):
         url = (self._base_uri / "api/workspace-imports-matchings").resolve()

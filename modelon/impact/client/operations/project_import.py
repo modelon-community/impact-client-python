@@ -41,7 +41,7 @@ class ProjectImportOperation(AsyncOperation):
         raise NotImplementedError('Cancel is not supported for this operation')
 
     def _info(self):
-        return self._sal.project.get_project_upload_status(self._location)["data"]
+        return self._sal.imports.get_import_status(self._location)["data"]
 
     def data(self):
         """

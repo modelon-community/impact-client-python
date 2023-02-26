@@ -63,10 +63,6 @@ class ProjectService:
             }
             return self._http_client.post_json(url, files=multipart_form_data)
 
-    def project_content_upload_status(self, location: str):
-        url = (self._base_uri / location).resolve()
-        return self._http_client.get_json(url)
-
     def project_content_get(self, project_id: str, content_id: str):
         url = (
             self._base_uri / f"/api/projects/{project_id}/content/{content_id}"
@@ -115,7 +111,3 @@ class ProjectService:
         url = (self._base_uri / "api/project-imports").resolve()
         with open(path_to_project, "rb") as f:
             return self._http_client.post_json(url, files={"file": f})
-
-    def get_project_upload_status(self, location: str):
-        url = (self._base_uri / location).resolve()
-        return self._http_client.get_json(url)

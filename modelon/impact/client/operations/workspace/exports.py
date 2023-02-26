@@ -69,7 +69,7 @@ class WorkspaceExportOperation(AsyncOperation):
         raise NotImplementedError('Cancel is not supported for this operation')
 
     def _info(self):
-        return self._sal.workspace.get_workspace_export_status(self._location)["data"]
+        return self._sal.exports.get_export_status(self._location)["data"]
 
     def data(self):
         """
@@ -84,7 +84,7 @@ class WorkspaceExportOperation(AsyncOperation):
             raise exceptions.IllegalWorkspaceExport(
                 f"Workspace export failed! Cause: {info['error'].get('message')}"
             )
-        return Export(self._sal.export, info["data"]["downloadUri"])
+        return Export(self._sal.exports, info["data"]["downloadUri"])
 
     def status(self):
         """

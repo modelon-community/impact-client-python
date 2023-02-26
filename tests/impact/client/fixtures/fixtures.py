@@ -950,7 +950,7 @@ def project_default_options_get(sem_ver_check, mock_server_base):
 @pytest.fixture
 def workspace():
     service = MagicMock()
-    export_service = service.export
+    export_service = service.exports
     ws_service = service.workspace
     custom_function_service = service.custom_function
     exp_service = service.experiment
@@ -1067,7 +1067,7 @@ def workspace():
     ws_service.workspace_export_setup.return_value = {
         "data": {"location": f"api/workspace-exports/{IDs.EXPORT}"}
     }
-    ws_service.get_workspace_export_status.return_value = {
+    export_service.get_export_status.return_value = {
         "data": {
             "id": IDs.EXPORT,
             "status": "ready",
@@ -1812,6 +1812,7 @@ def delete_project_content(user_with_license):
 def project():
     service = MagicMock()
     project_service = service.project
+    import_service = service.imports
     project_service.projects_get.return_value = {
         "data": {
             "items": [
@@ -1868,7 +1869,7 @@ def project():
         "data": {"location": f'{project_url}/content-imports/{IDs.IMPORT}'}
     }
     content_url = f'{project_url}/content/{IDs.PROJECT_CONTENT_PRIMARY}'
-    project_service.project_content_upload_status.return_value = {
+    import_service.get_import_status.return_value = {
         "data": {
             'id': IDs.IMPORT,
             'status': 'ready',
