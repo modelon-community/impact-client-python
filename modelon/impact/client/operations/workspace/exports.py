@@ -65,9 +65,6 @@ class WorkspaceExportOperation(AsyncOperation):
         """Return the name of operation"""
         return "Workspace export"
 
-    def cancel(self):
-        raise NotImplementedError('Cancel is not supported for this operation')
-
     def _info(self):
         return self._sal.exports.get_export_status(self._location)["data"]
 

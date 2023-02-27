@@ -123,6 +123,9 @@ class AsyncOperation(BaseOperation):
 
             time.sleep(0.5)
 
+    def cancel(self):
+        raise NotImplementedError('Cancel is not supported for this operation')
+
 
 class ExecutionOperation(BaseOperation):
     """

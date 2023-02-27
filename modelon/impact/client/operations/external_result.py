@@ -34,9 +34,6 @@ class ExternalResultUploadOperation(AsyncOperation):
         """Return the name of operation"""
         return "Result upload"
 
-    def cancel(self):
-        raise NotImplementedError('Cancel is not supported for this operation')
-
     def _info(self):
         return self._sal.workspace.get_result_upload_status(self._result_id)["data"]
 

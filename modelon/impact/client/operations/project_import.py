@@ -37,9 +37,6 @@ class ProjectImportOperation(AsyncOperation):
         """Return the name of operation"""
         return "Project import"
 
-    def cancel(self):
-        raise NotImplementedError('Cancel is not supported for this operation')
-
     def _info(self):
         return self._sal.imports.get_import_status(self._location)["data"]
 
