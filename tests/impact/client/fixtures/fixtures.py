@@ -902,6 +902,17 @@ def workspace():
     custom_function_service = service.custom_function
     exp_service = service.experiment
     project_service = service.project
+    import_service = service.imports
+    import_service.get_import_status.return_value = {
+        "data": {
+            'id': IDs.IMPORT,
+            'status': 'ready',
+            'data': {
+                'resourceUri': f'api/projects/{IDs.PROJECT_PRIMARY}',
+                'projectId': IDs.PROJECT_PRIMARY,
+            },
+        }
+    }
     export_service.export_download.return_value = b"undjnvsjnvj"
     ws_service.experiment_create.return_value = {
         "experiment_id": IDs.EXPERIMENT_PRIMARY
@@ -1055,6 +1066,16 @@ def workspace():
             "executionOptions": [],
         },
         "projectType": "LOCAL",
+    }
+    ws_service.import_project_from_zip.return_value = {
+        "data": {
+            "location": f"api/workspaces/{IDs.WORKSPACE_PRIMARY}/project-imports/{IDs.IMPORT}"
+        }
+    }
+    ws_service.import_dependency_from_zip.return_value = {
+        "data": {
+            "location": f"api/workspaces/{IDs.WORKSPACE_PRIMARY}/dependency-imports/{IDs.IMPORT}"
+        }
     }
     return WorkspaceMock(
         create_workspace_entity(IDs.WORKSPACE_PRIMARY, service=service), service
@@ -1999,6 +2020,38 @@ def import_workspace(sem_ver_check, mock_server_base):
     json = {"data": {"location": f"api/workspace-imports/{IDs.IMPORT}"}}
 
     return with_json_route(mock_server_base, 'POST', 'api/workspace-imports', json)
+
+
+@pytest.fixture
+def import_workspace_project(sem_ver_check, mock_server_base):
+    json = {
+        "data": {
+            "location": f"api/workspaces/{IDs.WORKSPACE_PRIMARY}/project-imports/{IDs.IMPORT}"
+        }
+    }
+
+    return with_json_route(
+        mock_server_base,
+        'POST',
+        f'api/workspaces/{IDs.WORKSPACE_PRIMARY}/project-imports',
+        json,
+    )
+
+
+@pytest.fixture
+def import_workspace_dependency(sem_ver_check, mock_server_base):
+    json = {
+        "data": {
+            "location": f"api/workspaces/{IDs.WORKSPACE_PRIMARY}/dependency-imports/{IDs.IMPORT}"
+        }
+    }
+
+    return with_json_route(
+        mock_server_base,
+        'POST',
+        f'api/workspaces/{IDs.WORKSPACE_PRIMARY}/dependency-imports',
+        json,
+    )
 
 
 @pytest.fixture

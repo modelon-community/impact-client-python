@@ -325,3 +325,31 @@ class TestWorkspaceService:
                 ]
             }
         }
+
+    def test_project_import_from_zip(self, import_workspace_project):
+        uri = URI(import_workspace_project.url)
+        service = modelon.impact.client.sal.service.Service(
+            uri=uri, context=import_workspace_project.context
+        )
+        data = service.workspace.import_project_from_zip(
+            IDs.WORKSPACE_PRIMARY, TEST_WORKSPACE_PATH
+        )
+        assert data == {
+            "data": {
+                "location": f"api/workspaces/{IDs.WORKSPACE_PRIMARY}/project-imports/{IDs.IMPORT}"
+            }
+        }
+
+    def test_dependency_import_from_zip(self, import_workspace_dependency):
+        uri = URI(import_workspace_dependency.url)
+        service = modelon.impact.client.sal.service.Service(
+            uri=uri, context=import_workspace_dependency.context
+        )
+        data = service.workspace.import_dependency_from_zip(
+            IDs.WORKSPACE_PRIMARY, TEST_WORKSPACE_PATH
+        )
+        assert data == {
+            "data": {
+                "location": f"api/workspaces/{IDs.WORKSPACE_PRIMARY}/dependency-imports/{IDs.IMPORT}"
+            }
+        }

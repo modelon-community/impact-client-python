@@ -11,6 +11,7 @@ from tests.impact.client.helpers import (
     create_workspace_export_operation,
     IDs,
 )
+from tests.files.paths import TEST_WORKSPACE_PATH
 
 
 class TestWorkspace:
@@ -135,4 +136,14 @@ class TestWorkspace:
 
     def test_create_project(self, workspace):
         project = workspace.entity.create_project("my_project")
+        assert project.id == IDs.PROJECT_PRIMARY
+
+    def test_import_dependency_from_zip(self, workspace):
+        project = workspace.entity.import_dependency_from_zip(
+            TEST_WORKSPACE_PATH
+        ).wait()
+        assert project.id == IDs.PROJECT_PRIMARY
+
+    def test_import_project_from_zip(self, workspace):
+        project = workspace.entity.import_project_from_zip(TEST_WORKSPACE_PATH).wait()
         assert project.id == IDs.PROJECT_PRIMARY

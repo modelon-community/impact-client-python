@@ -141,3 +141,17 @@ class WorkspaceService:
     def get_project_matchings(self, shared_definition: Dict[str, Any]):
         url = (self._base_uri / "api/workspace-imports-matchings").resolve()
         return self._http_client.post_json(url, body=shared_definition)
+
+    def import_project_from_zip(self, workspace_id: str, path_to_project: str):
+        url = (
+            self._base_uri / f"api/workspaces/{workspace_id}/project-imports"
+        ).resolve()
+        with open(path_to_project, "rb") as f:
+            return self._http_client.post_json(url, files={"file": f})
+
+    def import_dependency_from_zip(self, workspace_id: str, path_to_project: str):
+        url = (
+            self._base_uri / f"api/workspaces/{workspace_id}/dependency-imports"
+        ).resolve()
+        with open(path_to_project, "rb") as f:
+            return self._http_client.post_json(url, files={"file": f})
