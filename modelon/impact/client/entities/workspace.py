@@ -11,8 +11,8 @@ from modelon.impact.client.experiment_definition.base import (
 from modelon.impact.client.entities.custom_function import CustomFunction
 from modelon.impact.client.operations.workspace.exports import WorkspaceExportOperation
 from modelon.impact.client.operations.experiment import ExperimentOperation
-from modelon.impact.client.operations.external_result import (
-    ExternalResultUploadOperation,
+from modelon.impact.client.operations.external_result_import import (
+    ExternalResultImportOperation,
 )
 import modelon.impact.client.entities.model
 from modelon.impact.client.entities.model_executable import ModelExecutable
@@ -232,7 +232,7 @@ class Workspace:
         path_to_result: str,
         label: Optional[str] = None,
         description: Optional[str] = None,
-    ) -> ExternalResultUploadOperation:
+    ) -> ExternalResultImportOperation:
         """Uploads a '.mat' result file to the workspace.
 
         Parameters:
@@ -252,10 +252,10 @@ class Workspace:
             workspace.upload_result('C:/B.mat', label = "result_for_PID.mat",
             description = "This is a result file for PID controller")
         """
-        resp = self._sal.workspace.result_upload(
+        resp = self._sal.external_result.result_upload(
             self._workspace_id, path_to_result, label=label, description=description
         )
-        return ExternalResultUploadOperation(resp["data"]["id"], self._sal)
+        return ExternalResultImportOperation(resp["data"]["location"], self._sal)
 
     def export(self, options: Dict[str, Any]):
         """Exports the workspace as a binary compressed archive. Similar to

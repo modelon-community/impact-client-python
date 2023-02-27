@@ -280,10 +280,10 @@ def import_fmu(sem_ver_check):
 
 
 def get_upload_status_data(status):
-    resource_uri = "api/external-result/2f036b9fab6f45c788cc466da327cc78workspace"
+    resource_uri = f"api/external-result/{IDs.EXTERNAL_RESULT}"
     status_data = {
         "data": {
-            "id": "2f036b9fab6f45c788cc466da327cc78workspace",
+            "id": IDs.IMPORT,
             "status": status,
         }
     }
@@ -299,27 +299,14 @@ def get_upload_result_ready_data():
     return get_upload_status_data("ready")
 
 
-def get_upload_result_running_data():
-    return get_upload_status_data("running")
-
-
-def get_upload_result_error_data():
-    return get_upload_status_data("error")
-
-
 def get_result_upload_post_data():
-    return {
-        "data": {
-            "id": "2f036b9fab6f45c788cc466da327cc78workspace",
-            "status": "running",
-        }
-    }
+    return {"data": {"location": f"api/uploads/results/{IDs.IMPORT}"}}
 
 
 def get_external_result_data():
     return {
         "data": {
-            "id": "2f036b9fab6f45c788cc466da327cc78workspace",
+            "id": IDs.EXTERNAL_RESULT,
             "createdAt": "2021-09-02T08:26:49.612000",
             "name": "result_for_PID",
             "description": "This is a result file for PID controller",
@@ -329,43 +316,15 @@ def get_external_result_data():
 
 
 @pytest.fixture
-def workspace_sal_upload_base():
+def external_result_sal_upload():
     service = MagicMock()
-    workspace_service = service.workspace
-    workspace_service.result_upload.return_value = get_result_upload_post_data()
-    workspace_service.get_uploaded_result_meta.return_value = get_external_result_data()
+    external_result_service = service.external_result
+    external_result_service.result_upload.return_value = get_result_upload_post_data()
+    external_result_service.get_uploaded_result_meta.return_value = (
+        get_external_result_data()
+    )
 
     return service
-
-
-@pytest.fixture
-def workspace_sal_upload_result_ready(workspace_sal_upload_base):
-    workspace_service = workspace_sal_upload_base.workspace
-    workspace_service.get_result_upload_status.return_value = (
-        get_upload_result_ready_data()
-    )
-
-    return workspace_sal_upload_base
-
-
-@pytest.fixture
-def workspace_sal_upload_result_running(workspace_sal_upload_base):
-    workspace_service = workspace_sal_upload_base.workspace
-    workspace_service.get_result_upload_status.return_value = (
-        get_upload_result_running_data()
-    )
-
-    return workspace_sal_upload_base
-
-
-@pytest.fixture
-def workspace_sal_upload_result_error(workspace_sal_upload_base):
-    workspace_service = workspace_sal_upload_base.workspace
-    workspace_service.get_result_upload_status.return_value = (
-        get_upload_result_error_data()
-    )
-
-    return workspace_sal_upload_base
 
 
 @pytest.fixture
@@ -373,18 +332,8 @@ def upload_result_status_ready(sem_ver_check, mock_server_base):
     return with_json_route(
         mock_server_base,
         'GET',
-        'api/uploads/results/2f036b9fab6f45c788cc466da327cc78workspace',
+        f'api/uploads/results/{IDs.IMPORT}',
         get_upload_result_ready_data(),
-    )
-
-
-@pytest.fixture
-def upload_result_status_running(sem_ver_check, mock_server_base):
-    return with_json_route(
-        mock_server_base,
-        'GET',
-        'api/uploads/results/2f036b9fab6f45c788cc466da327cc78workspace',
-        get_upload_result_running_data(),
     )
 
 
@@ -400,7 +349,7 @@ def upload_result_meta(sem_ver_check, mock_server_base):
     return with_json_route(
         mock_server_base,
         'GET',
-        'api/external-result/2f036b9fab6f45c788cc466da327cc78workspace',
+        f'api/external-result/{IDs.EXTERNAL_RESULT}',
         get_external_result_data(),
     )
 
@@ -408,9 +357,7 @@ def upload_result_meta(sem_ver_check, mock_server_base):
 @pytest.fixture
 def upload_result_delete(sem_ver_check, mock_server_base):
     return with_json_route_no_resp(
-        mock_server_base,
-        'DELETE',
-        'api/external-result/2f036b9fab6f45c788cc466da327cc78workspace',
+        mock_server_base, 'DELETE', f'api/external-result/{IDs.EXTERNAL_RESULT}'
     )
 
 

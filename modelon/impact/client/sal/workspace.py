@@ -1,5 +1,4 @@
 """Workspace service module"""
-import json
 from typing import Optional, Dict, Any, List
 from modelon.impact.client.sal.http import HTTPClient
 from modelon.impact.client.sal.uri import URI
@@ -47,40 +46,6 @@ class WorkspaceService:
     def workspace_get(self, workspace_id: str):
         url = (self._base_uri / f"api/workspaces/{workspace_id}").resolve()
         return self._http_client.get_json(url)
-
-    def result_upload(
-        self,
-        workspace_id: str,
-        path_to_result: str,
-        label: Optional[str] = None,
-        description: Optional[str] = None,
-    ):
-        url = (self._base_uri / "api/uploads/results").resolve()
-        options: Dict[str, Any] = {
-            "context": {"workspaceId": workspace_id},
-        }
-        if label:
-            options["name"] = label
-        if description:
-            options["description"] = description
-        with open(path_to_result, "rb") as f:
-            multipart_form_data = {
-                'file': f,
-                'options': json.dumps(options),
-            }
-            return self._http_client.post_json(url, files=multipart_form_data)
-
-    def get_result_upload_status(self, upload_id: str):
-        url = (self._base_uri / f"api/uploads/results/{upload_id}").resolve()
-        return self._http_client.get_json(url)
-
-    def get_uploaded_result_meta(self, upload_id: str):
-        url = (self._base_uri / f"api/external-result/{upload_id}").resolve()
-        return self._http_client.get_json(url)
-
-    def delete_uploaded_result(self, upload_id: str):
-        url = (self._base_uri / f"api/external-result/{upload_id}").resolve()
-        return self._http_client.delete_json(url)
 
     def workspace_export_setup(self, workspace_id: str, options: Dict[str, Any]):
         url = (self._base_uri / "api/workspace-exports").resolve()

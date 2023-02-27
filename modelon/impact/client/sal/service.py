@@ -10,6 +10,7 @@ from modelon.impact.client.sal.project import ProjectService
 from modelon.impact.client.sal.custom_function import CustomFunctionService
 from modelon.impact.client.sal.model_executable import ModelExecutableService
 from modelon.impact.client.sal.experiment import ExperimentService
+from modelon.impact.client.sal.external_result import ExternalResultService
 from modelon.impact.client.sal.users import UsersService
 from modelon.impact.client.sal.exports import ExportService
 from modelon.impact.client.sal.imports import ImportService
@@ -39,6 +40,7 @@ class Service:
         )
         self.experiment = ExperimentService(self._base_uri, self._http_client)
         self.custom_function = CustomFunctionService(self._base_uri, self._http_client)
+        self.external_result = ExternalResultService(self._base_uri, self._http_client)
         self.users = UsersService(self._base_uri, self._http_client)
         self.exports = ExportService(self._base_uri, self._http_client)
         self.imports = ImportService(self._base_uri, self._http_client)
@@ -73,6 +75,9 @@ class Service:
         self.users = _decorate_all_methods(self.users, retry_with_login_decorator)
         self.exports = _decorate_all_methods(self.exports, retry_with_login_decorator)
         self.imports = _decorate_all_methods(self.imports, retry_with_login_decorator)
+        self.external_result = _decorate_all_methods(
+            self.external_result, retry_with_login_decorator
+        )
 
     def api_get_metadata(self):
         url = (self._base_uri / "api/").resolve()

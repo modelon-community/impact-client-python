@@ -56,7 +56,7 @@ class ExternalResult:
     @property
     def metadata(self) -> _ExternalResultMetaData:
         """External result metadata."""
-        upload_meta = self._sal.workspace.get_uploaded_result_meta(self._result_id)[
+        upload_meta = self._sal.external_result.get_uploaded_result(self._result_id)[
             "data"
         ]
         id = upload_meta.get("id")
@@ -66,4 +66,4 @@ class ExternalResult:
         return _ExternalResultMetaData(id, name, description, workspace_id)
 
     def delete(self):
-        self._sal.workspace.delete_uploaded_result(self._result_id)
+        self._sal.external_result.delete_uploaded_result(self._result_id)

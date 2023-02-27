@@ -442,7 +442,7 @@ class TestSimpleFMUExperimentDefinition:
 
     def test_experiment_definition_with_modifier(self, fmu, custom_function_no_param):
         definition = SimpleFMUExperimentDefinition(
-            fmu, custom_function=custom_function_no_param,
+            fmu, custom_function=custom_function_no_param
         ).with_modifiers({'h0': Range(0.1, 0.5, 3)}, v=Choices(0.1, 0.5, 3))
         config = definition.to_dict()
         assert config["experiment"]["base"]["modifiers"]["variables"] == {
@@ -454,7 +454,7 @@ class TestSimpleFMUExperimentDefinition:
         self, fmu, custom_function_no_param
     ):
         definition = SimpleFMUExperimentDefinition(
-            fmu, custom_function=custom_function_no_param,
+            fmu, custom_function=custom_function_no_param
         ).with_modifiers(v=Choices(0.1))
         config = definition.to_dict()
         assert config["experiment"]["base"]["modifiers"]["variables"] == {
@@ -465,7 +465,7 @@ class TestSimpleFMUExperimentDefinition:
         self, fmu_with_modifiers, custom_function_no_param
     ):
         definition = SimpleFMUExperimentDefinition(
-            fmu_with_modifiers, custom_function=custom_function_no_param,
+            fmu_with_modifiers, custom_function=custom_function_no_param
         )
         config = definition.to_dict()
         assert config["experiment"]["base"]["modifiers"]["variables"] == {'PI.K': 20}
@@ -474,7 +474,7 @@ class TestSimpleFMUExperimentDefinition:
         ext1 = SimpleExperimentExtension().with_modifiers(p=2)
         ext2 = SimpleExperimentExtension({'final_time': 10}).with_modifiers(p=3)
         definition = SimpleFMUExperimentDefinition(
-            fmu, custom_function=custom_function_no_param,
+            fmu, custom_function=custom_function_no_param
         ).with_extensions([ext1, ext2])
         config = definition.to_dict()
         assert config["experiment"]["extensions"] == [
@@ -487,7 +487,8 @@ class TestSimpleFMUExperimentDefinition:
 
     def test_experiment_definition_with_cases(self, fmu, custom_function_no_param):
         definition = SimpleFMUExperimentDefinition(
-            fmu, custom_function=custom_function_no_param,
+            fmu,
+            custom_function=custom_function_no_param,
         ).with_cases([{'p': 2}, {'p': 3}])
         config = definition.to_dict()
         assert config["experiment"]["extensions"] == [
@@ -661,25 +662,25 @@ class TestSimpleExperimentExtension:
 
     def test_invalid_with_extensions_input(self, fmu, custom_function_no_param):
         definition = SimpleFMUExperimentDefinition(
-            fmu, custom_function=custom_function_no_param,
+            fmu, custom_function=custom_function_no_param
         )
         pytest.raises(TypeError, definition.with_extensions, {})
 
     def test_invalid_with_extensions_list_input(self, fmu, custom_function_no_param):
         definition = SimpleFMUExperimentDefinition(
-            fmu, custom_function=custom_function_no_param,
+            fmu, custom_function=custom_function_no_param
         )
         pytest.raises(TypeError, definition.with_extensions, [{}])
 
     def test_invalid_with_cases_input(self, fmu, custom_function_no_param):
         definition = SimpleFMUExperimentDefinition(
-            fmu, custom_function=custom_function_no_param,
+            fmu, custom_function=custom_function_no_param
         )
         pytest.raises(TypeError, definition.with_cases, {})
 
     def test_invalid_with_cases_list_input(self, fmu, custom_function_no_param):
         definition = SimpleFMUExperimentDefinition(
-            fmu, custom_function=custom_function_no_param,
+            fmu, custom_function=custom_function_no_param
         )
         pytest.raises(TypeError, definition.with_cases, [[]])
 
@@ -1072,7 +1073,7 @@ class TestSimpleModelicaExperimentDefinition:
         self, model, custom_function_no_param
     ):
         definition = SimpleModelicaExperimentDefinition(
-            model, custom_function=custom_function_no_param,
+            model, custom_function=custom_function_no_param
         ).with_modifiers({'h0': Range(0.1, 0.5, 3), 'v': Choices(0.1, 0.5, 3)})
         config = definition.to_dict()
         assert config["experiment"]["base"]["modifiers"]["variables"] == {
@@ -1084,7 +1085,7 @@ class TestSimpleModelicaExperimentDefinition:
         self, model, custom_function_no_param
     ):
         definition = SimpleModelicaExperimentDefinition(
-            model, custom_function=custom_function_no_param,
+            model, custom_function=custom_function_no_param
         ).with_modifiers(
             {'h0': Uniform(0.1, 0.5), 'v': Beta(0.1, 0.5), 't': Normal(0.1, 0.5, -5)}
         )
@@ -1102,13 +1103,16 @@ class TestSimpleModelicaExperimentDefinition:
         workspace_ops,
         upload_result,
         upload_result_status_ready,
+        upload_result_meta,
     ):
         with mock.patch("builtins.open", mock.mock_open()) as mock_file:
-            result = workspace_ops.upload_result("test.mat", "Workspace").wait()
+            result = workspace_ops.upload_result(
+                "test.mat", IDs.WORKSPACE_PRIMARY
+            ).wait()
             mock_file.assert_called_with("test.mat", "rb")
 
         definition = SimpleModelicaExperimentDefinition(
-            model, custom_function=custom_function_no_param,
+            model, custom_function=custom_function_no_param
         ).initialize_from(result)
         config = definition.to_dict()
         assert (
@@ -1121,7 +1125,7 @@ class TestSimpleModelicaExperimentDefinition:
     ):
         experiment = experiment.entity
         definition = SimpleModelicaExperimentDefinition(
-            model, custom_function=custom_function_no_param,
+            model, custom_function=custom_function_no_param
         ).initialize_from(experiment)
         config = definition.to_dict()
         assert (
@@ -1133,7 +1137,7 @@ class TestSimpleModelicaExperimentDefinition:
     ):
         case_1 = experiment.entity.get_case('case_1')
         definition = SimpleModelicaExperimentDefinition(
-            model, custom_function=custom_function_no_param,
+            model, custom_function=custom_function_no_param
         ).initialize_from(case_1)
         config = definition.to_dict()
         assert config["experiment"]["base"]["modifiers"]["initializeFromCase"] == {
@@ -1146,7 +1150,7 @@ class TestSimpleModelicaExperimentDefinition:
     ):
         experiment = experiment.entity
         definition = SimpleModelicaExperimentDefinition(
-            model, custom_function=custom_function_no_param,
+            model, custom_function=custom_function_no_param
         ).initialize_from(experiment)
 
         # Reinitializing with case entity
@@ -1179,7 +1183,7 @@ class TestSimpleModelicaExperimentDefinition:
         ext1 = SimpleExperimentExtension().with_modifiers(p=2)
         ext2 = SimpleExperimentExtension({'final_time': 10}).with_modifiers(p=3)
         definition = SimpleModelicaExperimentDefinition(
-            model, custom_function=custom_function_no_param,
+            model, custom_function=custom_function_no_param
         ).with_extensions([ext1, ext2])
         config = definition.to_dict()
         assert config["experiment"]["extensions"] == [
@@ -1205,7 +1209,7 @@ class TestSimpleModelicaExperimentDefinition:
             .initialize_from(experiment)
         )
         definition = SimpleModelicaExperimentDefinition(
-            model, custom_function=custom_function_no_param,
+            model, custom_function=custom_function_no_param
         ).with_extensions([ext1, ext2])
         config = definition.to_dict()
         assert config["experiment"]["extensions"] == [
@@ -1227,7 +1231,7 @@ class TestSimpleModelicaExperimentDefinition:
             .initialize_from(case_1)
         )
         definition = SimpleModelicaExperimentDefinition(
-            model, custom_function=custom_function_no_param,
+            model, custom_function=custom_function_no_param
         ).with_extensions([ext1, ext2])
         config = definition.to_dict()
         assert config["experiment"]["extensions"] == [
@@ -1266,7 +1270,7 @@ class TestSimpleModelicaExperimentDefinition:
 
     def test_experiment_definition_with_cases(self, model, custom_function_no_param):
         definition = SimpleModelicaExperimentDefinition(
-            model, custom_function=custom_function_no_param,
+            model, custom_function=custom_function_no_param
         ).with_cases([{'p': 2}, {'p': 3}])
         config = definition.to_dict()
         assert config["experiment"]["extensions"] == [

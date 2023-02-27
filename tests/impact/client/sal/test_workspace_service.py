@@ -64,69 +64,6 @@ class TestWorkspaceService:
             }
         }
 
-    def test_result_upload(self, upload_result):
-        uri = URI(upload_result.url)
-        service = modelon.impact.client.sal.service.Service(
-            uri=uri, context=upload_result.context
-        )
-        with mock.patch("builtins.open", mock.mock_open()) as mock_file:
-            data = service.workspace.result_upload(IDs.WORKSPACE_PRIMARY, "test.mat")
-            mock_file.assert_called_with("test.mat", "rb")
-
-        assert data == {
-            "data": {
-                "id": "2f036b9fab6f45c788cc466da327cc78workspace",
-                "status": "running",
-            }
-        }
-
-    def test_result_upload_status(self, upload_result_status_ready):
-        uri = URI(upload_result_status_ready.url)
-        service = modelon.impact.client.sal.service.Service(
-            uri=uri, context=upload_result_status_ready.context
-        )
-        data = service.workspace.get_result_upload_status(
-            "2f036b9fab6f45c788cc466da327cc78workspace"
-        )
-
-        resource_uri = "api/external-result/2f036b9fab6f45c788cc466da327cc78workspace"
-        assert data == {
-            "data": {
-                "id": "2f036b9fab6f45c788cc466da327cc78workspace",
-                "status": "ready",
-                "data": {"resourceUri": resource_uri},
-            }
-        }
-
-    def test_result_upload_meta(self, upload_result_meta):
-        uri = URI(upload_result_meta.url)
-        service = modelon.impact.client.sal.service.Service(
-            uri=uri, context=upload_result_meta.context
-        )
-        data = service.workspace.get_uploaded_result_meta(
-            "2f036b9fab6f45c788cc466da327cc78workspace"
-        )
-
-        assert data == {
-            "data": {
-                "id": "2f036b9fab6f45c788cc466da327cc78workspace",
-                "createdAt": "2021-09-02T08:26:49.612000",
-                "name": "result_for_PID",
-                "description": "This is a result file for PID controller",
-                "workspaceId": IDs.WORKSPACE_PRIMARY,
-            }
-        }
-
-    def test_delete_result_upload(self, upload_result_delete):
-        uri = URI(upload_result_delete.url)
-        service = modelon.impact.client.sal.service.Service(
-            uri=uri, context=upload_result_delete.context
-        )
-        service.workspace.delete_uploaded_result(
-            "2f036b9fab6f45c788cc466da327cc78workspace"
-        )
-        assert upload_result_delete.adapter.called
-
     def test_workspace_export_setup(self, setup_export_workspace):
         uri = URI(setup_export_workspace.url)
         service = modelon.impact.client.sal.service.Service(
