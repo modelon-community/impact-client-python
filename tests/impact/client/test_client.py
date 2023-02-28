@@ -53,7 +53,7 @@ def test_semantic_version_error(semantic_version_error):
         Client(url=semantic_version_error.url, context=semantic_version_error.context)
     assert (
         "Version '1.0.0' of the HTTP REST API is not supported, must be in the "
-        "range '>=4.0.0-beta.12,<5.0.0'! Updgrade or downgrade this package to a "
+        "range '>=4.0.0-beta.23,<5.0.0'! Updgrade or downgrade this package to a "
         "version that supports version '1.0.0' of the HTTP REST API."
         in str(excinfo.value)
     )
