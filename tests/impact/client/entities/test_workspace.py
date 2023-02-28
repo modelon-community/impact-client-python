@@ -15,15 +15,15 @@ from tests.impact.client.helpers import (
 
 class TestWorkspace:
     def test_get_custom_function(self, workspace):
-        custom_function = workspace.entity.get_custom_function('dynamic')
-        assert 'dynamic' == custom_function.name
+        custom_function = workspace.entity.get_custom_function(IDs.DYNAMIC_CF)
+        assert IDs.DYNAMIC_CF == custom_function.name
 
     def test_get_custom_functions(self, workspace):
         custom_function_list = [
             custom_function.name
             for custom_function in workspace.entity.get_custom_functions()
         ]
-        assert ['dynamic'] == custom_function_list
+        assert [IDs.DYNAMIC_CF] == custom_function_list
 
     def test_delete(self):
         service = mock.MagicMock()
@@ -65,12 +65,16 @@ class TestWorkspace:
     def test_get_model(self, workspace):
         model = workspace.entity.get_model("Modelica.Blocks.PID")
         assert model == create_model_entity(
-            "Modelica.Blocks.PID", workspace.entity.id, IDs.PROJECT_PRIMARY,
+            "Modelica.Blocks.PID",
+            workspace.entity.id,
+            IDs.PROJECT_PRIMARY,
         )
 
     def test_model_repr(self, workspace):
         model = create_model_entity(
-            "Modelica.Blocks.PID", workspace.entity.id, IDs.PROJECT_PRIMARY,
+            "Modelica.Blocks.PID",
+            workspace.entity.id,
+            IDs.PROJECT_PRIMARY,
         )
         assert "Class name 'Modelica.Blocks.PID'" == model.__repr__()
 
@@ -123,7 +127,8 @@ class TestWorkspace:
         projects = workspace.entity.get_projects()
         assert projects == [
             create_project_entity(
-                project_id=IDs.PROJECT_PRIMARY, project_name="NewProject",
+                project_id=IDs.PROJECT_PRIMARY,
+                project_name="NewProject",
             )
         ]
 
