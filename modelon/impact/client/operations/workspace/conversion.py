@@ -34,9 +34,6 @@ class WorkspaceConversionOperation(AsyncOperation):
         """Return the name of operation"""
         return "Workspace conversion"
 
-    def cancel(self):
-        raise NotImplementedError('Cancel is not supported for this operation')
-
     def _info(self):
         return self._sal.workspace.get_workspace_conversion_status(self._location)[
             "data"

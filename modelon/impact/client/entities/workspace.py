@@ -10,9 +10,10 @@ from modelon.impact.client.experiment_definition.base import (
 )
 from modelon.impact.client.entities.custom_function import CustomFunction
 from modelon.impact.client.operations.workspace.exports import WorkspaceExportOperation
+from modelon.impact.client.operations.project_import import ProjectImportOperation
 from modelon.impact.client.operations.experiment import ExperimentOperation
-from modelon.impact.client.operations.external_result import (
-    ExternalResultUploadOperation,
+from modelon.impact.client.operations.external_result_import import (
+    ExternalResultImportOperation,
 )
 import modelon.impact.client.entities.model
 from modelon.impact.client.entities.model_executable import ModelExecutable
@@ -232,7 +233,7 @@ class Workspace:
         path_to_result: str,
         label: Optional[str] = None,
         description: Optional[str] = None,
-    ) -> ExternalResultUploadOperation:
+    ) -> ExternalResultImportOperation:
         """Uploads a '.mat' result file to the workspace.
 
         Parameters:
@@ -252,16 +253,16 @@ class Workspace:
             workspace.upload_result('C:/B.mat', label = "result_for_PID.mat",
             description = "This is a result file for PID controller")
         """
-        resp = self._sal.workspace.result_upload(
+        resp = self._sal.external_result.result_upload(
             self._workspace_id, path_to_result, label=label, description=description
         )
-        return ExternalResultUploadOperation(resp["data"]["id"], self._sal)
+        return ExternalResultImportOperation(resp["data"]["location"], self._sal)
 
     def export(self, options: Dict[str, Any]):
         """Exports the workspace as a binary compressed archive. Similar to
         :obj:`~modelon.impact.client.entities.workspace.Workspace.download`,
         but gives more control for getting the workspace async.
-        Returns an modelon.impact.client.operations.workspace
+        Returns an modelon.impact.client.operations.workspace.exports
         .WorkspaceExportOperation class object.
 
         Parameters:
@@ -273,8 +274,8 @@ class Workspace:
         Returns:
 
             WorkspaceExportOperation --
-                An modelon.impact.client.operations.workspace.WorkspaceExportOperation
-                 class object.
+                An modelon.impact.client.operations.workspace.exports.
+                WorkspaceExportOperation class object.
 
         Example::
 
@@ -668,3 +669,51 @@ class Workspace:
                 self._workspace_id, strict=strict
             )["definition"]
         )
+
+    def import_project_from_zip(self, path_to_project):
+        """Imports a Project from a compressed(.zip) project file and adds
+        it to the workspace. Returns the project class object.
+
+        Parameters:
+
+            path_to_project --
+                The path for the compressed project(.zip) to be uploaded.
+
+        Returns:
+
+            ProjectImportOperation --
+                An modelon.impact.client.operations.project_import.
+                ProjectImportOperation class object.
+
+        Example::
+
+            workspace.import_project_from_zip(path_to_project).wait()
+        """
+        resp = self._sal.workspace.import_project_from_zip(
+            self._workspace_id, path_to_project
+        )
+        return ProjectImportOperation(resp["data"]["location"], self._sal)
+
+    def import_dependency_from_zip(self, path_to_dependency):
+        """Imports a Project dependency from a compressed(.zip) project file
+        and adds it to the workspace. Returns the project class object.
+
+        Parameters:
+
+            path_to_dependency --
+                The path for the compressed project(.zip) to be uploaded.
+
+        Returns:
+
+            ProjectImportOperation --
+                An modelon.impact.client.operations.project_import.
+                ProjectImportOperation class object.
+
+        Example::
+
+            workspace.import_dependency_from_zip(path_to_project).wait()
+        """
+        resp = self._sal.workspace.import_dependency_from_zip(
+            self._workspace_id, path_to_dependency
+        )
+        return ProjectImportOperation(resp["data"]["location"], self._sal)

@@ -11,6 +11,7 @@ from tests.impact.client.helpers import (
     create_workspace_export_operation,
     IDs,
 )
+from tests.files.paths import TEST_WORKSPACE_PATH
 
 
 class TestWorkspace:
@@ -31,16 +32,16 @@ class TestWorkspace:
         workspace.delete()
         service.workspace.workspace_delete.assert_called_with(IDs.WORKSPACE_PRIMARY)
 
-    def test_upload_result(self, workspace_sal_upload_base):
-        workspace_service = workspace_sal_upload_base.workspace
+    def test_upload_result(self, external_result_sal_upload):
+        external_result_service = external_result_sal_upload.external_result
         workspace = create_workspace_entity(
-            IDs.WORKSPACE_PRIMARY, service=workspace_sal_upload_base
+            IDs.WORKSPACE_PRIMARY, service=external_result_sal_upload
         )
         upload_op = workspace.upload_result("test.mat", "Workspace")
-        workspace_service.result_upload.assert_called_with(
+        external_result_service.result_upload.assert_called_with(
             IDs.WORKSPACE_PRIMARY, 'test.mat', description=None, label='Workspace'
         )
-        assert upload_op.id == "2f036b9fab6f45c788cc466da327cc78workspace"
+        assert upload_op.id == IDs.IMPORT
 
     def test_download_workspace(self, workspace):
         t = os.path.join(tempfile.gettempdir(), workspace.entity.id + '.zip')
@@ -65,16 +66,12 @@ class TestWorkspace:
     def test_get_model(self, workspace):
         model = workspace.entity.get_model("Modelica.Blocks.PID")
         assert model == create_model_entity(
-            "Modelica.Blocks.PID",
-            workspace.entity.id,
-            IDs.PROJECT_PRIMARY,
+            "Modelica.Blocks.PID", workspace.entity.id, IDs.PROJECT_PRIMARY
         )
 
     def test_model_repr(self, workspace):
         model = create_model_entity(
-            "Modelica.Blocks.PID",
-            workspace.entity.id,
-            IDs.PROJECT_PRIMARY,
+            "Modelica.Blocks.PID", workspace.entity.id, IDs.PROJECT_PRIMARY
         )
         assert "Class name 'Modelica.Blocks.PID'" == model.__repr__()
 
@@ -127,8 +124,7 @@ class TestWorkspace:
         projects = workspace.entity.get_projects()
         assert projects == [
             create_project_entity(
-                project_id=IDs.PROJECT_PRIMARY,
-                project_name="NewProject",
+                project_id=IDs.PROJECT_PRIMARY, project_name="NewProject"
             )
         ]
 
@@ -140,4 +136,14 @@ class TestWorkspace:
 
     def test_create_project(self, workspace):
         project = workspace.entity.create_project("my_project")
+        assert project.id == IDs.PROJECT_PRIMARY
+
+    def test_import_dependency_from_zip(self, workspace):
+        project = workspace.entity.import_dependency_from_zip(
+            TEST_WORKSPACE_PATH
+        ).wait()
+        assert project.id == IDs.PROJECT_PRIMARY
+
+    def test_import_project_from_zip(self, workspace):
+        project = workspace.entity.import_project_from_zip(TEST_WORKSPACE_PATH).wait()
         assert project.id == IDs.PROJECT_PRIMARY

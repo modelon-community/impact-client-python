@@ -280,10 +280,10 @@ def import_fmu(sem_ver_check):
 
 
 def get_upload_status_data(status):
-    resource_uri = "api/external-result/2f036b9fab6f45c788cc466da327cc78workspace"
+    resource_uri = f"api/external-result/{IDs.EXTERNAL_RESULT}"
     status_data = {
         "data": {
-            "id": "2f036b9fab6f45c788cc466da327cc78workspace",
+            "id": IDs.IMPORT,
             "status": status,
         }
     }
@@ -308,18 +308,13 @@ def get_upload_result_error_data():
 
 
 def get_result_upload_post_data():
-    return {
-        "data": {
-            "id": "2f036b9fab6f45c788cc466da327cc78workspace",
-            "status": "running",
-        }
-    }
+    return {"data": {"location": f"api/uploads/results/{IDs.IMPORT}"}}
 
 
 def get_external_result_data():
     return {
         "data": {
-            "id": "2f036b9fab6f45c788cc466da327cc78workspace",
+            "id": IDs.EXTERNAL_RESULT,
             "createdAt": "2021-09-02T08:26:49.612000",
             "name": "result_for_PID",
             "description": "This is a result file for PID controller",
@@ -329,62 +324,45 @@ def get_external_result_data():
 
 
 @pytest.fixture
-def workspace_sal_upload_base():
+def external_result_sal_upload():
     service = MagicMock()
-    workspace_service = service.workspace
-    workspace_service.result_upload.return_value = get_result_upload_post_data()
-    workspace_service.get_uploaded_result_meta.return_value = get_external_result_data()
+    external_result_service = service.external_result
+    external_result_service.result_upload.return_value = get_result_upload_post_data()
+    external_result_service.get_uploaded_result.return_value = (
+        get_external_result_data()
+    )
 
     return service
 
 
 @pytest.fixture
-def workspace_sal_upload_result_ready(workspace_sal_upload_base):
-    workspace_service = workspace_sal_upload_base.workspace
-    workspace_service.get_result_upload_status.return_value = (
-        get_upload_result_ready_data()
-    )
-
-    return workspace_sal_upload_base
+def external_result_sal_upload_ready(external_result_sal_upload):
+    imports = external_result_sal_upload.imports
+    imports.get_import_status.return_value = get_upload_result_ready_data()
+    return external_result_sal_upload
 
 
 @pytest.fixture
-def workspace_sal_upload_result_running(workspace_sal_upload_base):
-    workspace_service = workspace_sal_upload_base.workspace
-    workspace_service.get_result_upload_status.return_value = (
-        get_upload_result_running_data()
-    )
+def external_result_sal_upload_running(external_result_sal_upload):
+    imports = external_result_sal_upload.imports
+    imports.get_import_status.return_value = get_upload_result_running_data()
 
-    return workspace_sal_upload_base
-
+    return external_result_sal_upload
 
 @pytest.fixture
-def workspace_sal_upload_result_error(workspace_sal_upload_base):
-    workspace_service = workspace_sal_upload_base.workspace
-    workspace_service.get_result_upload_status.return_value = (
-        get_upload_result_error_data()
-    )
+def external_result_sal_upload_error(external_result_sal_upload):
+    imports = external_result_sal_upload.imports
+    imports.get_import_status.return_value = get_upload_result_error_data()
 
-    return workspace_sal_upload_base
-
+    return external_result_sal_upload
 
 @pytest.fixture
 def upload_result_status_ready(sem_ver_check, mock_server_base):
     return with_json_route(
         mock_server_base,
         'GET',
-        'api/uploads/results/2f036b9fab6f45c788cc466da327cc78workspace',
+        f'api/uploads/results/{IDs.IMPORT}',
         get_upload_result_ready_data(),
-    )
-
-
-@pytest.fixture
-def upload_result_status_running(sem_ver_check, mock_server_base):
-    return with_json_route(
-        mock_server_base,
-        'GET',
-        'api/uploads/results/2f036b9fab6f45c788cc466da327cc78workspace',
-        get_upload_result_running_data(),
     )
 
 
@@ -400,7 +378,7 @@ def upload_result_meta(sem_ver_check, mock_server_base):
     return with_json_route(
         mock_server_base,
         'GET',
-        'api/external-result/2f036b9fab6f45c788cc466da327cc78workspace',
+        f'api/external-result/{IDs.EXTERNAL_RESULT}',
         get_external_result_data(),
     )
 
@@ -408,17 +386,8 @@ def upload_result_meta(sem_ver_check, mock_server_base):
 @pytest.fixture
 def upload_result_delete(sem_ver_check, mock_server_base):
     return with_json_route_no_resp(
-        mock_server_base,
-        'DELETE',
-        'api/external-result/2f036b9fab6f45c788cc466da327cc78workspace',
+        mock_server_base, 'DELETE', f'api/external-result/{IDs.EXTERNAL_RESULT}'
     )
-
-
-@pytest.fixture
-def upload_workspace(sem_ver_check, mock_server_base):
-    json = {'id': IDs.WORKSPACE_PRIMARY}
-
-    return with_json_route(mock_server_base, 'POST', 'api/workspaces', json)
 
 
 @pytest.fixture
@@ -957,11 +926,22 @@ def project_default_options_get(sem_ver_check, mock_server_base):
 @pytest.fixture
 def workspace():
     service = MagicMock()
-    export_service = service.export
+    export_service = service.exports
     ws_service = service.workspace
     custom_function_service = service.custom_function
     exp_service = service.experiment
     project_service = service.project
+    import_service = service.imports
+    import_service.get_import_status.return_value = {
+        "data": {
+            'id': IDs.IMPORT,
+            'status': 'ready',
+            'data': {
+                'resourceUri': f'api/projects/{IDs.PROJECT_PRIMARY}',
+                'projectId': IDs.PROJECT_PRIMARY,
+            },
+        }
+    }
     export_service.export_download.return_value = b"undjnvsjnvj"
     ws_service.experiment_create.return_value = {
         "experiment_id": IDs.EXPERIMENT_PRIMARY
@@ -1074,7 +1054,7 @@ def workspace():
     ws_service.workspace_export_setup.return_value = {
         "data": {"location": f"api/workspace-exports/{IDs.EXPORT}"}
     }
-    ws_service.get_workspace_export_status.return_value = {
+    export_service.get_export_status.return_value = {
         "data": {
             "id": IDs.EXPORT,
             "status": "ready",
@@ -1115,6 +1095,16 @@ def workspace():
             "executionOptions": [],
         },
         "projectType": "LOCAL",
+    }
+    ws_service.import_project_from_zip.return_value = {
+        "data": {
+            "location": f"api/workspaces/{IDs.WORKSPACE_PRIMARY}/project-imports/{IDs.IMPORT}"
+        }
+    }
+    ws_service.import_dependency_from_zip.return_value = {
+        "data": {
+            "location": f"api/workspaces/{IDs.WORKSPACE_PRIMARY}/dependency-imports/{IDs.IMPORT}"
+        }
     }
     return WorkspaceMock(
         create_workspace_entity(IDs.WORKSPACE_PRIMARY, service=service), service
@@ -1819,6 +1809,7 @@ def delete_project_content(user_with_license):
 def project():
     service = MagicMock()
     project_service = service.project
+    import_service = service.imports
     project_service.projects_get.return_value = {
         "data": {
             "items": [
@@ -1875,7 +1866,7 @@ def project():
         "data": {"location": f'{project_url}/content-imports/{IDs.IMPORT}'}
     }
     content_url = f'{project_url}/content/{IDs.PROJECT_CONTENT_PRIMARY}'
-    project_service.project_content_upload_status.return_value = {
+    import_service.get_import_status.return_value = {
         "data": {
             'id': IDs.IMPORT,
             'status': 'ready',
@@ -1966,19 +1957,43 @@ def shared_definition_get(user_with_license, mock_server_base):
 
 
 @pytest.fixture
-def get_workspace_upload_status(user_with_license, mock_server_base):
+def get_project_upload_status(user_with_license, mock_server_base):
     json = {
         "data": {
-            'id': 'efa5cc60e3d04049ad0566bc53b431f8',
+            'id': IDs.IMPORT,
             'status': 'ready',
-            'data': {'resourceUri': 'api/workspaces/test', 'workspaceId': 'test'},
+            'data': {
+                'resourceUri': f'api/projects/{IDs.PROJECT_PRIMARY}',
+                'projectId': IDs.PROJECT_PRIMARY,
+            },
         }
     }
 
     return with_json_route(
         mock_server_base,
         'GET',
-        'api/workspace-imports/05c7c0c45a084f079682eaf443287901',
+        f'api/project-imports/{IDs.IMPORT}',
+        json,
+    )
+
+
+@pytest.fixture
+def get_workspace_upload_status(user_with_license, mock_server_base):
+    json = {
+        "data": {
+            'id': IDs.IMPORT,
+            'status': 'ready',
+            'data': {
+                'resourceUri': f'api/workspaces/{IDs.WORKSPACE_PRIMARY}',
+                'workspaceId': IDs.WORKSPACE_PRIMARY,
+            },
+        }
+    }
+
+    return with_json_route(
+        mock_server_base,
+        'GET',
+        f'api/workspace-imports/{IDs.IMPORT}',
         json,
     )
 
@@ -1987,11 +2002,11 @@ def get_workspace_upload_status(user_with_license, mock_server_base):
 def get_successful_workspace_upload_status(user_with_license, mock_server_base):
     json = {
         "data": {
-            "id": "05c7c0c45a084f079682eaf443287901",
+            "id": IDs.IMPORT,
             "status": "ready",
             "data": {
-                'resourceUri': 'api/workspaces/123456780',
-                'workspaceId': "123456780",
+                'resourceUri': f'api/workspaces/{IDs.WORKSPACE_PRIMARY}',
+                'workspaceId': IDs.WORKSPACE_PRIMARY,
             },
         }
     }
@@ -1999,7 +2014,7 @@ def get_successful_workspace_upload_status(user_with_license, mock_server_base):
     return with_json_route(
         mock_server_base,
         'GET',
-        'api/workspace-imports/05c7c0c45a084f079682eaf443287901',
+        f'api/workspace-imports/{IDs.IMPORT}',
         json,
     )
 
@@ -2010,7 +2025,7 @@ def get_failed_workspace_upload_status(user_with_license, mock_server_base):
     vcs_uri = f'git+{git_url}.git@main:da6abb188a089527df1b54b27ace84274b819e4a'
     json = {
         "data": {
-            "id": "05c7c0c45a084f079682eaf443287901",
+            "id": IDs.IMPORT,
             "status": "error",
             "error": {
                 "message": "Could not import workspace 'test'. Multiple existing "
@@ -2024,18 +2039,55 @@ def get_failed_workspace_upload_status(user_with_license, mock_server_base):
     return with_json_route(
         mock_server_base,
         'GET',
-        'api/workspace-imports/05c7c0c45a084f079682eaf443287901',
+        f'api/workspace-imports/{IDs.IMPORT}',
         json,
     )
 
 
 @pytest.fixture
-def import_from_shared_definition(user_with_license, mock_server_base):
-    json = {
-        "data": {"location": "api/workspace-imports/05c7c0c45a084f079682eaf443287901"}
-    }
+def import_workspace(sem_ver_check, mock_server_base):
+    json = {"data": {"location": f"api/workspace-imports/{IDs.IMPORT}"}}
 
     return with_json_route(mock_server_base, 'POST', 'api/workspace-imports', json)
+
+
+@pytest.fixture
+def import_workspace_project(sem_ver_check, mock_server_base):
+    json = {
+        "data": {
+            "location": f"api/workspaces/{IDs.WORKSPACE_PRIMARY}/project-imports/{IDs.IMPORT}"
+        }
+    }
+
+    return with_json_route(
+        mock_server_base,
+        'POST',
+        f'api/workspaces/{IDs.WORKSPACE_PRIMARY}/project-imports',
+        json,
+    )
+
+
+@pytest.fixture
+def import_workspace_dependency(sem_ver_check, mock_server_base):
+    json = {
+        "data": {
+            "location": f"api/workspaces/{IDs.WORKSPACE_PRIMARY}/dependency-imports/{IDs.IMPORT}"
+        }
+    }
+
+    return with_json_route(
+        mock_server_base,
+        'POST',
+        f'api/workspaces/{IDs.WORKSPACE_PRIMARY}/dependency-imports',
+        json,
+    )
+
+
+@pytest.fixture
+def import_project(sem_ver_check, mock_server_base):
+    json = {"data": {"location": f"api/project-imports/{IDs.IMPORT}"}}
+
+    return with_json_route(mock_server_base, 'POST', 'api/project-imports', json)
 
 
 @pytest.fixture

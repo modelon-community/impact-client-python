@@ -2,8 +2,10 @@ import pytest
 from unittest.mock import MagicMock
 from modelon.impact.client import Client
 from modelon.impact.client.entities.workspace import Workspace, WorkspaceDefinition
+from modelon.impact.client.entities.project import Project
 import modelon.impact.client.exceptions as exceptions
 import modelon.impact.client.sal.exceptions as sal_exceptions
+from tests.files.paths import TEST_WORKSPACE_PATH
 
 from tests.impact.client.helpers import (
     create_workspace_conversion_operation,
@@ -51,7 +53,7 @@ def test_semantic_version_error(semantic_version_error):
         Client(url=semantic_version_error.url, context=semantic_version_error.context)
     assert (
         "Version '1.0.0' of the HTTP REST API is not supported, must be in the "
-        "range '>=4.0.0-beta.12,<5.0.0'! Updgrade or downgrade this package to a "
+        "range '>=4.0.0-beta.23,<5.0.0'! Updgrade or downgrade this package to a "
         "version that supports version '1.0.0' of the HTTP REST API."
         in str(excinfo.value)
     )
@@ -89,7 +91,8 @@ def test_client_login_api_key_missing(user_with_license):
     )
 
     assert_login_called(
-        adapter=user_with_license.adapter, body={},
+        adapter=user_with_license.adapter,
+        body={},
     )
 
 
@@ -200,28 +203,45 @@ def test_get_project_matchings(
     assert project_matching_entries[0].projects[1].id == IDs.VERSIONED_PROJECT_SECONDARY
 
 
-def test_import_from_shared_definition(
-    import_from_shared_definition, get_successful_workspace_upload_status
+def test_import_workspace_from_zip(
+    import_workspace,
+    get_successful_workspace_upload_status,
+    single_workspace,
 ):
     client = Client(
-        url=import_from_shared_definition.url,
-        context=import_from_shared_definition.context,
+        url=import_workspace.url,
+        context=import_workspace.context,
+    )
+    imported_workspace = client.import_workspace_from_zip(TEST_WORKSPACE_PATH).wait()
+    assert isinstance(imported_workspace, Workspace)
+
+
+def test_import_workspace_from_shared_definition(
+    import_workspace,
+    get_successful_workspace_upload_status,
+    single_workspace,
+):
+    client = Client(
+        url=import_workspace.url,
+        context=import_workspace.context,
     )
     definition = WorkspaceDefinition(get_test_workspace_definition())
-    imported_workspace = client.import_from_shared_definition(definition).wait()
+    imported_workspace = client.import_workspace_from_shared_definition(
+        definition
+    ).wait()
     assert isinstance(imported_workspace, Workspace)
 
 
 def test_failed_import_from_shared_definition(
-    import_from_shared_definition, get_failed_workspace_upload_status
+    import_workspace, get_failed_workspace_upload_status
 ):
     client = Client(
-        url=import_from_shared_definition.url,
-        context=import_from_shared_definition.context,
+        url=import_workspace.url,
+        context=import_workspace.context,
     )
     definition = WorkspaceDefinition(get_test_workspace_definition())
     with pytest.raises(exceptions.IllegalWorkspaceImport):
-        client.import_from_shared_definition(definition).wait()
+        client.import_workspace_from_shared_definition(definition).wait()
 
 
 def test_workspace_conversion(setup_workspace_conversion):
@@ -231,3 +251,16 @@ def test_workspace_conversion(setup_workspace_conversion):
 
     conversioin_op = client.convert_workspace(IDs.CONVERSION, 'backup')
     assert conversioin_op == create_workspace_conversion_operation(IDs.CONVERSION)
+
+
+def test_import_project_from_zip(
+    import_project,
+    get_project_upload_status,
+    single_project,
+):
+    client = Client(
+        url=import_project.url,
+        context=import_project.context,
+    )
+    imported_project = client.import_project_from_zip(TEST_WORKSPACE_PATH).wait()
+    assert isinstance(imported_project, Project)

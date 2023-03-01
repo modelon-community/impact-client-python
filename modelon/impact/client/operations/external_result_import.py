@@ -4,41 +4,38 @@ from modelon.impact.client.sal.service import Service
 from modelon.impact.client.operations.base import AsyncOperation, AsyncOperationStatus
 
 
-class ExternalResultUploadOperation(AsyncOperation):
+class ExternalResultImportOperation(AsyncOperation):
     """
     An operation class for the modelon.impact.client.entities.
     external_result.ExternalResult class.
     """
 
-    def __init__(self, result_id: str, service: Service):
+    def __init__(self, location: str, service: Service):
         super().__init__()
-        self._result_id = result_id
+        self._location = location
         self._sal = service
 
     def __repr__(self):
-        return f"Result upload operations for id '{self._result_id}'"
+        return f"Result import operations for id '{self.id}'"
 
     def __eq__(self, obj):
         return (
-            isinstance(obj, ExternalResultUploadOperation)
-            and obj._result_id == self._result_id
+            isinstance(obj, ExternalResultImportOperation)
+            and obj._location == self._location
         )
 
     @property
     def id(self):
-        """Result id"""
-        return self._result_id
+        """Result import id"""
+        return self._location.split('/')[-1]
 
     @property
     def name(self):
         """Return the name of operation"""
-        return "Result upload"
-
-    def cancel(self):
-        raise NotImplementedError('Cancel is not supported for this operation')
+        return "Result import"
 
     def _info(self):
-        return self._sal.workspace.get_result_upload_status(self._result_id)["data"]
+        return self._sal.imports.get_import_status(self._location)["data"]
 
     def data(self):
         """
@@ -54,8 +51,8 @@ class ExternalResultUploadOperation(AsyncOperation):
             raise exceptions.ExternalResultUploadError(
                 f"External result upload failed! Cause: {info['error'].get('message')}"
             )
-
-        return ExternalResult(self._result_id, self._sal)
+        resp = self._sal.external_result.get_uploaded_result(self.id)
+        return ExternalResult(resp['data']['id'], self._sal)
 
     def status(self):
         """

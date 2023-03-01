@@ -10,6 +10,7 @@ import modelon.impact.client.sal.service
 import modelon.impact.client.sal.exceptions
 import modelon.impact.client.credential_manager
 import modelon.impact.client.jupyterhub
+from modelon.impact.client.operations.project_import import ProjectImportOperation
 from modelon.impact.client.operations.workspace.imports import WorkspaceImportOperation
 from modelon.impact.client.operations.workspace.conversion import (
     WorkspaceConversionOperation,
@@ -127,7 +128,7 @@ class Client:
         client = Client(url=impact_url, interactive=True)
     """
 
-    _SUPPORTED_VERSION_RANGE = ">=4.0.0-beta.12,<5.0.0"
+    _SUPPORTED_VERSION_RANGE = ">=4.0.0-beta.23,<5.0.0"
 
     def __init__(
         self,
@@ -360,8 +361,10 @@ class Client:
         return Workspace(resp["id"], WorkspaceDefinition(resp["definition"]), self._sal)
 
     def upload_workspace(self, path_to_workspace):
-        """Uploads a Workspace
+        """Imports a Workspace from a compressed(.zip) workspace file.
         Returns the workspace class object of the imported workspace.
+        Similar to :obj:`~modelon.impact.client.Client.import_workspace_from_zip`,
+        but does the import in one go.
 
         Parameters:
 
@@ -377,10 +380,35 @@ class Client:
 
             client.upload_workspace(path_to_workspace)
         """
-        resp = self._sal.workspace.workspace_upload(path_to_workspace)
-        return Workspace(resp["id"], WorkspaceDefinition(resp["definition"]), self._sal)
+        return self.import_workspace_from_zip(path_to_workspace).wait()
 
-    def import_from_shared_definition(
+    def import_workspace_from_zip(self, path_to_workspace):
+        """Imports a Workspace from a compressed(.zip) workspace file.
+        Similar to
+        :obj:`~modelon.impact.client.Client.upload_workspace`,
+        but gives more control for getting the workspace async.
+        Returns an modelon.impact.client.operations.workspace.imports
+        .WorkspaceImportOperation class object.
+
+        Parameters:
+
+            path_to_workspace --
+                The path for the compressed workspace(.zip) to be uploaded.
+
+        Returns:
+
+            WorkspaceImportOperation --
+                An modelon.impact.client.operations.workspace.imports.
+                WorkspaceImportOperation class object.
+
+        Example::
+
+            client.import_workspace_from_zip(path_to_workspace).wait()
+        """
+        resp = self._sal.workspace.import_from_zip(path_to_workspace)
+        return WorkspaceImportOperation(resp["data"]["location"], self._sal)
+
+    def import_workspace_from_shared_definition(
         self,
         shared_definition: WorkspaceDefinition,
         selections: Optional[List[Selection]] = None,
@@ -391,9 +419,7 @@ class Client:
             if selections
             else None,
         )
-        return WorkspaceImportOperation(
-            resp["data"]["location"], shared_definition, self._sal
-        )
+        return WorkspaceImportOperation(resp["data"]["location"], self._sal)
 
     def get_project_matchings(
         self, shared_definition: WorkspaceDefinition
@@ -420,3 +446,25 @@ class Client:
                 )
             )
         return ProjectMatchings(project_matchings)
+
+    def import_project_from_zip(self, path_to_project):
+        """Imports a Project from a compressed(.zip) project file.
+        Returns the project class object.
+
+        Parameters:
+
+            path_to_project --
+                The path for the compressed project(.zip) to be uploaded.
+
+        Returns:
+
+            ProjectImportOperation --
+                An modelon.impact.client.operations.project_import.
+                ProjectImportOperation class object.
+
+        Example::
+
+            client.import_project_from_zip(path_to_project).wait()
+        """
+        resp = self._sal.project.import_from_zip(path_to_project)
+        return ProjectImportOperation(resp["data"]["location"], self._sal)

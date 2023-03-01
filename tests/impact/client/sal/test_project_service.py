@@ -2,7 +2,7 @@ import unittest.mock as mock
 from modelon.impact.client.sal.uri import URI
 import modelon.impact.client.sal.service
 from tests.impact.client.helpers import IDs
-from tests.files.paths import SINGLE_FILE_LIBRARY_PATH
+from tests.files.paths import SINGLE_FILE_LIBRARY_PATH, TEST_WORKSPACE_PATH
 
 
 class TestProjectService:
@@ -187,3 +187,11 @@ class TestProjectService:
             IDs.WORKSPACE_PRIMARY, IDs.DYNAMIC_CF
         )
         assert data == {'compiler': {'c_compiler': 'gcc'}}
+
+    def test_project_import_from_zip(self, import_project):
+        uri = URI(import_project.url)
+        service = modelon.impact.client.sal.service.Service(
+            uri=uri, context=import_project.context
+        )
+        data = service.project.import_from_zip(TEST_WORKSPACE_PATH)
+        assert data == {"data": {"location": f"api/project-imports/{IDs.IMPORT}"}}

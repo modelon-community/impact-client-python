@@ -1,5 +1,4 @@
 """Workspace service module"""
-import json
 from typing import Optional, Dict, Any, List
 from modelon.impact.client.sal.http import HTTPClient
 from modelon.impact.client.sal.uri import URI
@@ -48,53 +47,10 @@ class WorkspaceService:
         url = (self._base_uri / f"api/workspaces/{workspace_id}").resolve()
         return self._http_client.get_json(url)
 
-    def workspace_upload(self, path_to_workspace: str):
-        url = (self._base_uri / "api/workspaces").resolve()
-        with open(path_to_workspace, "rb") as f:
-            return self._http_client.post_json(url, files={"file": f})
-
-    def result_upload(
-        self,
-        workspace_id: str,
-        path_to_result: str,
-        label: Optional[str] = None,
-        description: Optional[str] = None,
-    ):
-        url = (self._base_uri / "api/uploads/results").resolve()
-        options: Dict[str, Any] = {
-            "context": {"workspaceId": workspace_id},
-        }
-        if label:
-            options["name"] = label
-        if description:
-            options["description"] = description
-        with open(path_to_result, "rb") as f:
-            multipart_form_data = {
-                'file': f,
-                'options': json.dumps(options),
-            }
-            return self._http_client.post_json(url, files=multipart_form_data)
-
-    def get_result_upload_status(self, upload_id: str):
-        url = (self._base_uri / f"api/uploads/results/{upload_id}").resolve()
-        return self._http_client.get_json(url)
-
-    def get_uploaded_result_meta(self, upload_id: str):
-        url = (self._base_uri / f"api/external-result/{upload_id}").resolve()
-        return self._http_client.get_json(url)
-
-    def delete_uploaded_result(self, upload_id: str):
-        url = (self._base_uri / f"api/external-result/{upload_id}").resolve()
-        return self._http_client.delete_json(url)
-
     def workspace_export_setup(self, workspace_id: str, options: Dict[str, Any]):
         url = (self._base_uri / "api/workspace-exports").resolve()
         options["workspaceId"] = workspace_id
         return self._http_client.post_json(url, body=options)
-
-    def get_workspace_export_status(self, location: str):
-        url = (self._base_uri / location).resolve()
-        return self._http_client.get_json(url)
 
     def workspace_conversion_setup(self, workspace_id: str, backup_name: Optional[str]):
         url = (self._base_uri / "api/workspace-conversions").resolve()
@@ -164,6 +120,11 @@ class WorkspaceService:
         ).resolve()
         return self._http_client.get_json(url)
 
+    def import_from_zip(self, path_to_workspace: str):
+        url = (self._base_uri / "api/workspace-imports").resolve()
+        with open(path_to_workspace, "rb") as f:
+            return self._http_client.post_json(url, files={"file": f})
+
     def import_from_shared_definition(
         self,
         shared_definition: Dict[str, Any],
@@ -177,10 +138,20 @@ class WorkspaceService:
         url = (self._base_uri / "api/workspace-imports").resolve()
         return self._http_client.post_json(url, body=shared_definition)
 
-    def get_workspace_upload_status(self, location: str):
-        url = (self._base_uri / location).resolve()
-        return self._http_client.get_json(url)
-
     def get_project_matchings(self, shared_definition: Dict[str, Any]):
         url = (self._base_uri / "api/workspace-imports-matchings").resolve()
         return self._http_client.post_json(url, body=shared_definition)
+
+    def import_project_from_zip(self, workspace_id: str, path_to_project: str):
+        url = (
+            self._base_uri / f"api/workspaces/{workspace_id}/project-imports"
+        ).resolve()
+        with open(path_to_project, "rb") as f:
+            return self._http_client.post_json(url, files={"file": f})
+
+    def import_dependency_from_zip(self, workspace_id: str, path_to_project: str):
+        url = (
+            self._base_uri / f"api/workspaces/{workspace_id}/dependency-imports"
+        ).resolve()
+        with open(path_to_project, "rb") as f:
+            return self._http_client.post_json(url, files={"file": f})

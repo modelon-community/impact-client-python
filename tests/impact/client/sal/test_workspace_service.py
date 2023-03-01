@@ -64,77 +64,6 @@ class TestWorkspaceService:
             }
         }
 
-    def test_workspace_upload(self, upload_workspace):
-        uri = URI(upload_workspace.url)
-        service = modelon.impact.client.sal.service.Service(
-            uri=uri, context=upload_workspace.context
-        )
-        data = service.workspace.workspace_upload(TEST_WORKSPACE_PATH)
-        assert data == {'id': IDs.WORKSPACE_PRIMARY}
-
-    def test_result_upload(self, upload_result):
-        uri = URI(upload_result.url)
-        service = modelon.impact.client.sal.service.Service(
-            uri=uri, context=upload_result.context
-        )
-        with mock.patch("builtins.open", mock.mock_open()) as mock_file:
-            data = service.workspace.result_upload(IDs.WORKSPACE_PRIMARY, "test.mat")
-            mock_file.assert_called_with("test.mat", "rb")
-
-        assert data == {
-            "data": {
-                "id": "2f036b9fab6f45c788cc466da327cc78workspace",
-                "status": "running",
-            }
-        }
-
-    def test_result_upload_status(self, upload_result_status_ready):
-        uri = URI(upload_result_status_ready.url)
-        service = modelon.impact.client.sal.service.Service(
-            uri=uri, context=upload_result_status_ready.context
-        )
-        data = service.workspace.get_result_upload_status(
-            "2f036b9fab6f45c788cc466da327cc78workspace"
-        )
-
-        resource_uri = "api/external-result/2f036b9fab6f45c788cc466da327cc78workspace"
-        assert data == {
-            "data": {
-                "id": "2f036b9fab6f45c788cc466da327cc78workspace",
-                "status": "ready",
-                "data": {"resourceUri": resource_uri},
-            }
-        }
-
-    def test_result_upload_meta(self, upload_result_meta):
-        uri = URI(upload_result_meta.url)
-        service = modelon.impact.client.sal.service.Service(
-            uri=uri, context=upload_result_meta.context
-        )
-        data = service.workspace.get_uploaded_result_meta(
-            "2f036b9fab6f45c788cc466da327cc78workspace"
-        )
-
-        assert data == {
-            "data": {
-                "id": "2f036b9fab6f45c788cc466da327cc78workspace",
-                "createdAt": "2021-09-02T08:26:49.612000",
-                "name": "result_for_PID",
-                "description": "This is a result file for PID controller",
-                "workspaceId": IDs.WORKSPACE_PRIMARY,
-            }
-        }
-
-    def test_delete_result_upload(self, upload_result_delete):
-        uri = URI(upload_result_delete.url)
-        service = modelon.impact.client.sal.service.Service(
-            uri=uri, context=upload_result_delete.context
-        )
-        service.workspace.delete_uploaded_result(
-            "2f036b9fab6f45c788cc466da327cc78workspace"
-        )
-        assert upload_result_delete.adapter.called
-
     def test_workspace_export_setup(self, setup_export_workspace):
         uri = URI(setup_export_workspace.url)
         service = modelon.impact.client.sal.service.Service(
@@ -148,9 +77,7 @@ class TestWorkspaceService:
         service = modelon.impact.client.sal.service.Service(
             uri=uri, context=get_export_workspace_status.context
         )
-        data = service.workspace.get_workspace_export_status(
-            f"api/workspace-exports/{IDs.EXPORT}"
-        )
+        data = service.exports.get_export_status(f"api/workspace-exports/{IDs.EXPORT}")
         assert data["data"]["status"] == "ready"
 
     def test_workspace_conversion_setup(self, setup_workspace_conversion):
@@ -338,31 +265,36 @@ class TestWorkspaceService:
         service = modelon.impact.client.sal.service.Service(
             uri=uri, context=get_workspace_upload_status.context
         )
-        data = service.workspace.get_workspace_upload_status(
-            "api/workspace-imports/05c7c0c45a084f079682eaf443287901"
-        )
+        data = service.imports.get_import_status(f"api/workspace-imports/{IDs.IMPORT}")
         assert get_workspace_upload_status.adapter.called
         assert data == {
             "data": {
-                'id': 'efa5cc60e3d04049ad0566bc53b431f8',
+                'id': IDs.IMPORT,
                 'status': 'ready',
-                'data': {'resourceUri': 'api/workspaces/test', 'workspaceId': 'test'},
+                'data': {
+                    'resourceUri': f'api/workspaces/{IDs.WORKSPACE_PRIMARY}',
+                    'workspaceId': IDs.WORKSPACE_PRIMARY,
+                },
             }
         }
 
-    def test_import_from_shared_definition(self, import_from_shared_definition):
-        uri = URI(import_from_shared_definition.url)
+    def test_workspace_import_from_zip(self, import_workspace):
+        uri = URI(import_workspace.url)
         service = modelon.impact.client.sal.service.Service(
-            uri=uri, context=import_from_shared_definition.context
+            uri=uri, context=import_workspace.context
+        )
+        data = service.workspace.import_from_zip(TEST_WORKSPACE_PATH)
+        assert data == {"data": {"location": f"api/workspace-imports/{IDs.IMPORT}"}}
+
+    def test_import_from_shared_definition(self, import_workspace):
+        uri = URI(import_workspace.url)
+        service = modelon.impact.client.sal.service.Service(
+            uri=uri, context=import_workspace.context
         )
         data = service.workspace.import_from_shared_definition(
             {"definition": {"name": "test", "projects": []}}
         )
-        assert data == {
-            "data": {
-                "location": "api/workspace-imports/05c7c0c45a084f079682eaf443287901"
-            }
-        }
+        assert data == {"data": {"location": f"api/workspace-imports/{IDs.IMPORT}"}}
 
     def test_get_vcs_matchings(self, get_project_matchings):
         uri = URI(get_project_matchings.url)
@@ -391,5 +323,33 @@ class TestWorkspaceService:
                         "projects": [VERSIONED_PROJECT_TRUNK, VERSIONED_PROJECT_BRANCH],
                     },
                 ]
+            }
+        }
+
+    def test_project_import_from_zip(self, import_workspace_project):
+        uri = URI(import_workspace_project.url)
+        service = modelon.impact.client.sal.service.Service(
+            uri=uri, context=import_workspace_project.context
+        )
+        data = service.workspace.import_project_from_zip(
+            IDs.WORKSPACE_PRIMARY, TEST_WORKSPACE_PATH
+        )
+        assert data == {
+            "data": {
+                "location": f"api/workspaces/{IDs.WORKSPACE_PRIMARY}/project-imports/{IDs.IMPORT}"
+            }
+        }
+
+    def test_dependency_import_from_zip(self, import_workspace_dependency):
+        uri = URI(import_workspace_dependency.url)
+        service = modelon.impact.client.sal.service.Service(
+            uri=uri, context=import_workspace_dependency.context
+        )
+        data = service.workspace.import_dependency_from_zip(
+            IDs.WORKSPACE_PRIMARY, TEST_WORKSPACE_PATH
+        )
+        assert data == {
+            "data": {
+                "location": f"api/workspaces/{IDs.WORKSPACE_PRIMARY}/dependency-imports/{IDs.IMPORT}"
             }
         }
