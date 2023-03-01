@@ -25,14 +25,14 @@ class TestProject:
             "runtime": {"log_level": 2},
             "simulation": {'dynamic_diagnostics': False, 'ncp': 500},
             "solver": {"rtol": 1e-5},
-            'customFunction': 'dynamic',
+            'customFunction': IDs.DYNAMIC_CF,
         }
 
     def test_get_project_default_options(self, project, custom_function):
         options = project.entity.get_options(custom_function, use_defaults=True)
         assert options.to_dict() == {
             'compiler': {'c_compiler': 'gcc'},
-            'customFunction': 'dynamic',
+            'customFunction': IDs.DYNAMIC_CF,
         }
 
     def test_get_project_contents(self, project):
@@ -63,17 +63,20 @@ class TestProject:
     def test_delete_project_contents(self, project):
         service = project.service
         content = create_project_content_entity(
-            project_id=IDs.PROJECT_PRIMARY, service=project.service,
+            project_id=IDs.PROJECT_PRIMARY,
+            service=project.service,
         )
         content.delete()
         service.project.project_content_delete.assert_called_with(
-            IDs.PROJECT_PRIMARY, IDs.PROJECT_CONTENT_PRIMARY,
+            IDs.PROJECT_PRIMARY,
+            IDs.PROJECT_CONTENT_PRIMARY,
         )
 
     def test_delete_project(self, project):
         service = project.service
         project = create_project_entity(
-            project_id=IDs.PROJECT_PRIMARY, service=service,
+            project_id=IDs.PROJECT_PRIMARY,
+            service=service,
         )
         project.delete()
         service.project.project_delete.assert_called_with(IDs.PROJECT_PRIMARY)

@@ -28,18 +28,21 @@ class ProjectService:
         url = (self._base_uri / f"api/projects/{project_id}").resolve()
         self._http_client.put_json(url, body=project_data)
 
-    def project_options_get(self, project_id: str, custom_function: str):
+    def project_options_get(
+        self, project_id: str, workspace_id: str, custom_function: str
+    ):
         url = (
             self._base_uri
-            / f"api/projects/{project_id}/custom-functions/{custom_function}/options"
+            / f"api/workspaces/{workspace_id}/projects/{project_id}/custom-functions/"
+            f"{custom_function}/options"
         ).resolve()
         return self._http_client.get_json(url)
 
-    def project_default_options_get(self, project_id: str, custom_function: str):
+    def project_default_options_get(self, workspace_id: str, custom_function: str):
         url = (
             self._base_uri
-            / f"api/projects/{project_id}/custom-functions/{custom_function}/"
-            "default-options"
+            / f"api/workspaces/{workspace_id}/custom-functions/{custom_function}"
+            "/default-options"
         ).resolve()
         return self._http_client.get_json(url)
 

@@ -97,7 +97,7 @@ class TestCase:
                         'input': {
                             'fmu_id': IDs.FMU_PRIMARY,
                             'analysis': {
-                                'analysis_function': 'dynamic',
+                                'analysis_function': IDs.DYNAMIC_CF,
                                 'parameters': {'start_time': 1, 'final_time': 200000.0},
                                 'simulation_options': {'ncp': 600},
                                 'solver_options': {'atol': 1e-08},
@@ -183,7 +183,7 @@ class TestCase:
                         'input': {
                             'fmu_id': IDs.FMU_PRIMARY,
                             'analysis': {
-                                'analysis_function': 'dynamic',
+                                'analysis_function': IDs.DYNAMIC_CF,
                                 'parameters': {'start_time': 0, 'final_time': 1},
                                 'simulation_options': {},
                                 'solver_options': {},

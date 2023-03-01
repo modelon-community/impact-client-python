@@ -938,7 +938,7 @@ def project_options_get(sem_ver_check, mock_server_base):
     return with_json_route(
         mock_server_base,
         'GET',
-        f'api/projects/{IDs.PROJECT_PRIMARY}/custom-functions/dynamic/options',
+        f'api/workspaces/{IDs.WORKSPACE_PRIMARY}/projects/{IDs.PROJECT_PRIMARY}/custom-functions/{IDs.DYNAMIC_CF}/options',
         json,
     )
 
@@ -949,7 +949,7 @@ def project_default_options_get(sem_ver_check, mock_server_base):
     return with_json_route(
         mock_server_base,
         'GET',
-        f'api/projects/{IDs.PROJECT_PRIMARY}/custom-functions/dynamic/default-options',
+        f'api/workspaces/{IDs.WORKSPACE_PRIMARY}/custom-functions/{IDs.DYNAMIC_CF}/default-options',
         json,
     )
 
@@ -1083,13 +1083,16 @@ def workspace():
         }
     }
     custom_function_service.custom_function_get.return_value = {
-        'name': 'dynamic',
+        'name': IDs.DYNAMIC_CF,
         'parameters': _custom_function_parameter_list(),
     }
     custom_function_service.custom_functions_get.return_value = {
         'data': {
             'items': [
-                {'name': 'dynamic', 'parameters': _custom_function_parameter_list()}
+                {
+                    'name': IDs.DYNAMIC_CF,
+                    'parameters': _custom_function_parameter_list(),
+                }
             ]
         }
     }
@@ -1155,7 +1158,7 @@ def custom_function():
     service = MagicMock()
     custom_function_service = service.custom_function
     custom_function_service.custom_function_get.return_value = {
-        'name': 'dynamic',
+        'name': IDs.DYNAMIC_CF,
         'parameters': _custom_function_parameter_list(),
     }
     custom_function_service.custom_function_options_get.return_value = {
@@ -1171,7 +1174,10 @@ def custom_function():
         "solver": {"rtol": 1e-5},
     }
     return create_custom_function_entity(
-        IDs.WORKSPACE_PRIMARY, 'dynamic', _custom_function_parameter_list(), service
+        IDs.WORKSPACE_PRIMARY,
+        IDs.DYNAMIC_CF,
+        _custom_function_parameter_list(),
+        service,
     )
 
 
@@ -1187,7 +1193,7 @@ def custom_function_no_param():
     }
     custom_function_service.custom_function_options_get.return_value = opts
     return create_custom_function_entity(
-        IDs.WORKSPACE_PRIMARY, 'dynamic', [], service=service
+        IDs.WORKSPACE_PRIMARY, IDs.DYNAMIC_CF, [], service=service
     )
 
 
