@@ -1,3 +1,11 @@
+# [3.0.0-dev.10](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.9...v3.0.0-dev.10) (2023-03-01)
+
+
+### Bug Fixes
+
+* updated the route for project options endpoint ([75f9a76](https://github.com/modelon-community/impact-client-python/commit/75f9a763d4f49fa6ee64e71f57eb8a3361dddded))
+* use helper class for dynamic cf ([92ce0e3](https://github.com/modelon-community/impact-client-python/commit/92ce0e3d026e6aa4dd7fe468155c1c86b3d5c156))
+
 # [3.0.0-dev.9](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.8...v3.0.0-dev.9) (2023-01-24)
 
 
