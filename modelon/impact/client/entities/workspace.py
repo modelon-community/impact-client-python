@@ -687,7 +687,7 @@ class Workspace:
 
         Example::
 
-            workspace.import_project_from_zip(path_to_project)
+            workspace.import_project_from_zip(path_to_project).wait()
         """
         resp = self._sal.workspace.import_project_from_zip(
             self._workspace_id, path_to_project
@@ -711,7 +711,7 @@ class Workspace:
 
         Example::
 
-            workspace.import_dependency_from_zip(path_to_project)
+            workspace.import_dependency_from_zip(path_to_project).wait()
         """
         resp = self._sal.workspace.import_dependency_from_zip(
             self._workspace_id, path_to_dependency

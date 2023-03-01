@@ -299,6 +299,14 @@ def get_upload_result_ready_data():
     return get_upload_status_data("ready")
 
 
+def get_upload_result_running_data():
+    return get_upload_status_data("running")
+
+
+def get_upload_result_error_data():
+    return get_upload_status_data("error")
+
+
 def get_result_upload_post_data():
     return {"data": {"location": f"api/uploads/results/{IDs.IMPORT}"}}
 
@@ -320,12 +328,33 @@ def external_result_sal_upload():
     service = MagicMock()
     external_result_service = service.external_result
     external_result_service.result_upload.return_value = get_result_upload_post_data()
-    external_result_service.get_uploaded_result_meta.return_value = (
+    external_result_service.get_uploaded_result.return_value = (
         get_external_result_data()
     )
 
     return service
 
+
+@pytest.fixture
+def external_result_sal_upload_ready(external_result_sal_upload):
+    imports = external_result_sal_upload.imports
+    imports.get_import_status.return_value = get_upload_result_ready_data()
+    return external_result_sal_upload
+
+
+@pytest.fixture
+def external_result_sal_upload_running(external_result_sal_upload):
+    imports = external_result_sal_upload.imports
+    imports.get_import_status.return_value = get_upload_result_running_data()
+
+    return external_result_sal_upload
+
+@pytest.fixture
+def external_result_sal_upload_error(external_result_sal_upload):
+    imports = external_result_sal_upload.imports
+    imports.get_import_status.return_value = get_upload_result_error_data()
+
+    return external_result_sal_upload
 
 @pytest.fixture
 def upload_result_status_ready(sem_ver_check, mock_server_base):

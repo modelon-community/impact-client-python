@@ -403,7 +403,7 @@ class Client:
 
         Example::
 
-            client.import_workspace_from_zip(path_to_workspace)
+            client.import_workspace_from_zip(path_to_workspace).wait()
         """
         resp = self._sal.workspace.import_from_zip(path_to_workspace)
         return WorkspaceImportOperation(resp["data"]["location"], self._sal)
@@ -464,7 +464,7 @@ class Client:
 
         Example::
 
-            client.import_project_from_zip(path_to_project)
+            client.import_project_from_zip(path_to_project).wait()
         """
         resp = self._sal.project.import_from_zip(path_to_project)
         return ProjectImportOperation(resp["data"]["location"], self._sal)
