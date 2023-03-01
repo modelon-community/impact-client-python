@@ -1,3 +1,19 @@
+# [3.0.0-dev.11](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.10...v3.0.0-dev.11) (2023-03-01)
+
+
+### Bug Fixes
+
+* feedback fix ([95d04c0](https://github.com/modelon-community/impact-client-python/commit/95d04c025c4cb9407722ab51061b5783a5852068))
+* rename 'import_from_*' methods to import_workspace_from_* ([12afca2](https://github.com/modelon-community/impact-client-python/commit/12afca2ea9b7f4cc5527782a92f2775a9ba9c00d))
+* unified fetching import/export status for all entities ([f20773c](https://github.com/modelon-community/impact-client-python/commit/f20773c7fa831cd05c7eca2839e5ae15f12d0f8d))
+* updated workspace import api to use new routes ([7b34f5d](https://github.com/modelon-community/impact-client-python/commit/7b34f5d2c0256260c895960a9fdacbca062a8357))
+
+
+### Features
+
+* added support for project import ([1f8828b](https://github.com/modelon-community/impact-client-python/commit/1f8828bc6281adcdcfc3e5e5f61b08929eef74f3))
+* added support for workspace project and dependency import ([50e7214](https://github.com/modelon-community/impact-client-python/commit/50e7214707856c4f90fbc92a8d8b9323b4081ffc))
+
 # [3.0.0-dev.10](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.9...v3.0.0-dev.10) (2023-03-01)
 
 
