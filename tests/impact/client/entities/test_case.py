@@ -1,4 +1,6 @@
 import pytest
+import os
+import tempfile
 import unittest.mock as mock
 from datetime import datetime
 from modelon.impact.client import exceptions
@@ -23,17 +25,17 @@ def get_case_put_call_consistent_value(mock_method_call):
 
 class TestCase:
     def test_case(self, experiment):
-        case = experiment.entity.get_case("case_1")
-        assert case.id == "case_1"
+        case = experiment.entity.get_case(IDs.CASE_PRIMARY)
+        assert case.id == IDs.CASE_PRIMARY
         assert case.run_info.status == CaseStatus.SUCCESSFUL
         assert case.run_info.consistent
         assert case.run_info.started == datetime(2022, 9, 12, 6, 42, 36, 945000)
         assert case.run_info.finished == datetime(2022, 9, 12, 6, 42, 37, 990000)
         assert case.get_log() == "Successful Log"
         result, name = case.get_result()
-        assert (result, name) == (b'\x00\x00\x00\x00', 'result.mat')
-        artifact, name = case.get_artifact('ABCD')
-        assert (artifact, name) == (b'\x00\x00\x00\x00', 'result.mat')
+        assert (result, name) == (b'\x00\x00\x00\x00', IDs.RESULT_MAT)
+        artifact, name = case.get_artifact(IDs.CUSTOM_ARTIFACT_ID)
+        assert (artifact, name) == (b'\x00\x00\x00\x00', IDs.RESULT_MAT)
         assert case.is_successful()
         assert case.get_trajectories()['inertia.I'] == [1, 2, 3, 4]
         fmu = case.get_fmu()
@@ -45,15 +47,15 @@ class TestCase:
         assert case.run_info.status == CaseStatus.SUCCESSFUL
         assert case.get_log() == "Successful Log"
         result, name = case.get_result()
-        assert (result, name) == (b'\x00\x00\x00\x00', 'result.mat')
-        artifact, name = case.get_artifact('ABCD')
-        assert (artifact, name) == (b'\x00\x00\x00\x00', 'result.mat')
+        assert (result, name) == (b'\x00\x00\x00\x00', IDs.RESULT_MAT)
+        artifact, name = case.get_artifact(IDs.CUSTOM_ARTIFACT_ID)
+        assert (artifact, name) == (b'\x00\x00\x00\x00', IDs.RESULT_MAT)
         assert case.is_successful()
         assert case.get_trajectories()['inertia.I'] == [14, 4, 4, 74]
 
     def test_failed_case(self, experiment_with_failed_case):
         failed_case = experiment_with_failed_case.get_case("case_2")
-        assert failed_case.id == "case_1"
+        assert failed_case.id == IDs.CASE_PRIMARY
         assert failed_case.run_info.status == CaseStatus.FAILED
         assert not failed_case.is_successful()
         pytest.raises(exceptions.OperationFailureError, failed_case.get_result)
@@ -70,7 +72,7 @@ class TestCase:
         service = experiment.service
         exp_sal = service.experiment
 
-        case = exp.get_case("case_1")
+        case = exp.get_case(IDs.CASE_PRIMARY)
         case.input.parametrization = {'PI.k': 120}
         case.input.analysis.simulation_options = {'ncp': 600}
         case.input.analysis.solver_options = {'atol': 1e-8}
@@ -85,9 +87,9 @@ class TestCase:
                 mock.call(
                     IDs.WORKSPACE_PRIMARY,
                     IDs.EXPERIMENT_PRIMARY,
-                    'case_1',
+                    IDs.CASE_PRIMARY,
                     {
-                        'id': 'case_1',
+                        'id': IDs.CASE_PRIMARY,
                         'run_info': {
                             'status': 'successful',
                             'consistent': True,
@@ -119,7 +121,7 @@ class TestCase:
         )
         result = case.execute().wait()
         assert result == create_case_entity(
-            'case_1', IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY
+            IDs.CASE_PRIMARY, IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY
         )
 
     def test_case_execute_with_no_sync(self, experiment):
@@ -127,29 +129,29 @@ class TestCase:
         service = experiment.service
         exp_sal = service.experiment
 
-        case = exp.get_case("case_1")
+        case = exp.get_case(IDs.CASE_PRIMARY)
         result = case.execute(sync_case_changes=True).wait()
         exp_sal.case_put.assert_called_once()
         assert result == create_case_entity(
-            'case_1', IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY
+            IDs.CASE_PRIMARY, IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY
         )
 
     def test_case_execute_with_auto_sync(self, experiment):
         exp = experiment.entity
         exp_sal = experiment.service
 
-        case = exp.get_case("case_1")
+        case = exp.get_case(IDs.CASE_PRIMARY)
         result = case.execute(sync_case_changes=False).wait()
         exp_sal.case_put.assert_not_called()
         assert result == create_case_entity(
-            'case_1', IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY
+            IDs.CASE_PRIMARY, IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY
         )
 
     def test_case_sync_second_time_should_call_with_consistent_false(self, experiment):
         exp = experiment.entity
         service = experiment.service
 
-        case = exp.get_case("case_1")
+        case = exp.get_case(IDs.CASE_PRIMARY)
         case.input.parametrization = {'PI.k': 120}
         case.sync()
         case.sync()
@@ -160,7 +162,7 @@ class TestCase:
 
     def test_case_initialize_from_external_result(self, experiment):
         result = create_external_result_entity('upload_id')
-        case = experiment.entity.get_case("case_1")
+        case = experiment.entity.get_case(IDs.CASE_PRIMARY)
         case.initialize_from_external_result = result
         assert case.initialize_from_external_result == result
         case.sync()
@@ -171,9 +173,9 @@ class TestCase:
                 mock.call(
                     IDs.WORKSPACE_PRIMARY,
                     IDs.EXPERIMENT_PRIMARY,
-                    'case_1',
+                    IDs.CASE_PRIMARY,
                     {
-                        'id': 'case_1',
+                        'id': IDs.CASE_PRIMARY,
                         'run_info': {
                             'status': 'successful',
                             'consistent': True,
@@ -208,7 +210,7 @@ class TestCase:
         case_to_init = create_case_entity(
             'Case_2', IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY
         )
-        case = experiment.entity.get_case("case_1")
+        case = experiment.entity.get_case(IDs.CASE_PRIMARY)
         case.initialize_from_external_result = result
         with pytest.raises(Exception) as err:
             case.initialize_from_case = case_to_init
@@ -224,7 +226,7 @@ class TestCase:
         case_to_init = create_case_entity(
             'Case_2', IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY
         )
-        case = experiment.entity.get_case("case_1")
+        case = experiment.entity.get_case(IDs.CASE_PRIMARY)
         case.initialize_from_case = case_to_init
         with pytest.raises(Exception) as err:
             case.initialize_from_external_result = result
@@ -247,7 +249,7 @@ class TestCase:
     def test_case_input(self, experiment):
         exp = experiment.entity
 
-        case = exp.get_case("case_1")
+        case = exp.get_case(IDs.CASE_PRIMARY)
         case.input.analysis.parameters = {"start_time": 0, "final_time": 90}
         case.input.analysis.simulation_options = {'ncp': 600}
         case.input.analysis.solver_options = {'atol': 1e-8}
@@ -260,5 +262,15 @@ class TestCase:
         assert case.input.parametrization == {'PI.k': 120}
 
     def test_get_result_invalid_format(self, experiment):
-        case = experiment.entity.get_case("case_1")
+        case = experiment.entity.get_case(IDs.CASE_PRIMARY)
         pytest.raises(ValueError, case.get_result, 'ma')
+
+    def test_get_custom_artifacts(self, experiment):
+        case = experiment.entity.get_case(IDs.CASE_PRIMARY)
+        artifacts = case.get_artifacts()
+        assert len(artifacts) == 1
+        assert artifacts[0].id == IDs.CUSTOM_ARTIFACT_ID
+        assert artifacts[0].download_as == IDs.RESULT_MAT
+        t = os.path.join(tempfile.gettempdir(), artifacts[0].download_as)
+        resp = artifacts[0].download(tempfile.gettempdir())
+        assert resp == t

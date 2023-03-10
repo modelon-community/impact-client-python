@@ -78,15 +78,17 @@ class TestExperiment:
         assert experiment.run_info.not_started == 0
         assert experiment.get_variables() == ["inertia.I", "time"]
         assert experiment.get_cases() == [
-            create_case_entity("case_1", IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY)
+            create_case_entity(
+                IDs.CASE_PRIMARY, IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY
+            )
         ]
-        assert experiment.get_case("case_1") == create_case_entity(
-            "case_1", IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY
+        assert experiment.get_case(IDs.CASE_PRIMARY) == create_case_entity(
+            IDs.CASE_PRIMARY, IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY
         )
 
         exp = experiment.get_trajectories(['inertia.I', 'time'])
-        assert exp['case_1']['inertia.I'] == [1, 2, 3, 4]
-        assert exp['case_1']['time'] == [5, 2, 9, 4]
+        assert exp[IDs.CASE_PRIMARY]['inertia.I'] == [1, 2, 3, 4]
+        assert exp[IDs.CASE_PRIMARY]['time'] == [5, 2, 9, 4]
 
     def test_successful_batch_execute(self, batch_experiment):
         assert batch_experiment.is_successful()
@@ -97,11 +99,13 @@ class TestExperiment:
         assert batch_experiment.run_info.not_started == 0
         assert batch_experiment.get_variables() == ["inertia.I", "time"]
         assert batch_experiment.get_cases() == [
-            create_case_entity("case_1", IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY),
+            create_case_entity(
+                IDs.CASE_PRIMARY, IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY
+            ),
             create_case_entity("case_2", IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY),
         ]
         exp = batch_experiment.get_trajectories(['inertia.I'])
-        assert exp['case_1']['inertia.I'] == [1, 2, 3, 4]
+        assert exp[IDs.CASE_PRIMARY]['inertia.I'] == [1, 2, 3, 4]
         assert exp['case_2']['inertia.I'] == [14, 4, 4, 74]
 
     def test_some_successful_batch_execute(self, batch_experiment_some_successful):
@@ -112,7 +116,9 @@ class TestExperiment:
         assert batch_experiment_some_successful.run_info.cancelled == 0
         assert batch_experiment_some_successful.run_info.not_started == 1
         assert batch_experiment_some_successful.get_cases() == [
-            create_case_entity("case_1", IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY),
+            create_case_entity(
+                IDs.CASE_PRIMARY, IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY
+            ),
             create_case_entity("case_2", IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY),
             create_case_entity("case_3", IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY),
             create_case_entity("case_4", IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY),
@@ -141,23 +147,29 @@ class TestExperiment:
     def test_execution_with_failed_cases(self, experiment_with_failed_case):
         assert experiment_with_failed_case.run_info.status == ExperimentStatus.DONE
         assert experiment_with_failed_case.get_cases() == [
-            create_case_entity("case_1", IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY)
+            create_case_entity(
+                IDs.CASE_PRIMARY, IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY
+            )
         ]
-        assert experiment_with_failed_case.get_case("case_1") == create_case_entity(
-            "case_1", IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY
+        assert experiment_with_failed_case.get_case(
+            IDs.CASE_PRIMARY
+        ) == create_case_entity(
+            IDs.CASE_PRIMARY, IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY
         )
         assert not experiment_with_failed_case.is_successful()
         assert experiment_with_failed_case.get_trajectories(['inertia.I']) == {
-            'case_1': {'inertia.I': [1, 2, 3, 4]}
+            IDs.CASE_PRIMARY: {'inertia.I': [1, 2, 3, 4]}
         }
 
     def test_cancelled_execution(self, cancelled_experiment):
         assert cancelled_experiment.run_info.status == ExperimentStatus.CANCELLED
         assert cancelled_experiment.get_cases() == [
-            create_case_entity("case_1", IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY)
+            create_case_entity(
+                IDs.CASE_PRIMARY, IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY
+            )
         ]
-        assert cancelled_experiment.get_case("case_1") == create_case_entity(
-            "case_1", IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY
+        assert cancelled_experiment.get_case(IDs.CASE_PRIMARY) == create_case_entity(
+            IDs.CASE_PRIMARY, IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY
         )
 
         assert not cancelled_experiment.is_successful()

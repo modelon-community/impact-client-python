@@ -157,11 +157,14 @@ class IDs:
     FMU_SECONDARY = 'test_filter_fmu_id'
     EXPERIMENT_PRIMARY = 'pid_20090615_134'
     EXPERIMENT_SECONDARY = 'filter_20090615_135'
+    CASE_PRIMARY = 'case_1'
     IMPORT = '9a8fg798a7g'
     EXPORT = '79sd8-3n2a4-e3t24'
     CONVERSION = 't24e3-a43n2-d879s'
     DYNAMIC_CF = 'dynamic'
     EXTERNAL_RESULT = IMPORT
+    CUSTOM_ARTIFACT_ID = 'ABCD'
+    RESULT_MAT = 'result.mat'
 
 
 VERSIONED_PROJECT_TRUNK = {

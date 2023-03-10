@@ -1,6 +1,9 @@
 import logging
+import os
+import tempfile
 from datetime import datetime
-from typing import Any, Dict, Tuple, Optional
+from dataclasses import dataclass
+from typing import Any, Dict, Tuple, Optional, List
 from modelon.impact.client.sal.service import Service
 from modelon.impact.client.sal.experiment import ResultFormat
 from modelon.impact.client.operations.case import CaseOperation
@@ -125,6 +128,67 @@ class _CaseAnalysis:
     @simulation_log_level.setter
     def simulation_log_level(self, simulation_log_level: str):
         self._analysis['simulation_log_level'] = simulation_log_level
+
+
+@dataclass
+class CustomArtifact:
+    """CustomArtifact class"""
+
+    def __init__(
+        self,
+        workspace_id: str,
+        experiment_id: str,
+        case_id: str,
+        data: Dict[str, str],
+        exp_sal,
+    ):
+        self._workspace_id = workspace_id
+        self._exp_id = experiment_id
+        self._case_id = case_id
+        self._data = data
+        self._exp_sal = exp_sal
+
+    @property
+    def id(self):
+        """Id of the custom artifact."""
+        return self._data['id']
+
+    @property
+    def download_as(self):
+        """File name for the downloaded artifact."""
+        return self._data['downloadAs']
+
+    def download(self, path: Optional[str] = None):
+        """Downloads a custom artifact.
+        Returns the local path to the downloaded artifact.
+
+        Parameters:
+
+            path --
+                The local path to store the custom artifact. Default: None.
+                If no path is given, custom artifact will be downloaded in a temporary
+                 directory.
+
+        Returns:
+
+            path --
+                Local path to the downloaded custom artifact.
+
+        Example::
+
+            artifact_path = artifact.download()
+            artifact_path = artifact.download('/home/Downloads')
+        """
+        artifact, file_name = self._exp_sal.case_artifact_get(
+            self._workspace_id, self._exp_id, self._case_id, self.id
+        )
+        if path is None:
+            path = os.path.join(tempfile.gettempdir(), "impact-downloads")
+        os.makedirs(path, exist_ok=True)
+        artifact_path = os.path.join(path, file_name)
+        with open(artifact_path, "wb") as f:
+            f.write(artifact)
+        return artifact_path
 
 
 class _CaseMeta:
@@ -465,6 +529,39 @@ class Case:
         )
 
         return result, file_name
+
+    def get_artifacts(self) -> List[CustomArtifact]:
+        """
+        Returns a list of CustomArtifact classes for a finished case.
+
+        Returns:
+
+            custom artifacts --
+                A list of CustomArtifact class objects.
+
+        Raises:
+
+            OperationNotCompleteError if simulation process is in progress.
+            OperationFailureError if simulation process has failed or was cancelled.
+
+        Example::
+
+            custom_artifacts = case.get_artifacts()
+        """
+        assert_successful_operation(self.is_successful(), self._case_id)
+        resp = self._sal.experiment.case_artifacts_meta_get(
+            self._workspace_id, self._exp_id, self._case_id
+        )
+        return [
+            CustomArtifact(
+                self._workspace_id,
+                self.experiment_id,
+                self._case_id,
+                meta,
+                self._sal.experiment,
+            )
+            for meta in resp["data"]["items"]
+        ]
 
     def get_fmu(self):
         """
