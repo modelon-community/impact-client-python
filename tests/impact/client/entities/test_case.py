@@ -34,8 +34,6 @@ class TestCase:
         assert case.get_log() == "Successful Log"
         result, name = case.get_result()
         assert (result, name) == (b'\x00\x00\x00\x00', IDs.RESULT_MAT)
-        artifact, name = case.get_artifact(IDs.CUSTOM_ARTIFACT_ID)
-        assert (artifact, name) == (b'\x00\x00\x00\x00', IDs.RESULT_MAT)
         assert case.is_successful()
         assert case.get_trajectories()['inertia.I'] == [1, 2, 3, 4]
         fmu = case.get_fmu()
@@ -48,8 +46,6 @@ class TestCase:
         assert case.get_log() == "Successful Log"
         result, name = case.get_result()
         assert (result, name) == (b'\x00\x00\x00\x00', IDs.RESULT_MAT)
-        artifact, name = case.get_artifact(IDs.CUSTOM_ARTIFACT_ID)
-        assert (artifact, name) == (b'\x00\x00\x00\x00', IDs.RESULT_MAT)
         assert case.is_successful()
         assert case.get_trajectories()['inertia.I'] == [14, 4, 4, 74]
 
@@ -274,3 +270,27 @@ class TestCase:
         t = os.path.join(tempfile.gettempdir(), artifacts[0].download_as)
         resp = artifacts[0].download(tempfile.gettempdir())
         assert resp == t
+        artifact_stream = artifacts[0].get_data()
+        assert artifact_stream == b'\x00\x00\x00\x00'
+
+    def test_get_custom_artifact(self, experiment):
+        case = experiment.entity.get_case(IDs.CASE_PRIMARY)
+        artifact = case.get_artifact(IDs.CUSTOM_ARTIFACT_ID)
+        assert artifact.id == IDs.CUSTOM_ARTIFACT_ID
+        assert artifact.download_as == IDs.RESULT_MAT
+        t = os.path.join(tempfile.gettempdir(), artifact.download_as)
+        resp = artifact.download(tempfile.gettempdir())
+        assert resp == t
+        artifact_stream = artifact.get_data()
+        assert artifact_stream == b'\x00\x00\x00\x00'
+
+    def test_get_custom_artifact_with_download_as(self, experiment):
+        case = experiment.entity.get_case(IDs.CASE_PRIMARY)
+        artifact = case.get_artifact(IDs.CUSTOM_ARTIFACT_ID, 'something.mat')
+        assert artifact.id == IDs.CUSTOM_ARTIFACT_ID
+        assert artifact.download_as == 'something.mat'
+        t = os.path.join(tempfile.gettempdir(), artifact.download_as)
+        resp = artifact.download(tempfile.gettempdir())
+        assert resp == t
+        artifact_stream = artifact.get_data()
+        assert artifact_stream == b'\x00\x00\x00\x00'
