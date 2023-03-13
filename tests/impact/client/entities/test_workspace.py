@@ -136,3 +136,9 @@ class TestWorkspace:
     def test_import_project_from_zip(self, workspace):
         project = workspace.entity.import_project_from_zip(TEST_WORKSPACE_PATH).wait()
         assert project.id == IDs.PROJECT_PRIMARY
+
+    def test_get_model_experiments(self, workspace):
+        experiments = workspace.entity.get_experiments(IDs.MODELICA_CLASS_PATH)
+        assert len(experiments) == 2
+        assert experiments[0].id == IDs.EXPERIMENT_PRIMARY
+        assert experiments[1].id == IDs.EXPERIMENT_SECONDARY
