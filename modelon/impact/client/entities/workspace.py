@@ -359,8 +359,15 @@ class Workspace:
         resp = self._sal.workspace.fmu_get(self._workspace_id, fmu_id)
         return ModelExecutable(self._workspace_id, resp["id"], self._sal, resp)
 
-    def get_experiments(self) -> List[Experiment]:
+    def get_experiments(self, class_path: Optional[str] = None) -> List[Experiment]:
         """Returns a list of Experiment class objects.
+
+        Parameters:
+
+            class_path --
+                The modelica class path. If given, only the experiments
+                generated for model with the specified class path
+                are returned.
 
         Returns:
             List of Experiment class objects.
@@ -370,7 +377,7 @@ class Workspace:
             workspace.get_experiments()
 
         """
-        resp = self._sal.workspace.experiments_get(self._workspace_id)
+        resp = self._sal.workspace.experiments_get(self._workspace_id, class_path)
         return [
             Experiment(self._workspace_id, item["id"], self._sal, item)
             for item in resp["data"]["items"]

@@ -85,8 +85,14 @@ class WorkspaceService:
         ).resolve()
         return self._http_client.get_zip(url)
 
-    def experiments_get(self, workspace_id: str) -> Dict[str, Any]:
-        url = (self._base_uri / f"api/workspaces/{workspace_id}/experiments").resolve()
+    def experiments_get(
+        self, workspace_id: str, class_path: Optional[str] = None
+    ) -> Dict[str, Any]:
+        class_path_query = f"?classPath={class_path}" if class_path else ""
+        url = (
+            self._base_uri
+            / f"api/workspaces/{workspace_id}/experiments{class_path_query}"
+        ).resolve()
         return self._http_client.get_json(
             url, headers={"Accept": "application/vnd.impact.experiment.v2+json"}
         )

@@ -161,6 +161,35 @@ class TestWorkspaceService:
                 ]
             }
         }
+        assert get_all_experiments.adapter.called
+        get_exps_call = get_all_experiments.adapter.request_history[0]
+        assert (
+            f'http://mock-impact.com/api/workspaces/{IDs.WORKSPACE_PRIMARY}/experiments'
+            == get_exps_call.url
+        )
+
+    def test_get_experiments_for_class(self, get_all_experiments_for_class):
+        uri = URI(get_all_experiments_for_class.url)
+        service = modelon.impact.client.sal.service.Service(
+            uri=uri, context=get_all_experiments_for_class.context
+        )
+        data = service.workspace.experiments_get(
+            IDs.WORKSPACE_PRIMARY, IDs.MODELICA_CLASS_PATH
+        )
+        assert data == {
+            'data': {
+                'items': [
+                    {'id': IDs.EXPERIMENT_PRIMARY},
+                    {'id': IDs.EXPERIMENT_SECONDARY},
+                ]
+            }
+        }
+        assert get_all_experiments_for_class.adapter.called
+        get_exps_call = get_all_experiments_for_class.adapter.request_history[0]
+        assert (
+            f'http://mock-impact.com/api/workspaces/{IDs.WORKSPACE_PRIMARY}/experiments'
+            f'?classPath={IDs.MODELICA_CLASS_PATH}' == get_exps_call.url
+        )
 
     def test_create_experiment(self, experiment_create):
         uri = URI(experiment_create.url)

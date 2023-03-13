@@ -168,6 +168,7 @@ class IDs:
     EXTERNAL_RESULT = IMPORT
     CUSTOM_ARTIFACT_ID = 'ABCD'
     RESULT_MAT = 'result.mat'
+    MODELICA_CLASS_PATH = 'Modelica.Blocks.Examples.PID_Controller'
 
 
 VERSIONED_PROJECT_TRUNK = {

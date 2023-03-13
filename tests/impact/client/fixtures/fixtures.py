@@ -196,7 +196,6 @@ def create_workspace_fail_bad_input(sem_ver_check, mock_server_base):
 
 @pytest.fixture
 def delete_workspace(user_with_license):
-
     return with_json_route_no_resp(
         user_with_license, 'DELETE', f'api/workspaces/{IDs.WORKSPACE_PRIMARY}'
     )
@@ -249,7 +248,6 @@ def semantic_version_error(mock_server_base):
 
 @pytest.fixture
 def get_ok_empty_json(mock_server_base):
-
     return with_json_route(mock_server_base, 'GET', '', {})
 
 
@@ -578,6 +576,22 @@ def get_all_experiments(sem_ver_check, mock_server_base):
 
 
 @pytest.fixture
+def get_all_experiments_for_class(sem_ver_check, mock_server_base):
+    json = {
+        "data": {
+            "items": [{"id": IDs.EXPERIMENT_PRIMARY}, {"id": IDs.EXPERIMENT_SECONDARY}]
+        }
+    }
+
+    return with_json_route(
+        mock_server_base,
+        'GET',
+        f'api/workspaces/{IDs.WORKSPACE_PRIMARY}/experiments?classPath={IDs.MODELICA_CLASS_PATH}',
+        json,
+    )
+
+
+@pytest.fixture
 def get_experiment(sem_ver_check, mock_server_base):
     json = {"id": IDs.EXPERIMENT_PRIMARY}
 
@@ -626,7 +640,6 @@ def get_fmu_id(mock_server_base):
 
 @pytest.fixture
 def model_compile(get_fmu_id, no_cached_fmu_id, mock_server_base):
-
     fmu_url = get_model_exe_url(IDs.WORKSPACE_PRIMARY, IDs.FMU_PRIMARY)
     return with_json_route_no_resp(mock_server_base, 'POST', f'{fmu_url}/compilation')
 
@@ -669,7 +682,6 @@ def get_compile_status(sem_ver_check, mock_server_base):
 
 @pytest.fixture
 def cancel_compile(sem_ver_check, mock_server_base):
-
     fmu_url = get_model_exe_url(IDs.WORKSPACE_PRIMARY, IDs.FMU_PRIMARY)
     return with_json_route_no_resp(mock_server_base, 'DELETE', f'{fmu_url}/compilation')
 
