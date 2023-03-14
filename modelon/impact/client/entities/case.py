@@ -1,6 +1,8 @@
 import logging
+import os
+import tempfile
 from datetime import datetime
-from typing import Any, Dict, Tuple, Optional
+from typing import Any, Dict, Tuple, Optional, List
 from modelon.impact.client.sal.service import Service
 from modelon.impact.client.sal.experiment import ResultFormat
 from modelon.impact.client.operations.case import CaseOperation
@@ -125,6 +127,89 @@ class _CaseAnalysis:
     @simulation_log_level.setter
     def simulation_log_level(self, simulation_log_level: str):
         self._analysis['simulation_log_level'] = simulation_log_level
+
+
+class CustomArtifact:
+    """CustomArtifact class"""
+
+    def __init__(
+        self,
+        workspace_id: str,
+        experiment_id: str,
+        case_id: str,
+        artifact_id: str,
+        download_as: str,
+        exp_sal,
+    ):
+        self._workspace_id = workspace_id
+        self._exp_id = experiment_id
+        self._case_id = case_id
+        self._artifact_id = artifact_id
+        self._download_as = download_as
+        self._exp_sal = exp_sal
+
+    @property
+    def id(self):
+        """Id of the custom artifact."""
+        return self._artifact_id
+
+    @property
+    def download_as(self):
+        """File name for the downloaded artifact."""
+        return self._download_as
+
+    def download(self, path: Optional[str] = None):
+        """Downloads a custom artifact.
+        Returns the local path to the downloaded artifact.
+
+        Parameters:
+
+            path --
+                The local path to the directory to store the downloaded custom artifact.
+                Default: None. If no path is given, custom artifact will be downloaded
+                in a temporary directory.
+
+        Returns:
+
+            path --
+                Local path to the downloaded custom artifact.
+
+        Example::
+
+            artifact_path = artifact.download()
+            artifact_path = artifact.download('/home/Downloads')
+        """
+        artifact, _ = self._exp_sal.case_artifact_get(
+            self._workspace_id, self._exp_id, self._case_id, self.id
+        )
+        if path is None:
+            path = os.path.join(tempfile.gettempdir(), "impact-downloads")
+        os.makedirs(path, exist_ok=True)
+        artifact_path = os.path.join(path, self.download_as)
+        with open(artifact_path, "wb") as f:
+            f.write(artifact)
+        return artifact_path
+
+    def get_data(self) -> bytes:
+        """
+        Returns the custom artifact stream.
+
+        Returns:
+
+            artifact --
+                The artifact byte stream.
+
+        Example::
+            artifact = case.get_artifact("ABCD")
+            data = artifact.get_data() # may raise exception on communication error
+            with open(artifact.download_as, "wb") as f:
+                f.write(data)
+        """
+        result_stream, _ = self._exp_sal.case_artifact_get(
+            self._workspace_id, self._exp_id, self._case_id, self.id
+        )
+
+        return result_stream
 
 
 class _CaseMeta:
@@ -430,23 +515,19 @@ class Case:
             self._sal,
         )
 
-    def get_artifact(self, artifact_id: str) -> Tuple[bytes, str]:
+    def get_artifact(
+        self, artifact_id: str, download_as: Optional[str] = None
+    ) -> CustomArtifact:
         """
-        Returns the artifact stream and the file name for a finished case.
-
-        Parameters:
-
-            artifact_id --
-                The ID of the artifact.
+        Returns a CustomArtifact class for a finished case.
 
         Returns:
 
-            artifact --
-                The artifact byte stream.
+            custom artifact --
+                A CustomArtifact class object.
 
-            filename --
-                The filename for the artifact. This name could be used to write the
-                artifact stream.
+            download_as --
+                File name for the downloaded artifact.
 
         Raises:
 
@@ -455,16 +536,67 @@ class Case:
 
         Example::
 
-            result, file_name = case.get_artifact("ABCD")
-            with open(file_name, "wb") as f:
-                f.write(result)
+            custom_artifact = case.get_artifact(artifact_id)
         """
         assert_successful_operation(self.is_successful(), self._case_id)
-        result, file_name = self._sal.experiment.case_artifact_get(
-            self._workspace_id, self._exp_id, self._case_id, artifact_id
+        return CustomArtifact(
+            self._workspace_id,
+            self.experiment_id,
+            self._case_id,
+            artifact_id,
+            download_as
+            if download_as
+            else self._get_artifact_download_name(artifact_id),
+            self._sal.experiment,
         )
 
-        return result, file_name
+    def _get_artifact_download_name(self, artifact_id):
+        resp = self._sal.experiment.case_artifacts_meta_get(
+            self._workspace_id, self._exp_id, self._case_id
+        )
+        meta = next(
+            (meta for meta in resp["data"]["items"] if meta["id"] == artifact_id),
+            None,
+        )
+        if not meta:
+            raise exceptions.NoSuchCustomArtifactError(
+                f'No custom artifact found with ID: {artifact_id}.'
+            )
+        return meta['downloadAs']
+
+    def get_artifacts(self) -> List[CustomArtifact]:
+        """
+        Returns a list of CustomArtifact classes for a finished case.
+
+        Returns:
+
+            custom artifacts --
+                A list of CustomArtifact class objects.
+
+        Raises:
+
+            OperationNotCompleteError if simulation process is in progress.
+            OperationFailureError if simulation process has failed or was cancelled.
+
+        Example::
+
+            custom_artifacts = case.get_artifacts()
+        """
+        assert_successful_operation(self.is_successful(), self._case_id)
+        resp = self._sal.experiment.case_artifacts_meta_get(
+            self._workspace_id, self._exp_id, self._case_id
+        )
+        return [
+            CustomArtifact(
+                self._workspace_id,
+                self.experiment_id,
+                self._case_id,
+                meta['id'],
+                meta['downloadAs'],
+                self._sal.experiment,
+            )
+            for meta in resp["data"]["items"]
+        ]
 
     def get_fmu(self):
         """

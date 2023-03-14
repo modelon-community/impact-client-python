@@ -59,3 +59,7 @@ class IllegalContentImport(Error):
 
 class ExternalResultUploadError(Error):
     pass
+
+
+class NoSuchCustomArtifactError(Error):
+    pass

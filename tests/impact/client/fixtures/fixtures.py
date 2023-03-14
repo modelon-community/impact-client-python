@@ -349,12 +349,14 @@ def external_result_sal_upload_running(external_result_sal_upload):
 
     return external_result_sal_upload
 
+
 @pytest.fixture
 def external_result_sal_upload_error(external_result_sal_upload):
     imports = external_result_sal_upload.imports
     imports.get_import_status.return_value = get_upload_result_error_data()
 
     return external_result_sal_upload
+
 
 @pytest.fixture
 def upload_result_status_ready(sem_ver_check, mock_server_base):
@@ -745,29 +747,35 @@ def get_trajectories(sem_ver_check, mock_server_base):
 
 @pytest.fixture
 def get_cases(sem_ver_check, mock_server_base):
-    json = {"data": {"items": [{"id": "case_1"}]}}
+    json = {"data": {"items": [{"id": IDs.CASE_PRIMARY}]}}
     experiment_url = get_experiment_url(IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY)
     return with_json_route(mock_server_base, 'GET', f'{experiment_url}/cases', json)
 
 
 @pytest.fixture
 def get_case(sem_ver_check, mock_server_base):
-    json = {"id": "case_1"}
-    case_url = get_case_url(IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY, "case_1")
+    json = {"id": IDs.CASE_PRIMARY}
+    case_url = get_case_url(
+        IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY, IDs.CASE_PRIMARY
+    )
     return with_json_route(mock_server_base, 'GET', case_url, json)
 
 
 @pytest.fixture
 def put_case(sem_ver_check, mock_server_base):
-    json = {"id": "case_1"}
-    case_url = get_case_url(IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY, "case_1")
+    json = {"id": IDs.CASE_PRIMARY}
+    case_url = get_case_url(
+        IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY, IDs.CASE_PRIMARY
+    )
     return with_json_route(mock_server_base, 'PUT', f'{case_url}', json)
 
 
 @pytest.fixture
 def get_case_log(sem_ver_check, mock_server_base):
     text = "Simulation log.."
-    case_url = get_case_url(IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY, "case_1")
+    case_url = get_case_url(
+        IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY, IDs.CASE_PRIMARY
+    )
     return with_text_route(mock_server_base, 'GET', f'{case_url}/log', text)
 
 
@@ -775,7 +783,9 @@ def get_case_log(sem_ver_check, mock_server_base):
 def get_mat_case_results(sem_ver_check, mock_server_base):
     binary = bytes(4)
 
-    case_url = get_case_url(IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY, "case_1")
+    case_url = get_case_url(
+        IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY, IDs.CASE_PRIMARY
+    )
     return with_octet_stream_route(
         mock_server_base,
         'GET',
@@ -792,7 +802,9 @@ def get_mat_case_results(sem_ver_check, mock_server_base):
 def get_csv_case_results(sem_ver_check, mock_server_base):
     text = "1;2;3"
 
-    case_url = get_case_url(IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY, "case_1")
+    case_url = get_case_url(
+        IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY, IDs.CASE_PRIMARY
+    )
     return with_csv_route(
         mock_server_base,
         'GET',
@@ -808,11 +820,13 @@ def get_csv_case_results(sem_ver_check, mock_server_base):
 def get_case_artifact(sem_ver_check, mock_server_base):
     binary = bytes(4)
 
-    case_url = get_case_url(IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY, "case_1")
+    case_url = get_case_url(
+        IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY, IDs.CASE_PRIMARY
+    )
     return with_octet_stream_route(
         mock_server_base,
         'GET',
-        f'{case_url}/custom-artifacts/ABCD',
+        f'{case_url}/custom-artifacts/{IDs.CUSTOM_ARTIFACT_ID}',
         binary,
         content_header=get_content_header(
             'application/octet-stream',
@@ -822,10 +836,27 @@ def get_case_artifact(sem_ver_check, mock_server_base):
 
 
 @pytest.fixture
+def get_case_artifact_meta(sem_ver_check, mock_server_base):
+    case_url = get_case_url(
+        IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY, IDs.CASE_PRIMARY
+    )
+    json = {
+        "data": {
+            "items": [{"id": IDs.CUSTOM_ARTIFACT_ID, "downloadAs": IDs.RESULT_MAT}]
+        }
+    }
+    return with_json_route(
+        mock_server_base, 'GET', f'{case_url}/custom-artifacts', json
+    )
+
+
+@pytest.fixture
 def get_case_trajectories(sem_ver_check, mock_server_base):
     json = [[1.0, 2.0, 7.0], [2.0, 3.0, 5.0]]
 
-    case_url = get_case_url(IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY, "case_1")
+    case_url = get_case_url(
+        IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY, IDs.CASE_PRIMARY
+    )
     return with_json_route(mock_server_base, 'POST', f'{case_url}/trajectories', json)
 
 
@@ -1470,9 +1501,9 @@ def experiment():
     exp_service.experiment_execute.return_value = IDs.EXPERIMENT_PRIMARY
     exp_service.execute_status.return_value = {"status": "done"}
     exp_service.result_variables_get.return_value = ["inertia.I", "time"]
-    exp_service.cases_get.return_value = {"data": {"items": [{"id": "case_1"}]}}
+    exp_service.cases_get.return_value = {"data": {"items": [{"id": IDs.CASE_PRIMARY}]}}
     case_get_data = {
-        "id": "case_1",
+        "id": IDs.CASE_PRIMARY,
         "run_info": {
             "status": "successful",
             "consistent": True,
@@ -1502,8 +1533,13 @@ def experiment():
     exp_service.case_get.return_value = case_get_data
     exp_service.case_put.return_value = case_put_return
     exp_service.case_get_log.return_value = "Successful Log"
-    exp_service.case_result_get.return_value = (bytes(4), 'result.mat')
-    exp_service.case_artifact_get.return_value = (bytes(4), 'result.mat')
+    exp_service.case_result_get.return_value = (bytes(4), IDs.RESULT_MAT)
+    exp_service.case_artifacts_meta_get.return_value = {
+        "data": {
+            "items": [{"id": IDs.CUSTOM_ARTIFACT_ID, "downloadAs": IDs.RESULT_MAT}]
+        }
+    }
+    exp_service.case_artifact_get.return_value = (bytes(4), IDs.RESULT_MAT)
     exp_service.trajectories_get.return_value = [[[1, 2, 3, 4]], [[5, 2, 9, 4]]]
     exp_service.case_trajectories_get.return_value = [[1, 2, 3, 4], [5, 2, 9, 4]]
     return ExperimentMock(
@@ -1519,7 +1555,7 @@ def experiment_running():
     service = MagicMock()
     exp_service = service.experiment
     exp_service.experiment_execute.return_value = IDs.EXPERIMENT_PRIMARY
-    exp_service.case_get.return_value = {"id": "case_1"}
+    exp_service.case_get.return_value = {"id": IDs.CASE_PRIMARY}
     exp_service.execute_status.return_value = {"status": "running"}
     return create_experiment_entity(
         IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY, service
@@ -1531,7 +1567,7 @@ def experiment_cancelled():
     service = MagicMock()
     exp_service = service.experiment
     exp_service.experiment_execute.return_value = IDs.EXPERIMENT_PRIMARY
-    exp_service.case_get.return_value = {"id": "case_1"}
+    exp_service.case_get.return_value = {"id": IDs.CASE_PRIMARY}
     exp_service.execute_status.return_value = {"status": "cancelled"}
     return create_experiment_entity(
         IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY, service=service
@@ -1557,7 +1593,7 @@ def batch_experiment_with_case_filter():
     exp_service.cases_get.return_value = {
         "data": {
             "items": [
-                {"id": "case_1", "meta": {"label": None}},
+                {"id": IDs.CASE_PRIMARY, "meta": {"label": None}},
                 {"id": "case_2", "meta": {"label": "Cruise operating point"}},
                 {"id": "case_3", "meta": {"label": None}},
                 {"id": "case_4", "meta": {"label": "Cruise operating point"}},
@@ -1593,7 +1629,7 @@ def batch_experiment():
     exp_service.execute_status.return_value = {"status": "done"}
     exp_service.result_variables_get.return_value = ["inertia.I", "time"]
     exp_service.cases_get.return_value = {
-        "data": {"items": [{"id": "case_1"}, {"id": "case_2"}]}
+        "data": {"items": [{"id": IDs.CASE_PRIMARY}, {"id": "case_2"}]}
     }
     exp_service.case_get.return_value = {
         "id": "case_2",
@@ -1605,8 +1641,8 @@ def batch_experiment():
         },
     }
     exp_service.case_get_log.return_value = "Successful Log"
-    exp_service.case_result_get.return_value = (bytes(4), 'result.mat')
-    exp_service.case_artifact_get.return_value = (bytes(4), 'result.mat')
+    exp_service.case_result_get.return_value = (bytes(4), IDs.RESULT_MAT)
+    exp_service.case_artifact_get.return_value = (bytes(4), IDs.RESULT_MAT)
     exp_service.trajectories_get.return_value = [
         [[1, 2, 3, 4], [14, 4, 4, 74]],
         [[5, 2, 9, 4], [11, 22, 32, 44]],
@@ -1636,7 +1672,7 @@ def batch_experiment_some_successful():
     exp_service.cases_get.return_value = {
         "data": {
             "items": [
-                {"id": "case_1"},
+                {"id": IDs.CASE_PRIMARY},
                 {"id": "case_2"},
                 {"id": "case_3"},
                 {"id": "case_4"},
@@ -1669,9 +1705,9 @@ def experiment_with_failed_case():
         "run_info": {"status": "done", "failed": 1, "successful": 0, "cancelled": 0}
     }
     exp_service.execute_status.return_value = {"status": "done"}
-    exp_service.cases_get.return_value = {"data": {"items": [{"id": "case_1"}]}}
+    exp_service.cases_get.return_value = {"data": {"items": [{"id": IDs.CASE_PRIMARY}]}}
     exp_service.case_get.return_value = {
-        "id": "case_1",
+        "id": IDs.CASE_PRIMARY,
         "run_info": {
             "status": "failed",
             "consistent": True,
@@ -1722,8 +1758,8 @@ def cancelled_experiment():
             "cancelled": 1,
         }
     }
-    exp_service.cases_get.return_value = {"data": {"items": [{"id": "case_1"}]}}
-    exp_service.case_get.return_value = {"id": "case_1"}
+    exp_service.cases_get.return_value = {"data": {"items": [{"id": IDs.CASE_PRIMARY}]}}
+    exp_service.case_get.return_value = {"id": IDs.CASE_PRIMARY}
     exp_service.execute_status.return_value = {
         "status": "cancelled",
         "consistent": True,

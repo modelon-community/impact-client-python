@@ -161,3 +161,13 @@ class ExperimentService:
         ).resolve()
         resp = self._http_client.get_octet_response(url)
         return resp.stream, resp.file_name
+
+    def case_artifacts_meta_get(
+        self, workspace_id: str, experiment_id: str, case_id: str
+    ):
+        url = (
+            self._base_uri
+            / f"api/workspaces/{workspace_id}/experiments/{experiment_id}/cases/"
+            f"{case_id}/custom-artifacts"
+        ).resolve()
+        return self._http_client.get_json(url)

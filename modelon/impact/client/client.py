@@ -128,7 +128,7 @@ class Client:
         client = Client(url=impact_url, interactive=True)
     """
 
-    _SUPPORTED_VERSION_RANGE = ">=4.0.0-beta.23,<5.0.0"
+    _SUPPORTED_VERSION_RANGE = ">=4.0.0-beta.25,<5.0.0"
 
     def __init__(
         self,

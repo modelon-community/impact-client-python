@@ -21,11 +21,11 @@ class TestExperimentService:
             uri=uri, context=experiment_execute.context
         )
         service.experiment.experiment_execute(
-            IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY, case_ids=['case_1']
+            IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY, case_ids=[IDs.CASE_PRIMARY]
         )
         assert experiment_execute.adapter.called
         assert experiment_execute.adapter.request_history[0].json() == {
-            'includeCases': {'ids': ['case_1']}
+            'includeCases': {'ids': [IDs.CASE_PRIMARY]}
         }
 
     def test_set_label_for_experiment(self, set_experiment_label):
@@ -102,7 +102,7 @@ class TestExperimentService:
         data = service.experiment.cases_get(
             IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY
         )
-        assert data == {"data": {"items": [{"id": "case_1"}]}}
+        assert data == {"data": {"items": [{"id": IDs.CASE_PRIMARY}]}}
 
     def test_get_case(self, get_case):
         uri = URI(get_case.url)
@@ -110,9 +110,9 @@ class TestExperimentService:
             uri=uri, context=get_case.context
         )
         data = service.experiment.case_get(
-            IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY, "case_1"
+            IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY, IDs.CASE_PRIMARY
         )
-        assert data == {"id": "case_1"}
+        assert data == {"id": IDs.CASE_PRIMARY}
 
     def test_put_case(self, put_case):
         uri = URI(put_case.url)
@@ -120,7 +120,7 @@ class TestExperimentService:
             uri=uri, context=put_case.context
         )
         service.experiment.case_put(
-            IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY, "case_1", {}
+            IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY, IDs.CASE_PRIMARY, {}
         )
         assert put_case.adapter.called
 
@@ -130,7 +130,7 @@ class TestExperimentService:
             uri=uri, context=get_case_log.context
         )
         data = service.experiment.case_get_log(
-            IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY, "case_1"
+            IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY, IDs.CASE_PRIMARY
         )
         assert data == 'Simulation log..'
 
@@ -140,7 +140,10 @@ class TestExperimentService:
             uri=uri, context=get_mat_case_results.context
         )
         data, name = service.experiment.case_result_get(
-            IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY, "case_1", ResultFormat.MAT,
+            IDs.WORKSPACE_PRIMARY,
+            IDs.EXPERIMENT_PRIMARY,
+            IDs.CASE_PRIMARY,
+            ResultFormat.MAT,
         )
         assert data == b'\x00\x00\x00\x00'
         assert name == 'Modelica.Blocks.Examples.PID_Controller_2020-10-22_06-03.mat'
@@ -151,7 +154,10 @@ class TestExperimentService:
             uri=uri, context=get_csv_case_results.context
         )
         data, name = service.experiment.case_result_get(
-            IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY, "case_1", ResultFormat.CSV,
+            IDs.WORKSPACE_PRIMARY,
+            IDs.EXPERIMENT_PRIMARY,
+            IDs.CASE_PRIMARY,
+            ResultFormat.CSV,
         )
         assert data == '1;2;3'
         assert name == 'Modelica.Blocks.Examples.PID_Controller_2020-10-22_06-03.csv'
@@ -162,10 +168,29 @@ class TestExperimentService:
             uri=uri, context=get_case_artifact.context
         )
         data, name = service.experiment.case_artifact_get(
-            IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY, "case_1", "ABCD"
+            IDs.WORKSPACE_PRIMARY,
+            IDs.EXPERIMENT_PRIMARY,
+            IDs.CASE_PRIMARY,
+            IDs.CUSTOM_ARTIFACT_ID,
         )
         assert data == b'\x00\x00\x00\x00'
         assert name == 'Modelica.Blocks.Examples.PID_Controller_2020-10-22_06-03.mat'
+
+    def test_get_case_artifact_meta(self, get_case_artifact_meta):
+        uri = URI(get_case_artifact_meta.url)
+        service = modelon.impact.client.sal.service.Service(
+            uri=uri, context=get_case_artifact_meta.context
+        )
+        data = service.experiment.case_artifacts_meta_get(
+            IDs.WORKSPACE_PRIMARY,
+            IDs.EXPERIMENT_PRIMARY,
+            IDs.CASE_PRIMARY,
+        )
+        assert data == {
+            "data": {
+                "items": [{"id": IDs.CUSTOM_ARTIFACT_ID, "downloadAs": IDs.RESULT_MAT}]
+            }
+        }
 
     def test_case_get_trajectories(self, get_case_trajectories):
         uri = URI(get_case_trajectories.url)
@@ -175,8 +200,7 @@ class TestExperimentService:
         data = service.experiment.case_trajectories_get(
             IDs.WORKSPACE_PRIMARY,
             IDs.EXPERIMENT_PRIMARY,
-            "case_1",
+            IDs.CASE_PRIMARY,
             ["variable1", "variable2"],
         )
         assert data == [[1.0, 2.0, 7.0], [2.0, 3.0, 5.0]]
-
