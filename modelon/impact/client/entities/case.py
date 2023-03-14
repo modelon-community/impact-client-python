@@ -77,6 +77,8 @@ class _CaseAnalysis:
     Class containing Case analysis configuration.
     """
 
+    __slots__ = ['_analysis']
+
     def __init__(self, analysis: Dict[str, Any]):
         self._analysis = analysis
 
@@ -217,6 +219,8 @@ class _CaseMeta:
     Class containing Case meta
     """
 
+    __slots__ = ['_data']
+
     def __init__(self, data: Dict[str, Any]):
         self._data = data
 
@@ -235,6 +239,8 @@ class _CaseInput:
     Class containing Case input
     """
 
+    __slots__ = ['_data']
+
     def __init__(self, data: Dict[str, Any]):
         self._data = data
 
@@ -245,14 +251,14 @@ class _CaseInput:
     @property
     def parametrization(self) -> Dict[str, Any]:
         """
-        Parameterization of the case, a list of key value pairs where key
+        Parametrization of the case, a list of key value pairs where key
         is variable name and value is the value to use for that variable.
         """
         return self._data['parametrization']
 
     @parametrization.setter
-    def parametrization(self, parameterization: Dict[str, Any]):
-        self._data['parametrization'] = parameterization
+    def parametrization(self, parametrization: Dict[str, Any]):
+        self._data['parametrization'] = parametrization
 
     @property
     def fmu_id(self) -> str:
@@ -262,7 +268,7 @@ class _CaseInput:
     @property
     def structural_parametrization(self) -> Dict[str, Any]:
         """
-        Structural parameterization of the case, a list of key value pairs where
+        Structural parametrization of the case, a list of key value pairs where
         key is variable name and value is the value to use for that variable.
         These are values that cannot be applied to the FMU/Model after compilation.
         """
@@ -282,6 +288,8 @@ class Case:
     """
     Class containing Case functionalities.
     """
+
+    __slots__ = ['_case_id', '_workspace_id', '_exp_id', '_sal', '_info']
 
     def __init__(
         self,
