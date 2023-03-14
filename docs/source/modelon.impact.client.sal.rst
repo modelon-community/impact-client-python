@@ -36,6 +36,22 @@ modelon.impact.client.sal.experiment module
    :undoc-members:
    :show-inheritance:
 
+modelon.impact.client.sal.exports module
+----------------------------------------
+
+.. automodule:: modelon.impact.client.sal.exports
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+modelon.impact.client.sal.external\_result module
+-------------------------------------------------
+
+.. automodule:: modelon.impact.client.sal.external_result
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 modelon.impact.client.sal.http module
 -------------------------------------
 
@@ -44,10 +60,26 @@ modelon.impact.client.sal.http module
    :undoc-members:
    :show-inheritance:
 
+modelon.impact.client.sal.imports module
+----------------------------------------
+
+.. automodule:: modelon.impact.client.sal.imports
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 modelon.impact.client.sal.model\_executable module
 --------------------------------------------------
 
 .. automodule:: modelon.impact.client.sal.model_executable
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+modelon.impact.client.sal.project module
+----------------------------------------
+
+.. automodule:: modelon.impact.client.sal.project
    :members:
    :undoc-members:
    :show-inheritance:
