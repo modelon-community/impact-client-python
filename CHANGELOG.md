@@ -1,3 +1,11 @@
+# [3.0.0-dev.13](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.12...v3.0.0-dev.13) (2023-03-14)
+
+
+### Bug Fixes
+
+* consistent spelling use for parameterization --> parametrization ([bae4176](https://github.com/modelon-community/impact-client-python/commit/bae41769fe1f9880f9a30028d879595e3195bcdb))
+* specified slots for classes with setter methods ([3faf823](https://github.com/modelon-community/impact-client-python/commit/3faf823cb39719213982e8054d4f7c8321c7bfd7))
+
 # [3.0.0-dev.12](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.11...v3.0.0-dev.12) (2023-03-14)
 
 
