@@ -1,3 +1,20 @@
+# [3.0.0-dev.12](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.11...v3.0.0-dev.12) (2023-03-14)
+
+
+### Bug Fixes
+
+* updated the get_artifact method to return CustomArtifact class ([b406550](https://github.com/modelon-community/impact-client-python/commit/b4065507292db4787f3a41f5a8354e4eabe847e1))
+
+
+### Features
+
+* add support to fetch artifact ids ([27b255c](https://github.com/modelon-community/impact-client-python/commit/27b255c0ea4c00e04e0ce61e915bcf6aa9da8470))
+
+
+### BREAKING CHANGES
+
+* the case.get_artifact method now returns a CustomArtifact class
+
 # [3.0.0-dev.11](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.10...v3.0.0-dev.11) (2023-03-01)
 
 
