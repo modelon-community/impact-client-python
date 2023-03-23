@@ -20,6 +20,14 @@ modelon.impact.client.entities.case module
    :undoc-members:
    :show-inheritance:
 
+modelon.impact.client.entities.content module
+---------------------------------------------
+
+.. automodule:: modelon.impact.client.entities.content
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 modelon.impact.client.entities.custom\_function module
 ------------------------------------------------------
 
@@ -64,6 +72,14 @@ modelon.impact.client.entities.model\_executable module
 -------------------------------------------------------
 
 .. automodule:: modelon.impact.client.entities.model_executable
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+modelon.impact.client.entities.project module
+---------------------------------------------
+
+.. automodule:: modelon.impact.client.entities.project
    :members:
    :undoc-members:
    :show-inheritance:
