@@ -1,3 +1,10 @@
+# [3.0.0-dev.14](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.13...v3.0.0-dev.14) (2023-03-23)
+
+
+### Bug Fixes
+
+* regenerated docs ([ce1ddd0](https://github.com/modelon-community/impact-client-python/commit/ce1ddd07338bf0950ad5b2add21aa0553d019c3c))
+
 # [3.0.0-dev.13](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.12...v3.0.0-dev.13) (2023-03-14)
 
 
