@@ -1,4 +1,4 @@
-"""HTTP client class"""
+"""HTTP client class."""
 from typing import Optional, Dict, Any
 from modelon.impact.client.sal.request import (
     RequestCSV,

@@ -1,4 +1,4 @@
-"""Experiment service module"""
+"""Experiment service module."""
 import enum
 from typing import Any, Optional, List, Dict
 from modelon.impact.client.sal.http import HTTPClient
@@ -7,10 +7,8 @@ from modelon.impact.client.sal.uri import URI
 
 @enum.unique
 class ResultFormat(enum.Enum):
-    """
-    Class representing an enumeration for the possible
-    formats avaiable for downloading results.
-    """
+    """Class representing an enumeration for the possible formats avaiable for
+    downloading results."""
 
     MAT = "mat"
     CSV = "csv"

@@ -5,9 +5,7 @@ from dataclasses import dataclass
 
 
 class Operator:
-    """
-    Base class for an Operator.
-    """
+    """Base class for an Operator."""
 
     @abstractmethod
     def __str__(self):
@@ -16,8 +14,7 @@ class Operator:
 
 @dataclass
 class Range(Operator):
-    """
-    Range operator class for parameterizing batch runs.
+    """Range operator class for parameterizing batch runs.
 
     Parameters:
 
@@ -39,6 +36,7 @@ class Range(Operator):
         experiment_definition = fmu.new_experiment_definition(
             custom_function).with_modifiers({'inertia1.J': 2,
             'inertia2.J': Range(0.1, 0.5, 3)})
+
     """
 
     start_value: float
@@ -50,8 +48,7 @@ class Range(Operator):
 
 
 class Choices(Operator):
-    """
-    Choices operator class for parameterizing batch runs.
+    """Choices operator class for parameterizing batch runs.
 
     Parameters:
 
@@ -66,6 +63,7 @@ class Choices(Operator):
         experiment_definition = fmu.new_experiment_definition(
             custom_function).with_modifiers({'inertia1.J': 2,
             'inertia2.J': Choices(0.1, 0.5)})
+
     """
 
     def __init__(self, *values):
@@ -77,9 +75,9 @@ class Choices(Operator):
 
 @dataclass
 class Uniform(Operator):
-    """
-    Uniform distribution class for parameterizing batch runs.For mathematical
-    background, see e.g., https://en.wikipedia.org/wiki/Continuous_uniform_distribution
+    """Uniform distribution class for parameterizing batch runs.For
+    mathematical background, see e.g.,
+    https://en.wikipedia.org/wiki/Continuous_uniform_distribution.
 
     Parameters:
 
@@ -97,6 +95,7 @@ class Uniform(Operator):
         experiment_definition = fmu.new_experiment_definition(
             custom_function).with_modifiers({'inertia1.J': 2,
             'inertia2.J': Uniform(0.1, 0.5)})
+
     """
 
     start: float
@@ -108,8 +107,7 @@ class Uniform(Operator):
 
 @dataclass
 class Beta(Operator):
-    """
-    Beta distribution class for parameterizing batch runs. For mathematical
+    """Beta distribution class for parameterizing batch runs. For mathematical
     background, see e.g., https://en.wikipedia.org/wiki/Beta_distribution.
 
     Parameters:
@@ -128,6 +126,7 @@ class Beta(Operator):
         experiment_definition = fmu.new_experiment_definition(
             custom_function).with_modifiers({'inertia1.J': 2,
             'inertia2.J': Beta(0.1, 0.5, 3)})
+
     """
 
     alpha: float
@@ -139,13 +138,12 @@ class Beta(Operator):
 
 @dataclass
 class Normal(Operator):
-    """
-    Normal distribution class for parameterizing batch runs.For mathematical
+    """Normal distribution class for parameterizing batch runs.For mathematical
     background, see e.g., https://en.wikipedia.org/wiki/Normal_distribution
-    https://en.wikipedia.org/wiki/Truncated_normal_distribution
-    Supports both the standard and truncated Normal distribution.
-    The standard Normal distribution is the default, add additional start &
-    end parameters for truncation.
+    https://en.wikipedia.org/wiki/Truncated_normal_distribution Supports both
+    the standard and truncated Normal distribution. The standard Normal
+    distribution is the default, add additional start & end parameters for
+    truncation.
 
     Parameters:
 
@@ -169,6 +167,7 @@ class Normal(Operator):
         experiment_definition = fmu.new_experiment_definition(
             custom_function).with_modifiers({'inertia1.J': 2,
             'inertia2.J': Normal(0.1, 0.5)})
+
     """
 
     mean: float

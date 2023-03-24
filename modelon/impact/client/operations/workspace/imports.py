@@ -5,9 +5,11 @@ from modelon.impact.client import exceptions
 
 
 class WorkspaceImportOperation(AsyncOperation):
-    """
-    An import operation class for the modelon.impact.client.entities.workspace.
+    """An import operation class for the
+    modelon.impact.client.entities.workspace.
+
     Workspace class.
+
     """
 
     def __init__(
@@ -30,25 +32,25 @@ class WorkspaceImportOperation(AsyncOperation):
 
     @property
     def id(self):
-        """Workspace import id"""
+        """Workspace import id."""
         return self._location.split('/')[-1]
 
     @property
     def name(self):
-        """Return the name of operation"""
+        """Return the name of operation."""
         return "Workspace import"
 
     def _info(self):
         return self._sal.imports.get_import_status(self._location)["data"]
 
     def data(self):
-        """
-        Returns a new Workspace class instance.
+        """Returns a new Workspace class instance.
 
         Returns:
 
             workspace --
                 A Workspace class instance.
+
         """
         info = self._info()
         if info['status'] == AsyncOperationStatus.ERROR.value:
@@ -60,8 +62,7 @@ class WorkspaceImportOperation(AsyncOperation):
         return Workspace(resp["id"], WorkspaceDefinition(resp["definition"]), self._sal)
 
     def status(self):
-        """
-        Returns the upload status as an enumeration.
+        """Returns the upload status as an enumeration.
 
         Returns:
 
@@ -73,5 +74,6 @@ class WorkspaceImportOperation(AsyncOperation):
         Example::
 
             client.import_from_shared_definition(definition, False).status()
+
         """
         return AsyncOperationStatus(self._info()["status"])

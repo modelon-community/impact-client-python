@@ -1,4 +1,4 @@
-"""Service access layer exceptions"""
+"""Service access layer exceptions."""
 
 
 class ServiceAccessError(Exception):

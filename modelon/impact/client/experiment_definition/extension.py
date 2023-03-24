@@ -16,14 +16,11 @@ logger = logging.getLogger(__name__)
 
 
 class BaseExperimentExtension(ABC):
-    """
-    Base class for an experiment extension class.
-    """
+    """Base class for an experiment extension class."""
 
 
 class SimpleExperimentExtension(BaseExperimentExtension):
-    """
-    A simple experiment extension class for defining experiement extensions.
+    """A simple experiment extension class for defining experiement extensions.
 
     Parameters:
 
@@ -67,6 +64,7 @@ class SimpleExperimentExtension(BaseExperimentExtension):
         ).with_modifiers({'PI.k': 40})
         simulate_def = simulate_def.with_extensions(simulate_ext)
         simulate_def.to_dict()
+
     """
 
     def __init__(
@@ -154,6 +152,7 @@ class SimpleExperimentExtension(BaseExperimentExtension):
             solver_options,
             simulation_options
             ).with_case_label('Cruise condition')
+
         """
         new = SimpleExperimentExtension(
             self._parameter_modifiers,
@@ -169,7 +168,8 @@ class SimpleExperimentExtension(BaseExperimentExtension):
         return new
 
     def initialize_from(self, entity):
-        """Sets the experiment or case to initialize from for an experiment extension.
+        """Sets the experiment or case to initialize from for an experiment
+        extension.
 
         Parameters:
 
@@ -184,6 +184,7 @@ class SimpleExperimentExtension(BaseExperimentExtension):
             experiment = workspace.get_experiment(experiment_id)
             case = experiment.get_case('case_1')
             simulate_ext = SimpleExperimentExtension().initialize_from(case)
+
         """
         new = SimpleExperimentExtension(
             self._parameter_modifiers,
@@ -228,6 +229,7 @@ class SimpleExperimentExtension(BaseExperimentExtension):
             simulation_options,
             ).with_modifiers({'PI.k': 40})
             simulate_ext.to_dict()
+
         """
         ext_dict = {}
         if self._variable_modifiers:

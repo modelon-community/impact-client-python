@@ -10,8 +10,8 @@ class Export:
         self._download_uri = download_uri
 
     def download_as(self, path_to_download):
-        """Writes the binary archive to a file.
-        Returns the path to downloaded archive.
+        """Writes the binary archive to a file. Returns the path to downloaded
+        archive.
 
         Parameters:
 
@@ -27,6 +27,7 @@ class Export:
 
             path = workspace.export(options).wait().download_as('/home/workspace.zip')
             path = workspace.export(options).wait().download_as('workspace.zip')
+
         """
         data = self._export_sal.export_download(self._download_uri)
         os.makedirs(os.path.dirname(path_to_download), exist_ok=True)
@@ -36,9 +37,11 @@ class Export:
 
 
 class WorkspaceExportOperation(AsyncOperation):
-    """
-    An export operation class for the modelon.impact.client.entities.workspace.
+    """An export operation class for the
+    modelon.impact.client.entities.workspace.
+
     Workspace class.
+
     """
 
     def __init__(self, location: str, service: Service):
@@ -57,24 +60,24 @@ class WorkspaceExportOperation(AsyncOperation):
 
     @property
     def id(self):
-        """Workspace export id"""
+        """Workspace export id."""
         return self._location.split('/')[-1]
 
     @property
     def name(self):
-        """Return the name of operation"""
+        """Return the name of operation."""
         return "Workspace export"
 
     def _info(self):
         return self._sal.exports.get_export_status(self._location)["data"]
 
     def data(self):
-        """
-        Returns a Export class instance.
+        """Returns a Export class instance.
 
         Returns:
 
             An Export class instance.
+
         """
         info = self._info()
         if info['status'] == AsyncOperationStatus.ERROR.value:
@@ -84,8 +87,7 @@ class WorkspaceExportOperation(AsyncOperation):
         return Export(self._sal.exports, info["data"]["downloadUri"])
 
     def status(self):
-        """
-        Returns the upload status as an enumeration.
+        """Returns the upload status as an enumeration.
 
         Returns:
 
@@ -97,5 +99,6 @@ class WorkspaceExportOperation(AsyncOperation):
         Example::
 
             workspace.download(definition, False).status()
+
         """
         return AsyncOperationStatus(self._info()["status"])

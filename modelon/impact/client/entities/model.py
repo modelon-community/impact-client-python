@@ -43,9 +43,7 @@ def _assert_valid_compilation_options(compiler_options=None, runtime_options=Non
 
 
 class Model:
-    """
-    Class containing Model functionalities.
-    """
+    """Class containing Model functionalities."""
 
     def __init__(
         self, class_name: str, workspace_id: str, project_id: str, service: Service
@@ -63,7 +61,7 @@ class Model:
 
     @property
     def name(self) -> str:
-        """Class name"""
+        """Class name."""
         return self._class_name
 
     def compile(
@@ -76,8 +74,9 @@ class Model:
         platform: str = "auto",
         force_compilation: bool = False,
     ) -> CompilationOperations:
-        """Compiles the model to an FMU.
-        Returns an modelon.impact.client.operations.model_executable
+        """Compiles the model to an FMU. Returns an
+        modelon.impact.client.operations.model_executable.
+
         .ModelExecutableOperation class object.
 
         Parameters:
@@ -134,6 +133,7 @@ class Model:
             runtime_options={'cs_solver':0}
             model.compile(compiler_options, runtime_options).wait()
             model.compile({'c_compiler':'gcc'}).wait()
+
         """
         _assert_valid_compilation_options(
             compiler_options=compiler_options, runtime_options=runtime_options
@@ -198,8 +198,7 @@ class Model:
         simulation_options: Optional[SimulationOptionsOrDict] = None,
         simulation_log_level: str = "WARNING",
     ):
-        """
-        Returns a new experiment definition using this Model.
+        """Returns a new experiment definition using this Model.
 
         Parameters:
 
@@ -266,6 +265,7 @@ class Model:
                 simulation_options=simulation_options
             )
             experiment = workspace.execute(experiment_definition).wait()
+
         """
         options = self._sal.project.project_options_get(
             self._project_id, self._workspace_id, custom_function=custom_function.name

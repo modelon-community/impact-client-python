@@ -1,4 +1,4 @@
-"""Workspace service module"""
+"""Workspace service module."""
 from typing import Optional, Dict, Any, List
 from modelon.impact.client.sal.http import HTTPClient
 from modelon.impact.client.sal.uri import URI

@@ -55,26 +55,19 @@ def _assert_valid_extensions(experiment_extensions):
 
 
 class BaseExperimentDefinition(ABC):
-    """
-    Base class for an Experiment definition class.
-    """
+    """Base class for an Experiment definition class."""
 
     @abstractmethod
     def validate(self):
-        """
-        Validates the modifiers appended to the experiment definition.
-        """
+        """Validates the modifiers appended to the experiment definition."""
 
     @abstractmethod
     def to_dict(self):
-        """
-        Returns the experiment definition as a dictionary.
-        """
+        """Returns the experiment definition as a dictionary."""
 
 
 class SimpleFMUExperimentDefinition(BaseExperimentDefinition):
-    """
-    A simple experiment definition class for defining experiements.
+    """A simple experiment definition class for defining experiements.
 
     Parameters:
 
@@ -106,6 +99,7 @@ class SimpleFMUExperimentDefinition(BaseExperimentDefinition):
         simulate_def = fmu.new_experiment_definition(custom_function,
         solver_options, simulation_options)
         simulate_def.to_dict()
+
     """
 
     def __init__(
@@ -166,6 +160,7 @@ class SimpleFMUExperimentDefinition(BaseExperimentDefinition):
             experiment_definition = fmu.new_experiment_definition(
                 custom_function).with_modifiers({'inertia1.J': Choices(0.1, 0.9),
                 'inertia2.J': Range(0.1, 0.5, 3)})
+
         """
         if modifiers_kwargs:
             logger.warning(
@@ -222,6 +217,7 @@ class SimpleFMUExperimentDefinition(BaseExperimentDefinition):
                     ).with_modifiers({'PI.k': 20})
                 ]
             )
+
         """
 
         _assert_valid_extensions(experiment_extensions)
@@ -245,8 +241,8 @@ class SimpleFMUExperimentDefinition(BaseExperimentDefinition):
         return new
 
     def with_cases(self, cases_modifiers):
-        """Sets up an experiment with multiple cases with different
-        variable modifiers.
+        """Sets up an experiment with multiple cases with different variable
+        modifiers.
 
         Parameters:
 
@@ -260,6 +256,7 @@ class SimpleFMUExperimentDefinition(BaseExperimentDefinition):
             fmu = model.compile().wait()
             experiment_definition = fmu.new_experiment_definition(
                 custom_function).with_cases([{'PI.k': 20}, {'PI.k': 30}])
+
         """
         _assert_valid_case_modifiers(cases_modifiers)
 
@@ -286,6 +283,7 @@ class SimpleFMUExperimentDefinition(BaseExperimentDefinition):
             simulate_def = fmu.new_experiment_definition(custom_function,
             solver_options, simulation_options)
             simulate_def.to_dict()
+
         """
         exp_dict = {
             "experiment": {
@@ -344,6 +342,7 @@ class SimpleFMUExperimentDefinition(BaseExperimentDefinition):
             fmu = model.compile().wait()
             experiment_definition = fmu.new_experiment_definition(custom_function).
             initialize_from(result)
+
         """
         new = SimpleFMUExperimentDefinition(
             self._fmu,
@@ -368,8 +367,7 @@ class SimpleFMUExperimentDefinition(BaseExperimentDefinition):
 
 
 class SimpleModelicaExperimentDefinition(BaseExperimentDefinition):
-    """
-    A simple experiment definition class for defining experiements.
+    """A simple experiment definition class for defining experiements.
 
     Parameters:
 
@@ -438,6 +436,7 @@ class SimpleModelicaExperimentDefinition(BaseExperimentDefinition):
             simulation_options=simulation_options
         )
         simulate_def.to_dict()
+
     """
 
     def __init__(
@@ -515,6 +514,7 @@ class SimpleModelicaExperimentDefinition(BaseExperimentDefinition):
             experiment_definition = model.new_experiment_definition(
                 custom_function).with_modifiers({'inertia1.J': Choices(0.1, 0.9),
                 'inertia2.J': Range(0.1, 0.5, 3)})
+
         """
         modifiers = {} if modifiers is None else modifiers
         new = SimpleModelicaExperimentDefinition(
@@ -560,6 +560,7 @@ class SimpleModelicaExperimentDefinition(BaseExperimentDefinition):
             experiment_definition = model.new_experiment_definition(
                 custom_function).with_modifiers({'inertia1.J': Beta(0.1, 0.9),
                 'inertia2.J': Normal(0.1, 0.5)}).with_expansion(Sobol(5))
+
         """
         if not isinstance(expansion, ExpansionAlgorithm):
             raise TypeError(
@@ -610,6 +611,7 @@ class SimpleModelicaExperimentDefinition(BaseExperimentDefinition):
             result = workspace.upload_result('C:/A.mat').wait()
             experiment_definition = model.new_experiment_definition(custom_function).
             initialize_from(result)
+
         """
         new = SimpleModelicaExperimentDefinition(
             model=self._model,
@@ -668,6 +670,7 @@ class SimpleModelicaExperimentDefinition(BaseExperimentDefinition):
                     ).with_modifiers({'PI.k': 20})
                 ]
             )
+
         """
 
         _assert_valid_extensions(experiment_extensions)
@@ -697,8 +700,8 @@ class SimpleModelicaExperimentDefinition(BaseExperimentDefinition):
         return new
 
     def with_cases(self, cases_modifiers):
-        """Sets up an experiment with multiple cases with different
-        variable modifiers.
+        """Sets up an experiment with multiple cases with different variable
+        modifiers.
 
         Parameters:
 
@@ -712,6 +715,7 @@ class SimpleModelicaExperimentDefinition(BaseExperimentDefinition):
             model = workspace.get_model("Modelica.Blocks.Examples.PID_Controller")
             experiment_definition = model.new_experiment_definition(
                 custom_function).with_cases([{'PI.k': 20}, {'PI.k': 30}])
+
         """
         _assert_valid_case_modifiers(cases_modifiers)
 
@@ -741,6 +745,7 @@ class SimpleModelicaExperimentDefinition(BaseExperimentDefinition):
                 simulation_options=simulation_options
             )
             simulate_def.to_dict()
+
         """
 
         exp_dict = {

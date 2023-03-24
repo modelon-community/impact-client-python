@@ -5,9 +5,10 @@ from modelon.impact.client.operations.base import AsyncOperation, AsyncOperation
 
 
 class ExternalResultImportOperation(AsyncOperation):
-    """
-    An operation class for the modelon.impact.client.entities.
+    """An operation class for the modelon.impact.client.entities.
+
     external_result.ExternalResult class.
+
     """
 
     def __init__(self, location: str, service: Service):
@@ -26,25 +27,25 @@ class ExternalResultImportOperation(AsyncOperation):
 
     @property
     def id(self):
-        """Result import id"""
+        """Result import id."""
         return self._location.split('/')[-1]
 
     @property
     def name(self):
-        """Return the name of operation"""
+        """Return the name of operation."""
         return "Result import"
 
     def _info(self):
         return self._sal.imports.get_import_status(self._location)["data"]
 
     def data(self):
-        """
-        Returns a new ExternalResult class instance.
+        """Returns a new ExternalResult class instance.
 
         Returns:
 
             external_result --
                 A ExternalResult class instance.
+
         """
         info = self._info()
         if info['status'] == AsyncOperationStatus.ERROR.value:
@@ -55,8 +56,7 @@ class ExternalResultImportOperation(AsyncOperation):
         return ExternalResult(resp['data']['id'], self._sal)
 
     def status(self):
-        """
-        Returns the upload status as an enumeration.
+        """Returns the upload status as an enumeration.
 
         Returns:
 
@@ -68,5 +68,6 @@ class ExternalResultImportOperation(AsyncOperation):
         Example::
 
             workspace.upload_result('C:/A.mat').status()
+
         """
         return AsyncOperationStatus(self._info()["status"])

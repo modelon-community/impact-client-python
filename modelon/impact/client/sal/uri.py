@@ -1,4 +1,4 @@
-"""URI class"""
+"""URI class."""
 import sys
 import urllib.parse
 

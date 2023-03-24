@@ -1,4 +1,4 @@
-"""Custom function service module"""
+"""Custom function service module."""
 from modelon.impact.client.sal.http import HTTPClient
 from modelon.impact.client.sal.uri import URI
 

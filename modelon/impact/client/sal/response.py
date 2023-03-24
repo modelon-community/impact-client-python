@@ -1,4 +1,4 @@
-"""Response class"""
+"""Response class."""
 import re
 from typing import Text, Union, Dict, Any
 from modelon.impact.client.sal import exceptions

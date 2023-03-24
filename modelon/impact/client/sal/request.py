@@ -1,4 +1,4 @@
-"""Request class"""
+"""Request class."""
 import logging
 from typing import Callable, Dict, Optional, Any
 import requests

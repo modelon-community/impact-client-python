@@ -2,10 +2,8 @@ from enum import Enum
 
 
 class CaseStatus(Enum):
-    """
-    Class representing an enumeration for the possible
-    Case run info states.
-    """
+    """Class representing an enumeration for the possible Case run info
+    states."""
 
     SUCCESSFUL = "successful"
     FAILED = "failed"
@@ -15,10 +13,8 @@ class CaseStatus(Enum):
 
 
 class ExperimentStatus(Enum):
-    """
-    Class representing an enumeration for the possible
-    experiment run info states.
-    """
+    """Class representing an enumeration for the possible experiment run info
+    states."""
 
     NOTSTARTED = "not_started"
     CANCELLED = "cancelled"
@@ -27,10 +23,8 @@ class ExperimentStatus(Enum):
 
 
 class ModelExecutableStatus(Enum):
-    """
-    Class representing an enumeration for the possible
-    model-executable run info states.
-    """
+    """Class representing an enumeration for the possible model-executable run
+    info states."""
 
     NOTSTARTED = "not_started"
     CANCELLED = "cancelled"

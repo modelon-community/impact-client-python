@@ -1,4 +1,4 @@
-"""Export service module"""
+"""Export service module."""
 from modelon.impact.client.sal.http import HTTPClient
 from modelon.impact.client.sal.uri import URI
 

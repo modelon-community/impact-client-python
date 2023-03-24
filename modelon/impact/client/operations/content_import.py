@@ -5,10 +5,8 @@ from modelon.impact.client.entities.content import ProjectContent
 
 
 class ContentImportOperation(AsyncOperation):
-    """
-    An operation class for the modelon.impact.client.entities.project.ProjectContent
-    class.
-    """
+    """An operation class for the
+    modelon.impact.client.entities.project.ProjectContent class."""
 
     def __init__(self, location: str, service: Service):
         super().__init__()
@@ -25,25 +23,25 @@ class ContentImportOperation(AsyncOperation):
 
     @property
     def id(self):
-        """Content import id"""
+        """Content import id."""
         return self._location.split('/')[-1]
 
     @property
     def name(self):
-        """Return the name of operation"""
+        """Return the name of operation."""
         return "Content import"
 
     def _info(self):
         return self._sal.imports.get_import_status(self._location)["data"]
 
     def data(self):
-        """
-        Returns a new Workspace class instance.
+        """Returns a new Workspace class instance.
 
         Returns:
 
             workspace --
                 A Workspace class instance.
+
         """
         info = self._info()
         if info['status'] == AsyncOperationStatus.ERROR.value:
@@ -56,8 +54,7 @@ class ContentImportOperation(AsyncOperation):
         return ProjectContent(resp, project_id, self._sal)
 
     def status(self):
-        """
-        Returns the upload status as an enumeration.
+        """Returns the upload status as an enumeration.
 
         Returns:
 
@@ -69,5 +66,6 @@ class ContentImportOperation(AsyncOperation):
         Example::
 
             project.upload_content('path/to/model.mo').status()
+
         """
         return AsyncOperationStatus(self._info()["status"])

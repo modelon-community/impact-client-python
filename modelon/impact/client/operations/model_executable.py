@@ -9,9 +9,10 @@ logger = logging.getLogger(__name__)
 
 
 class CachedModelExecutableOperation(ExecutionOperation):
-    """
-    An operation class for a cached modelon.impact.client.entities.
+    """An operation class for a cached modelon.impact.client.entities.
+
     model_executable.ModelExecutable class.
+
     """
 
     def __init__(
@@ -40,30 +41,29 @@ class CachedModelExecutableOperation(ExecutionOperation):
 
     @property
     def id(self):
-        """FMU id"""
+        """FMU id."""
         return self._fmu_id
 
     @property
     def name(self):
-        """Return the name of operation"""
+        """Return the name of operation."""
         return "Looking for cached FMU"
 
     def data(self):
-        """
-        Returns a new ModelExecutable class instance.
+        """Returns a new ModelExecutable class instance.
 
         Returns:
 
             model_executable --
                 A model_executable class instance.
+
         """
         return ModelExecutable(
             self._workspace_id, self._fmu_id, self._sal, self._info, self._modifiers
         )
 
     def status(self):
-        """
-        Returns the compilation status as an enumeration.
+        """Returns the compilation status as an enumeration.
 
         Returns:
 
@@ -75,6 +75,7 @@ class CachedModelExecutableOperation(ExecutionOperation):
         Example::
 
             model.compile(options).status()
+
         """
         return Status.DONE
 
@@ -84,8 +85,8 @@ class CachedModelExecutableOperation(ExecutionOperation):
         )
 
     def wait(self, timeout=None, status=Status.DONE):
-        """Waits until the operation achieves the set status.
-        Returns the operation class instance if the set status is achieved.
+        """Waits until the operation achieves the set status. Returns the
+        operation class instance if the set status is achieved.
 
         Parameters:
 
@@ -110,6 +111,7 @@ class CachedModelExecutableOperation(ExecutionOperation):
         Example::
 
            model.compile(compile_options).wait()
+
         """
 
         if self.status() != status:
@@ -123,9 +125,10 @@ class CachedModelExecutableOperation(ExecutionOperation):
 
 
 class ModelExecutableOperation(ExecutionOperation):
-    """
-    An operation class for the modelon.impact.client.entities.
+    """An operation class for the modelon.impact.client.entities.
+
     model_executable.ModelExecutable class.
+
     """
 
     def __init__(self, workspace_id: str, fmu_id: str, service: Service):
@@ -142,28 +145,27 @@ class ModelExecutableOperation(ExecutionOperation):
 
     @property
     def id(self):
-        """FMU id"""
+        """FMU id."""
         return self._fmu_id
 
     @property
     def name(self):
-        """Return the name of operation"""
+        """Return the name of operation."""
         return "Compilation"
 
     def data(self):
-        """
-        Returns a new ModelExecutable class instance.
+        """Returns a new ModelExecutable class instance.
 
         Returns:
 
             model_executable --
                 A model_executable class instance.
+
         """
         return ModelExecutable(self._workspace_id, self._fmu_id, self._sal)
 
     def status(self):
-        """
-        Returns the compilation status as an enumeration.
+        """Returns the compilation status as an enumeration.
 
         Returns:
 
@@ -175,6 +177,7 @@ class ModelExecutableOperation(ExecutionOperation):
         Example::
 
             model.compile(options).status()
+
         """
         return Status(
             self._sal.model_executable.compile_status(self._workspace_id, self._fmu_id)[
@@ -183,11 +186,11 @@ class ModelExecutableOperation(ExecutionOperation):
         )
 
     def cancel(self):
-        """
-        Terminates the compilation process.
+        """Terminates the compilation process.
 
         Example::
 
             model.compile(options).cancel()
+
         """
         self._sal.model_executable.compile_cancel(self._workspace_id, self._fmu_id)

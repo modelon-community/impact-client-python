@@ -12,9 +12,8 @@ def _set_options(options, **modified):
 
 
 class BaseExecutionOptions(Mapping, ABC):
-    """
-    Base class for the simulation, compiler, solver and runtime options settings.
-    """
+    """Base class for the simulation, compiler, solver and runtime options
+    settings."""
 
     def __init__(self, values: Dict[str, Any], custom_function_name: str):
         self._values = values
@@ -48,6 +47,7 @@ class BaseExecutionOptions(Mapping, ABC):
                 cs_solver=0)
             sol_opts = custom_function.get_solver_options().with_values(rtol=1e-7)
             sim_opts = custom_function.get_simulation_options().with_values(ncp=500)
+
         """
         values = _set_options(self._values, **modified)
         return self.__class__(values, self._custom_function_name)
@@ -82,6 +82,7 @@ class SimulationOptions(BaseExecutionOptions):
 
             sim_opts = custom_function.get_simulation_options().with_result_filter(
                 pattern = ["*.phi"])
+
         """
         if not isinstance(pattern, str):
             pattern = str(pattern)
