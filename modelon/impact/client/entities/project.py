@@ -273,7 +273,7 @@ class Project:
     ) -> Optional[ProjectContent]:
         """Gets the first matching project content with the given name.
 
-        Parameters:
+        Args:
 
             name --
                 The name of the content.
@@ -296,7 +296,7 @@ class Project:
     def get_modelica_library_by_name(self, name: str) -> Optional[ProjectContent]:
         """Gets the first matching modelica library with the given name.
 
-        Parameters:
+        Args:
 
             name --
                 The modelica library name.
@@ -311,7 +311,7 @@ class Project:
     def upload_content(self, path_to_content: str, content_type: ContentType):
         """Upload content to a project.
 
-        Parameters:
+        Args:
 
             path_to_content --
                 The path for the content to be imported.
@@ -334,7 +334,7 @@ class Project:
         """Uploads/adds a non-encrypted modelica library or a modelica model to
         the project.
 
-        Parameters:
+        Args:
 
             path_to_lib --
                 The path for the library to be imported. Only '.mo' or '.zip' file
@@ -358,7 +358,7 @@ class Project:
     ):
         """Get project execution option.
 
-        Parameters:
+        Args:
 
             custom_function --
                 The CustomFunction class object.

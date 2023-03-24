@@ -88,7 +88,7 @@ class CachedModelExecutableOperation(ExecutionOperation):
         """Waits until the operation achieves the set status. Returns the
         operation class instance if the set status is achieved.
 
-        Parameters:
+        Args:
 
             timeout --
                 Time to wait in seconds for achieving the status.This argument is

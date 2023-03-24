@@ -16,7 +16,7 @@ class Operator:
 class Range(Operator):
     """Range operator class for parameterizing batch runs.
 
-    Parameters:
+    Args:
 
         start_value --
             The start value for the sweep parameter.
@@ -50,7 +50,7 @@ class Range(Operator):
 class Choices(Operator):
     """Choices operator class for parameterizing batch runs.
 
-    Parameters:
+    Args:
 
         values --
             Variable number of numerical arguments to sweep.
@@ -79,7 +79,7 @@ class Uniform(Operator):
     mathematical background, see e.g.,
     https://en.wikipedia.org/wiki/Continuous_uniform_distribution.
 
-    Parameters:
+    Args:
 
         start (float) --
             Starting value of the interval.
@@ -110,7 +110,7 @@ class Beta(Operator):
     """Beta distribution class for parameterizing batch runs. For mathematical
     background, see e.g., https://en.wikipedia.org/wiki/Beta_distribution.
 
-    Parameters:
+    Args:
 
         alpha  (float) --
             'alpha' resp. 'a' parameter of beta distribution, requires alpha > 0
@@ -145,7 +145,7 @@ class Normal(Operator):
     distribution is the default, add additional start & end parameters for
     truncation.
 
-    Parameters:
+    Args:
 
         mean     (float) --
             Mean resp. location of the distribution.

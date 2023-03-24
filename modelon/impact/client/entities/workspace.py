@@ -166,7 +166,7 @@ class Workspace:
     def get_custom_function(self, name: str) -> CustomFunction:
         """Returns a CustomFunction class object.
 
-        Parameters:
+        Args:
 
             name --
                 The name of the custom function.
@@ -235,7 +235,7 @@ class Workspace:
     ) -> ExternalResultImportOperation:
         """Uploads a '.mat' result file to the workspace.
 
-        Parameters:
+        Args:
 
             path_to_result --
                 The path for the result file to be imported.
@@ -265,7 +265,7 @@ class Workspace:
         Returns an modelon.impact.client.operations.workspace.exports
         .WorkspaceExportOperation class object.
 
-        Parameters:
+        Args:
 
             options --
                 The definition of what workspace resources to include when
@@ -310,7 +310,7 @@ class Workspace:
         :obj:`~modelon.impact.client.entities.workspace.Workspace.export`, but
         does the entire setup and download in one go.
 
-        Parameters:
+        Args:
 
             options --
                 The definition of what workspace resources to include when
@@ -373,7 +373,7 @@ class Workspace:
     def get_model(self, class_name: str, project: Optional[Project] = None):
         """Returns a Model class object.
 
-        Parameters:
+        Args:
 
             class_name --
                 The modelica class path of the model.
@@ -453,7 +453,7 @@ class Workspace:
     def get_experiment(self, experiment_id: str) -> Experiment:
         """Returns an Experiment class object.
 
-        Parameters:
+        Args:
 
             experiment_id --
                 The ID of the experiment.
@@ -478,7 +478,7 @@ class Workspace:
     ) -> Experiment:
         """Creates an experiment. Returns an Experiment class object.
 
-        Parameters:
+        Args:
 
             definition --
                 An parametrized experiment definition class of type
@@ -526,7 +526,7 @@ class Workspace:
         modelon.impact.client.operations.experiment.ExperimentOperation class
         object.
 
-        Parameters:
+        Args:
 
             definition --
                 An experiment definition class instance of
@@ -680,7 +680,7 @@ class Workspace:
         """Imports a Project from a compressed(.zip) project file and adds it
         to the workspace. Returns the project class object.
 
-        Parameters:
+        Args:
 
             path_to_project --
                 The path for the compressed project(.zip) to be uploaded.
@@ -705,7 +705,7 @@ class Workspace:
         """Imports a Project dependency from a compressed(.zip) project file
         and adds it to the workspace. Returns the project class object.
 
-        Parameters:
+        Args:
 
             path_to_dependency --
                 The path for the compressed project(.zip) to be uploaded.

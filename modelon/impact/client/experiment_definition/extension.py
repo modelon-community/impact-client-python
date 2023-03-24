@@ -22,7 +22,7 @@ class BaseExperimentExtension(ABC):
 class SimpleExperimentExtension(BaseExperimentExtension):
     """A simple experiment extension class for defining experiement extensions.
 
-    Parameters:
+    Args:
 
         parameter_modifiers --
             The custom function parameters passes as a dictionary. By default, the
@@ -88,7 +88,7 @@ class SimpleExperimentExtension(BaseExperimentExtension):
     def with_modifiers(self, modifiers=None, **modifiers_kwargs):
         """Sets the modifiers variables for an experiment extension.
 
-        Parameters:
+        Args:
 
             modifiers --
                 A dictionary of variable modifiers.
@@ -135,7 +135,7 @@ class SimpleExperimentExtension(BaseExperimentExtension):
     def with_case_label(self, case_label):
         """Sets the case label for an experiment extension.
 
-        Parameters:
+        Args:
 
             case_label --
                 A case label string.
@@ -171,7 +171,7 @@ class SimpleExperimentExtension(BaseExperimentExtension):
         """Sets the experiment or case to initialize from for an experiment
         extension.
 
-        Parameters:
+        Args:
 
             entity --
                 "An instance of modelon.impact.client.entities.case.Case or "

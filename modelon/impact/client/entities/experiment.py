@@ -159,7 +159,7 @@ class Experiment:
         modelon.impact.client.operations.experiment.ExperimentOperation class
         object.
 
-        Parameters:
+        Args:
 
             with_cases --
                 A list of cases objects to execute.
@@ -264,7 +264,7 @@ class Experiment:
     def get_case(self, case_id: str) -> Case:
         """Returns a case object for a given case_id.
 
-        Parameters:
+        Args:
 
             case_id --
                 The case_id for the case.
@@ -289,7 +289,7 @@ class Experiment:
     def get_cases_with_label(self, case_label: str) -> List[Case]:
         """Returns a list of case objects for an experiment with the label.
 
-        Parameters:
+        Args:
 
             case_label --
                 The case_label for the case.
@@ -310,7 +310,7 @@ class Experiment:
         """Returns a dictionary containing the result trajectories for a list
         of result variables for all the cases.
 
-        Parameters:
+        Args:
 
             variables --
                 A list of result variables to fecth trajectories for.

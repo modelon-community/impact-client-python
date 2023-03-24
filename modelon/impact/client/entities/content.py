@@ -90,7 +90,7 @@ class ProjectContent:
     ):
         """Uploads a FMU to the workspace.
 
-        Parameters:
+        Args:
 
             workspace --
                 Workspace class object

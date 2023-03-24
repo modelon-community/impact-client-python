@@ -165,7 +165,7 @@ class CustomArtifact:
         """Downloads a custom artifact. Returns the local path to the
         downloaded artifact.
 
-        Parameters:
+        Args:
 
             path --
                 The local path to the directory to store the downloaded custom artifact.
@@ -456,7 +456,7 @@ class Case:
     def get_result(self, format: str = 'mat') -> Tuple[bytes, str]:
         """Returns the result stream and the file name for a finished case.
 
-        Parameters:
+        Args:
 
             format --
                 The file format to download the result in. The only possible values
@@ -644,7 +644,7 @@ class Case:
         """Exceutes a case. Returns an
         modelon.impact.client.operations.case.CaseOperation class object.
 
-        Parameters:
+        Args:
 
             sync_case_changes --
                 Boolean specifying if to sync case changes against the server

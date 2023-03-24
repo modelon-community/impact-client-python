@@ -69,7 +69,7 @@ class AsyncOperation(BaseOperation):
         """Waits until the operation completes. Returns the operation class
         instance if operation completes.
 
-        Parameters:
+        Args:
 
             timeout --
                 Time to wait in seconds for achieving the status. By default
@@ -132,7 +132,7 @@ class ExecutionOperation(BaseOperation):
         """Waits until the operation achieves the set status. Returns the
         operation class instance if the set status is achieved.
 
-        Parameters:
+        Args:
 
             timeout --
                 Time to wait in seconds for achieving the status. By default

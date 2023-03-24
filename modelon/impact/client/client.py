@@ -91,7 +91,7 @@ class Client:
     """This Class contains methods to authenticate logins, create new
     workspaces and upload or fetch existing workspaces.
 
-    Parameters:
+    Args:
 
         url --
             The URL for Modelon Impact client host. Defaults to the value specified
@@ -226,7 +226,7 @@ class Client:
     def get_workspace(self, workspace_id):
         """Returns a Workspace class object.
 
-        Parameters:
+        Args:
 
             workspace_id --
                 The name of the workspace.
@@ -286,7 +286,7 @@ class Client:
     def get_project(self, project_id: str, vcs_info: bool = True):
         """Returns a project class object.
 
-        Parameters:
+        Args:
 
             project_id --
                 The id of the project.
@@ -313,7 +313,7 @@ class Client:
     def get_projects(self, vcs_info=True):
         """Returns a list of project class object.
 
-        Parameters:
+        Args:
 
             vcs_info --
                 If True, the versioning details are returned for the
@@ -344,7 +344,7 @@ class Client:
     def create_workspace(self, workspace_id):
         """Creates and returns a Workspace. Returns a workspace class object.
 
-        Parameters:
+        Args:
 
             workspace_id --
                 The name of the workspace to create.
@@ -368,7 +368,7 @@ class Client:
         :obj:`~modelon.impact.client.Client.import_workspace_from_zip`, but
         does the import in one go.
 
-        Parameters:
+        Args:
 
             path_to_workspace --
                 The path for the compressed workspace(.zip) to be uploaded.
@@ -393,7 +393,7 @@ class Client:
         Returns an modelon.impact.client.operations.workspace.imports
         .WorkspaceImportOperation class object.
 
-        Parameters:
+        Args:
 
             path_to_workspace --
                 The path for the compressed workspace(.zip) to be uploaded.
@@ -454,7 +454,7 @@ class Client:
         """Imports a Project from a compressed(.zip) project file. Returns the
         project class object.
 
-        Parameters:
+        Args:
 
             path_to_project --
                 The path for the compressed project(.zip) to be uploaded.

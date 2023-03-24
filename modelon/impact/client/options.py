@@ -34,7 +34,7 @@ class BaseExecutionOptions(Mapping, ABC):
     def with_values(self, **modified):
         """Sets/updates the options.
 
-        Parameters:
+        Args:
 
             parameters --
                 A keyworded, variable-length argument list of options.
@@ -69,7 +69,7 @@ class SimulationOptions(BaseExecutionOptions):
     def with_result_filter(self, pattern: Union[str, List[str]]):
         """Sets the variable filter for results.
 
-        Parameters:
+        Args:
 
             pattern --
                 A filter pattern for choosing which variables to actually store

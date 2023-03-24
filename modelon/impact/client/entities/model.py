@@ -79,7 +79,7 @@ class Model:
 
         .ModelExecutableOperation class object.
 
-        Parameters:
+        Args:
 
             compiler_options --
                 An compilation options class instance of
@@ -200,7 +200,7 @@ class Model:
     ):
         """Returns a new experiment definition using this Model.
 
-        Parameters:
+        Args:
 
             custom_function --
                 The custom function to use for this experiment.

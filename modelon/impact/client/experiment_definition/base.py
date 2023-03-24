@@ -69,7 +69,7 @@ class BaseExperimentDefinition(ABC):
 class SimpleFMUExperimentDefinition(BaseExperimentDefinition):
     """A simple experiment definition class for defining experiements.
 
-    Parameters:
+    Args:
 
         fmu --
             The FMU to be excecuted for this experiment.
@@ -147,7 +147,7 @@ class SimpleFMUExperimentDefinition(BaseExperimentDefinition):
     def with_modifiers(self, modifiers=None, **modifiers_kwargs):
         """Sets the modifiers parameters for an experiment.
 
-        Parameters:
+        Args:
 
             modifiers --
                 A dictionary of variable modifiers.
@@ -190,7 +190,7 @@ class SimpleFMUExperimentDefinition(BaseExperimentDefinition):
     def with_extensions(self, experiment_extensions):
         """Sets up an experiment with multiple experiment extensions.
 
-        Parameters:
+        Args:
 
             experiment_extensions --
                 "A list of experiment extension objects."
@@ -244,7 +244,7 @@ class SimpleFMUExperimentDefinition(BaseExperimentDefinition):
         """Sets up an experiment with multiple cases with different variable
         modifiers.
 
-        Parameters:
+        Args:
 
             cases_modifiers --
                 A list of variable modifier dictionaries.
@@ -319,7 +319,7 @@ class SimpleFMUExperimentDefinition(BaseExperimentDefinition):
     def initialize_from(self, entity):
         """Sets the experiment or case to initialize from for an experiment.
 
-        Parameters:
+        Args:
 
             entity --
                 "An instance of modelon.impact.client.entities.case.Case or "
@@ -369,7 +369,7 @@ class SimpleFMUExperimentDefinition(BaseExperimentDefinition):
 class SimpleModelicaExperimentDefinition(BaseExperimentDefinition):
     """A simple experiment definition class for defining experiements.
 
-    Parameters:
+    Args:
 
         model --
             The Model class object.
@@ -499,7 +499,7 @@ class SimpleModelicaExperimentDefinition(BaseExperimentDefinition):
     ) -> 'SimpleModelicaExperimentDefinition':
         """Sets the modifiers parameters for an experiment.
 
-        Parameters:
+        Args:
 
             modifiers --
                 A dictionary of variable modifiers. Could be used if
@@ -545,7 +545,7 @@ class SimpleModelicaExperimentDefinition(BaseExperimentDefinition):
     def with_expansion(self, expansion: ExpansionAlgorithm = FullFactorial()):
         """Sets the expansion algorithm for an experiment.
 
-        Parameters:
+        Args:
 
             expansion --
                 An expansion algorithm. Avaiable algorithms are LatinHypercube,
@@ -591,7 +591,7 @@ class SimpleModelicaExperimentDefinition(BaseExperimentDefinition):
     def initialize_from(self, entity):
         """Sets the experiment or case to initialize from for an experiment.
 
-        Parameters:
+        Args:
 
             entity --
                 "An instance of modelon.impact.client.entities.case.Case or "
@@ -643,7 +643,7 @@ class SimpleModelicaExperimentDefinition(BaseExperimentDefinition):
     def with_extensions(self, experiment_extensions):
         """Sets up an experiment with multiple experiment extensions.
 
-        Parameters:
+        Args:
 
             experiment_extensions --
                 "A list of experiment extension objects."
@@ -703,7 +703,7 @@ class SimpleModelicaExperimentDefinition(BaseExperimentDefinition):
         """Sets up an experiment with multiple cases with different variable
         modifiers.
 
-        Parameters:
+        Args:
 
             cases_modifiers --
                 A list of variable modifier dictionaries.

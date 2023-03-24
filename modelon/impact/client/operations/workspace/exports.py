@@ -13,7 +13,7 @@ class Export:
         """Writes the binary archive to a file. Returns the path to downloaded
         archive.
 
-        Parameters:
+        Args:
 
             path_to_download --
                 The path to store the downloaded workspace.

@@ -196,7 +196,7 @@ class ModelExecutable:
     ):
         """Returns a new experiment definition using this FMU.
 
-        Parameters:
+        Args:
 
             custom_function --
                 The custom function to use for this experiment.
@@ -235,7 +235,7 @@ class ModelExecutable:
         """Downloads an FMU binary that is compiled. Returns the local path to
         the downloaded FMU archive.
 
-        Parameters:
+        Args:
 
             path --
                 The local path to store the downloaded FMU. Default: None.

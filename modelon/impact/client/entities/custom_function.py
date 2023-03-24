@@ -87,7 +87,7 @@ class CustomFunction:
     def with_parameters(self, **modified) -> 'CustomFunction':
         """Sets/updates the custom_function parameters for an experiment.
 
-        Parameters:
+        Args:
 
             parameters --
                 A keyworded, variable-length argument list of custom_function
@@ -121,7 +121,7 @@ class CustomFunction:
     def get_options(self, use_defaults: Optional[bool] = False):
         """Get project execution option.
 
-        Parameters:
+        Args:
 
             use_defaults --
                 If true, default compiler options are used.
