@@ -1,4 +1,4 @@
-.PHONY: build shell unit-test test test-watch lint wheel publish
+.PHONY: build shell unit-test test test-watch lint wheel publish docformatter
 USER_ID := $(shell id -u)
 GROUP_ID := $(shell id -g)
 IN_DOCKER_IMG := $(shell test -f /.dockerenv && echo 1 || echo 0)
@@ -45,7 +45,7 @@ poetry:
 unit-test:
 	$(call _run_bare, poetry run -- pytest -vv ${EXTRA_PYTEST_FLAGS})
 
-test: build unit-test lint
+test: build unit-test lint docformatter-check
 
 test-with-coverage:
 	$(MAKE) WITH_COVERAGE=YES test
@@ -72,6 +72,12 @@ wheel: build
 
 publish: build
 	$(call _run_bare, npx semantic-release --ci false)
+
+docformatter: build
+	$(call _run_bare, bash -c "poetry run -- docformatter -i modelon --config ./pyproject.toml ")
+
+docformatter-check: build 
+	$(call _run_bare, bash -c "poetry run -- docformatter -c modelon --config ./pyproject.toml ")
 
 docs: build
 	$(call _run_bare, bash -c "poetry run -- sphinx-apidoc -f -d 5 -o docs/source modelon && poetry run -- $(MAKE) -C ./docs clean && poetry run -- $(MAKE) -C ./docs html")
