@@ -54,7 +54,7 @@ class CachedModelExecutableOperation(ExecutionOperation):
 
         Returns:
 
-            model_executable --
+            model_executable:
                 A model_executable class instance.
 
         """
@@ -67,7 +67,7 @@ class CachedModelExecutableOperation(ExecutionOperation):
 
         Returns:
 
-            status --
+            status:
                 The compilation status enum. The status has the enum value
                 Status.DONE as a cached FMU is only possible for a
                 successfully finished compilation.
@@ -90,12 +90,12 @@ class CachedModelExecutableOperation(ExecutionOperation):
 
         Args:
 
-            timeout --
+            timeout:
                 Time to wait in seconds for achieving the status.This argument is
                 not accounted for the CachedModelExecutableOperation class as the
                 model has a successfully compiled status(Status.DONE) in this class.
 
-            status --
+            status:
                 Operation status to be achieved. The only possible status for the
                 CachedModelExecutableOperation class is Status.DONE as cached FMU
                 is only avaiable for a successfully compiled model.
@@ -158,7 +158,7 @@ class ModelExecutableOperation(ExecutionOperation):
 
         Returns:
 
-            model_executable --
+            model_executable:
                 A model_executable class instance.
 
         """
@@ -169,7 +169,7 @@ class ModelExecutableOperation(ExecutionOperation):
 
         Returns:
 
-            status --
+            status:
                 The compilation status enum. The status can have the enum values
                 Status.PENDING, Status.RUNNING, Status.STOPPING, Status.CANCELLED
                 or Status.DONE

@@ -161,16 +161,16 @@ class Experiment:
 
         Args:
 
-            with_cases --
+            with_cases:
                 A list of cases objects to execute.
-            sync_case_changes --
+            sync_case_changes:
                 Boolean specifying if to sync the cases given with the 'with_cases'
                 argument against the server before executing the experiment.
                 Default is True.
 
         Returns:
 
-            experiment_ops --
+            experiment_ops:
                 An modelon.impact.client.operations.experiment.ExperimentOperation
                 class object.
 
@@ -224,7 +224,7 @@ class Experiment:
 
         Returns:
 
-            variables --
+            variables:
                 An list of result variables.
 
         Raises:
@@ -247,7 +247,7 @@ class Experiment:
 
         Returns:
 
-            cases --
+            cases:
                 An list of case objects.
 
         Example::
@@ -266,12 +266,12 @@ class Experiment:
 
         Args:
 
-            case_id --
+            case_id:
                 The case_id for the case.
 
         Returns:
 
-            cases --
+            cases:
                 An case object.
 
         Example::
@@ -291,12 +291,12 @@ class Experiment:
 
         Args:
 
-            case_label --
+            case_label:
                 The case_label for the case.
 
         Returns:
 
-            cases --
+            cases:
                 An list of case objects.
 
         Example::
@@ -312,12 +312,12 @@ class Experiment:
 
         Args:
 
-            variables --
+            variables:
                 A list of result variables to fecth trajectories for.
 
         Returns:
 
-            trajectory --
+            trajectory:
                 A dictionary object containing the result trajectories for all cases.
 
         Raises:

@@ -39,7 +39,7 @@ class ContentImportOperation(AsyncOperation):
 
         Returns:
 
-            workspace --
+            workspace:
                 A Workspace class instance.
 
         """
@@ -58,7 +58,7 @@ class ContentImportOperation(AsyncOperation):
 
         Returns:
 
-            upload_status --
+            upload_status:
                 The AsyncOperationStatus enum. The status can have the enum values
                 AsyncOperationStatus.READY, AsyncOperationStatus.RUNNING or
                 AsyncOperationStatus.ERROR

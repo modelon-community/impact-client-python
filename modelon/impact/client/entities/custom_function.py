@@ -89,7 +89,7 @@ class CustomFunction:
 
         Args:
 
-            parameters --
+            parameters:
                 A keyworded, variable-length argument list of custom_function
                 parameters.
 
@@ -123,7 +123,7 @@ class CustomFunction:
 
         Args:
 
-            use_defaults --
+            use_defaults:
                 If true, default compiler options are used.
 
         Example::
@@ -146,10 +146,10 @@ class CustomFunction:
 
         Returns:
 
-            compiler_options --
+            compiler_options:
                 A modelon.impact.client.options.CompilerOptions object.
 
-            use_defaults --
+            use_defaults:
                 If true, default compiler options are used.
         Example::
 
@@ -164,10 +164,10 @@ class CustomFunction:
 
         Returns:
 
-            runtime_options --
+            runtime_options:
                 A modelon.impact.client.options.RuntimeOptions object.
 
-            use_defaults --
+            use_defaults:
                 If true, default runtime options are used.
         Example::
 
@@ -182,10 +182,10 @@ class CustomFunction:
 
         Returns:
 
-            solver_options --
+            solver_options:
                 A modelon.impact.client.options.SolverOptions object.
 
-            use_defaults --
+            use_defaults:
                 If true, default solver options are used.
 
         Example::
@@ -201,10 +201,10 @@ class CustomFunction:
 
         Returns:
 
-            simulation_options --
+            simulation_options:
                 A modelon.impact.client.options.SimulationOptions object.
 
-            use_defaults --
+            use_defaults:
                 If true, default simulation options are used.
         Example::
 

@@ -168,12 +168,12 @@ class Workspace:
 
         Args:
 
-            name --
+            name:
                 The name of the custom function.
 
         Returns:
 
-            custom_function --
+            custom_function:
                 The CustomFunction class object.
 
         Example::
@@ -196,7 +196,7 @@ class Workspace:
 
         Returns:
 
-            custom_functions --
+            custom_functions:
                 A list of CustomFunction class objects.
 
         Example::
@@ -237,13 +237,13 @@ class Workspace:
 
         Args:
 
-            path_to_result --
+            path_to_result:
                 The path for the result file to be imported.
 
-            label --
+            label:
                 The label of the result file. Default: None.
 
-            description --
+            description:
                 The description of the result file. Default: None.
 
         Example::
@@ -267,13 +267,13 @@ class Workspace:
 
         Args:
 
-            options --
+            options:
                 The definition of what workspace resources to include when
                 exporting the workspace.
 
         Returns:
 
-            WorkspaceExportOperation --
+            WorkspaceExportOperation:
                 An modelon.impact.client.operations.workspace.exports.
                 WorkspaceExportOperation class object.
 
@@ -312,16 +312,16 @@ class Workspace:
 
         Args:
 
-            options --
+            options:
                 The definition of what workspace resources to include when
                 exporting the workspace.
 
-            path --
+            path:
                 The local path to store the downloaded workspace.
 
         Returns:
 
-            path --
+            path:
                 Local path to the downloaded workspace archive.
 
         Example::
@@ -357,7 +357,7 @@ class Workspace:
 
         Returns:
 
-            workspace_clone --
+            workspace_clone:
                 Clones workspace class object.
 
         Example::
@@ -375,15 +375,15 @@ class Workspace:
 
         Args:
 
-            class_name --
+            class_name:
                 The modelica class path of the model.
 
-            project --
+            project:
                 Project class object
 
         Returns:
 
-            model --
+            model:
                 Model class object.
 
         Example::
@@ -401,7 +401,7 @@ class Workspace:
 
         Returns:
 
-            FMUs --
+            FMUs:
                 List of ModelExecutable class objects.
 
         Example::
@@ -420,7 +420,7 @@ class Workspace:
 
         Returns:
 
-            FMU --
+            FMU:
                 ModelExecutable class object.
 
         Example::
@@ -436,7 +436,7 @@ class Workspace:
 
         Returns:
 
-            experiment --
+            experiment:
                 List of Experiment class objects.
 
         Example::
@@ -455,12 +455,12 @@ class Workspace:
 
         Args:
 
-            experiment_id --
+            experiment_id:
                 The ID of the experiment.
 
         Returns:
 
-            experiment --
+            experiment:
                 Experiment class object.
 
         Example::
@@ -480,17 +480,17 @@ class Workspace:
 
         Args:
 
-            definition --
+            definition:
                 An parametrized experiment definition class of type
                 modelon.impact.client.experiment_definition.base.SimpleModelicaExperimentDefinition
                 or
                 modelon.impact.client.experiment_definition.base.SimpleFMUExperimentDefinition.
-            user_data --
+            user_data:
                 Optional dictionary object with custom data to attach to the experiment.
 
         Returns:
 
-            experiment --
+            experiment:
                 Experiment class object.
 
         Example::
@@ -528,20 +528,20 @@ class Workspace:
 
         Args:
 
-            definition --
+            definition:
                 An experiment definition class instance of
                 modelon.impact.client.experiment_definition.base.SimpleFMUExperimentDefinition
                 or
                 modelon.impact.client.experiment_definition.base.SimpleModelicaExperimentDefinition
                 or
                 a dictionary object containing the definition.
-            user_data --
+            user_data:
                 Optional dictionary object with custom data to attach to the experiment.
 
 
         Returns:
 
-            experiment_ops --
+            experiment_ops:
                 An modelon.impact.client.operations.experiment.ExperimentOperation
                 class object.
 
@@ -565,7 +565,7 @@ class Workspace:
 
         Returns:
 
-            projects --
+            projects:
                 A list of modelon.impact.client.entities.project.Project
                 class object.
 
@@ -594,7 +594,7 @@ class Workspace:
 
         Returns:
 
-            dependencies --
+            dependencies:
                 A list of modelon.impact.client.entities.project.Project
                 class object.
 
@@ -622,7 +622,7 @@ class Workspace:
 
         Returns:
 
-            project --
+            project:
                 An modelon.impact.client.entities.project.Project
                 class object.
 
@@ -645,7 +645,7 @@ class Workspace:
 
         Returns:
 
-            project --
+            project:
                 An modelon.impact.client.entities.project.Project
                 class object.
 
@@ -682,12 +682,12 @@ class Workspace:
 
         Args:
 
-            path_to_project --
+            path_to_project:
                 The path for the compressed project(.zip) to be uploaded.
 
         Returns:
 
-            ProjectImportOperation --
+            ProjectImportOperation:
                 An modelon.impact.client.operations.project_import.
                 ProjectImportOperation class object.
 
@@ -707,12 +707,12 @@ class Workspace:
 
         Args:
 
-            path_to_dependency --
+            path_to_dependency:
                 The path for the compressed project(.zip) to be uploaded.
 
         Returns:
 
-            ProjectImportOperation --
+            ProjectImportOperation:
                 An modelon.impact.client.operations.project_import.
                 ProjectImportOperation class object.
 

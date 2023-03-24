@@ -167,14 +167,14 @@ class CustomArtifact:
 
         Args:
 
-            path --
+            path:
                 The local path to the directory to store the downloaded custom artifact.
                 Default: None. If no path is given, custom artifact will be downloaded
                 in a temporary directory.
 
         Returns:
 
-            path --
+            path:
                 Local path to the downloaded custom artifact.
 
         Example::
@@ -199,7 +199,7 @@ class CustomArtifact:
 
         Returns:
 
-            artifact --
+            artifact:
                 The artifact byte stream.
 
         Example::
@@ -438,7 +438,7 @@ class Case:
 
         Returns:
 
-            log --
+            log:
                 The case execution log class object.
 
         Example::
@@ -458,17 +458,17 @@ class Case:
 
         Args:
 
-            format --
+            format:
                 The file format to download the result in. The only possible values
                 are 'mat' and 'csv'.
                 Default: 'mat'
 
         Returns:
 
-            result --
+            result:
                 The result byte stream.
 
-            filename --
+            filename:
                 The filename for the result. This name could be used to write the
                 result stream.
 
@@ -498,7 +498,7 @@ class Case:
 
         Returns:
 
-            trajectories --
+            trajectories:
                 A result trajectory dictionary object.
 
         Raises:
@@ -530,10 +530,10 @@ class Case:
 
         Returns:
 
-            custom artifact --
+            custom artifact:
                 A CustomArtifact class object.
 
-            download_as --
+            download_as:
                 File name for the downloaded artifact.
 
         Raises:
@@ -577,7 +577,7 @@ class Case:
 
         Returns:
 
-            custom artifacts --
+            custom artifacts:
                 A list of CustomArtifact class objects.
 
         Raises:
@@ -611,7 +611,7 @@ class Case:
 
         Returns:
 
-            FMU --
+            FMU:
                 ModelExecutable class object.
 
         Example::
@@ -646,14 +646,14 @@ class Case:
 
         Args:
 
-            sync_case_changes --
+            sync_case_changes:
                 Boolean specifying if to sync case changes against the server
                 before executing the case. Default is True.
 
 
         Returns:
 
-            case_ops --
+            case_ops:
                 An modelon.impact.client.operations.case.CaseOperation class object.
 
         Example::

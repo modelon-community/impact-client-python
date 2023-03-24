@@ -135,7 +135,7 @@ class ModelExecutable:
 
         Returns:
 
-            log --
+            log:
                 The compilation log object.
 
         Raises:
@@ -169,7 +169,7 @@ class ModelExecutable:
 
         Returns:
 
-            settable_parameters --
+            settable_parameters:
                 A list of parameters than can be set on the FMU.
 
         Raises:
@@ -198,17 +198,17 @@ class ModelExecutable:
 
         Args:
 
-            custom_function --
+            custom_function:
                 The custom function to use for this experiment.
-            solver_options --
+            solver_options:
                 The solver options to use for this experiment. By default the options
                 is set to None, which means the default options for the
                 custom_function input is used.
-            simulation_options --
+            simulation_options:
                 The simulation_options to use for this experiment. By default the
                 options is set to None, which means the default options for the
                 custom_function input is used.
-            simulation_log_level --
+            simulation_log_level:
                 Simulation log level for this experiment. Default is 'WARNING'.
 
         Example::
@@ -237,13 +237,13 @@ class ModelExecutable:
 
         Args:
 
-            path --
+            path:
                 The local path to store the downloaded FMU. Default: None.
                 If no path is given, FMU will be downloaded in a temporary directory.
 
         Returns:
 
-            path --
+            path:
                 Local path to the downloaded FMU.
 
         Raises:

@@ -47,7 +47,7 @@ class ProjectImportOperation(AsyncOperation):
 
         Returns:
 
-            project --
+            project:
                 A Project class instance.
 
         """
@@ -71,7 +71,7 @@ class ProjectImportOperation(AsyncOperation):
 
         Returns:
 
-            upload_status --
+            upload_status:
                 The AsyncOperationStatus enum. The status can have the enum values
                 AsyncOperationStatus.READY, AsyncOperationStatus.RUNNING or
                 AsyncOperationStatus.ERROR

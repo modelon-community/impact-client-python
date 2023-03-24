@@ -34,7 +34,7 @@ class ExperimentOperation(base.ExecutionOperation):
 
         Returns:
 
-            experiment --
+            experiment:
                 An experiment class instance.
 
         """
@@ -47,7 +47,7 @@ class ExperimentOperation(base.ExecutionOperation):
 
         Returns:
 
-            status --
+            status:
                 The execution status enum. The status can have the enum values
                 Status.PENDING, Status.RUNNING, Status.STOPPING, Status.CANCELLED
                 or Status.DONE

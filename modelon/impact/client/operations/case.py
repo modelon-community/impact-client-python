@@ -34,7 +34,7 @@ class CaseOperation(ExecutionOperation):
 
         Returns:
 
-            experiment --
+            experiment:
                 An Case class instance.
 
         """
@@ -50,7 +50,7 @@ class CaseOperation(ExecutionOperation):
 
         Returns:
 
-            status --
+            status:
                 The execution status enum. The status can have the enum values
                 Status.PENDING, Status.RUNNING, Status.STOPPING, Status.CANCELLED
                 or Status.DONE

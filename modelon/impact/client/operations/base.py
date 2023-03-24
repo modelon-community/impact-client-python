@@ -71,7 +71,7 @@ class AsyncOperation(BaseOperation):
 
         Args:
 
-            timeout --
+            timeout:
                 Time to wait in seconds for achieving the status. By default
                 the timeout is set to 'None', which signifies an infinite time
                 to wait until the status is achieved.
@@ -134,12 +134,12 @@ class ExecutionOperation(BaseOperation):
 
         Args:
 
-            timeout --
+            timeout:
                 Time to wait in seconds for achieving the status. By default
                 the timeout is set to 'None', which signifies an infinite time
                 to wait until the status is achieved.
 
-            status --
+            status:
                 Operation status to be achieved.
                 Default: Status.DONE
 

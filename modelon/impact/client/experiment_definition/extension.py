@@ -24,26 +24,26 @@ class SimpleExperimentExtension(BaseExperimentExtension):
 
     Args:
 
-        parameter_modifiers --
+        parameter_modifiers:
             The custom function parameters passes as a dictionary. By default, the
             parameter_modifier is set to None, which means the options set in
             the experiment definition will be used.
 
-        solver_options --
+        solver_options:
             A solver options class instance of
             modelon.impact.client.options.SolverOptions or
             a dictionary object containing the solver options. By
             default, the options is set to None, which means an empty dictionary
             is passed in the experiment extension.
 
-        simulation_options --
+        simulation_options:
             A simulation options class instance of
             modelon.impact.client.options.SimulationOptions or
             a dictionary object containing the simulation options. By
             default, the options is set to None, which means an empty dictionary
             is passed in the experiment extension.
 
-        simulation_log_level --
+        simulation_log_level:
             Simulation log level for this experiment. Default: 'WARNING'.
 
     Examples::
@@ -90,7 +90,7 @@ class SimpleExperimentExtension(BaseExperimentExtension):
 
         Args:
 
-            modifiers --
+            modifiers:
                 A dictionary of variable modifiers.
 
         Example::
@@ -137,7 +137,7 @@ class SimpleExperimentExtension(BaseExperimentExtension):
 
         Args:
 
-            case_label --
+            case_label:
                 A case label string.
 
         Example::
@@ -173,7 +173,7 @@ class SimpleExperimentExtension(BaseExperimentExtension):
 
         Args:
 
-            entity --
+            entity:
                 "An instance of modelon.impact.client.entities.case.Case or "
                 "modelon.impact.client.entities.experiment.Experiment."
 
@@ -214,7 +214,7 @@ class SimpleExperimentExtension(BaseExperimentExtension):
 
         Returns:
 
-            extensions_dict --
+            extensions_dict:
                 A dictionary containing the experiment extensions.
 
         Example::

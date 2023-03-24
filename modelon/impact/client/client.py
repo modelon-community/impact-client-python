@@ -93,12 +93,12 @@ class Client:
 
     Args:
 
-        url --
+        url:
             The URL for Modelon Impact client host. Defaults to the value specified
             by env variable 'MODELON_IMPACT_CLIENT_URL' if set else uses the URL
             'http://localhost:8080/'.
 
-        interactive --
+        interactive:
             If True the client will prompt for an API key if no other login information
             can be found. An API key entered for this prompt will be saved to disk
             and re-used next time the Client is instantiated. If False no prompt will
@@ -113,11 +113,11 @@ class Client:
             Default is False. It is possible to change the default value through
             the environment variable 'MODELON_IMPACT_CLIENT_INTERACTIVE'.
 
-        credential_manager --
+        credential_manager:
             Help class for managing credentials for the Impact server. Default is None
             and then the default credential manager is used.
 
-        context --
+        context:
             Request contexts to pass data alongside a HTTP request. Default is None and
             then the default context is used.
 
@@ -228,12 +228,12 @@ class Client:
 
         Args:
 
-            workspace_id --
+            workspace_id:
                 The name of the workspace.
 
         Returns:
 
-            workspace --
+            workspace:
                 Workspace class object.
 
         Example::
@@ -249,7 +249,7 @@ class Client:
 
         Returns:
 
-            workspace --
+            workspace:
                 A list of Workspace class objects.
 
         Example::
@@ -288,12 +288,12 @@ class Client:
 
         Args:
 
-            project_id --
+            project_id:
                 The id of the project.
 
         Returns:
 
-            project --
+            project:
                 Project class objects.
 
         Example::
@@ -315,13 +315,13 @@ class Client:
 
         Args:
 
-            vcs_info --
+            vcs_info:
                 If True, the versioning details are returned for the
                 projects under version control.
 
         Returns:
 
-            project --
+            project:
                 A list of Project class objects.
 
         Example::
@@ -346,12 +346,12 @@ class Client:
 
         Args:
 
-            workspace_id --
+            workspace_id:
                 The name of the workspace to create.
 
         Returns:
 
-            workspace --
+            workspace:
                 The created workspace class object.
 
         Example::
@@ -370,12 +370,12 @@ class Client:
 
         Args:
 
-            path_to_workspace --
+            path_to_workspace:
                 The path for the compressed workspace(.zip) to be uploaded.
 
         Returns:
 
-            workspace --
+            workspace:
                 Workspace class object.
 
         Example::
@@ -395,12 +395,12 @@ class Client:
 
         Args:
 
-            path_to_workspace --
+            path_to_workspace:
                 The path for the compressed workspace(.zip) to be uploaded.
 
         Returns:
 
-            WorkspaceImportOperation --
+            WorkspaceImportOperation:
                 An modelon.impact.client.operations.workspace.imports.
                 WorkspaceImportOperation class object.
 
@@ -456,12 +456,12 @@ class Client:
 
         Args:
 
-            path_to_project --
+            path_to_project:
                 The path for the compressed project(.zip) to be uploaded.
 
         Returns:
 
-            ProjectImportOperation --
+            ProjectImportOperation:
                 An modelon.impact.client.operations.project_import.
                 ProjectImportOperation class object.
 

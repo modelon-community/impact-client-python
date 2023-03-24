@@ -18,13 +18,13 @@ class Range(Operator):
 
     Args:
 
-        start_value --
+        start_value:
             The start value for the sweep parameter.
 
-        end_value --
+        end_value:
             The end value for the sweep parameter.
 
-        no_of_steps --
+        no_of_steps:
             The number of steps to intermediate steps to take between start_value
             and end_value.
 
@@ -52,7 +52,7 @@ class Choices(Operator):
 
     Args:
 
-        values --
+        values:
             Variable number of numerical arguments to sweep.
 
     Examples::
@@ -81,10 +81,10 @@ class Uniform(Operator):
 
     Args:
 
-        start (float) --
+        start (float):
             Starting value of the interval.
 
-        end   (float) --
+        end   (float):
             End value of the interval. Requires start <= end.
 
     Examples::
@@ -112,10 +112,10 @@ class Beta(Operator):
 
     Args:
 
-        alpha  (float) --
+        alpha  (float):
             'alpha' resp. 'a' parameter of beta distribution, requires alpha > 0
 
-        beta   (float) --
+        beta   (float):
             'beta' resp. 'b' parameter of beta distribution, requires beta > 0
 
     Examples::
@@ -147,13 +147,13 @@ class Normal(Operator):
 
     Args:
 
-        mean     (float) --
+        mean     (float):
             Mean resp. location of the distribution.
 
-        variance (float) --
+        variance (float):
             Variance of the normal distribution. Requires var > 0.
 
-        start    (float) --
+        start    (float):
             Lower bound. Default: -inf
 
         end      (float)

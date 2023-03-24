@@ -81,27 +81,27 @@ class Model:
 
         Args:
 
-            compiler_options --
+            compiler_options:
                 An compilation options class instance of
                 modelon.impact.client.options.CompilerOptions or
                 a dictionary object containing the compiler options.
 
-            runtime_options --
+            runtime_options:
                 An runtime options class instance of
                 modelon.impact.client.options.RuntimeOptions or
                 a dictionary object containing the runtime options. Default: None.
 
-            compiler_log_level --
+            compiler_log_level:
                 The logging for the compiler. Possible values are "error",
                 "warning", "info", "verbose" and "debug". Default: 'warning'.
 
-            fmi_target --
+            fmi_target:
                 Compiler target. Possible values are 'me' and 'cs'. Default: 'me'.
 
-            fmi_version --
+            fmi_version:
                 The FMI version. Valid options are '1.0' and '2.0'. Default: '2.0'.
 
-            platform --
+            platform:
                 Platform for FMU binary.The OS running the Impact server must match the
                 environment that runs the compiled FMU. This is necessary as the
                 binaries packaged with the FMU are based on the platform generating
@@ -115,12 +115,12 @@ class Model:
                     - "win64": generate a 64 bit FMU
                 Default: 'auto'.
 
-            force_compilation --
+            force_compilation:
                 Force a model compilation.
 
         Returns:
 
-            modelexecutableoperation --
+            modelexecutableoperation:
                 An modelon.impact.client.operations.model_executable
                 .ModelExecutableOperation class object.
 
@@ -202,16 +202,16 @@ class Model:
 
         Args:
 
-            custom_function --
+            custom_function:
                 The custom function to use for this experiment.
 
-            fmi_target --
+            fmi_target:
                 Compiler target. Possible values are 'me' and 'cs'. Default: 'me'.
 
-            fmi_version --
+            fmi_version:
                 The FMI version. Valid options are '1.0' and '2.0'. Default: '2.0'.
 
-            platform --
+            platform:
                 Platform for FMU binary.The OS running the Impact server must match the
                 environment that runs the compiled FMU. This is necessary as the
                 binaries packaged with the FMU are based on the platform generating
@@ -225,31 +225,31 @@ class Model:
                     - "win64": generate a 64 bit FMU
                 Default: 'auto'.
 
-            compiler_log_level --
+            compiler_log_level:
                 The logging for the compiler. Possible values are "error",
                 "warning", "info", "verbose" and "debug". Default: 'warning'.
 
-            compiler_options --
+            compiler_options:
                 An compilation options class instance of
                 modelon.impact.client.options.CompilerOptions or
                 a dictionary object containing the compiler options.
 
-            runtime_options --
+            runtime_options:
                 An runtime options class instance of
                 modelon.impact.client.options.RuntimeOptions or
                 a dictionary object containing the runtime options. Default: None.
 
-            solver_options --
+            solver_options:
                 The solver options to use for this experiment. By default the options
                 is set to None, which means the default options for the
                 custom_function input is used.
 
-            simulation_options --
+            simulation_options:
                 The simulation_options to use for this experiment. By default the
                 options is set to None, which means the default options for the
                 custom_function input is used.
 
-            simulation_log_level --
+            simulation_log_level:
                 Simulation log level for this experiment. Default is 'WARNING'.
 
         Example::

@@ -15,12 +15,12 @@ class Export:
 
         Args:
 
-            path_to_download --
+            path_to_download:
                 The path to store the downloaded workspace.
 
         Returns:
 
-            path --
+            path:
                 Local path to the downloaded archive.
 
         Example::
@@ -91,7 +91,7 @@ class WorkspaceExportOperation(AsyncOperation):
 
         Returns:
 
-            upload_status --
+            upload_status:
                 The AsyncOperationStatus enum. The status can have the enum values
                 AsyncOperationStatus.READY, AsyncOperationStatus.RUNNING or
                 AsyncOperationStatus.ERROR

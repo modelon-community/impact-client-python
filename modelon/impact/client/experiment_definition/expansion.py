@@ -24,9 +24,9 @@ class LatinHypercube(ExpansionAlgorithm):
     """LatinHypercube expansion class.
 
     Args:
-        samples (int) --
+        samples (int):
             Positive integer; number of cases the Experiment will produce.
-        seed (int)  --
+        seed (int) :
             Using the same seed will result in the same output for an Experiment with
             the same modifiers. If not set or None: picks a random seed. Must be a
             non-negative integer. Default: None.
@@ -81,7 +81,7 @@ class Sobol(ExpansionAlgorithm):
     achieving a good coverage of the design space.
 
     Args:
-        samples (int) --
+        samples (int):
             Positive integer; number of cases the Experiment will produce.
             Expansions where the number of samples is a power of 2 yield
             additional balances properties.

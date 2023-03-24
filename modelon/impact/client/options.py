@@ -36,7 +36,7 @@ class BaseExecutionOptions(Mapping, ABC):
 
         Args:
 
-            parameters --
+            parameters:
                 A keyworded, variable-length argument list of options.
 
         Example::
@@ -71,7 +71,7 @@ class SimulationOptions(BaseExecutionOptions):
 
         Args:
 
-            pattern --
+            pattern:
                 A filter pattern for choosing which variables to actually store
             result for. The syntax can be found in
             http://en.wikipedia.org/wiki/Glob_%28programming%29 . An

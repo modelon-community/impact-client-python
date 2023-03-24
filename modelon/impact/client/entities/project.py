@@ -275,10 +275,10 @@ class Project:
 
         Args:
 
-            name --
+            name:
                 The name of the content.
 
-            content_type --
+            content_type:
                 The type of the project content.
         Example::
             from modelon.impact.client import ContentType
@@ -298,7 +298,7 @@ class Project:
 
         Args:
 
-            name --
+            name:
                 The modelica library name.
 
         Example::
@@ -313,10 +313,10 @@ class Project:
 
         Args:
 
-            path_to_content --
+            path_to_content:
                 The path for the content to be imported.
 
-            content_type --
+            content_type:
                 The type of the imported content.
 
         Example::
@@ -336,7 +336,7 @@ class Project:
 
         Args:
 
-            path_to_lib --
+            path_to_lib:
                 The path for the library to be imported. Only '.mo' or '.zip' file
                 extension are supported for upload.
 
@@ -360,10 +360,10 @@ class Project:
 
         Args:
 
-            custom_function --
+            custom_function:
                 The CustomFunction class object.
 
-            use_defaults --
+            use_defaults:
                 If true, default options are used.
 
         Example::
