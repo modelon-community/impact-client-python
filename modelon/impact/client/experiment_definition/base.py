@@ -394,13 +394,12 @@ class SimpleModelicaExperimentDefinition(BaseExperimentDefinition):
             binaries packaged with the FMU are based on the platform generating
             the FMU. For example, if the Impact server is running Linux the binary
             in the downloaded FMU is compiled for Linux. The downloaded FMU can
-            then not be simulated on Windows.
-            Supported options are:-
-                - 'auto': platform is selected automatically.
-                - "linux64": generate a 32 bit FMU.
-                - "win32": generate a 32 bit FMU.
-                - "win64": generate a 64 bit FMU
-            Default: 'auto'.
+            then not be simulated on Windows. Default: 'auto'. Supported options are:-
+
+            - 'auto': platform is selected automatically
+            - 'linux64': generate a 32 bit FMU
+            - 'win32': generate a 32 bit FMU
+            - 'win64': generate a 64 bit FMU
 
         compiler_log_level:
             The logging for the compiler. Possible values are "error",

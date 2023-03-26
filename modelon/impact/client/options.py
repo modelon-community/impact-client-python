@@ -72,11 +72,11 @@ class SimulationOptions(BaseExecutionOptions):
         Args:
 
             pattern:
-                A filter pattern for choosing which variables to actually store
-            result for. The syntax can be found in
-            http://en.wikipedia.org/wiki/Glob_%28programming%29 . An
-            example is filter = "*der" , stores all variables ending with
-            'der'. Can also be a list.
+                A filter pattern for choosing which variables to actually
+                store result for. The syntax can be found in
+                https://en.wikipedia.org/wiki/Glob_(programming).
+                An example for filter is `*der`, which would stores all
+                variables ending with `der`. Can also be a list.
 
         Example::
 

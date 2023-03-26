@@ -252,6 +252,7 @@ class ModelExecutable:
             OperationFailureError if compilation process has failed or was cancelled.
 
         Example::
+
             fmu =  model.compile().wait()
             if fmu.is_successful():
                 fmu_path = fmu.download()

@@ -21,7 +21,12 @@ class ExpansionAlgorithm(ABC):
 
 @dataclass
 class LatinHypercube(ExpansionAlgorithm):
-    """LatinHypercube expansion class.
+    """LatinHypercube expansion class. Produces <samples> cases, picks a random
+    value from each Modifier expression for each case. The resulting cases are
+    ortogonal, i.e., the values of a given Modifier expression do not repeat.
+    The exception are singular Modifiers, e.g., Modifier('name', 1), these
+    result in the same value for all cases. Singular Modifiers do not affect
+    the result (with respect to the seed) in the resulting Experiment.
 
     Args:
         samples (int):
@@ -30,13 +35,6 @@ class LatinHypercube(ExpansionAlgorithm):
             Using the same seed will result in the same output for an Experiment with
             the same modifiers. If not set or None: picks a random seed. Must be a
             non-negative integer. Default: None.
-
-        Produces <samples> cases, picks a random value from each Modifier expression
-        for each case. The resulting cases are ortogonal, i.e., the values of a given
-        Modifier expression do not repeat. The exception are singular Modifiers, e.g.,
-        Modifier('name', 1), these result in the same value for all cases. Singular
-        Modifiers do not affect the result (with respect to the seed) in the resulting
-        Experiment.
 
     """
 

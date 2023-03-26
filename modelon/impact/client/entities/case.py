@@ -203,6 +203,7 @@ class CustomArtifact:
                 The artifact byte stream.
 
         Example::
+
             artifact = case.get_artifact("ABCD")
             data = artifact.get_data() # may raise exception on communication error
             with open(artifact.download_as, "wb") as f:
