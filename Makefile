@@ -45,7 +45,7 @@ poetry:
 unit-test:
 	$(call _run_bare, poetry run -- pytest -vv ${EXTRA_PYTEST_FLAGS})
 
-test: build unit-test lint docformatter-check
+test: build unit-test lint docformatter-check docs-spell-check
 
 test-with-coverage:
 	$(MAKE) WITH_COVERAGE=YES test
@@ -78,6 +78,9 @@ docformatter: build
 
 docformatter-check: build 
 	$(call _run_bare, bash -c "poetry run -- docformatter -c modelon --config ./pyproject.toml ")
+
+docs-spell-check: build
+	$(call _run_bare, bash -c "poetry run -- sphinx-build -b spelling docs/source docs/build")
 
 docs: build
 	$(call _run_bare, bash -c "poetry run -- sphinx-apidoc -f -d 5 -o docs/source modelon && poetry run -- $(MAKE) -C ./docs clean && poetry run -- $(MAKE) -C ./docs html")

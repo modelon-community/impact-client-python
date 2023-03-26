@@ -39,6 +39,7 @@ extensions = [
     'sphinx_copybutton',
     'sphinx.ext.autosectionlabel',
     'sphinx.ext.napoleon',
+    'sphinxcontrib.spelling',
 ]
 
 add_module_names = False
@@ -62,6 +63,14 @@ html_theme = 'sphinx_rtd_theme'
 html_theme_options = {
     'style_nav_header_background': '#fb8c00',
 }
+
+# The wordlist with known words, like Jupyterlab
+spelling_word_list_filename = "spelling_wordlist.txt"
+spelling_show_suggestions=True
+spelling_ignore_acronyms=True
+spelling_exclude_patterns=['modelon.*']
+
+
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
