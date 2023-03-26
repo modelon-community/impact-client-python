@@ -7,7 +7,7 @@ from modelon.impact.client.sal.uri import URI
 
 @enum.unique
 class ResultFormat(enum.Enum):
-    """Class representing an enumeration for the possible formats avaiable for
+    """Class representing an enumeration for the possible formats available for
     downloading results."""
 
     MAT = "mat"

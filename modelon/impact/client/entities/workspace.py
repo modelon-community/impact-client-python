@@ -376,7 +376,7 @@ class Workspace:
         Args:
 
             class_name:
-                The modelica class path of the model.
+                The Modelica class path of the model.
 
             project:
                 Project class object

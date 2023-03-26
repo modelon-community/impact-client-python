@@ -10,8 +10,8 @@ Authentication with JupyterHub
 This section is ONLY applicable for users running Modelon Impact in a JupyterHub environment,
 otherwise skip to the section :ref:`below<Authentication with API keys>`.
 To use the client on JupyterHub, the users needs to first authenticate with a token
-for Jupyterhub. To generate the key, go to the JupyterHub token manager 
-(located at <JupyterHub url>/token).You can get a secret token by clicking the 
+for JupyterHub. To generate the key, go to the JupyterHub token manager 
+(located at <JupyterHub URL>/token).You can get a secret token by clicking the 
 "Request new API token" button. These are tokens with full access to the JupyterHub API. 
 Anything you can do with JupyterHub can be done with these tokens.
 
@@ -30,7 +30,7 @@ While initializing the client, you will be asked to enter the JupyterHub API tok
 
 When the token has been entered the first time, it will be stored and used in future requests, 
 and the prompt will not be shown again. To view a list of active tokens or revoke active tokens, 
-the user can go to the JupyterHub token manager (located at <JupyterHub url>/token).
+the user can go to the JupyterHub token manager (located at <JupyterHub URL>/token).
 Revoking the token will cause the prompt to be shown again and a new token needs to be created.
 Once the JupyterHub API has been authenticated, the user need to authenticate the client for Modelon Impact 
 following the section :ref:`below<Authentication with API keys>`.
@@ -39,7 +39,7 @@ Authentication with API keys
 ****************************
 
 To use the client, authentication with an API key is required. To generate the key, go
-to the API key manager (located at <impact url>/admin/keys/). You will get a secret
+to the API key manager (located at <impact URL>/admin/keys/). You will get a secret
 API key and a key ID. The API key is personal and each user may have one single key at
 a time, so do not share one key between several persons.
 

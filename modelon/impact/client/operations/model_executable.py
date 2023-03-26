@@ -98,7 +98,7 @@ class CachedModelExecutableOperation(ExecutionOperation):
             status:
                 Operation status to be achieved. The only possible status for the
                 CachedModelExecutableOperation class is Status.DONE as cached FMU
-                is only avaiable for a successfully compiled model.
+                is only available for a successfully compiled model.
 
         Returns:
 

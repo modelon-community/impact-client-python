@@ -294,12 +294,12 @@ class Project:
             return None
 
     def get_modelica_library_by_name(self, name: str) -> Optional[ProjectContent]:
-        """Gets the first matching modelica library with the given name.
+        """Gets the first matching Modelica library with the given name.
 
         Args:
 
             name:
-                The modelica library name.
+                The Modelica library name.
 
         Example::
 
@@ -331,7 +331,7 @@ class Project:
         return ContentImportOperation(resp['data']['location'], self._sal)
 
     def upload_modelica_library(self, path_to_lib: str):
-        """Uploads/adds a non-encrypted modelica library or a modelica model to
+        """Uploads/adds a non-encrypted Modelica library or a Modelica model to
         the project.
 
         Args:
