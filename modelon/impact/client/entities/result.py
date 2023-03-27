@@ -14,9 +14,7 @@ def _create_result_dict(variables, workspace_id, exp_id, case_id, exp_sal):
 
 
 class Result(Mapping):
-    """
-    Result class containing base functionality.
-    """
+    """Result class containing base functionality."""
 
     def __init__(
         self,

@@ -5,9 +5,7 @@ from dataclasses import dataclass
 
 
 class Operator:
-    """
-    Base class for an Operator.
-    """
+    """Base class for an Operator."""
 
     @abstractmethod
     def __str__(self):
@@ -16,18 +14,17 @@ class Operator:
 
 @dataclass
 class Range(Operator):
-    """
-    Range operator class for parameterizing batch runs.
+    """Range operator class for parameterizing batch runs.
 
-    Parameters:
+    Args:
 
-        start_value --
+        start_value:
             The start value for the sweep parameter.
 
-        end_value --
+        end_value:
             The end value for the sweep parameter.
 
-        no_of_steps --
+        no_of_steps:
             The number of steps to intermediate steps to take between start_value
             and end_value.
 
@@ -39,6 +36,7 @@ class Range(Operator):
         experiment_definition = fmu.new_experiment_definition(
             custom_function).with_modifiers({'inertia1.J': 2,
             'inertia2.J': Range(0.1, 0.5, 3)})
+
     """
 
     start_value: float
@@ -50,12 +48,11 @@ class Range(Operator):
 
 
 class Choices(Operator):
-    """
-    Choices operator class for parameterizing batch runs.
+    """Choices operator class for parameterizing batch runs.
 
-    Parameters:
+    Args:
 
-        values --
+        values:
             Variable number of numerical arguments to sweep.
 
     Examples::
@@ -66,6 +63,7 @@ class Choices(Operator):
         experiment_definition = fmu.new_experiment_definition(
             custom_function).with_modifiers({'inertia1.J': 2,
             'inertia2.J': Choices(0.1, 0.5)})
+
     """
 
     def __init__(self, *values):
@@ -77,16 +75,16 @@ class Choices(Operator):
 
 @dataclass
 class Uniform(Operator):
-    """
-    Uniform distribution class for parameterizing batch runs.For mathematical
-    background, see e.g., https://en.wikipedia.org/wiki/Continuous_uniform_distribution
+    """Uniform distribution class for parameterizing batch runs.For
+    mathematical background, see e.g.,
+    https://en.wikipedia.org/wiki/Continuous_uniform_distribution.
 
-    Parameters:
+    Args:
 
-        start (float) --
+        start (float):
             Starting value of the interval.
 
-        end   (float) --
+        end   (float):
             End value of the interval. Requires start <= end.
 
     Examples::
@@ -97,6 +95,7 @@ class Uniform(Operator):
         experiment_definition = fmu.new_experiment_definition(
             custom_function).with_modifiers({'inertia1.J': 2,
             'inertia2.J': Uniform(0.1, 0.5)})
+
     """
 
     start: float
@@ -108,16 +107,15 @@ class Uniform(Operator):
 
 @dataclass
 class Beta(Operator):
-    """
-    Beta distribution class for parameterizing batch runs. For mathematical
+    """Beta distribution class for parameterizing batch runs. For mathematical
     background, see e.g., https://en.wikipedia.org/wiki/Beta_distribution.
 
-    Parameters:
+    Args:
 
-        alpha  (float) --
+        alpha  (float):
             'alpha' resp. 'a' parameter of beta distribution, requires alpha > 0
 
-        beta   (float) --
+        beta   (float):
             'beta' resp. 'b' parameter of beta distribution, requires beta > 0
 
     Examples::
@@ -128,6 +126,7 @@ class Beta(Operator):
         experiment_definition = fmu.new_experiment_definition(
             custom_function).with_modifiers({'inertia1.J': 2,
             'inertia2.J': Beta(0.1, 0.5, 3)})
+
     """
 
     alpha: float
@@ -139,23 +138,22 @@ class Beta(Operator):
 
 @dataclass
 class Normal(Operator):
-    """
-    Normal distribution class for parameterizing batch runs.For mathematical
+    """Normal distribution class for parameterizing batch runs.For mathematical
     background, see e.g., https://en.wikipedia.org/wiki/Normal_distribution
-    https://en.wikipedia.org/wiki/Truncated_normal_distribution
-    Supports both the standard and truncated Normal distribution.
-    The standard Normal distribution is the default, add additional start &
-    end parameters for truncation.
+    https://en.wikipedia.org/wiki/Truncated_normal_distribution Supports both
+    the standard and truncated Normal distribution. The standard Normal
+    distribution is the default, add additional start & end parameters for
+    truncation.
 
-    Parameters:
+    Args:
 
-        mean     (float) --
+        mean     (float):
             Mean resp. location of the distribution.
 
-        variance (float) --
+        variance (float):
             Variance of the normal distribution. Requires var > 0.
 
-        start    (float) --
+        start    (float):
             Lower bound. Default: -inf
 
         end      (float)
@@ -169,6 +167,7 @@ class Normal(Operator):
         experiment_definition = fmu.new_experiment_definition(
             custom_function).with_modifiers({'inertia1.J': 2,
             'inertia2.J': Normal(0.1, 0.5)})
+
     """
 
     mean: float

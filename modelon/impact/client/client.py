@@ -88,17 +88,17 @@ class ProjectMatchings:
 
 
 class Client:
-    """This Class contains methods to authenticate logins, create new workspaces and
-    upload or fetch existing workspaces.
+    """This Class contains methods to authenticate logins, create new
+    workspaces and upload or fetch existing workspaces.
 
-    Parameters:
+    Args:
 
-        url --
+        url:
             The URL for Modelon Impact client host. Defaults to the value specified
             by env variable 'MODELON_IMPACT_CLIENT_URL' if set else uses the URL
             'http://localhost:8080/'.
 
-        interactive --
+        interactive:
             If True the client will prompt for an API key if no other login information
             can be found. An API key entered for this prompt will be saved to disk
             and re-used next time the Client is instantiated. If False no prompt will
@@ -113,11 +113,11 @@ class Client:
             Default is False. It is possible to change the default value through
             the environment variable 'MODELON_IMPACT_CLIENT_INTERACTIVE'.
 
-        credential_manager --
+        credential_manager:
             Help class for managing credentials for the Impact server. Default is None
             and then the default credential manager is used.
 
-        context --
+        context:
             Request contexts to pass data alongside a HTTP request. Default is None and
             then the default context is used.
 
@@ -126,6 +126,7 @@ class Client:
 
         client = Client(url=impact_url)
         client = Client(url=impact_url, interactive=True)
+
     """
 
     _SUPPORTED_VERSION_RANGE = ">=4.0.0-beta.25,<5.0.0"
@@ -223,38 +224,38 @@ class Client:
         return api_key
 
     def get_workspace(self, workspace_id):
-        """
-        Returns a Workspace class object.
+        """Returns a Workspace class object.
 
-        Parameters:
+        Args:
 
-            workspace_id --
+            workspace_id:
                 The name of the workspace.
 
         Returns:
 
-            workspace --
+            workspace:
                 Workspace class object.
 
         Example::
 
             client.get_workspace('my_workspace')
+
         """
         resp = self._sal.workspace.workspace_get(workspace_id)
         return Workspace(resp["id"], WorkspaceDefinition(resp["definition"]), self._sal)
 
     def get_workspaces(self):
-        """
-        Returns a list of Workspace class object.
+        """Returns a list of Workspace class object.
 
         Returns:
 
-            workspace --
+            workspace:
                 A list of Workspace class objects.
 
         Example::
 
             client.get_workspaces()
+
         """
         resp = self._sal.workspace.workspaces_get()
         return [
@@ -263,8 +264,8 @@ class Client:
         ]
 
     def convert_workspace(self, workspace_id: str, backup_name: Optional[str] = None):
-        """Converts a workspace of an old version up to the new version the server
-        is using.
+        """Converts a workspace of an old version up to the new version the
+        server is using.
 
         Args:
             workspace_id (str): The ID of the workspace to convert to the latest
@@ -277,27 +278,28 @@ class Client:
         Example::
             workspace = client.convert_workspace(workspace_id, backup_name='old save')
             .wait()
+
         """
         resp = self._sal.workspace.workspace_conversion_setup(workspace_id, backup_name)
         return WorkspaceConversionOperation(resp["data"]["location"], self._sal)
 
     def get_project(self, project_id: str, vcs_info: bool = True):
-        """
-        Returns a project class object.
+        """Returns a project class object.
 
-        Parameters:
+        Args:
 
-            project_id --
+            project_id:
                 The id of the project.
 
         Returns:
 
-            project --
+            project:
                 Project class objects.
 
         Example::
 
             client.get_project('hcbhsb11313321')
+
         """
         resp = self._sal.project.project_get(project_id, vcs_info)
         return Project(
@@ -309,23 +311,23 @@ class Client:
         )
 
     def get_projects(self, vcs_info=True):
-        """
-        Returns a list of project class object.
+        """Returns a list of project class object.
 
-        Parameters:
+        Args:
 
-            vcs_info --
+            vcs_info:
                 If True, the versioning details are returned for the
                 projects under version control.
 
         Returns:
 
-            project --
+            project:
                 A list of Project class objects.
 
         Example::
 
             client.get_projects()
+
         """
         resp = self._sal.project.projects_get(vcs_info=vcs_info)
         return [
@@ -340,45 +342,46 @@ class Client:
         ]
 
     def create_workspace(self, workspace_id):
-        """Creates and returns a Workspace.
-        Returns a workspace class object.
+        """Creates and returns a Workspace. Returns a workspace class object.
 
-        Parameters:
+        Args:
 
-            workspace_id --
+            workspace_id:
                 The name of the workspace to create.
 
         Returns:
 
-            workspace --
+            workspace:
                 The created workspace class object.
 
         Example::
 
             client.create_workspace('my_workspace')
+
         """
         resp = self._sal.workspace.workspace_create(workspace_id)
         return Workspace(resp["id"], WorkspaceDefinition(resp["definition"]), self._sal)
 
     def upload_workspace(self, path_to_workspace):
-        """Imports a Workspace from a compressed(.zip) workspace file.
-        Returns the workspace class object of the imported workspace.
-        Similar to :obj:`~modelon.impact.client.Client.import_workspace_from_zip`,
-        but does the import in one go.
+        """Imports a Workspace from a compressed(.zip) workspace file. Returns
+        the workspace class object of the imported workspace. Similar to
+        :obj:`~modelon.impact.client.Client.import_workspace_from_zip`, but
+        does the import in one go.
 
-        Parameters:
+        Args:
 
-            path_to_workspace --
+            path_to_workspace:
                 The path for the compressed workspace(.zip) to be uploaded.
 
         Returns:
 
-            workspace --
+            workspace:
                 Workspace class object.
 
         Example::
 
             client.upload_workspace(path_to_workspace)
+
         """
         return self.import_workspace_from_zip(path_to_workspace).wait()
 
@@ -390,14 +393,14 @@ class Client:
         Returns an modelon.impact.client.operations.workspace.imports
         .WorkspaceImportOperation class object.
 
-        Parameters:
+        Args:
 
-            path_to_workspace --
+            path_to_workspace:
                 The path for the compressed workspace(.zip) to be uploaded.
 
         Returns:
 
-            WorkspaceImportOperation --
+            WorkspaceImportOperation:
                 An modelon.impact.client.operations.workspace.imports.
                 WorkspaceImportOperation class object.
 
@@ -448,23 +451,24 @@ class Client:
         return ProjectMatchings(project_matchings)
 
     def import_project_from_zip(self, path_to_project):
-        """Imports a Project from a compressed(.zip) project file.
-        Returns the project class object.
+        """Imports a Project from a compressed(.zip) project file. Returns the
+        project class object.
 
-        Parameters:
+        Args:
 
-            path_to_project --
+            path_to_project:
                 The path for the compressed project(.zip) to be uploaded.
 
         Returns:
 
-            ProjectImportOperation --
+            ProjectImportOperation:
                 An modelon.impact.client.operations.project_import.
                 ProjectImportOperation class object.
 
         Example::
 
             client.import_project_from_zip(path_to_project).wait()
+
         """
         resp = self._sal.project.import_from_zip(path_to_project)
         return ProjectImportOperation(resp["data"]["location"], self._sal)

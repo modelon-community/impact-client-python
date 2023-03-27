@@ -41,14 +41,16 @@ class ProjectContent:
 
     @property
     def relpath(self):
-        """
-        Relative path in the project. Can be file (e.g., SomeLib.mo) or folder
+        """Relative path in the project.
+
+        Can be file (e.g., SomeLib.mo) or folder
+
         """
         return Path(self._content['relpath'])
 
     @property
     def content_type(self) -> ContentType:
-        """Type of content"""
+        """Type of content."""
         return ContentType(self._content['contentType'])
 
     @property
@@ -58,7 +60,7 @@ class ProjectContent:
 
     @property
     def name(self):
-        """Modelica library name"""
+        """Modelica library name."""
         return self._content.get('name')
 
     @property
@@ -71,6 +73,7 @@ class ProjectContent:
         Example::
 
             content.delete()
+
         """
         self._sal.project.project_content_delete(self._project_id, self.id)
 
@@ -87,24 +90,24 @@ class ProjectContent:
     ):
         """Uploads a FMU to the workspace.
 
-        Parameters:
+        Args:
 
-            workspace --
+            workspace:
                 Workspace class object
 
-            fmu_path --
+            fmu_path:
                 The path for the FMU to be imported.
 
-            class_name --
+            class_name:
                 Qualified name of generated class. By default, 'class_name' is
                 set to the name of the library followed by a name based
                 on the filename of the imported FMU.
 
-            overwrite --
+            overwrite:
                 Determines if any already existing files should be overwritten.
                 Default: False.
 
-            include_patterns, exclude_patterns --
+            include_patterns, exclude_patterns:
                 Specifies what variables from the FMU to include and/or exclude in the
                 wrapper model. These two arguments are patterns or lists of patterns as
                 the same kind as the argument 'filter' for the function
@@ -115,7 +118,7 @@ class ProjectContent:
                 always excluded.
                 Default value: None (which means to include all the variables).
 
-            top_level_inputs --
+            top_level_inputs:
                 Specify what inputs that should be kept as inputs, i.e. with or without
                 the input keyword. The argument is a pattern similar to the arguments
                 include_patterns and exclude_patterns. Example: If
@@ -126,7 +129,7 @@ class ProjectContent:
                 Default value: None (which means all inputs are kept as inputs)
                 Type: str or a list of strings
 
-            step_size --
+            step_size:
                 Specify what value to set for the parameter for step size in the
                 generated model. By default the parameter is set to zero, which
                 inturn means that the step size will be set during simulation based
@@ -142,6 +145,7 @@ class ProjectContent:
             workspace = client.get_workspace("test")
             content.upload_fmu(workspace, 'C:/A.fmu',"Test")
             content.upload_fmu(workspace, 'C:/B.fmu',"Test",class_name="Test.Model")
+
         """
         class_name = class_name or ".".join(
             [self.relpath.stem.split(' ')[0], os.path.split(fmu_path)[-1].strip('.fmu')]

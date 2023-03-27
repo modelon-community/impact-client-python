@@ -12,9 +12,8 @@ def _set_options(options, **modified):
 
 
 class BaseExecutionOptions(Mapping, ABC):
-    """
-    Base class for the simulation, compiler, solver and runtime options settings.
-    """
+    """Base class for the simulation, compiler, solver and runtime options
+    settings."""
 
     def __init__(self, values: Dict[str, Any], custom_function_name: str):
         self._values = values
@@ -35,9 +34,9 @@ class BaseExecutionOptions(Mapping, ABC):
     def with_values(self, **modified):
         """Sets/updates the options.
 
-        Parameters:
+        Args:
 
-            parameters --
+            parameters:
                 A keyworded, variable-length argument list of options.
 
         Example::
@@ -48,6 +47,7 @@ class BaseExecutionOptions(Mapping, ABC):
                 cs_solver=0)
             sol_opts = custom_function.get_solver_options().with_values(rtol=1e-7)
             sim_opts = custom_function.get_simulation_options().with_values(ncp=500)
+
         """
         values = _set_options(self._values, **modified)
         return self.__class__(values, self._custom_function_name)
@@ -69,19 +69,20 @@ class SimulationOptions(BaseExecutionOptions):
     def with_result_filter(self, pattern: Union[str, List[str]]):
         """Sets the variable filter for results.
 
-        Parameters:
+        Args:
 
-            pattern --
-                A filter pattern for choosing which variables to actually store
-            result for. The syntax can be found in
-            http://en.wikipedia.org/wiki/Glob_%28programming%29 . An
-            example is filter = "*der" , stores all variables ending with
-            'der'. Can also be a list.
+            pattern:
+                A filter pattern for choosing which variables to actually
+                store result for. The syntax can be found in
+                https://en.wikipedia.org/wiki/Glob_(programming).
+                An example for filter is `*der`, which would stores all
+                variables ending with `der`. Can also be a list.
 
         Example::
 
             sim_opts = custom_function.get_simulation_options().with_result_filter(
                 pattern = ["*.phi"])
+
         """
         if not isinstance(pattern, str):
             pattern = str(pattern)

@@ -122,7 +122,7 @@ It is possible to upload external result files to initialize a case from. This c
 for initializing from in a case and be used as an alternative to :ref:`initializing from another case <Initialize from case>`.
 Currently, '.mat' files are supported for result import.
 
-Here is a code snippet, where an external result is imported and used to initialzie a case::
+Here is a code snippet, where an external result is imported and used to initialize a case::
 
    result = workspace.upload_result(path_to_result="<path_to_result>/result.mat", label = 
             "result_to_init", description= "Converged result file").wait()

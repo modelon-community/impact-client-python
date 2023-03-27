@@ -27,18 +27,18 @@ class ProjectType(enum.Enum):
 
 @dataclass
 class GitRepoURL:
-    """GitRepoURL represents a project referenced in a git repo
-    String representation is url[@[refname][:sha1]]
-    """
+    """GitRepoURL represents a project referenced in a git repo String
+    representation is url[@[refname][:sha1]]"""
 
     url: str
-    """ URL without protocol part, e.g., gitlab.modelon.com/group/project/repo """
+    """URL without protocol part, e.g.,
+    gitlab.modelon.com/group/project/repo."""
 
     refname: str = ""
-    """ Reference name (branch, tag or similar) """
+    """Reference name (branch, tag or similar)"""
 
     sha1: str = ""
-    """ Commit hash """
+    """Commit hash."""
 
     def __str__(self):
         repo_url = self.url
@@ -59,22 +59,22 @@ class GitRepoURL:
 
 @dataclass
 class SvnRepoURL:
-    """SvnRepoURL represents a project referenced in a Subversion repo
-    String representation is url/trunk/subdir[@[rev]]
-    """
+    """SvnRepoURL represents a project referenced in a Subversion repo String
+    representation is url/trunk/subdir[@[rev]]"""
 
     root_url: str
-    """ URL without protocol part up to branch part, e.g., svn.modelon.com/PNNN/ """
+    """URL without protocol part up to branch part, e.g.,
+    svn.modelon.com/PNNN/"""
 
     branch: str = ""
-    """ Non-empty if it's standard layout and can be either
-        trunk or branches/name or tags/name """
+    """Non-empty if it's standard layout and can be either trunk or
+    branches/name or tags/name."""
 
     url_from_root: str = ""
-    """ URL segment after branch (could be saved in subdir as well) """
+    """URL segment after branch (could be saved in subdir as well)"""
 
     rev: str = ""
-    """ Revision number or empty (means HEAD) """
+    """Revision number or empty (means HEAD)"""
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, SvnRepoURL):
@@ -144,26 +144,24 @@ class VcsUri:
 
 
 class ProjectDependency:
-    """Dependency entry for a project"""
+    """Dependency entry for a project."""
 
     def __init__(self, data):
         self._data = data
 
     @property
     def name(self):
-        """The name of the project dependency"""
+        """The name of the project dependency."""
         return self._data.get('name')
 
     @property
     def version_specifier(self):
-        """Version specifier"""
+        """Version specifier."""
         return self._data.get('versionSpecifier')
 
 
 class ProjectDefinition:
-    """
-    Impact project definition.
-    """
+    """Impact project definition."""
 
     def __init__(self, data):
         self._data = data
@@ -204,9 +202,7 @@ class ProjectDefinition:
 
 
 class Project:
-    """
-    Class containing Project functionalities.
-    """
+    """Class containing Project functionalities."""
 
     def __init__(
         self,
@@ -230,7 +226,7 @@ class Project:
 
     @property
     def id(self) -> str:
-        """Project id"""
+        """Project id."""
         return self._project_id
 
     @property
@@ -239,7 +235,7 @@ class Project:
 
     @property
     def vcs_uri(self) -> Optional[VcsUri]:
-        """Project vcs uri"""
+        """Project vcs uri."""
         return self._vcs_uri
 
     @property
@@ -252,6 +248,7 @@ class Project:
         Example::
 
             project.delete()
+
         """
         self._sal.project.project_delete(self._project_id)
 
@@ -264,6 +261,7 @@ class Project:
         Example::
 
             project.get_contents()
+
         """
         return [
             self._get_project_content(content)
@@ -275,16 +273,17 @@ class Project:
     ) -> Optional[ProjectContent]:
         """Gets the first matching project content with the given name.
 
-        Parameters:
+        Args:
 
-            name --
+            name:
                 The name of the content.
 
-            content_type --
+            content_type:
                 The type of the project content.
         Example::
             from modelon.impact.client import ContentType
             project.get_content_by_name(name, ContentType.MODELICA)
+
         """
         contents = self.get_contents()
         if content_type:
@@ -295,34 +294,36 @@ class Project:
             return None
 
     def get_modelica_library_by_name(self, name: str) -> Optional[ProjectContent]:
-        """Gets the first matching modelica library with the given name.
+        """Gets the first matching Modelica library with the given name.
 
-        Parameters:
+        Args:
 
-            name --
-                The modelica library name.
+            name:
+                The Modelica library name.
 
         Example::
 
             project.get_content_by_name(name)
+
         """
         return self.get_content_by_name(name, ContentType.MODELICA)
 
     def upload_content(self, path_to_content: str, content_type: ContentType):
         """Upload content to a project.
 
-        Parameters:
+        Args:
 
-            path_to_content --
+            path_to_content:
                 The path for the content to be imported.
 
-            content_type --
+            content_type:
                 The type of the imported content.
 
         Example::
             from modelon.impact.client import ContentType
 
             project.upload_content('/home/test.mo', ContentType.MODELICA).wait()
+
         """
         resp = self._sal.project.project_content_upload(
             path_to_content, self._project_id, content_type.value
@@ -330,11 +331,12 @@ class Project:
         return ContentImportOperation(resp['data']['location'], self._sal)
 
     def upload_modelica_library(self, path_to_lib: str):
-        """Uploads/adds a non-encrypted modelica library or a modelica model to the project.
+        """Uploads/adds a non-encrypted Modelica library or a Modelica model to
+        the project.
 
-        Parameters:
+        Args:
 
-            path_to_lib --
+            path_to_lib:
                 The path for the library to be imported. Only '.mo' or '.zip' file
                 extension are supported for upload.
 
@@ -342,6 +344,7 @@ class Project:
 
             project.upload_model_library('C:/A.mo')
             project.upload_model_library('C:/B.zip')
+
         """
         if Path(path_to_lib).suffix.lower() not in ['.mo', '.zip']:
             raise ValueError(
@@ -355,17 +358,18 @@ class Project:
     ):
         """Get project execution option.
 
-        Parameters:
+        Args:
 
-            custom_function --
+            custom_function:
                 The CustomFunction class object.
 
-            use_defaults --
+            use_defaults:
                 If true, default options are used.
 
         Example::
             dynamic = workspace.get_custom_function('dynamic')
             project.get_options(dynamic)
+
         """
         if use_defaults:
             options = self._sal.project.project_default_options_get(

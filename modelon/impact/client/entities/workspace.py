@@ -136,9 +136,7 @@ class WorkspaceDefinition:
 
 
 class Workspace:
-    """
-    Class containing Workspace functionalities.
-    """
+    """Class containing Workspace functionalities."""
 
     def __init__(
         self,
@@ -158,7 +156,7 @@ class Workspace:
 
     @property
     def id(self) -> str:
-        """Workspace id"""
+        """Workspace id."""
         return self._workspace_id
 
     @property
@@ -166,22 +164,22 @@ class Workspace:
         return self._workspace_definition
 
     def get_custom_function(self, name: str) -> CustomFunction:
-        """
-        Returns a CustomFunction class object.
+        """Returns a CustomFunction class object.
 
-        Parameters:
+        Args:
 
-            name --
+            name:
                 The name of the custom function.
 
         Returns:
 
-            custom_function --
+            custom_function:
                 The CustomFunction class object.
 
         Example::
 
             workspace.get_custom_function('dynamic')
+
         """
         custom_function = self._sal.custom_function.custom_function_get(
             self._workspace_id, name
@@ -194,17 +192,17 @@ class Workspace:
         )
 
     def get_custom_functions(self) -> List[CustomFunction]:
-        """
-        Returns a list of CustomFunctions class objects.
+        """Returns a list of CustomFunctions class objects.
 
         Returns:
 
-            custom_functions --
+            custom_functions:
                 A list of CustomFunction class objects.
 
         Example::
 
             workspace.get_custom_functions()
+
         """
         custom_functions = self._sal.custom_function.custom_functions_get(
             self._workspace_id
@@ -225,6 +223,7 @@ class Workspace:
         Example::
 
             workspace.delete()
+
         """
         self._sal.workspace.workspace_delete(self._workspace_id)
 
@@ -236,15 +235,15 @@ class Workspace:
     ) -> ExternalResultImportOperation:
         """Uploads a '.mat' result file to the workspace.
 
-        Parameters:
+        Args:
 
-            path_to_result --
+            path_to_result:
                 The path for the result file to be imported.
 
-            label --
+            label:
                 The label of the result file. Default: None.
 
-            description --
+            description:
                 The description of the result file. Default: None.
 
         Example::
@@ -252,6 +251,7 @@ class Workspace:
             workspace.upload_result('C:/A.mat')
             workspace.upload_result('C:/B.mat', label = "result_for_PID.mat",
             description = "This is a result file for PID controller")
+
         """
         resp = self._sal.external_result.result_upload(
             self._workspace_id, path_to_result, label=label, description=description
@@ -265,15 +265,15 @@ class Workspace:
         Returns an modelon.impact.client.operations.workspace.exports
         .WorkspaceExportOperation class object.
 
-        Parameters:
+        Args:
 
-            options --
+            options:
                 The definition of what workspace resources to include when
                 exporting the workspace.
 
         Returns:
 
-            WorkspaceExportOperation --
+            WorkspaceExportOperation:
                 An modelon.impact.client.operations.workspace.exports.
                 WorkspaceExportOperation class object.
 
@@ -305,23 +305,23 @@ class Workspace:
         return WorkspaceExportOperation(resp["data"]["location"], self._sal)
 
     def download(self, options: Dict[str, Any], path: str):
-        """Downloads the workspace as a binary compressed archive.
-        Returns the local path to the downloaded workspace archive.
-        Similar to :obj:`~modelon.impact.client.entities.workspace.Workspace.export`,
-        but does the entire setup and download in one go.
+        """Downloads the workspace as a binary compressed archive. Returns the
+        local path to the downloaded workspace archive. Similar to
+        :obj:`~modelon.impact.client.entities.workspace.Workspace.export`, but
+        does the entire setup and download in one go.
 
-        Parameters:
+        Args:
 
-            options --
+            options:
                 The definition of what workspace resources to include when
                 exporting the workspace.
 
-            path --
+            path:
                 The local path to store the downloaded workspace.
 
         Returns:
 
-            path --
+            path:
                 Local path to the downloaded workspace archive.
 
         Example::
@@ -346,23 +346,24 @@ class Workspace:
                 }
             }
             workspace.download(options, path)
+
         """
         ws_path = os.path.join(path, self._workspace_id + ".zip")
         ops = self.export(options).wait()
         return ops.download_as(ws_path)
 
     def clone(self) -> 'Workspace':
-        """Clones the workspace.
-        Returns a clone Workspace class object.
+        """Clones the workspace. Returns a clone Workspace class object.
 
         Returns:
 
-            workspace_clone --
+            workspace_clone:
                 Clones workspace class object.
 
         Example::
 
             workspace.clone()
+
         """
         resp = self._sal.workspace.workspace_clone(self._workspace_id)
         return Workspace(
@@ -370,25 +371,25 @@ class Workspace:
         )
 
     def get_model(self, class_name: str, project: Optional[Project] = None):
-        """
-        Returns a Model class object.
+        """Returns a Model class object.
 
-        Parameters:
+        Args:
 
-            class_name --
-                The modelica class path of the model.
+            class_name:
+                The Modelica class path of the model.
 
-            project --
+            project:
                 Project class object
 
         Returns:
 
-            model --
+            model:
                 Model class object.
 
         Example::
 
             workspace.get_model(class_name)
+
         """
         project = project or self.get_default_project()
         return modelon.impact.client.entities.model.Model(
@@ -396,17 +397,17 @@ class Workspace:
         )
 
     def get_fmus(self) -> List[ModelExecutable]:
-        """
-        Returns a list of ModelExecutable class objects.
+        """Returns a list of ModelExecutable class objects.
 
         Returns:
 
-            FMUs --
+            FMUs:
                 List of ModelExecutable class objects.
 
         Example::
 
             workspace.get_fmus()
+
         """
         resp = self._sal.workspace.fmus_get(self._workspace_id)
         return [
@@ -415,33 +416,33 @@ class Workspace:
         ]
 
     def get_fmu(self, fmu_id: str) -> ModelExecutable:
-        """
-        Returns a ModelExecutable class object.
+        """Returns a ModelExecutable class object.
 
         Returns:
 
-            FMU --
+            FMU:
                 ModelExecutable class object.
 
         Example::
 
             workspace.get_fmu(fmu_id)
+
         """
         resp = self._sal.workspace.fmu_get(self._workspace_id, fmu_id)
         return ModelExecutable(self._workspace_id, resp["id"], self._sal, resp)
 
     def get_experiments(self) -> List[Experiment]:
-        """
-        Returns a list of Experiment class objects.
+        """Returns a list of Experiment class objects.
 
         Returns:
 
-            experiment --
+            experiment:
                 List of Experiment class objects.
 
         Example::
 
             workspace.get_experiments()
+
         """
         resp = self._sal.workspace.experiments_get(self._workspace_id)
         return [
@@ -450,22 +451,22 @@ class Workspace:
         ]
 
     def get_experiment(self, experiment_id: str) -> Experiment:
-        """
-        Returns an Experiment class object.
+        """Returns an Experiment class object.
 
-        Parameters:
+        Args:
 
-            experiment_id --
+            experiment_id:
                 The ID of the experiment.
 
         Returns:
 
-            experiment --
+            experiment:
                 Experiment class object.
 
         Example::
 
             workspace.get_experiment(experiment_id)
+
         """
         resp = self._sal.workspace.experiment_get(self._workspace_id, experiment_id)
         return Experiment(self._workspace_id, resp["id"], self._sal, resp)
@@ -475,27 +476,27 @@ class Workspace:
         definition: ExperimentDefinition,
         user_data: Optional[Dict[str, Any]] = None,
     ) -> Experiment:
-        """Creates an experiment.
-        Returns an Experiment class object.
+        """Creates an experiment. Returns an Experiment class object.
 
-        Parameters:
+        Args:
 
-            definition --
+            definition:
                 An parametrized experiment definition class of type
                 modelon.impact.client.experiment_definition.base.SimpleModelicaExperimentDefinition
                 or
                 modelon.impact.client.experiment_definition.base.SimpleFMUExperimentDefinition.
-            user_data --
+            user_data:
                 Optional dictionary object with custom data to attach to the experiment.
 
         Returns:
 
-            experiment --
+            experiment:
                 Experiment class object.
 
         Example::
 
             workspace.create_experiment(definition)
+
         """
         if isinstance(
             definition,
@@ -521,26 +522,26 @@ class Workspace:
         definition: ExperimentDefinition,
         user_data: Optional[Dict[str, Any]] = None,
     ) -> ExperimentOperation:
-        """Exceutes an experiment.
-        Returns an modelon.impact.client.operations.experiment.ExperimentOperation
-        class object.
+        """Exceutes an experiment. Returns an
+        modelon.impact.client.operations.experiment.ExperimentOperation class
+        object.
 
-        Parameters:
+        Args:
 
-            definition --
+            definition:
                 An experiment definition class instance of
                 modelon.impact.client.experiment_definition.base.SimpleFMUExperimentDefinition
                 or
                 modelon.impact.client.experiment_definition.base.SimpleModelicaExperimentDefinition
                 or
                 a dictionary object containing the definition.
-            user_data --
+            user_data:
                 Optional dictionary object with custom data to attach to the experiment.
 
 
         Returns:
 
-            experiment_ops --
+            experiment_ops:
                 An modelon.impact.client.operations.experiment.ExperimentOperation
                 class object.
 
@@ -550,6 +551,7 @@ class Workspace:
             experiment_ops.cancel()
             experiment_ops.status()
             experiment_ops.wait()
+
         """
         exp_id = self.create_experiment(definition, user_data).id
         return ExperimentOperation(
@@ -563,13 +565,14 @@ class Workspace:
 
         Returns:
 
-            projects --
+            projects:
                 A list of modelon.impact.client.entities.project.Project
                 class object.
 
         Example::
 
             projects = workspace.get_projects()
+
         """
         resp = self._sal.workspace.projects_get(
             self._workspace_id, vcs_info=vcs_info, include_disabled=include_disabled
@@ -591,13 +594,14 @@ class Workspace:
 
         Returns:
 
-            dependencies --
+            dependencies:
                 A list of modelon.impact.client.entities.project.Project
                 class object.
 
         Example::
 
             dependencies = workspace.get_dependencies()
+
         """
         resp = self._sal.workspace.dependencies_get(
             self._workspace_id, vcs_info, include_disabled
@@ -618,13 +622,14 @@ class Workspace:
 
         Returns:
 
-            project --
+            project:
                 An modelon.impact.client.entities.project.Project
                 class object.
 
         Example::
 
             project = workspace.create_project("test")
+
         """
         resp = self._sal.workspace.project_create(self._workspace_id, name)
         return Project(
@@ -640,13 +645,14 @@ class Workspace:
 
         Returns:
 
-            project --
+            project:
                 An modelon.impact.client.entities.project.Project
                 class object.
 
         Example::
 
             project = workspace.get_default_project()
+
         """
         if not self._workspace_definition.default_project_id:
             raise ValueError(
@@ -671,23 +677,24 @@ class Workspace:
         )
 
     def import_project_from_zip(self, path_to_project):
-        """Imports a Project from a compressed(.zip) project file and adds
-        it to the workspace. Returns the project class object.
+        """Imports a Project from a compressed(.zip) project file and adds it
+        to the workspace. Returns the project class object.
 
-        Parameters:
+        Args:
 
-            path_to_project --
+            path_to_project:
                 The path for the compressed project(.zip) to be uploaded.
 
         Returns:
 
-            ProjectImportOperation --
+            ProjectImportOperation:
                 An modelon.impact.client.operations.project_import.
                 ProjectImportOperation class object.
 
         Example::
 
             workspace.import_project_from_zip(path_to_project).wait()
+
         """
         resp = self._sal.workspace.import_project_from_zip(
             self._workspace_id, path_to_project
@@ -698,20 +705,21 @@ class Workspace:
         """Imports a Project dependency from a compressed(.zip) project file
         and adds it to the workspace. Returns the project class object.
 
-        Parameters:
+        Args:
 
-            path_to_dependency --
+            path_to_dependency:
                 The path for the compressed project(.zip) to be uploaded.
 
         Returns:
 
-            ProjectImportOperation --
+            ProjectImportOperation:
                 An modelon.impact.client.operations.project_import.
                 ProjectImportOperation class object.
 
         Example::
 
             workspace.import_dependency_from_zip(path_to_project).wait()
+
         """
         resp = self._sal.workspace.import_dependency_from_zip(
             self._workspace_id, path_to_dependency

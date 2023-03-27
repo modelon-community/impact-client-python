@@ -5,9 +5,11 @@ from modelon.impact.client.sal.service import Service
 
 
 class WorkspaceConversionOperation(AsyncOperation):
-    """
-    An conversion operation class for the modelon.impact.client.entities.workspace.
+    """An conversion operation class for the
+    modelon.impact.client.entities.workspace.
+
     Workspace class.
+
     """
 
     def __init__(self, location: str, service: Service):
@@ -26,12 +28,12 @@ class WorkspaceConversionOperation(AsyncOperation):
 
     @property
     def id(self):
-        """Workspace conversion id"""
+        """Workspace conversion id."""
         return self._location.split('/')[-1]
 
     @property
     def name(self):
-        """Return the name of operation"""
+        """Return the name of operation."""
         return "Workspace conversion"
 
     def _info(self):
@@ -40,12 +42,12 @@ class WorkspaceConversionOperation(AsyncOperation):
         ]
 
     def data(self):
-        """
-        Returns a Workspace class instance of the converted workspace.
+        """Returns a Workspace class instance of the converted workspace.
 
         Returns:
 
             An Workspace class instance.
+
         """
         info = self._info()
         if info['status'] == AsyncOperationStatus.ERROR.value:
@@ -58,8 +60,7 @@ class WorkspaceConversionOperation(AsyncOperation):
         return Workspace(resp["id"], WorkspaceDefinition(resp["definition"]), self._sal)
 
     def status(self):
-        """
-        Returns the conversion status as an enumeration.
+        """Returns the conversion status as an enumeration.
 
         Returns:
             The AsyncOperationStatus enum. The status can have the enum values
@@ -69,5 +70,6 @@ class WorkspaceConversionOperation(AsyncOperation):
         Example::
 
             client.convert_workspace(workspace_id).status()
+
         """
         return AsyncOperationStatus(self._info()["status"])

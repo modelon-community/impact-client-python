@@ -32,19 +32,21 @@ class _ModelExecutableRunInfo:
 
     @property
     def status(self):
-        """Status info for a Model-Executable"""
+        """Status info for a Model-Executable."""
         return self._status
 
     @property
     def errors(self):
-        """A list of errors. Is empty unless 'status' attribute is 'FAILED'"""
+        """A list of errors.
+
+        Is empty unless 'status' attribute is 'FAILED'
+
+        """
         return self._errors
 
 
 class ModelExecutable:
-    """
-    Class containing ModelExecutable functionalities.
-    """
+    """Class containing ModelExecutable functionalities."""
 
     def __init__(
         self,
@@ -71,7 +73,7 @@ class ModelExecutable:
 
     @property
     def id(self) -> str:
-        """FMU id"""
+        """FMU id."""
         return self._fmu_id
 
     def _variable_modifiers(self) -> Dict[str, Any]:
@@ -85,13 +87,13 @@ class ModelExecutable:
 
     @property
     def info(self) -> Dict[str, Any]:
-        """Deprecated, use 'run_info' attribute"""
+        """Deprecated, use 'run_info' attribute."""
         logger.warning("This attribute is deprectated, use 'run_info' instead")
         return self._get_info()
 
     @property
     def run_info(self) -> _ModelExecutableRunInfo:
-        """Compilation run information"""
+        """Compilation run information."""
         run_info = self._get_info()["run_info"]
         status = ModelExecutableStatus(run_info["status"])
         errors = run_info.get("errors", [])
@@ -99,8 +101,13 @@ class ModelExecutable:
 
     @property
     def metadata(self) -> Dict[str, Any]:
-        """FMU metadata. Returns the 'iteration_variable_count' and 'residual_variable_count'
-        only for steady state model compiled as an FMU"""
+        """FMU metadata.
+
+        Returns the 'iteration_variable_count' and
+        'residual_variable_count' only for steady state model compiled
+        as an FMU
+
+        """
         assert_successful_operation(self.is_successful(), "Compilation")
         parameter_state = {"parameterState": self._variable_modifiers()}
         return self._sal.model_executable.ss_fmu_metadata_get(
@@ -108,9 +115,8 @@ class ModelExecutable:
         )
 
     def is_successful(self) -> bool:
-        """
-        Returns True if the model has compiled successfully.
-        Use the 'run_info' attribute to get more info.
+        """Returns True if the model has compiled successfully. Use the
+        'run_info' attribute to get more info.
 
         Returns:
 
@@ -120,16 +126,16 @@ class ModelExecutable:
         Example::
 
             fmu.is_successful()
+
         """
         return self.run_info.status == ModelExecutableStatus.SUCCESSFUL
 
     def get_log(self) -> Log:
-        """
-        Returns the compilation log object.
+        """Returns the compilation log object.
 
         Returns:
 
-            log --
+            log:
                 The compilation log object.
 
         Raises:
@@ -141,6 +147,7 @@ class ModelExecutable:
 
             log = fmu.get_log()
             log.show()
+
         """
         _assert_compilation_is_complete(self.run_info.status, "Compilation")
         return Log(
@@ -153,16 +160,16 @@ class ModelExecutable:
         Example::
 
             fmu.delete()
+
         """
         self._sal.model_executable.fmu_delete(self._workspace_id, self._fmu_id)
 
     def get_settable_parameters(self) -> List[str]:
-        """
-        Returns a list of settable parameters for the FMU.
+        """Returns a list of settable parameters for the FMU.
 
         Returns:
 
-            settable_parameters --
+            settable_parameters:
                 A list of parameters than can be set on the FMU.
 
         Raises:
@@ -173,6 +180,7 @@ class ModelExecutable:
         Example::
 
             fmu.get_settable_parameters()
+
         """
         assert_successful_operation(self.is_successful(), "Compilation")
         return self._sal.model_executable.settable_parameters_get(
@@ -186,22 +194,21 @@ class ModelExecutable:
         simulation_options: Optional[SimulationOptionsOrDict] = None,
         simulation_log_level: str = "WARNING",
     ):
-        """
-        Returns a new experiment definition using this FMU.
+        """Returns a new experiment definition using this FMU.
 
-        Parameters:
+        Args:
 
-            custom_function --
+            custom_function:
                 The custom function to use for this experiment.
-            solver_options --
+            solver_options:
                 The solver options to use for this experiment. By default the options
                 is set to None, which means the default options for the
                 custom_function input is used.
-            simulation_options --
+            simulation_options:
                 The simulation_options to use for this experiment. By default the
                 options is set to None, which means the default options for the
                 custom_function input is used.
-            simulation_log_level --
+            simulation_log_level:
                 Simulation log level for this experiment. Default is 'WARNING'.
 
         Example::
@@ -214,6 +221,7 @@ class ModelExecutable:
             experiment_definition = fmu.new_experiment_definition(
                 dynamic, solver_options, simulation_options)
             experiment = workspace.execute(experiment_definition).wait()
+
         """
         return base.SimpleFMUExperimentDefinition(
             self,
@@ -224,18 +232,18 @@ class ModelExecutable:
         )
 
     def download(self, path: Optional[str] = None):
-        """Downloads an FMU binary that is compiled.
-        Returns the local path to the downloaded FMU archive.
+        """Downloads an FMU binary that is compiled. Returns the local path to
+        the downloaded FMU archive.
 
-        Parameters:
+        Args:
 
-            path --
+            path:
                 The local path to store the downloaded FMU. Default: None.
                 If no path is given, FMU will be downloaded in a temporary directory.
 
         Returns:
 
-            path --
+            path:
                 Local path to the downloaded FMU.
 
         Raises:
@@ -244,10 +252,12 @@ class ModelExecutable:
             OperationFailureError if compilation process has failed or was cancelled.
 
         Example::
+
             fmu =  model.compile().wait()
             if fmu.is_successful():
                 fmu_path = fmu.download()
                 fmu_path = fmu.download('C:/Downloads')
+
         """
         assert_successful_operation(self.is_successful(), "Compilation")
         data = self._sal.workspace.fmu_download(self._workspace_id, self._fmu_id)

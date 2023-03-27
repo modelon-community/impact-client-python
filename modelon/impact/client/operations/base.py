@@ -11,10 +11,7 @@ logger = logging.getLogger(__name__)
 
 @enum.unique
 class Status(enum.Enum):
-    """
-    Class representing an enumeration for the possible
-    operation states.
-    """
+    """Class representing an enumeration for the possible operation states."""
 
     PENDING = "pending"
     RUNNING = "running"
@@ -25,9 +22,7 @@ class Status(enum.Enum):
 
 @enum.unique
 class AsyncOperationStatus(enum.Enum):
-    """
-    Defines all states for import
-    """
+    """Defines all states for import."""
 
     RUNNING = 'running'
     READY = 'ready'
@@ -38,59 +33,45 @@ class AsyncOperationStatus(enum.Enum):
 
 
 class BaseOperation(ABC):
-    """
-    Abstract base operation class.
-    """
+    """Abstract base operation class."""
 
     @abstractmethod
     def data(self):
-        """
-        Returns the operation class.
-        """
+        """Returns the operation class."""
         pass
 
     @abstractmethod
     def status(self):
-        """
-        Returns the operation status as an enumeration.
-        """
+        """Returns the operation status as an enumeration."""
         pass
 
     @abstractmethod
     def cancel(self):
-        """
-        Terminates the operation.
-        """
+        """Terminates the operation."""
         pass
 
     @property
     @abstractmethod
     def name(self) -> str:
-        """
-        Name of the operation.
-        """
+        """Name of the operation."""
         pass
 
     @abstractmethod
     def wait(self, timeout):
-        """
-        Waits for the operation to finish.
-        """
+        """Waits for the operation to finish."""
         pass
 
 
 class AsyncOperation(BaseOperation):
-    """
-    File operation class containing base functionality.
-    """
+    """File operation class containing base functionality."""
 
     def wait(self, timeout: Optional[float] = None) -> Any:
-        """Waits until the operation completes.
-        Returns the operation class instance if operation completes.
+        """Waits until the operation completes. Returns the operation class
+        instance if operation completes.
 
-        Parameters:
+        Args:
 
-            timeout --
+            timeout:
                 Time to wait in seconds for achieving the status. By default
                 the timeout is set to 'None', which signifies an infinite time
                 to wait until the status is achieved.
@@ -106,6 +87,7 @@ class AsyncOperation(BaseOperation):
         Example::
 
             workspace.upload_result('C:/A.mat').wait(timeout = 120)
+
         """
         start_t = time.time()
         while True:
@@ -128,13 +110,10 @@ class AsyncOperation(BaseOperation):
 
 
 class ExecutionOperation(BaseOperation):
-    """
-    Execution operation class containing base functionality.
-    """
+    """Execution operation class containing base functionality."""
 
     def is_complete(self) -> bool:
-        """
-        Returns True if the operation has completed.
+        """Returns True if the operation has completed.
 
         Returns:
 
@@ -145,21 +124,22 @@ class ExecutionOperation(BaseOperation):
 
            model.compile(options).is_complete()
            workspace.execute(definition).is_complete()
+
         """
         return self.status() == Status.DONE
 
     def wait(self, timeout: Optional[float] = None, status: Status = Status.DONE):
-        """Waits until the operation achieves the set status.
-        Returns the operation class instance if the set status is achieved.
+        """Waits until the operation achieves the set status. Returns the
+        operation class instance if the set status is achieved.
 
-        Parameters:
+        Args:
 
-            timeout --
+            timeout:
                 Time to wait in seconds for achieving the status. By default
                 the timeout is set to 'None', which signifies an infinite time
                 to wait until the status is achieved.
 
-            status --
+            status:
                 Operation status to be achieved.
                 Default: Status.DONE
 
@@ -178,6 +158,7 @@ class ExecutionOperation(BaseOperation):
                status = Status.CANCELLED
            )
            workspace.execute(experiment_definition).wait(timeout = 120)
+
         """
         start_t = time.time()
         while True:

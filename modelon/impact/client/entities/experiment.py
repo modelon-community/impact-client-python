@@ -36,32 +36,36 @@ class _ExperimentRunInfo:
 
     @property
     def status(self):
-        """Status info for an Experiment"""
+        """Status info for an Experiment."""
         return self._status
 
     @property
     def errors(self):
-        """A list of errors. Is empty unless 'status' attribute is 'FAILED'"""
+        """A list of errors.
+
+        Is empty unless 'status' attribute is 'FAILED'
+
+        """
         return self._errors
 
     @property
     def successful(self):
-        """Number of cases in experiment that are successful"""
+        """Number of cases in experiment that are successful."""
         return self._successful
 
     @property
     def failed(self):
-        """Number of cases in experiment thar have failed"""
+        """Number of cases in experiment thar have failed."""
         return self._failed
 
     @property
     def cancelled(self):
-        """Number of cases in experiment that are cancelled"""
+        """Number of cases in experiment that are cancelled."""
         return self._cancelled
 
     @property
     def not_started(self):
-        """Number of cases in experiment that have not yet started"""
+        """Number of cases in experiment that have not yet started."""
         return self._not_started
 
 
@@ -71,14 +75,12 @@ class _ExperimentMetaData:
 
     @property
     def user_data(self) -> Dict[str, Any]:
-        """User data dictionary object attached to experiment, if any"""
+        """User data dictionary object attached to experiment, if any."""
         return self._user_data
 
 
 class Experiment:
-    """
-    Class containing Experiment functionalities.
-    """
+    """Class containing Experiment functionalities."""
 
     def __init__(
         self,
@@ -100,7 +102,7 @@ class Experiment:
 
     @property
     def id(self) -> str:
-        """Experiment id"""
+        """Experiment id."""
         return self._exp_id
 
     def _get_info(self) -> Dict[str, Any]:
@@ -113,7 +115,7 @@ class Experiment:
 
     @property
     def run_info(self) -> _ExperimentRunInfo:
-        """Experiment run information"""
+        """Experiment run information."""
         run_info = self._get_info()["run_info"]
 
         status = ExperimentStatus(run_info["status"])
@@ -128,8 +130,12 @@ class Experiment:
 
     @property
     def metadata(self) -> Optional[_ExperimentMetaData]:
-        """Experiment metadata. Returns custom user_data dictionary object attached
-        to the experiment, if any."""
+        """Experiment metadata.
+
+        Returns custom user_data dictionary object attached to the
+        experiment, if any.
+
+        """
 
         info = self._get_info()
         meta_data = info.get("meta_data")
@@ -142,29 +148,29 @@ class Experiment:
 
     @property
     def info(self) -> Dict[str, Any]:
-        """Deprecated, use 'run_info' attribute"""
+        """Deprecated, use 'run_info' attribute."""
         logger.warning("This attribute is deprectated, use 'run_info' instead")
         return self._get_info()
 
     def execute(
         self, with_cases: Optional[List[Case]] = None, sync_case_changes: bool = True
     ):
-        """Exceutes an experiment.
-        Returns an modelon.impact.client.operations.experiment.ExperimentOperation class
+        """Exceutes an experiment. Returns an
+        modelon.impact.client.operations.experiment.ExperimentOperation class
         object.
 
-        Parameters:
+        Args:
 
-            with_cases --
+            with_cases:
                 A list of cases objects to execute.
-            sync_case_changes --
+            sync_case_changes:
                 Boolean specifying if to sync the cases given with the 'with_cases'
                 argument against the server before executing the experiment.
                 Default is True.
 
         Returns:
 
-            experiment_ops --
+            experiment_ops:
                 An modelon.impact.client.operations.experiment.ExperimentOperation
                 class object.
 
@@ -178,6 +184,7 @@ class Experiment:
             generate_cases = experiment.execute(with_cases=[]).wait()
             cases_to_execute =  generate_cases.get_case('case_2')
             experiment = experiment.execute(with_cases=[cases_to_execute]).wait()
+
         """
         if sync_case_changes and with_cases is not None:
             for case in with_cases:
@@ -193,9 +200,8 @@ class Experiment:
         )
 
     def is_successful(self) -> bool:
-        """
-        Returns True if the Experiment is done and no cases has failed.
-        Use the 'run_info' attribute to get more info.
+        """Returns True if the Experiment is done and no cases has failed. Use
+        the 'run_info' attribute to get more info.
 
         Returns:
 
@@ -205,6 +211,7 @@ class Experiment:
         Example::
 
             experiment.is_successful()
+
         """
         return (
             self.run_info.status == ExperimentStatus.DONE
@@ -213,12 +220,11 @@ class Experiment:
         )
 
     def get_variables(self) -> List[str]:
-        """
-        Returns a list of variables available in the result.
+        """Returns a list of variables available in the result.
 
         Returns:
 
-            variables --
+            variables:
                 An list of result variables.
 
         Raises:
@@ -229,6 +235,7 @@ class Experiment:
         Example::
 
             experiment.get_variables()
+
         """
         _assert_experiment_is_complete(self.run_info.status, "Simulation")
         return self._sal.experiment.result_variables_get(
@@ -236,17 +243,17 @@ class Experiment:
         )
 
     def get_cases(self) -> List[Case]:
-        """
-        Returns a list of case objects for an experiment.
+        """Returns a list of case objects for an experiment.
 
         Returns:
 
-            cases --
+            cases:
                 An list of case objects.
 
         Example::
 
             experiment.get_cases()
+
         """
         resp = self._sal.experiment.cases_get(self._workspace_id, self._exp_id)
         return [
@@ -255,22 +262,22 @@ class Experiment:
         ]
 
     def get_case(self, case_id: str) -> Case:
-        """
-        Returns a case object for a given case_id.
+        """Returns a case object for a given case_id.
 
-        Parameters:
+        Args:
 
-            case_id --
+            case_id:
                 The case_id for the case.
 
         Returns:
 
-            cases --
+            cases:
                 An case object.
 
         Example::
 
             experiment.get_case('case_1')
+
         """
         case_data = self._sal.experiment.case_get(
             self._workspace_id, self._exp_id, case_id
@@ -280,38 +287,37 @@ class Experiment:
         )
 
     def get_cases_with_label(self, case_label: str) -> List[Case]:
-        """
-        Returns a list of case objects for an experiment with the label.
+        """Returns a list of case objects for an experiment with the label.
 
-        Parameters:
+        Args:
 
-            case_label --
+            case_label:
                 The case_label for the case.
 
         Returns:
 
-            cases --
+            cases:
                 An list of case objects.
 
         Example::
 
             experiment.get_cases_with_label('Cruise condition')
+
         """
         return [case for case in self.get_cases() if case.meta.label == case_label]
 
     def get_trajectories(self, variables: List[str]) -> Dict[str, Any]:
-        """
-        Returns a dictionary containing the result trajectories
-        for a list of result variables for all the cases.
+        """Returns a dictionary containing the result trajectories for a list
+        of result variables for all the cases.
 
-        Parameters:
+        Args:
 
-            variables --
+            variables:
                 A list of result variables to fecth trajectories for.
 
         Returns:
 
-            trajectory --
+            trajectory:
                 A dictionary object containing the result trajectories for all cases.
 
         Raises:
@@ -326,6 +332,7 @@ class Experiment:
             result = experiment.get_trajectories(['h', 'time'])
             height = result['case_1']['h']
             time = result['case_1']['time']
+
         """
         if not isinstance(variables, list):
             raise TypeError(
@@ -357,6 +364,7 @@ class Experiment:
         Example::
 
             experiment.delete()
+
         """
         self._sal.experiment.experiment_delete(self._workspace_id, self._exp_id)
 
@@ -366,6 +374,7 @@ class Experiment:
         Example::
 
             experiment.set_label("Engine run with Oil type B")
+
         """
         self._sal.experiment.experiment_set_label(
             self._workspace_id, self._exp_id, label

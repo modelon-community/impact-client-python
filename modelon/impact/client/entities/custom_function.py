@@ -50,9 +50,7 @@ class _Parameter:
 
 
 class CustomFunction:
-    """
-    Class containing CustomFunction functionalities.
-    """
+    """Class containing CustomFunction functionalities."""
 
     def __init__(
         self,
@@ -89,15 +87,16 @@ class CustomFunction:
     def with_parameters(self, **modified) -> 'CustomFunction':
         """Sets/updates the custom_function parameters for an experiment.
 
-        Parameters:
+        Args:
 
-            parameters --
+            parameters:
                 A keyworded, variable-length argument list of custom_function
                 parameters.
 
         Example::
 
             custom_function.with_parameters(start_time=0.0, final_time=2.0)
+
         """
         new = CustomFunction(
             self._workspace_id, self._name, self._parameter_data, self._sal
@@ -116,20 +115,21 @@ class CustomFunction:
 
     @property
     def parameter_values(self) -> Dict[str, Any]:
-        """Custom_function parameters and value as a dictionary"""
+        """Custom_function parameters and value as a dictionary."""
         return {p.name: p.value for p in self._param_by_name.values()}
 
     def get_options(self, use_defaults: Optional[bool] = False):
         """Get project execution option.
 
-        Parameters:
+        Args:
 
-            use_defaults --
+            use_defaults:
                 If true, default compiler options are used.
 
         Example::
             opts = custom_function.get_compiler_options()
             opts_2 = opts.compiler_options.with_values(c_compiler='gcc')
+
         """
         if use_defaults:
             options = self._sal.custom_function.custom_function_default_options_get(
@@ -142,74 +142,74 @@ class CustomFunction:
         return ProjectExecutionOptions(options, self.name)
 
     def get_compiler_options(self, use_defaults: bool = False):
-        """
-        Return a modelon.impact.client.options.CompilerOptions object.
+        """Return a modelon.impact.client.options.CompilerOptions object.
 
         Returns:
 
-            compiler_options --
+            compiler_options:
                 A modelon.impact.client.options.CompilerOptions object.
 
-            use_defaults --
+            use_defaults:
                 If true, default compiler options are used.
         Example::
 
             opts = custom_function.get_compiler_options()
             compiler_options = opts.with_values(c_compiler='gcc')
+
         """
         return self.get_options(use_defaults=use_defaults).compiler_options
 
     def get_runtime_options(self, use_defaults: bool = False):
-        """
-        Return a modelon.impact.client.options.RuntimeOptions object.
+        """Return a modelon.impact.client.options.RuntimeOptions object.
 
         Returns:
 
-            runtime_options --
+            runtime_options:
                 A modelon.impact.client.options.RuntimeOptions object.
 
-            use_defaults --
+            use_defaults:
                 If true, default runtime options are used.
         Example::
 
             opts = custom_function.get_runtime_options()
             opts_2 = opts.with_values(cs_solver=0)
+
         """
         return self.get_options(use_defaults=use_defaults).runtime_options
 
     def get_solver_options(self, use_defaults: bool = False):
-        """
-        Return a modelon.impact.client.options.SolverOptions object.
+        """Return a modelon.impact.client.options.SolverOptions object.
 
         Returns:
 
-            solver_options --
+            solver_options:
                 A modelon.impact.client.options.SolverOptions object.
 
-            use_defaults --
+            use_defaults:
                 If true, default solver options are used.
 
         Example::
 
             opts = custom_function.get_solver_options()
             opts_2 = opts.with_values(rtol=1e-7)
+
         """
         return self.get_options(use_defaults=use_defaults).solver_options
 
     def get_simulation_options(self, use_defaults: bool = False):
-        """
-        Return a modelon.impact.client.options.SimulationOptions object.
+        """Return a modelon.impact.client.options.SimulationOptions object.
 
         Returns:
 
-            simulation_options --
+            simulation_options:
                 A modelon.impact.client.options.SimulationOptions object.
 
-            use_defaults --
+            use_defaults:
                 If true, default simulation options are used.
         Example::
 
             opts = custom_function.get_simulation_options()
             opts_2 = opts.with_values(ncp=500)
+
         """
         return self.get_options(use_defaults=use_defaults).simulation_options

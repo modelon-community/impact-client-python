@@ -4,10 +4,8 @@ from modelon.impact.client.sal.service import Service
 
 
 class ExperimentOperation(base.ExecutionOperation):
-    """
-    An operation class for the modelon.impact.client.entities.experiment.Experiment
-    class.
-    """
+    """An operation class for the
+    modelon.impact.client.entities.experiment.Experiment class."""
 
     def __init__(self, workspace_id: str, exp_id: str, service: Service):
         super().__init__()
@@ -23,34 +21,33 @@ class ExperimentOperation(base.ExecutionOperation):
 
     @property
     def id(self):
-        """Experiment id"""
+        """Experiment id."""
         return self._exp_id
 
     @property
     def name(self):
-        """Return the name of operation"""
+        """Return the name of operation."""
         return "Execution"
 
     def data(self):
-        """
-        Returns a new Experiment class instance.
+        """Returns a new Experiment class instance.
 
         Returns:
 
-            experiment --
+            experiment:
                 An experiment class instance.
+
         """
         return modelon.impact.client.entities.experiment.Experiment(
             self._workspace_id, self._exp_id, self._sal
         )
 
     def status(self):
-        """
-        Returns the execution status as an enumeration.
+        """Returns the execution status as an enumeration.
 
         Returns:
 
-            status --
+            status:
                 The execution status enum. The status can have the enum values
                 Status.PENDING, Status.RUNNING, Status.STOPPING, Status.CANCELLED
                 or Status.DONE
@@ -58,6 +55,7 @@ class ExperimentOperation(base.ExecutionOperation):
         Example::
 
             workspace.execute(definition).status()
+
         """
         return base.Status(
             self._sal.experiment.execute_status(self._workspace_id, self._exp_id)[
@@ -66,11 +64,11 @@ class ExperimentOperation(base.ExecutionOperation):
         )
 
     def cancel(self):
-        """
-        Terminates the execution process.
+        """Terminates the execution process.
 
         Example::
 
             workspace.execute(definition).cancel()
+
         """
         self._sal.experiment.execute_cancel(self._workspace_id, self._exp_id)

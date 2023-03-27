@@ -29,7 +29,7 @@ It is also possible to create multi-execution experiments with an explicit list 
    experiment_definition = experiment_definition.with_modifiers({'PI.k': Choices(10, 20, 30, 40)})
 
 Here the ``Choices()`` operator class is used to specify an explicit list of values for the parameter to sweep. The parametrization in the
-examples above would configure a set of four simulation cases for the fmu with ``4`` choosen values for the ``PI.k`` parameter.
+examples above would configure a set of four simulation cases for the FMU with ``4`` chosen values for the ``PI.k`` parameter.
 
 It also possible to use a combination of the range and choices operators to setup a batch run::
 

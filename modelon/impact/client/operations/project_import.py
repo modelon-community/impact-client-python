@@ -5,9 +5,11 @@ from modelon.impact.client import exceptions
 
 
 class ProjectImportOperation(AsyncOperation):
-    """
-    An import operation class for the modelon.impact.client.entities.project.
+    """An import operation class for the
+    modelon.impact.client.entities.project.
+
     Project class.
+
     """
 
     def __init__(
@@ -29,25 +31,25 @@ class ProjectImportOperation(AsyncOperation):
 
     @property
     def id(self):
-        """Project import id"""
+        """Project import id."""
         return self._location.split('/')[-1]
 
     @property
     def name(self):
-        """Return the name of operation"""
+        """Return the name of operation."""
         return "Project import"
 
     def _info(self):
         return self._sal.imports.get_import_status(self._location)["data"]
 
     def data(self):
-        """
-        Returns a new Project class instance.
+        """Returns a new Project class instance.
 
         Returns:
 
-            project --
+            project:
                 A Project class instance.
+
         """
         info = self._info()
         if info['status'] == AsyncOperationStatus.ERROR.value:
@@ -65,12 +67,11 @@ class ProjectImportOperation(AsyncOperation):
         )
 
     def status(self):
-        """
-        Returns the upload status as an enumeration.
+        """Returns the upload status as an enumeration.
 
         Returns:
 
-            upload_status --
+            upload_status:
                 The AsyncOperationStatus enum. The status can have the enum values
                 AsyncOperationStatus.READY, AsyncOperationStatus.RUNNING or
                 AsyncOperationStatus.ERROR
@@ -78,5 +79,6 @@ class ProjectImportOperation(AsyncOperation):
         Example::
 
             client.import_from_shared_definition(definition, False).status()
+
         """
         return AsyncOperationStatus(self._info()["status"])

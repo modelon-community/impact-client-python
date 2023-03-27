@@ -1,4 +1,4 @@
-"""External result service module"""
+"""External result service module."""
 import json
 from typing import Any, Optional, Dict
 from modelon.impact.client.sal.http import HTTPClient

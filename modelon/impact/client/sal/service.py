@@ -1,4 +1,4 @@
-"""Service class"""
+"""Service class."""
 import inspect
 import logging
 from typing import Optional

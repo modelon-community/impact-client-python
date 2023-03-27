@@ -1,4 +1,4 @@
-"""Project service module"""
+"""Project service module."""
 import json
 from typing import Dict, Any, Optional, Union, List
 from modelon.impact.client.sal.http import HTTPClient

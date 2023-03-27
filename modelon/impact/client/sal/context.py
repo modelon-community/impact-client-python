@@ -1,4 +1,4 @@
-"""Context class"""
+"""Context class."""
 from requests import Session
 
 

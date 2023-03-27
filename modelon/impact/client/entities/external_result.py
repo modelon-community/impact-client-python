@@ -2,9 +2,7 @@ from modelon.impact.client.sal.service import Service
 
 
 class _ExternalResultMetaData:
-    """
-    Class containing external result metadata.
-    """
+    """Class containing external result metadata."""
 
     def __init__(self, id: str, name: str, description: str, workspace_id: str):
         self._id = id
@@ -14,29 +12,27 @@ class _ExternalResultMetaData:
 
     @property
     def id(self) -> str:
-        """Result id"""
+        """Result id."""
         return self._id
 
     @property
     def name(self) -> str:
-        """Label for result"""
+        """Label for result."""
         return self._name
 
     @property
     def description(self) -> str:
-        """Description of the result"""
+        """Description of the result."""
         return self._description
 
     @property
     def workspace_id(self) -> str:
-        """Name of workspace"""
+        """Name of workspace."""
         return self._workspace_id
 
 
 class ExternalResult:
-    """
-    Class containing  external result.
-    """
+    """Class containing  external result."""
 
     def __init__(self, result_id: str, service: Service):
         self._result_id = result_id
@@ -50,7 +46,7 @@ class ExternalResult:
 
     @property
     def id(self) -> str:
-        """Result id"""
+        """Result id."""
         return self._result_id
 
     @property

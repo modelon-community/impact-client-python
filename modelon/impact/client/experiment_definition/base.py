@@ -55,46 +55,39 @@ def _assert_valid_extensions(experiment_extensions):
 
 
 class BaseExperimentDefinition(ABC):
-    """
-    Base class for an Experiment definition class.
-    """
+    """Base class for an Experiment definition class."""
 
     @abstractmethod
     def validate(self):
-        """
-        Validates the modifiers appended to the experiment definition.
-        """
+        """Validates the modifiers appended to the experiment definition."""
 
     @abstractmethod
     def to_dict(self):
-        """
-        Returns the experiment definition as a dictionary.
-        """
+        """Returns the experiment definition as a dictionary."""
 
 
 class SimpleFMUExperimentDefinition(BaseExperimentDefinition):
-    """
-    A simple experiment definition class for defining experiements.
+    """A simple experiment definition class for defining experiements.
 
-    Parameters:
+    Args:
 
-        fmu --
+        fmu:
             The FMU to be excecuted for this experiment.
 
-        custom_function --
+        custom_function:
             The custom function to use for this experiment.
 
-        solver_options --
+        solver_options:
             The solver options to use for this experiment. By default, the options
             is set to None, which means the default options for the
             custom_function input is used.
 
-        simulation_options --
+        simulation_options:
             The simulation_options to use for this experiment. By default, the
             options is set to None, which means the default options for the
             custom_function input is used.
 
-        simulation_log_level --
+        simulation_log_level:
             Simulation log level for this experiment. Default is 'WARNING'.
 
     Examples::
@@ -106,6 +99,7 @@ class SimpleFMUExperimentDefinition(BaseExperimentDefinition):
         simulate_def = fmu.new_experiment_definition(custom_function,
         solver_options, simulation_options)
         simulate_def.to_dict()
+
     """
 
     def __init__(
@@ -153,9 +147,9 @@ class SimpleFMUExperimentDefinition(BaseExperimentDefinition):
     def with_modifiers(self, modifiers=None, **modifiers_kwargs):
         """Sets the modifiers parameters for an experiment.
 
-        Parameters:
+        Args:
 
-            modifiers --
+            modifiers:
                 A dictionary of variable modifiers.
 
         Example::
@@ -166,6 +160,7 @@ class SimpleFMUExperimentDefinition(BaseExperimentDefinition):
             experiment_definition = fmu.new_experiment_definition(
                 custom_function).with_modifiers({'inertia1.J': Choices(0.1, 0.9),
                 'inertia2.J': Range(0.1, 0.5, 3)})
+
         """
         if modifiers_kwargs:
             logger.warning(
@@ -195,9 +190,9 @@ class SimpleFMUExperimentDefinition(BaseExperimentDefinition):
     def with_extensions(self, experiment_extensions):
         """Sets up an experiment with multiple experiment extensions.
 
-        Parameters:
+        Args:
 
-            experiment_extensions --
+            experiment_extensions:
                 "A list of experiment extension objects."
                 "Extension object must an instance of "
                 "modelon.impact.client.experiment_definition."
@@ -222,6 +217,7 @@ class SimpleFMUExperimentDefinition(BaseExperimentDefinition):
                     ).with_modifiers({'PI.k': 20})
                 ]
             )
+
         """
 
         _assert_valid_extensions(experiment_extensions)
@@ -245,12 +241,12 @@ class SimpleFMUExperimentDefinition(BaseExperimentDefinition):
         return new
 
     def with_cases(self, cases_modifiers):
-        """Sets up an experiment with multiple cases with different
-        variable modifiers.
+        """Sets up an experiment with multiple cases with different variable
+        modifiers.
 
-        Parameters:
+        Args:
 
-            cases_modifiers --
+            cases_modifiers:
                 A list of variable modifier dictionaries.
                 Multiple dictionaries with variable modifiers could to added to create
                 multiple cases.
@@ -260,6 +256,7 @@ class SimpleFMUExperimentDefinition(BaseExperimentDefinition):
             fmu = model.compile().wait()
             experiment_definition = fmu.new_experiment_definition(
                 custom_function).with_cases([{'PI.k': 20}, {'PI.k': 30}])
+
         """
         _assert_valid_case_modifiers(cases_modifiers)
 
@@ -274,7 +271,7 @@ class SimpleFMUExperimentDefinition(BaseExperimentDefinition):
 
         Returns:
 
-            definition_dict --
+            definition_dict:
                 A dictionary containing the experiment definition.
 
         Example::
@@ -286,6 +283,7 @@ class SimpleFMUExperimentDefinition(BaseExperimentDefinition):
             simulate_def = fmu.new_experiment_definition(custom_function,
             solver_options, simulation_options)
             simulate_def.to_dict()
+
         """
         exp_dict = {
             "experiment": {
@@ -321,9 +319,9 @@ class SimpleFMUExperimentDefinition(BaseExperimentDefinition):
     def initialize_from(self, entity):
         """Sets the experiment or case to initialize from for an experiment.
 
-        Parameters:
+        Args:
 
-            entity --
+            entity:
                 "An instance of modelon.impact.client.entities.case.Case or "
                 "modelon.impact.client.entities.experiment.Experiment."
 
@@ -344,6 +342,7 @@ class SimpleFMUExperimentDefinition(BaseExperimentDefinition):
             fmu = model.compile().wait()
             experiment_definition = fmu.new_experiment_definition(custom_function).
             initialize_from(result)
+
         """
         new = SimpleFMUExperimentDefinition(
             self._fmu,
@@ -368,62 +367,60 @@ class SimpleFMUExperimentDefinition(BaseExperimentDefinition):
 
 
 class SimpleModelicaExperimentDefinition(BaseExperimentDefinition):
-    """
-    A simple experiment definition class for defining experiements.
+    """A simple experiment definition class for defining experiements.
 
-    Parameters:
+    Args:
 
-        model --
+        model:
             The Model class object.
 
-        custom_function --
+        custom_function:
             The custom function to use for this experiment.
 
-        compiler_options --
+        compiler_options:
             The compiler options to use for this experiment. By default the options
             is set to None, which means the default options for the
             custom_function input is used.
 
-        fmi_target --
+        fmi_target:
             Compiler target. Possible values are 'me' and 'cs'. Default: 'me'.
 
-        fmi_version --
+        fmi_version:
             The FMI version. Valid options are '1.0' and '2.0'. Default: '2.0'.
 
-        platform --
+        platform:
             Platform for FMU binary.The OS running the Impact server must match the
             environment that runs the compiled FMU. This is necessary as the
             binaries packaged with the FMU are based on the platform generating
             the FMU. For example, if the Impact server is running Linux the binary
             in the downloaded FMU is compiled for Linux. The downloaded FMU can
-            then not be simulated on Windows.
-            Supported options are:-
-                - 'auto': platform is selected automatically.
-                - "linux64": generate a 32 bit FMU.
-                - "win32": generate a 32 bit FMU.
-                - "win64": generate a 64 bit FMU
-            Default: 'auto'.
+            then not be simulated on Windows. Default: 'auto'. Supported options are:-
 
-        compiler_log_level --
+            - 'auto': platform is selected automatically
+            - 'linux64': generate a 32 bit FMU
+            - 'win32': generate a 32 bit FMU
+            - 'win64': generate a 64 bit FMU
+
+        compiler_log_level:
             The logging for the compiler. Possible values are "error",
             "warning", "info", "verbose" and "debug". Default: 'warning'.
 
-        runtime_options --
+        runtime_options:
             The runtime options to use for this experiment. By default the options
             is set to None, which means the default options for the
             custom_function input is used.
 
-        solver_options --
+        solver_options:
             The solver options to use for this experiment. By default the options
             is set to None, which means the default options for the
             custom_function input is used.
 
-        simulation_options --
+        simulation_options:
             The simulation options to use for this experiment. By default the
             options is set to None, which means the default options for the
             custom_function input is used.
 
-        simulation_log_level --
+        simulation_log_level:
             Simulation log level for this experiment. Default: 'WARNING'.
 
     Examples::
@@ -438,6 +435,7 @@ class SimpleModelicaExperimentDefinition(BaseExperimentDefinition):
             simulation_options=simulation_options
         )
         simulate_def.to_dict()
+
     """
 
     def __init__(
@@ -500,9 +498,9 @@ class SimpleModelicaExperimentDefinition(BaseExperimentDefinition):
     ) -> 'SimpleModelicaExperimentDefinition':
         """Sets the modifiers parameters for an experiment.
 
-        Parameters:
+        Args:
 
-            modifiers --
+            modifiers:
                 A dictionary of variable modifiers. Could be used if
                 modifiers keys conflict with python identifiers or keywords.
                 Default: None.
@@ -515,6 +513,7 @@ class SimpleModelicaExperimentDefinition(BaseExperimentDefinition):
             experiment_definition = model.new_experiment_definition(
                 custom_function).with_modifiers({'inertia1.J': Choices(0.1, 0.9),
                 'inertia2.J': Range(0.1, 0.5, 3)})
+
         """
         modifiers = {} if modifiers is None else modifiers
         new = SimpleModelicaExperimentDefinition(
@@ -545,9 +544,9 @@ class SimpleModelicaExperimentDefinition(BaseExperimentDefinition):
     def with_expansion(self, expansion: ExpansionAlgorithm = FullFactorial()):
         """Sets the expansion algorithm for an experiment.
 
-        Parameters:
+        Args:
 
-            expansion --
+            expansion:
                 An expansion algorithm. Avaiable algorithms are LatinHypercube,
                 Sobol and FullFactorial.
                 Default: FullFactorial.
@@ -560,6 +559,7 @@ class SimpleModelicaExperimentDefinition(BaseExperimentDefinition):
             experiment_definition = model.new_experiment_definition(
                 custom_function).with_modifiers({'inertia1.J': Beta(0.1, 0.9),
                 'inertia2.J': Normal(0.1, 0.5)}).with_expansion(Sobol(5))
+
         """
         if not isinstance(expansion, ExpansionAlgorithm):
             raise TypeError(
@@ -590,9 +590,9 @@ class SimpleModelicaExperimentDefinition(BaseExperimentDefinition):
     def initialize_from(self, entity):
         """Sets the experiment or case to initialize from for an experiment.
 
-        Parameters:
+        Args:
 
-            entity --
+            entity:
                 "An instance of modelon.impact.client.entities.case.Case or "
                 "modelon.impact.client.entities.experiment.Experiment."
 
@@ -610,6 +610,7 @@ class SimpleModelicaExperimentDefinition(BaseExperimentDefinition):
             result = workspace.upload_result('C:/A.mat').wait()
             experiment_definition = model.new_experiment_definition(custom_function).
             initialize_from(result)
+
         """
         new = SimpleModelicaExperimentDefinition(
             model=self._model,
@@ -641,9 +642,9 @@ class SimpleModelicaExperimentDefinition(BaseExperimentDefinition):
     def with_extensions(self, experiment_extensions):
         """Sets up an experiment with multiple experiment extensions.
 
-        Parameters:
+        Args:
 
-            experiment_extensions --
+            experiment_extensions:
                 "A list of experiment extension objects."
                 "Extension object must an instance of "
                 "modelon.impact.client.experiment_definition."
@@ -668,6 +669,7 @@ class SimpleModelicaExperimentDefinition(BaseExperimentDefinition):
                     ).with_modifiers({'PI.k': 20})
                 ]
             )
+
         """
 
         _assert_valid_extensions(experiment_extensions)
@@ -697,12 +699,12 @@ class SimpleModelicaExperimentDefinition(BaseExperimentDefinition):
         return new
 
     def with_cases(self, cases_modifiers):
-        """Sets up an experiment with multiple cases with different
-        variable modifiers.
+        """Sets up an experiment with multiple cases with different variable
+        modifiers.
 
-        Parameters:
+        Args:
 
-            cases_modifiers --
+            cases_modifiers:
                 A list of variable modifier dictionaries.
                 Multiple dictionaries with variable modifiers could to added to create
                 multiple cases.
@@ -712,6 +714,7 @@ class SimpleModelicaExperimentDefinition(BaseExperimentDefinition):
             model = workspace.get_model("Modelica.Blocks.Examples.PID_Controller")
             experiment_definition = model.new_experiment_definition(
                 custom_function).with_cases([{'PI.k': 20}, {'PI.k': 30}])
+
         """
         _assert_valid_case_modifiers(cases_modifiers)
 
@@ -726,7 +729,7 @@ class SimpleModelicaExperimentDefinition(BaseExperimentDefinition):
 
         Returns:
 
-            definition_dict --
+            definition_dict:
                 A dictionary containing the experiment definition.
 
         Example::
@@ -741,6 +744,7 @@ class SimpleModelicaExperimentDefinition(BaseExperimentDefinition):
                 simulation_options=simulation_options
             )
             simulate_def.to_dict()
+
         """
 
         exp_dict = {

@@ -30,9 +30,7 @@ def _datetime_from_unix_time(unix_time: Optional[int]):
 
 
 class _CaseRunInfo:
-    """
-    Class containing Case run info.
-    """
+    """Class containing Case run info."""
 
     def __init__(
         self,
@@ -53,29 +51,31 @@ class _CaseRunInfo:
 
     @property
     def consistent(self) -> bool:
-        """True if the case has not been synced since it was executed,
-        false otherwise."""
+        """True if the case has not been synced since it was executed, false
+        otherwise."""
         return self._consistent
 
     @property
     def started(self):
-        """
-        Case execution start time. Returns None if case execution hasn't started.
+        """Case execution start time.
+
+        Returns None if case execution hasn't started.
+
         """
         return self._datetime_started
 
     @property
     def finished(self):
-        """
-        Case execution finish time. Returns None if case execution hasn't finished.
+        """Case execution finish time.
+
+        Returns None if case execution hasn't finished.
+
         """
         return self._datetime_finished
 
 
 class _CaseAnalysis:
-    """
-    Class containing Case analysis configuration.
-    """
+    """Class containing Case analysis configuration."""
 
     __slots__ = ['_analysis']
 
@@ -84,18 +84,19 @@ class _CaseAnalysis:
 
     @property
     def analysis_function(self) -> str:
-        """The name of the custom function"""
+        """The name of the custom function."""
         return self._analysis['analysis_function']
 
     @property
     def parameters(self) -> Dict[str, Any]:
-        """Parameters to the custom function
+        """Parameters to the custom function.
 
         Example::
             {
                 "start_time": 0,
                 "final_time": 1
             }
+
         """
         return self._analysis['parameters']
 
@@ -105,7 +106,7 @@ class _CaseAnalysis:
 
     @property
     def simulation_options(self) -> Dict[str, Any]:
-        """Key-value pairs of simulation options"""
+        """Key-value pairs of simulation options."""
         return self._analysis['simulation_options']
 
     @simulation_options.setter
@@ -114,7 +115,7 @@ class _CaseAnalysis:
 
     @property
     def solver_options(self) -> Dict[str, Any]:
-        """Key-value pairs of solver options"""
+        """Key-value pairs of solver options."""
         return self._analysis['solver_options']
 
     @solver_options.setter
@@ -123,7 +124,7 @@ class _CaseAnalysis:
 
     @property
     def simulation_log_level(self) -> str:
-        """The simulation log level"""
+        """The simulation log level."""
         return self._analysis['simulation_log_level']
 
     @simulation_log_level.setter
@@ -132,7 +133,7 @@ class _CaseAnalysis:
 
 
 class CustomArtifact:
-    """CustomArtifact class"""
+    """CustomArtifact class."""
 
     def __init__(
         self,
@@ -161,25 +162,26 @@ class CustomArtifact:
         return self._download_as
 
     def download(self, path: Optional[str] = None):
-        """Downloads a custom artifact.
-        Returns the local path to the downloaded artifact.
+        """Downloads a custom artifact. Returns the local path to the
+        downloaded artifact.
 
-        Parameters:
+        Args:
 
-            path --
+            path:
                 The local path to the directory to store the downloaded custom artifact.
                 Default: None. If no path is given, custom artifact will be downloaded
                 in a temporary directory.
 
         Returns:
 
-            path --
+            path:
                 Local path to the downloaded custom artifact.
 
         Example::
 
             artifact_path = artifact.download()
             artifact_path = artifact.download('/home/Downloads')
+
         """
         artifact, _ = self._exp_sal.case_artifact_get(
             self._workspace_id, self._exp_id, self._case_id, self.id
@@ -193,19 +195,20 @@ class CustomArtifact:
         return artifact_path
 
     def get_data(self) -> bytes:
-        """
-        Returns the custom artifact stream.
+        """Returns the custom artifact stream.
 
         Returns:
 
-            artifact --
+            artifact:
                 The artifact byte stream.
 
         Example::
+
             artifact = case.get_artifact("ABCD")
             data = artifact.get_data() # may raise exception on communication error
             with open(artifact.download_as, "wb") as f:
                 f.write(data)
+
         """
         result_stream, _ = self._exp_sal.case_artifact_get(
             self._workspace_id, self._exp_id, self._case_id, self.id
@@ -215,9 +218,7 @@ class CustomArtifact:
 
 
 class _CaseMeta:
-    """
-    Class containing Case meta
-    """
+    """Class containing Case meta."""
 
     __slots__ = ['_data']
 
@@ -235,9 +236,7 @@ class _CaseMeta:
 
 
 class _CaseInput:
-    """
-    Class containing Case input
-    """
+    """Class containing Case input."""
 
     __slots__ = ['_data']
 
@@ -250,10 +249,8 @@ class _CaseInput:
 
     @property
     def parametrization(self) -> Dict[str, Any]:
-        """
-        Parametrization of the case, a list of key value pairs where key
-        is variable name and value is the value to use for that variable.
-        """
+        """Parametrization of the case, a list of key value pairs where key is
+        variable name and value is the value to use for that variable."""
         return self._data['parametrization']
 
     @parametrization.setter
@@ -267,27 +264,29 @@ class _CaseInput:
 
     @property
     def structural_parametrization(self) -> Dict[str, Any]:
-        """
-        Structural parametrization of the case, a list of key value pairs where
-        key is variable name and value is the value to use for that variable.
-        These are values that cannot be applied to the FMU/Model after compilation.
+        """Structural parametrization of the case, a list of key value pairs
+        where key is variable name and value is the value to use for that
+        variable.
+
+        These are values that cannot be applied to the FMU/Model after
+        compilation.
+
         """
         return self._data['structural_parametrization']
 
     @property
     def fmu_base_parametrization(self) -> Dict[str, Any]:
-        """
-        This is some base parametrization that must be applied to the FMU for
-        it to be valid running this case. It often comes as a result from of
-        caching to reuse the FMU.
+        """This is some base parametrization that must be applied to the FMU
+        for it to be valid running this case.
+
+        It often comes as a result from of caching to reuse the FMU.
+
         """
         return self._data['fmu_base_parametrization']
 
 
 class Case:
-    """
-    Class containing Case functionalities.
-    """
+    """Class containing Case functionalities."""
 
     __slots__ = ['_case_id', '_workspace_id', '_exp_id', '_sal', '_info']
 
@@ -313,23 +312,23 @@ class Case:
 
     @property
     def id(self) -> str:
-        """Case id"""
+        """Case id."""
         return self._case_id
 
     @property
     def experiment_id(self) -> str:
-        """Experiment id"""
+        """Experiment id."""
         return self._exp_id
 
     @property
     def info(self) -> Dict[str, Any]:
-        """Deprecated, use 'run_info' attribute"""
+        """Deprecated, use 'run_info' attribute."""
         logger.warning("This attribute is deprectated, use 'run_info' instead")
         return self._info
 
     @property
     def run_info(self) -> _CaseRunInfo:
-        """Case run information"""
+        """Case run information."""
         run_info = self._info["run_info"]
         started = _datetime_from_unix_time(run_info.get("datetime_started"))
         finished = _datetime_from_unix_time(run_info.get("datetime_finished"))
@@ -339,7 +338,7 @@ class Case:
 
     @property
     def input(self) -> _CaseInput:
-        """Case input attributes
+        """Case input attributes.
 
         Example::
 
@@ -351,12 +350,13 @@ class Case:
 
          help(case.input.analysis) # See help for attribute
          dir(case.input) # See nested attributes
+
         """
         return _CaseInput(self._info['input'])
 
     @property
     def meta(self) -> _CaseMeta:
-        """Case meta attributes
+        """Case meta attributes.
 
         Example::
 
@@ -365,6 +365,7 @@ class Case:
 
          help(case.meta) # See help for attribute
          dir(case.input) # See nested attributes
+
         """
         return _CaseMeta(self._info['meta'])
 
@@ -419,8 +420,7 @@ class Case:
         self._info['input']['initialize_from_external_result'] = {"uploadId": result.id}
 
     def is_successful(self) -> bool:
-        """
-        Returns True if a case has completed successfully.
+        """Returns True if a case has completed successfully.
 
         Returns:
 
@@ -430,22 +430,23 @@ class Case:
         Example::
 
             case.is_successful()
+
         """
         return self.run_info.status == CaseStatus.SUCCESSFUL
 
     def get_log(self) -> Log:
-        """
-        Returns the log class object for a finished case.
+        """Returns the log class object for a finished case.
 
         Returns:
 
-            log --
+            log:
                 The case execution log class object.
 
         Example::
 
             log = case.get_log()
             log.show()
+
         """
         return Log(
             self._sal.experiment.case_get_log(
@@ -454,22 +455,21 @@ class Case:
         )
 
     def get_result(self, format: str = 'mat') -> Tuple[bytes, str]:
-        """
-        Returns the result stream and the file name for a finished case.
+        """Returns the result stream and the file name for a finished case.
 
-        Parameters:
+        Args:
 
-            format --
+            format:
                 The file format to download the result in. The only possible values
                 are 'mat' and 'csv'.
                 Default: 'mat'
 
         Returns:
 
-            result --
+            result:
                 The result byte stream.
 
-            filename --
+            filename:
                 The filename for the result. This name could be used to write the
                 result stream.
 
@@ -485,6 +485,7 @@ class Case:
             result, file_name = case.get_result(format = 'csv')
             with open(file_name, "w") as f:
                 f.write(result)
+
         """
         assert_successful_operation(self.is_successful(), self._case_id)
         result_format = ResultFormat(format)
@@ -494,12 +495,11 @@ class Case:
         return result, file_name
 
     def get_trajectories(self) -> Result:
-        """
-        Returns result(Mapping) object containing the result trajectories.
+        """Returns result(Mapping) object containing the result trajectories.
 
         Returns:
 
-            trajectories --
+            trajectories:
                 A result trajectory dictionary object.
 
         Raises:
@@ -513,6 +513,7 @@ class Case:
             result_variables = result.keys()
             height = result['h']
             time = res['time']
+
         """
         _assert_case_is_complete(self.run_info.status, "Simulation")
         return Result(
@@ -526,15 +527,14 @@ class Case:
     def get_artifact(
         self, artifact_id: str, download_as: Optional[str] = None
     ) -> CustomArtifact:
-        """
-        Returns a CustomArtifact class for a finished case.
+        """Returns a CustomArtifact class for a finished case.
 
         Returns:
 
-            custom artifact --
+            custom artifact:
                 A CustomArtifact class object.
 
-            download_as --
+            download_as:
                 File name for the downloaded artifact.
 
         Raises:
@@ -545,6 +545,7 @@ class Case:
         Example::
 
             custom_artifact = case.get_artifact(artifact_id)
+
         """
         assert_successful_operation(self.is_successful(), self._case_id)
         return CustomArtifact(
@@ -573,12 +574,11 @@ class Case:
         return meta['downloadAs']
 
     def get_artifacts(self) -> List[CustomArtifact]:
-        """
-        Returns a list of CustomArtifact classes for a finished case.
+        """Returns a list of CustomArtifact classes for a finished case.
 
         Returns:
 
-            custom artifacts --
+            custom artifacts:
                 A list of CustomArtifact class objects.
 
         Raises:
@@ -589,6 +589,7 @@ class Case:
         Example::
 
             custom_artifacts = case.get_artifacts()
+
         """
         assert_successful_operation(self.is_successful(), self._case_id)
         resp = self._sal.experiment.case_artifacts_meta_get(
@@ -607,12 +608,11 @@ class Case:
         ]
 
     def get_fmu(self):
-        """
-        Returns the ModelExecutable class object simulated for the case.
+        """Returns the ModelExecutable class object simulated for the case.
 
         Returns:
 
-            FMU --
+            FMU:
                 ModelExecutable class object.
 
         Example::
@@ -620,6 +620,7 @@ class Case:
             case = experiment.get_case('case_1')
             fmu = case.get_fmu()
             fmus = set(case.get_fmu() for case in exp.get_cases())
+
         """
         fmu_id = self.input.fmu_id
 
@@ -634,25 +635,26 @@ class Case:
         Example::
             case.input.parametrization = {'PI.k': 120}
             case.sync()
+
         """
         self._info = self._sal.experiment.case_put(
             self._workspace_id, self._exp_id, self._case_id, self._info
         )
 
     def execute(self, sync_case_changes: bool = True) -> CaseOperation:
-        """Exceutes a case.
-        Returns an modelon.impact.client.operations.case.CaseOperation class object.
+        """Exceutes a case. Returns an
+        modelon.impact.client.operations.case.CaseOperation class object.
 
-        Parameters:
+        Args:
 
-            sync_case_changes --
+            sync_case_changes:
                 Boolean specifying if to sync case changes against the server
                 before executing the case. Default is True.
 
 
         Returns:
 
-            case_ops --
+            case_ops:
                 An modelon.impact.client.operations.case.CaseOperation class object.
 
         Example::
@@ -663,6 +665,7 @@ class Case:
             case_ops.cancel()
             case_ops.status()
             case_ops.wait()
+
         """
         if sync_case_changes:
             self.sync()
