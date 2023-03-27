@@ -2,7 +2,7 @@ Quick Start
 ===========
 
 The python API enables the execution of workflows orchestrated on a client and executed on a Modelon Impact server, which
-may be running remotely.  With sufficient login credentials and an API Key (see :doc:`Setup <setup>`),
+may be running remotely.  With sufficient login credentials and an API Key (see :doc:`Authentication with Modelon Impact<authentication_with_modelon_impact>`),
 Modelica models may be uploaded, compiled, and executed on a server.  The results can be either processed on the server
 with a custom function or downloaded to the client for further analysis.
 
