@@ -1,3 +1,19 @@
+# [3.0.0-dev.15](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.14...v3.0.0-dev.15) (2023-03-27)
+
+
+### Bug Fixes
+
+* corrected spellings ([9de1f0d](https://github.com/modelon-community/impact-client-python/commit/9de1f0d98ca913eab19e02296ac285cfc2fd15b1))
+* fix sphinx warnings ([ebed6f3](https://github.com/modelon-community/impact-client-python/commit/ebed6f3ef6dd02e8b314534c47bde01f8712cb49))
+* move docformatter and napolean to dev dependencies ([7248204](https://github.com/modelon-community/impact-client-python/commit/7248204c386be86fbf4ceab7c0e6e981a6360723))
+* replace '--' with ':' for arguments docstrings ([a7bb933](https://github.com/modelon-community/impact-client-python/commit/a7bb933b9c2cde863163493e8054ea57479b5844))
+* using args instead of parameters to folow google style docs ([aab983a](https://github.com/modelon-community/impact-client-python/commit/aab983a1d99417ddb0de65c88b17f5f8c7d39397))
+
+
+### Features
+
+* added spell check for docs ([0a5e4a6](https://github.com/modelon-community/impact-client-python/commit/0a5e4a6d56a6b24f9a0da5b331f85375e6824fc4))
+
 # [3.0.0-dev.14](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.13...v3.0.0-dev.14) (2023-03-23)
 
 
