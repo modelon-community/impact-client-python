@@ -12,6 +12,7 @@ RUN apt-get update && apt-get install -y curl apt-utils bash-completion vim git
 
 # Install enchant c libs for spell check
 RUN apt-get install -y libenchant-2-2 aspell aspell-en
+
 RUN curl -sL https://deb.nodesource.com/setup_18.x | bash
 RUN apt-get install -y nodejs
 RUN node -v

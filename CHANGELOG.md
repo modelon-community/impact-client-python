@@ -77,6 +77,13 @@
 
 * assert compilation is successful before calling download FMU api ([cee8892](https://github.com/modelon-community/impact-client-python/commit/cee88921236bcba594075ef6a47f0210898d7c8c))
 
+# [2.4.0](https://github.com/modelon-community/impact-client-python/compare/v2.3.0...v2.4.0) (2023-01-11)
+
+
+### Features
+
+* added hint with URL for where to generate key/token for authentication ([7dfdb98](https://github.com/modelon-community/impact-client-python/commit/7dfdb982a7d056caaf867388f940ddad243820fe))
+
 # [3.0.0-dev.8](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.7...v3.0.0-dev.8) (2022-12-21)
 
 

@@ -26,7 +26,7 @@ While initializing the client, you will be asked to enter the JupyterHub API tok
 
     >>>> from modelon.impact.client import Client
     >>>> client = Client(url=<JupyterHub url>, interactive=True)
-    Enter JupyterHub API token:
+    Enter JupyterHub API token (can be generated at <JupyterHub url>/token):
 
 When the token has been entered the first time, it will be stored and used in future requests, 
 and the prompt will not be shown again. To view a list of active tokens or revoke active tokens, 
@@ -85,7 +85,7 @@ prompt.
 
     >>>> from modelon.impact.client import Client
     >>>> client = Client(url=impact_url, interactive=True)
-    Enter API key:
+    Enter Modelon Impact API key (can be generated at <impact_url>/admin/keys):
 
 
 When the key has been entered the first time, it will be stored in the credentials file
