@@ -1,3 +1,10 @@
+# [3.0.0-dev.16](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.15...v3.0.0-dev.16) (2023-03-27)
+
+
+### Features
+
+* added hint with URL for where to generate key/token for authentication ([7dfdb98](https://github.com/modelon-community/impact-client-python/commit/7dfdb982a7d056caaf867388f940ddad243820fe))
+
 # [3.0.0-dev.15](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.14...v3.0.0-dev.15) (2023-03-27)
 
 
