@@ -5,7 +5,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-def get_client_url():
+def get_client_url() -> str:
     """Returns the default URL the client will use if unspecified.
 
     Can be overridden by the environment variable
@@ -19,7 +19,7 @@ def get_client_url():
     return url
 
 
-def get_client_interactive():
+def get_client_interactive() -> bool:
     """Returns the default for if client will run interactive or not if
     unspecified.
 

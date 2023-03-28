@@ -1,6 +1,7 @@
 """Experiment service module."""
+from __future__ import annotations
 import enum
-from typing import Any, Optional, List, Dict
+from typing import Any, Optional, List, Dict, Union, Text, Tuple
 from modelon.impact.client.sal.http import HTTPClient
 from modelon.impact.client.sal.uri import URI
 
@@ -14,7 +15,7 @@ class ResultFormat(enum.Enum):
     CSV = "csv"
 
     @classmethod
-    def _missing_(cls, value):
+    def _missing_(cls, value: Any) -> Any:
         if cls not in ['mat', 'csv']:
             raise ValueError(
                 "Invalid result format! Allowed formats are 'mat' and 'csv."
@@ -38,33 +39,33 @@ class ExperimentService:
         self._http_client.post_json_no_response_body(url, body=body)
         return exp_id
 
-    def experiment_delete(self, workspace_id: str, exp_id: str):
+    def experiment_delete(self, workspace_id: str, exp_id: str) -> None:
         url = (
             self._base_uri / f"api/workspaces/{workspace_id}/experiments/{exp_id}"
         ).resolve()
         self._http_client.delete_json(url)
 
-    def experiment_set_label(self, workspace_id: str, exp_id: str, label: str):
+    def experiment_set_label(self, workspace_id: str, exp_id: str, label: str) -> None:
         url = (
             self._base_uri / f"api/workspaces/{workspace_id}/experiments/{exp_id}"
         ).resolve()
         return self._http_client.put_json_no_response_body(url, body={"label": label})
 
-    def execute_status(self, workspace_id: str, experiment_id: str):
+    def execute_status(self, workspace_id: str, experiment_id: str) -> Dict[str, Any]:
         url = (
             self._base_uri
             / f"api/workspaces/{workspace_id}/experiments/{experiment_id}/execution"
         ).resolve()
         return self._http_client.get_json(url)
 
-    def execute_cancel(self, workspace_id: str, experiment_id: str):
+    def execute_cancel(self, workspace_id: str, experiment_id: str) -> None:
         url = (
             self._base_uri
             / f"api/workspaces/{workspace_id}/experiments/{experiment_id}/execution"
         ).resolve()
         return self._http_client.delete_json(url)
 
-    def result_variables_get(self, workspace_id: str, experiment_id: str):
+    def result_variables_get(self, workspace_id: str, experiment_id: str) -> List[str]:
         url = (
             self._base_uri
             / f"api/workspaces/{workspace_id}/experiments/{experiment_id}/variables"
@@ -73,7 +74,7 @@ class ExperimentService:
 
     def trajectories_get(
         self, workspace_id: str, experiment_id: str, variables: List[str]
-    ):
+    ) -> List[str]:
         body = {"variable_names": variables}
         url = (
             self._base_uri
@@ -81,14 +82,16 @@ class ExperimentService:
         ).resolve()
         return self._http_client.post_json(url, body=body)
 
-    def cases_get(self, workspace_id: str, experiment_id: str):
+    def cases_get(self, workspace_id: str, experiment_id: str) -> Dict[str, Any]:
         url = (
             self._base_uri
             / f"api/workspaces/{workspace_id}/experiments/{experiment_id}/cases"
         ).resolve()
         return self._http_client.get_json(url)
 
-    def case_get(self, workspace_id: str, experiment_id: str, case_id: str):
+    def case_get(
+        self, workspace_id: str, experiment_id: str, case_id: str
+    ) -> Dict[str, Any]:
         url = (
             self._base_uri
             / f"api/workspaces/{workspace_id}/experiments/{experiment_id}/cases/"
@@ -102,7 +105,7 @@ class ExperimentService:
         experiment_id: str,
         case_id: str,
         case_data: Dict[str, Any],
-    ):
+    ) -> Dict[str, Any]:
         url = (
             self._base_uri
             / f"api/workspaces/{workspace_id}/experiments/{experiment_id}/cases/"
@@ -110,7 +113,7 @@ class ExperimentService:
         ).resolve()
         return self._http_client.put_json(url, body=case_data)
 
-    def case_get_log(self, workspace_id: str, experiment_id: str, case_id: str):
+    def case_get_log(self, workspace_id: str, experiment_id: str, case_id: str) -> str:
         url = (
             self._base_uri
             / f"api/workspaces/{workspace_id}/experiments/{experiment_id}/cases/"
@@ -124,7 +127,7 @@ class ExperimentService:
         experiment_id: str,
         case_id: str,
         result_format: ResultFormat = ResultFormat.MAT,
-    ):
+    ) -> Tuple[Union[Text, bytes], str]:
         url = (
             self._base_uri
             / f"api/workspaces/{workspace_id}/experiments/{experiment_id}/cases/"
@@ -140,7 +143,7 @@ class ExperimentService:
 
     def case_trajectories_get(
         self, workspace_id: str, experiment_id: str, case_id: str, variables: List[str]
-    ):
+    ) -> List[str]:
         body = {"variable_names": variables}
         url = (
             self._base_uri
@@ -151,7 +154,7 @@ class ExperimentService:
 
     def case_artifact_get(
         self, workspace_id: str, experiment_id: str, case_id: str, artifact_id: str
-    ):
+    ) -> Tuple[bytes, str]:
         url = (
             self._base_uri
             / f"api/workspaces/{workspace_id}/experiments/{experiment_id}/cases/"
@@ -162,7 +165,7 @@ class ExperimentService:
 
     def case_artifacts_meta_get(
         self, workspace_id: str, experiment_id: str, case_id: str
-    ):
+    ) -> Dict[str, Any]:
         url = (
             self._base_uri
             / f"api/workspaces/{workspace_id}/experiments/{experiment_id}/cases/"

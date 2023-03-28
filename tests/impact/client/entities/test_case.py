@@ -47,7 +47,9 @@ class TestCase:
         result, name = case.get_result()
         assert (result, name) == (b'\x00\x00\x00\x00', IDs.RESULT_MAT)
         assert case.is_successful()
-        assert case.get_trajectories()['inertia.I'] == [14, 4, 4, 74]
+        result = case.get_trajectories()
+        assert result.keys() == ['inertia.I', 'time']
+        assert result['inertia.I'] == [14, 4, 4, 74]
 
     def test_failed_case(self, experiment_with_failed_case):
         failed_case = experiment_with_failed_case.get_case("case_2")

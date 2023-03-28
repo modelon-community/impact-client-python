@@ -16,7 +16,7 @@ class ExternalResultService:
         path_to_result: str,
         label: Optional[str] = None,
         description: Optional[str] = None,
-    ):
+    ) -> Dict[str, Any]:
         url = (self._base_uri / "api/uploads/results").resolve()
         options: Dict[str, Any] = {
             "context": {"workspaceId": workspace_id},
@@ -32,10 +32,10 @@ class ExternalResultService:
             }
             return self._http_client.post_json(url, files=multipart_form_data)
 
-    def get_uploaded_result(self, result_id: str):
+    def get_uploaded_result(self, result_id: str) -> Dict[str, Any]:
         url = (self._base_uri / f"api/external-result/{result_id}").resolve()
         return self._http_client.get_json(url)
 
-    def delete_uploaded_result(self, result_id: str):
+    def delete_uploaded_result(self, result_id: str) -> None:
         url = (self._base_uri / f"api/external-result/{result_id}").resolve()
         return self._http_client.delete_json(url)

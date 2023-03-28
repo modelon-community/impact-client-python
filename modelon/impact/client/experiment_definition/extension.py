@@ -1,8 +1,12 @@
+from __future__ import annotations
 import logging
 from abc import ABC
+from typing import Optional, Dict, Any, Union
 
 from modelon.impact.client.experiment_definition.operators import Operator
 from modelon.impact.client.entities.external_result import ExternalResult
+from modelon.impact.client.entities.experiment import Experiment
+from modelon.impact.client.entities.case import Case
 from modelon.impact.client.experiment_definition.util import (
     get_options,
     case_to_identifier_dict,
@@ -69,10 +73,10 @@ class SimpleExperimentExtension(BaseExperimentExtension):
 
     def __init__(
         self,
-        parameter_modifiers=None,
-        solver_options=None,
-        simulation_options=None,
-        simulation_log_level=None,
+        parameter_modifiers: Optional[Dict[str, Any]] = None,
+        solver_options: Optional[Dict[str, Any]] = None,
+        simulation_options: Optional[Dict[str, Any]] = None,
+        simulation_log_level: Optional[str] = None,
     ):
         self._parameter_modifiers = (
             {} if parameter_modifiers is None else parameter_modifiers
@@ -80,18 +84,19 @@ class SimpleExperimentExtension(BaseExperimentExtension):
         self._solver_options = get_options(dict, solver_options)
         self._simulation_options = get_options(dict, simulation_options)
         self._simulation_log_level = simulation_log_level
-        self._variable_modifiers = {}
-        self._initialize_from_experiment = None
-        self._initialize_from_case = None
-        self._case_label = None
+        self._variable_modifiers: Dict[str, Any] = {}
+        self._initialize_from_experiment: Optional[Experiment] = None
+        self._initialize_from_case: Optional[Case] = None
+        self._case_label: Optional[str] = None
 
-    def with_modifiers(self, modifiers=None, **modifiers_kwargs):
+    def with_modifiers(
+        self, modifiers: Optional[Dict[str, Any]] = None, **modifiers_kwargs: Any
+    ) -> SimpleExperimentExtension:
         """Sets the modifiers variables for an experiment extension.
 
         Args:
 
-            modifiers:
-                A dictionary of variable modifiers.
+            modifiers: A dictionary of variable modifiers.
 
         Example::
 
@@ -132,13 +137,12 @@ class SimpleExperimentExtension(BaseExperimentExtension):
             new._variable_modifiers[variable] = value
         return new
 
-    def with_case_label(self, case_label):
+    def with_case_label(self, case_label: str) -> SimpleExperimentExtension:
         """Sets the case label for an experiment extension.
 
         Args:
 
-            case_label:
-                A case label string.
+            case_label (str): A case label string.
 
         Example::
 
@@ -167,15 +171,16 @@ class SimpleExperimentExtension(BaseExperimentExtension):
 
         return new
 
-    def initialize_from(self, entity):
+    def initialize_from(
+        self, entity: Union[Experiment, Case]
+    ) -> SimpleExperimentExtension:
         """Sets the experiment or case to initialize from for an experiment
         extension.
 
         Args:
 
-            entity:
-                "An instance of modelon.impact.client.entities.case.Case or "
-                "modelon.impact.client.entities.experiment.Experiment."
+            entity: An instance of modelon.impact.client.entities.case.Case or
+                modelon.impact.client.entities.experiment.Experiment.
 
         Example::
             experiment = workspace.get_experiment(experiment_id)
@@ -209,13 +214,12 @@ class SimpleExperimentExtension(BaseExperimentExtension):
         new._case_label = self._case_label
         return new
 
-    def to_dict(self):
+    def to_dict(self) -> Dict[str, Any]:
         """Returns the experiment extensions as a dictionary.
 
         Returns:
 
-            extensions_dict:
-                A dictionary containing the experiment extensions.
+            extensions_dict (dict): A dictionary containing the experiment extensions.
 
         Example::
 
@@ -231,9 +235,10 @@ class SimpleExperimentExtension(BaseExperimentExtension):
             simulate_ext.to_dict()
 
         """
-        ext_dict = {}
+        ext_dict: Dict[str, Any] = {}
         if self._variable_modifiers:
-            ext_dict["modifiers"] = {"variables": self._variable_modifiers}
+            ext_dict.setdefault("modifiers", {})
+            ext_dict["modifiers"]["variables"] = self._variable_modifiers
 
         if self._parameter_modifiers:
             ext_dict.setdefault("analysis", {})
@@ -252,6 +257,7 @@ class SimpleExperimentExtension(BaseExperimentExtension):
             ext_dict["analysis"]["simulationLogLevel"] = self._simulation_log_level
 
         if self._initialize_from_experiment:
+            ext_dict.setdefault("modifiers", {})
             ext_dict["modifiers"][
                 "initializeFrom"
             ] = self._initialize_from_experiment.id
@@ -260,6 +266,7 @@ class SimpleExperimentExtension(BaseExperimentExtension):
             ext_dict["modifiers"]["initializeFromCase"] = case_to_identifier_dict(
                 self._initialize_from_case
             )
+
         if self._case_label:
             ext_dict["caseData"] = [{"label": self._case_label}]
 

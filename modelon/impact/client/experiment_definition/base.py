@@ -1,6 +1,7 @@
+from __future__ import annotations
 import logging
 from abc import ABC, abstractmethod
-from typing import Dict, Optional, Any
+from typing import Dict, Optional, Any, List, TYPE_CHECKING, Union, Type
 
 from modelon.impact.client.experiment_definition.operators import Operator
 from modelon.impact.client import exceptions
@@ -21,17 +22,37 @@ from modelon.impact.client.experiment_definition.asserts import (
     assert_valid_args,
 )
 
+if TYPE_CHECKING:
+    from modelon.impact.client.entities.model import Model
+    from modelon.impact.client.entities.custom_function import CustomFunction
+    from modelon.impact.client.entities.model_executable import ModelExecutable
+    from modelon.impact.client.entities.external_result import ExternalResult
+    from modelon.impact.client.options import (
+        SolverOptions,
+        SimulationOptions,
+        CompilerOptions,
+        RuntimeOptions,
+    )
+    from modelon.impact.client.entities.case import Case
+    from modelon.impact.client.entities.experiment import Experiment
+
+    CaseOrExperimentOrExternalResult = Union[Case, Experiment, ExternalResult]
+    RuntimeOptionsOrDict = Union[RuntimeOptions, Dict[str, Any]]
+    SimulationOptionsOrDict = Union[SimulationOptions, Dict[str, Any]]
+    SolverOptionsOrDict = Union[SolverOptions, Dict[str, Any]]
+    CompilerOptionsOrDict = Union[CompilerOptions, Dict[str, Any]]
+
 logger = logging.getLogger(__name__)
 
 
-def _assert_successful_compilation(fmu):
+def _assert_successful_compilation(fmu: ModelExecutable) -> None:
     if not fmu.is_successful():
         raise exceptions.OperationFailureError(
             "Compilation process has failed! See the log for more info!"
         )
 
 
-def _assert_valid_case_modifiers(cases_modifiers):
+def _assert_valid_case_modifiers(cases_modifiers: List[Dict[str, Any]]) -> None:
     if not isinstance(cases_modifiers, list):
         raise TypeError("The case modifiers argument must be a list!")
     for case_modifier in cases_modifiers:
@@ -42,7 +63,9 @@ def _assert_valid_case_modifiers(cases_modifiers):
             )
 
 
-def _assert_valid_extensions(experiment_extensions):
+def _assert_valid_extensions(
+    experiment_extensions: List[SimpleExperimentExtension],
+) -> None:
     if not isinstance(experiment_extensions, list):
         raise TypeError("The experiment extensions argument must be a list!")
     for extension in experiment_extensions:
@@ -58,11 +81,11 @@ class BaseExperimentDefinition(ABC):
     """Base class for an Experiment definition class."""
 
     @abstractmethod
-    def validate(self):
+    def validate(self) -> None:
         """Validates the modifiers appended to the experiment definition."""
 
     @abstractmethod
-    def to_dict(self):
+    def to_dict(self) -> Dict[str, Any]:
         """Returns the experiment definition as a dictionary."""
 
 
@@ -104,11 +127,11 @@ class SimpleFMUExperimentDefinition(BaseExperimentDefinition):
 
     def __init__(
         self,
-        fmu,
-        custom_function,
-        solver_options=None,
-        simulation_options=None,
-        simulation_log_level="WARNING",
+        fmu: ModelExecutable,
+        custom_function: CustomFunction,
+        solver_options: Optional[SolverOptionsOrDict] = None,
+        simulation_options: Optional[SimulationOptionsOrDict] = None,
+        simulation_log_level: str = "WARNING",
     ):
         assert_valid_args(
             fmu=fmu,
@@ -128,12 +151,12 @@ class SimpleFMUExperimentDefinition(BaseExperimentDefinition):
 
         self._simulation_log_level = simulation_log_level
         self._variable_modifiers = fmu._variable_modifiers()
-        self._extensions = []
-        self._initialize_from_experiment = None
-        self._initialize_from_case = None
-        self._initialize_from_external_result = None
+        self._extensions: List[SimpleExperimentExtension] = []
+        self._initialize_from_experiment: Optional[Experiment] = None
+        self._initialize_from_case: Optional[Case] = None
+        self._initialize_from_external_result: Optional[ExternalResult] = None
 
-    def validate(self):
+    def validate(self) -> None:
         add = set(self._variable_modifiers.keys()) - set(
             self._fmu.get_settable_parameters()
         )
@@ -144,7 +167,9 @@ class SimpleFMUExperimentDefinition(BaseExperimentDefinition):
                 "method on the fmu to view the list of settable parameters."
             )
 
-    def with_modifiers(self, modifiers=None, **modifiers_kwargs):
+    def with_modifiers(
+        self, modifiers: Optional[Dict[str, Any]] = None, **modifiers_kwargs: Any
+    ) -> SimpleFMUExperimentDefinition:
         """Sets the modifiers parameters for an experiment.
 
         Args:
@@ -187,7 +212,9 @@ class SimpleFMUExperimentDefinition(BaseExperimentDefinition):
             )
         return new
 
-    def with_extensions(self, experiment_extensions):
+    def with_extensions(
+        self, experiment_extensions: List[SimpleExperimentExtension]
+    ) -> SimpleFMUExperimentDefinition:
         """Sets up an experiment with multiple experiment extensions.
 
         Args:
@@ -240,7 +267,9 @@ class SimpleFMUExperimentDefinition(BaseExperimentDefinition):
 
         return new
 
-    def with_cases(self, cases_modifiers):
+    def with_cases(
+        self, cases_modifiers: List[Dict[str, Any]]
+    ) -> SimpleFMUExperimentDefinition:
         """Sets up an experiment with multiple cases with different variable
         modifiers.
 
@@ -266,7 +295,7 @@ class SimpleFMUExperimentDefinition(BaseExperimentDefinition):
         ]
         return self.with_extensions(extensions)
 
-    def to_dict(self):
+    def to_dict(self) -> Dict[str, Any]:
         """Returns the experiment definition as a dictionary.
 
         Returns:
@@ -285,7 +314,7 @@ class SimpleFMUExperimentDefinition(BaseExperimentDefinition):
             simulate_def.to_dict()
 
         """
-        exp_dict = {
+        exp_dict: Dict[str, Any] = {
             "experiment": {
                 "version": 2,
                 "base": {
@@ -316,7 +345,9 @@ class SimpleFMUExperimentDefinition(BaseExperimentDefinition):
             ] = self._initialize_from_external_result.id
         return exp_dict
 
-    def initialize_from(self, entity):
+    def initialize_from(
+        self, entity: CaseOrExperimentOrExternalResult
+    ) -> SimpleFMUExperimentDefinition:
         """Sets the experiment or case to initialize from for an experiment.
 
         Args:
@@ -440,18 +471,18 @@ class SimpleModelicaExperimentDefinition(BaseExperimentDefinition):
 
     def __init__(
         self,
-        model,
-        custom_function,
+        model: Model,
+        custom_function: CustomFunction,
         *,
-        compiler_options=None,
-        fmi_target="me",
-        fmi_version="2.0",
-        platform="auto",
-        compiler_log_level="warning",
-        runtime_options=None,
-        solver_options=None,
-        simulation_options=None,
-        simulation_log_level="WARNING",
+        compiler_options: Optional[CompilerOptionsOrDict] = None,
+        fmi_target: str = "me",
+        fmi_version: str = "2.0",
+        platform: str = "auto",
+        compiler_log_level: str = "warning",
+        runtime_options: Optional[RuntimeOptionsOrDict] = None,
+        solver_options: Optional[SolverOptionsOrDict] = None,
+        simulation_options: Optional[SimulationOptionsOrDict] = None,
+        simulation_log_level: str = "WARNING",
     ):
         assert_valid_args(
             model=model,
@@ -480,14 +511,14 @@ class SimpleModelicaExperimentDefinition(BaseExperimentDefinition):
             custom_function.get_simulation_options, simulation_options
         )
         self._simulation_log_level = simulation_log_level
-        self._variable_modifiers = {}
-        self._extensions = []
-        self._initialize_from_experiment = None
-        self._initialize_from_case = None
-        self._initialize_from_external_result = None
+        self._variable_modifiers: Dict[str, Any] = {}
+        self._extensions: List[SimpleExperimentExtension] = []
+        self._initialize_from_experiment: Optional[Experiment] = None
+        self._initialize_from_case: Optional[Case] = None
+        self._initialize_from_external_result: Optional[ExternalResult] = None
         self._expansion = FullFactorial()
 
-    def validate(self):
+    def validate(self) -> None:
         raise NotImplementedError(
             "Validation is not supported for SimpleModelicaExperimentDefinition class"
         )
@@ -495,7 +526,7 @@ class SimpleModelicaExperimentDefinition(BaseExperimentDefinition):
     def with_modifiers(
         self,
         modifiers: Optional[Dict[str, Any]] = None,
-    ) -> 'SimpleModelicaExperimentDefinition':
+    ) -> SimpleModelicaExperimentDefinition:
         """Sets the modifiers parameters for an experiment.
 
         Args:
@@ -541,7 +572,9 @@ class SimpleModelicaExperimentDefinition(BaseExperimentDefinition):
             )
         return new
 
-    def with_expansion(self, expansion: ExpansionAlgorithm = FullFactorial()):
+    def with_expansion(
+        self, expansion: Optional[Type[ExpansionAlgorithm]] = None
+    ) -> SimpleModelicaExperimentDefinition:
         """Sets the expansion algorithm for an experiment.
 
         Args:
@@ -566,6 +599,7 @@ class SimpleModelicaExperimentDefinition(BaseExperimentDefinition):
                 f"The expansion argument is of type '{type(expansion)}' "
                 "which is not a subtype of 'ExpansionAlgorithm'!"
             )
+        expansion = expansion or FullFactorial()
         new = SimpleModelicaExperimentDefinition(
             model=self._model,
             custom_function=self._custom_function,
@@ -587,7 +621,9 @@ class SimpleModelicaExperimentDefinition(BaseExperimentDefinition):
         new._variable_modifiers = self._variable_modifiers
         return new
 
-    def initialize_from(self, entity):
+    def initialize_from(
+        self, entity: CaseOrExperimentOrExternalResult
+    ) -> SimpleModelicaExperimentDefinition:
         """Sets the experiment or case to initialize from for an experiment.
 
         Args:
@@ -639,7 +675,9 @@ class SimpleModelicaExperimentDefinition(BaseExperimentDefinition):
         new._extensions = self._extensions
         return new
 
-    def with_extensions(self, experiment_extensions):
+    def with_extensions(
+        self, experiment_extensions: List[SimpleExperimentExtension]
+    ) -> SimpleModelicaExperimentDefinition:
         """Sets up an experiment with multiple experiment extensions.
 
         Args:
@@ -698,7 +736,9 @@ class SimpleModelicaExperimentDefinition(BaseExperimentDefinition):
         new._expansion = self._expansion
         return new
 
-    def with_cases(self, cases_modifiers):
+    def with_cases(
+        self, cases_modifiers: List[Dict[str, Any]]
+    ) -> SimpleModelicaExperimentDefinition:
         """Sets up an experiment with multiple cases with different variable
         modifiers.
 
@@ -724,7 +764,7 @@ class SimpleModelicaExperimentDefinition(BaseExperimentDefinition):
         ]
         return self.with_extensions(extensions)
 
-    def to_dict(self):
+    def to_dict(self) -> Dict[str, Any]:
         """Returns the experiment definition as a dictionary.
 
         Returns:
@@ -747,7 +787,7 @@ class SimpleModelicaExperimentDefinition(BaseExperimentDefinition):
 
         """
 
-        exp_dict = {
+        exp_dict: Dict[str, Any] = {
             "experiment": {
                 "version": 2,
                 "base": {

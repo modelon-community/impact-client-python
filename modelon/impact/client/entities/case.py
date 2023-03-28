@@ -1,8 +1,9 @@
+from __future__ import annotations
 import logging
 import os
 import tempfile
 from datetime import datetime
-from typing import Any, Dict, Tuple, Optional, List
+from typing import Any, Dict, Tuple, Optional, List, Union, Text, TYPE_CHECKING
 from modelon.impact.client.sal.service import Service
 from modelon.impact.client.sal.experiment import ResultFormat
 from modelon.impact.client.operations.case import CaseOperation
@@ -14,19 +15,23 @@ from modelon.impact.client.entities.status import CaseStatus
 from modelon.impact.client.entities.asserts import assert_successful_operation
 from modelon.impact.client import exceptions
 
+if TYPE_CHECKING:
+    from modelon.impact.client.sal.experiment import ExperimentService
+
 logger = logging.getLogger(__name__)
 
 
-def _assert_case_is_complete(status, operation_name="Operation"):
+def _assert_case_is_complete(
+    status: CaseStatus, operation_name: str = "Operation"
+) -> None:
     if status == CaseStatus.NOT_STARTED:
         raise exceptions.OperationNotCompleteError.for_operation(operation_name, status)
     elif status == CaseStatus.CANCELLED:
         raise exceptions.OperationFailureError.for_operation(operation_name)
 
 
-def _datetime_from_unix_time(unix_time: Optional[int]):
-    if unix_time:
-        return datetime.fromtimestamp(unix_time / 1e3)
+def _datetime_from_unix_time(unix_time: Optional[int]) -> Optional[datetime]:
+    return datetime.fromtimestamp(unix_time / 1e3) if unix_time else None
 
 
 class _CaseRunInfo:
@@ -56,7 +61,7 @@ class _CaseRunInfo:
         return self._consistent
 
     @property
-    def started(self):
+    def started(self) -> Optional[datetime]:
         """Case execution start time.
 
         Returns None if case execution hasn't started.
@@ -65,7 +70,7 @@ class _CaseRunInfo:
         return self._datetime_started
 
     @property
-    def finished(self):
+    def finished(self) -> Optional[datetime]:
         """Case execution finish time.
 
         Returns None if case execution hasn't finished.
@@ -101,7 +106,7 @@ class _CaseAnalysis:
         return self._analysis['parameters']
 
     @parameters.setter
-    def parameters(self, parameters: Dict[str, Any]):
+    def parameters(self, parameters: Dict[str, Any]) -> None:
         self._analysis['parameters'] = parameters
 
     @property
@@ -110,7 +115,7 @@ class _CaseAnalysis:
         return self._analysis['simulation_options']
 
     @simulation_options.setter
-    def simulation_options(self, simulation_options: Dict[str, Any]):
+    def simulation_options(self, simulation_options: Dict[str, Any]) -> None:
         self._analysis['simulation_options'] = simulation_options
 
     @property
@@ -119,7 +124,7 @@ class _CaseAnalysis:
         return self._analysis['solver_options']
 
     @solver_options.setter
-    def solver_options(self, solver_options: Dict[str, Any]):
+    def solver_options(self, solver_options: Dict[str, Any]) -> None:
         self._analysis['solver_options'] = solver_options
 
     @property
@@ -128,7 +133,7 @@ class _CaseAnalysis:
         return self._analysis['simulation_log_level']
 
     @simulation_log_level.setter
-    def simulation_log_level(self, simulation_log_level: str):
+    def simulation_log_level(self, simulation_log_level: str) -> None:
         self._analysis['simulation_log_level'] = simulation_log_level
 
 
@@ -142,7 +147,7 @@ class CustomArtifact:
         case_id: str,
         artifact_id: str,
         download_as: str,
-        exp_sal,
+        exp_sal: ExperimentService,
     ):
         self._workspace_id = workspace_id
         self._exp_id = experiment_id
@@ -152,16 +157,16 @@ class CustomArtifact:
         self._exp_sal = exp_sal
 
     @property
-    def id(self):
+    def id(self) -> str:
         """Id of the custom artifact."""
         return self._artifact_id
 
     @property
-    def download_as(self):
+    def download_as(self) -> str:
         """File name for the downloaded artifact."""
         return self._download_as
 
-    def download(self, path: Optional[str] = None):
+    def download(self, path: Optional[str] = None) -> str:
         """Downloads a custom artifact. Returns the local path to the
         downloaded artifact.
 
@@ -190,11 +195,11 @@ class CustomArtifact:
             path = os.path.join(tempfile.gettempdir(), "impact-downloads")
         os.makedirs(path, exist_ok=True)
         artifact_path = os.path.join(path, self.download_as)
-        with open(artifact_path, "wb") as f:
+        with open(artifact_path, mode="wb") as f:
             f.write(artifact)
         return artifact_path
 
-    def get_data(self) -> bytes:
+    def get_data(self) -> Union[Text, bytes]:
         """Returns the custom artifact stream.
 
         Returns:
@@ -231,7 +236,7 @@ class _CaseMeta:
         return self._data['label']
 
     @label.setter
-    def label(self, label: str):
+    def label(self, label: str) -> None:
         self._data['label'] = label
 
 
@@ -254,7 +259,7 @@ class _CaseInput:
         return self._data['parametrization']
 
     @parametrization.setter
-    def parametrization(self, parametrization: Dict[str, Any]):
+    def parametrization(self, parametrization: Dict[str, Any]) -> None:
         self._data['parametrization'] = parametrization
 
     @property
@@ -304,10 +309,10 @@ class Case:
         self._sal = service
         self._info = info
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"Case with id '{self._case_id}'"
 
-    def __eq__(self, obj):
+    def __eq__(self, obj: object) -> bool:
         return isinstance(obj, Case) and obj._case_id == self._case_id
 
     @property
@@ -370,7 +375,7 @@ class Case:
         return _CaseMeta(self._info['meta'])
 
     @property
-    def initialize_from_case(self) -> Optional['Case']:
+    def initialize_from_case(self) -> Optional[Case]:
         init_from_dict = self._info['input'].get('initialize_from_case')
         if init_from_dict is None:
             return None
@@ -386,7 +391,7 @@ class Case:
         )
 
     @initialize_from_case.setter
-    def initialize_from_case(self, case: 'Case'):
+    def initialize_from_case(self, case: Case) -> None:
         if not isinstance(case, Case):
             raise TypeError(
                 "The value must be an instance of modelon.impact.client.entities."
@@ -410,7 +415,7 @@ class Case:
         return ExternalResult(result_id, self._sal)
 
     @initialize_from_external_result.setter
-    def initialize_from_external_result(self, result: ExternalResult):
+    def initialize_from_external_result(self, result: ExternalResult) -> None:
         if not isinstance(result, ExternalResult):
             raise TypeError(
                 "The value must be an instance of "
@@ -454,7 +459,7 @@ class Case:
             )
         )
 
-    def get_result(self, format: str = 'mat') -> Tuple[bytes, str]:
+    def get_result(self, format: str = 'mat') -> Tuple[Union[bytes, Text], str]:
         """Returns the result stream and the file name for a finished case.
 
         Args:
@@ -559,7 +564,7 @@ class Case:
             self._sal.experiment,
         )
 
-    def _get_artifact_download_name(self, artifact_id):
+    def _get_artifact_download_name(self, artifact_id: str) -> str:
         resp = self._sal.experiment.case_artifacts_meta_get(
             self._workspace_id, self._exp_id, self._case_id
         )
@@ -607,7 +612,9 @@ class Case:
             for meta in resp["data"]["items"]
         ]
 
-    def get_fmu(self):
+    def get_fmu(
+        self,
+    ) -> modelon.impact.client.entities.model_executable.ModelExecutable:
         """Returns the ModelExecutable class object simulated for the case.
 
         Returns:
@@ -628,7 +635,7 @@ class Case:
             self._workspace_id, fmu_id, self._sal
         )
 
-    def sync(self):
+    def sync(self) -> None:
         """Sync case state against server, pushing any changes that has been
         done to the object client side.
 
@@ -679,7 +686,7 @@ class Case:
             self._sal,
         )
 
-    def _assert_unique_case_initialization(self, unsupported_init):
+    def _assert_unique_case_initialization(self, unsupported_init: str) -> None:
         if self._info['input'][unsupported_init]:
             raise ValueError(
                 "A case cannot use both 'initialize_from_case' and "

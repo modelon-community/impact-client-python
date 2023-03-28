@@ -30,26 +30,26 @@ class CachedModelExecutableOperation(ExecutionOperation):
         self._info = info
         self._modifiers = modifiers
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"Cached model executable operations for id '{self._fmu_id}'"
 
-    def __eq__(self, obj):
+    def __eq__(self, obj: object) -> bool:
         return (
             isinstance(obj, CachedModelExecutableOperation)
             and obj._fmu_id == self._fmu_id
         )
 
     @property
-    def id(self):
+    def id(self) -> str:
         """FMU id."""
         return self._fmu_id
 
     @property
-    def name(self):
+    def name(self) -> str:
         """Return the name of operation."""
         return "Looking for cached FMU"
 
-    def data(self):
+    def data(self) -> ModelExecutable:
         """Returns a new ModelExecutable class instance.
 
         Returns:
@@ -62,7 +62,7 @@ class CachedModelExecutableOperation(ExecutionOperation):
             self._workspace_id, self._fmu_id, self._sal, self._info, self._modifiers
         )
 
-    def status(self):
+    def status(self) -> Status:
         """Returns the compilation status as an enumeration.
 
         Returns:
@@ -79,12 +79,14 @@ class CachedModelExecutableOperation(ExecutionOperation):
         """
         return Status.DONE
 
-    def cancel(self):
+    def cancel(self) -> None:
         raise NotImplementedError(
             "Cancel is not supported for CachedModelExecutableOperation class"
         )
 
-    def wait(self, timeout=None, status=Status.DONE):
+    def wait(
+        self, timeout: Optional[float] = None, status: Status = Status.DONE
+    ) -> ModelExecutable:
         """Waits until the operation achieves the set status. Returns the
         operation class instance if the set status is achieved.
 
@@ -137,23 +139,23 @@ class ModelExecutableOperation(ExecutionOperation):
         self._fmu_id = fmu_id
         self._sal = service
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"Model executable operations for id '{self._fmu_id}'"
 
-    def __eq__(self, obj):
+    def __eq__(self, obj: object) -> bool:
         return isinstance(obj, ModelExecutableOperation) and obj._fmu_id == self._fmu_id
 
     @property
-    def id(self):
+    def id(self) -> str:
         """FMU id."""
         return self._fmu_id
 
     @property
-    def name(self):
+    def name(self) -> str:
         """Return the name of operation."""
         return "Compilation"
 
-    def data(self):
+    def data(self) -> ModelExecutable:
         """Returns a new ModelExecutable class instance.
 
         Returns:
@@ -164,7 +166,7 @@ class ModelExecutableOperation(ExecutionOperation):
         """
         return ModelExecutable(self._workspace_id, self._fmu_id, self._sal)
 
-    def status(self):
+    def status(self) -> Status:
         """Returns the compilation status as an enumeration.
 
         Returns:
@@ -185,7 +187,7 @@ class ModelExecutableOperation(ExecutionOperation):
             ]
         )
 
-    def cancel(self):
+    def cancel(self) -> None:
         """Terminates the compilation process.
 
         Example::
