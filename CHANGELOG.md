@@ -1,3 +1,16 @@
+# [3.0.0-dev.17](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.16...v3.0.0-dev.17) (2023-03-28)
+
+
+### Bug Fixes
+
+* the env_name parameter in CredentialManager class now takes a list instead of a string ([783e861](https://github.com/modelon-community/impact-client-python/commit/783e861932fc2d625bf0621cea4fe6940585b759))
+* updated install.rst ([33d877d](https://github.com/modelon-community/impact-client-python/commit/33d877d3f0933f8f7e2e1bd3f46f555bc3a31d62))
+
+
+### BREAKING CHANGES
+
+* env_names parameter of CredentialManager class now takes a list
+
 # [3.0.0-dev.16](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.15...v3.0.0-dev.16) (2023-03-27)
 
 
