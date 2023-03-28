@@ -3,7 +3,7 @@ import enum
 import logging
 from pathlib import Path
 from dataclasses import dataclass
-from typing import Optional, Union, List, Dict, Any
+from typing import Optional, Union, List, Dict, Any, Iterable
 from modelon.impact.client.options import ProjectExecutionOptions
 from modelon.impact.client.entities.content import ContentType, ProjectContent
 from modelon.impact.client.operations.content_import import ContentImportOperation
@@ -253,7 +253,7 @@ class Project:
     def _get_project_content(self, content: Dict[str, str]) -> ProjectContent:
         return ProjectContent(content, self._project_id, self._sal)
 
-    def get_contents(self) -> List[ProjectContent]:
+    def get_contents(self) -> Iterable[ProjectContent]:
         """Get project contents.
 
         Example::
