@@ -20,7 +20,10 @@ def authorize(uri, interactive, context=None, credential_manager=None, service=N
     help_text = f"Enter JupyterHub API token (can be generated at {uri / 'token'}):"
     credential_manager = credential_manager or CredentialManager(
         file_id="jupyterhub-api.key",
-        env_name="MODELON_IMPACT_JUPYTERHUB_CLIENT_API_TOKEN",
+        env_names=[
+            "JUPYTERHUB_API_TOKEN",
+            "MODELON_IMPACT_JUPYTERHUB_CLIENT_API_TOKEN",
+        ],
         interactive_help_text=help_text,
     )
     context = sal.JupyterContext(base=context)

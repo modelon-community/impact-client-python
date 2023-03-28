@@ -31,5 +31,5 @@ The client library is actively developed on GitHub. To install Modelon Impact Cl
 Requirements
 ------------
 
-Modelon Impact Client supports Python versions 3.6 or higher. The client library is developed in sync with 
+Modelon Impact Client supports Python versions 3.9 or higher. The client library is developed in sync with 
 Modelon Impact and is kept updated with the latest changes in the tool.

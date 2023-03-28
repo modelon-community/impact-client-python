@@ -5,7 +5,7 @@ Setting up the workspaces
 up a workspace.* 
 
 An API key is required to authenticate our login to the server. Refer to the 
-steps listed in the :doc:`Setup <setup>` section to configure an API key::
+steps listed in the :doc:`Authentication with Modelon Impact<authentication_with_modelon_impact>` section to configure an API key::
 
    from modelon.impact.client import Client
 

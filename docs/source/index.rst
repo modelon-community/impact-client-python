@@ -23,7 +23,7 @@ Python companion library for Modelon Impact that wraps its REST API framework an
    :caption: Getting Started
 
    install.rst
-   setup.rst
+   authentication_with_modelon_impact.rst
    quick_start.rst
 
 .. toctree::
