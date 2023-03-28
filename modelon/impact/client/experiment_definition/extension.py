@@ -237,7 +237,8 @@ class SimpleExperimentExtension(BaseExperimentExtension):
         """
         ext_dict: Dict[str, Any] = {}
         if self._variable_modifiers:
-            ext_dict["modifiers"] = {"variables": self._variable_modifiers}
+            ext_dict.setdefault("modifiers", {})
+            ext_dict["modifiers"]["variables"] = self._variable_modifiers
 
         if self._parameter_modifiers:
             ext_dict.setdefault("analysis", {})
@@ -256,6 +257,7 @@ class SimpleExperimentExtension(BaseExperimentExtension):
             ext_dict["analysis"]["simulationLogLevel"] = self._simulation_log_level
 
         if self._initialize_from_experiment:
+            ext_dict.setdefault("modifiers", {})
             ext_dict["modifiers"][
                 "initializeFrom"
             ] = self._initialize_from_experiment.id
@@ -264,6 +266,7 @@ class SimpleExperimentExtension(BaseExperimentExtension):
             ext_dict["modifiers"]["initializeFromCase"] = case_to_identifier_dict(
                 self._initialize_from_case
             )
+
         if self._case_label:
             ext_dict["caseData"] = [{"label": self._case_label}]
 

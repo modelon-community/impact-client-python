@@ -9,9 +9,7 @@ from modelon.impact.client.sal.uri import URI
 logger = logging.getLogger(__name__)
 
 
-def _get_jupyter_token(
-    credential_manager: CredentialManager, interactive: bool
-) -> Optional[str]:
+def _get_jupyter_token(credential_manager: CredentialManager, interactive: bool) -> str:
     jupyter_token = credential_manager.get_key(interactive=interactive)
     if not jupyter_token:
         raise exceptions.NoJupyterHubTokenError("No JupyterHub API token is given")
@@ -52,8 +50,9 @@ def authorize(
         else:
             raise
 
-    if interactive and jupyter_context.token:
-        credential_manager.write_key_to_file(jupyter_context.token)
+    jupyter_token = jupyter_context.token
+    if interactive and jupyter_token:
+        credential_manager.write_key_to_file(jupyter_token)
 
     if not user.server_running():
         uri_to_start_server = uri / 'hub/home'
