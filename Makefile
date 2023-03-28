@@ -64,7 +64,7 @@ commitlint:
 
 
 lint: commitlint
-	$(call _run_bare, bash -c "poetry run -- black -S modelon && poetry run -- flake8 modelon --config .flake8 && poetry run -- mypy modelon")
+	$(call _run_bare, bash -c "poetry run -- black -S modelon && poetry run -- flake8 modelon --config .flake8 && poetry run -- mypy --disallow-untyped-defs modelon")
 
 
 wheel: build
