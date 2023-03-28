@@ -60,5 +60,5 @@ class Result(Mapping):
     def __len__(self) -> int:
         return self._variables.__len__()
 
-    def keys(self):
+    def keys(self):  # type: ignore
         return self._variables
