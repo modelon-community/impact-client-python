@@ -228,7 +228,11 @@ class TestExperiment:
         exp_sal = service.experiment
         exp.set_label(IDs.EXPERIMENT_LABEL)
         exp_sal.experiment_set_label.assert_has_calls(
-            [mock.call(IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY, IDs.EXPERIMENT_LABEL)]
+            [
+                mock.call(
+                    IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY, IDs.EXPERIMENT_LABEL
+                )
+            ]
         )
 
     def test_get_experiment_label(self, experiment):

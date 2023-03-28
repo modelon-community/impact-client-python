@@ -63,6 +63,10 @@ class IllegalContentImport(Error):
     pass
 
 
+class IllegalFMUImport(Error):
+    pass
+
+
 class ExternalResultUploadError(Error):
     pass
 

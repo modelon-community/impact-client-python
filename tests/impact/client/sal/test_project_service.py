@@ -134,8 +134,7 @@ class TestProjectService:
             uri=uri, context=import_fmu.context
         )
         with mock.patch("builtins.open", mock.mock_open()) as mock_file:
-            data = service.project.fmu_upload(
-                IDs.WORKSPACE_PRIMARY,
+            data = service.project.fmu_import(
                 IDs.PROJECT_PRIMARY,
                 IDs.PROJECT_CONTENT_PRIMARY,
                 "test.fmu",
@@ -156,8 +155,8 @@ class TestProjectService:
 
         import_fmu_call = import_fmu.adapter.request_history[0]
         assert (
-            f'http://mock-impact.com/api/workspaces/{IDs.WORKSPACE_PRIMARY}/projects/{IDs.PROJECT_PRIMARY}/content/{IDs.PROJECT_CONTENT_PRIMARY}/models'
-            == import_fmu_call.url
+            f'http://mock-impact.com/api/projects/{IDs.PROJECT_PRIMARY}'
+            f'/content/{IDs.PROJECT_CONTENT_PRIMARY}/fmu-imports' == import_fmu_call.url
         )
         assert 'POST' == import_fmu_call.method
 

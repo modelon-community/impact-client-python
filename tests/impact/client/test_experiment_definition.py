@@ -48,7 +48,7 @@ _EXPECTED_MODELICA_EXP = {
         "base": {
             "model": {
                 "modelica": {
-                    "className": "Test.PID",
+                    "className": IDs.LOCAL_MODELICA_CLASS_PATH,
                     "compilerOptions": {"c_compiler": "gcc"},
                     "runtimeOptions": {},
                     "compilerLogLevel": 'warning',
@@ -690,7 +690,7 @@ class TestSimpleModelicaExperimentDefinition:
         self, model, custom_function_no_param
     ):
         definition = SimpleModelicaExperimentDefinition(
-            model, custom_function=custom_function_no_param
+            model.entity, custom_function=custom_function_no_param
         )
         config = definition.to_dict()
         assert config == {
@@ -699,7 +699,7 @@ class TestSimpleModelicaExperimentDefinition:
                 "base": {
                     "model": {
                         "modelica": {
-                            "className": "Test.PID",
+                            "className": IDs.LOCAL_MODELICA_CLASS_PATH,
                             "compilerOptions": {"c_compiler": "gcc"},
                             "runtimeOptions": {},
                             "compilerLogLevel": 'warning',
@@ -728,7 +728,7 @@ class TestSimpleModelicaExperimentDefinition:
         expected = get_expected_with_sobol_expansion(_EXPECTED_MODELICA_EXP)
         definition = (
             SimpleModelicaExperimentDefinition(
-                model, custom_function=custom_function_no_param
+                model.entity, custom_function=custom_function_no_param
             )
             .with_modifiers({'h0': Uniform(0.1, 0.5)})
             .with_expansion(expansion=Sobol(5))
@@ -743,7 +743,7 @@ class TestSimpleModelicaExperimentDefinition:
         expected = get_expected_with_lhs_expansion(_EXPECTED_MODELICA_EXP)
         definition = (
             SimpleModelicaExperimentDefinition(
-                model, custom_function=custom_function_no_param
+                model.entity, custom_function=custom_function_no_param
             )
             .with_modifiers({'h0': Normal(0.1, 0.5)})
             .with_expansion(expansion=LatinHypercube(5, 1))
@@ -760,7 +760,7 @@ class TestSimpleModelicaExperimentDefinition:
         expected = get_expected_with_ext_first(_EXPECTED_MODELICA_EXP)
         exp_def = (
             SimpleModelicaExperimentDefinition(
-                model, custom_function=custom_function_no_param
+                model.entity, custom_function=custom_function_no_param
             )
             .with_modifiers({'h0': Range(0.1, 0.5, 3)})
             .with_extensions([ext])
@@ -779,7 +779,7 @@ class TestSimpleModelicaExperimentDefinition:
         expected = get_expected_with_cases_first(_EXPECTED_MODELICA_EXP)
         exp_def = (
             SimpleModelicaExperimentDefinition(
-                model, custom_function=custom_function_no_param
+                model.entity, custom_function=custom_function_no_param
             )
             .with_cases([{'p': 3}])
             .with_modifiers({'h0': Range(0.1, 0.5, 3)})
@@ -797,7 +797,7 @@ class TestSimpleModelicaExperimentDefinition:
         expected = get_expected_with_ext_first(_EXPECTED_MODELICA_EXP)
         exp_def = (
             SimpleModelicaExperimentDefinition(
-                model, custom_function=custom_function_no_param
+                model.entity, custom_function=custom_function_no_param
             )
             .with_extensions([ext])
             .with_cases([{'p': 3}])
@@ -815,7 +815,7 @@ class TestSimpleModelicaExperimentDefinition:
         expected = get_expected_with_ext_first(_EXPECTED_MODELICA_EXP)
         exp_def = (
             SimpleModelicaExperimentDefinition(
-                model, custom_function=custom_function_no_param
+                model.entity, custom_function=custom_function_no_param
             )
             .with_initialize_from(experiment)
             .with_extensions([ext])
@@ -833,7 +833,7 @@ class TestSimpleModelicaExperimentDefinition:
         expected = get_expected_with_ext_first(_EXPECTED_MODELICA_EXP)
         exp_def = (
             SimpleModelicaExperimentDefinition(
-                model, custom_function=custom_function_no_param
+                model.entity, custom_function=custom_function_no_param
             )
             .with_initialize_from(experiment)
             .with_modifiers({'h0': Range(0.1, 0.5, 3)})
@@ -851,7 +851,7 @@ class TestSimpleModelicaExperimentDefinition:
         expected = get_expected_with_cases_first(_EXPECTED_MODELICA_EXP)
         exp_def = (
             SimpleModelicaExperimentDefinition(
-                model, custom_function=custom_function_no_param
+                model.entity, custom_function=custom_function_no_param
             )
             .with_modifiers({'h0': Range(0.1, 0.5, 3)})
             .with_initialize_from(experiment)
@@ -869,7 +869,7 @@ class TestSimpleModelicaExperimentDefinition:
         expected = get_expected_with_cases_first(_EXPECTED_MODELICA_EXP)
         exp_def = (
             SimpleModelicaExperimentDefinition(
-                model, custom_function=custom_function_no_param
+                model.entity, custom_function=custom_function_no_param
             )
             .with_cases([{'p': 3}])
             .with_extensions([ext])
@@ -887,7 +887,7 @@ class TestSimpleModelicaExperimentDefinition:
         expected = get_expected_with_cases_first(_EXPECTED_MODELICA_EXP)
         exp_def = (
             SimpleModelicaExperimentDefinition(
-                model, custom_function=custom_function_no_param
+                model.entity, custom_function=custom_function_no_param
             )
             .with_cases([{'p': 3}])
             .with_extensions([ext])
@@ -905,7 +905,7 @@ class TestSimpleModelicaExperimentDefinition:
         expected = get_expected_with_cases_first(_EXPECTED_MODELICA_EXP)
         exp_def = (
             SimpleModelicaExperimentDefinition(
-                model, custom_function=custom_function_no_param
+                model.entity, custom_function=custom_function_no_param
             )
             .with_cases([{'p': 3}])
             .with_initialize_from(experiment)
@@ -923,7 +923,7 @@ class TestSimpleModelicaExperimentDefinition:
         expected = get_expected_with_cases_first(_EXPECTED_MODELICA_EXP)
         exp_def = (
             SimpleModelicaExperimentDefinition(
-                model, custom_function=custom_function_no_param
+                model.entity, custom_function=custom_function_no_param
             )
             .with_initialize_from(experiment)
             .with_cases([{'p': 3}])
@@ -941,7 +941,7 @@ class TestSimpleModelicaExperimentDefinition:
         expected = get_expected_with_ext_first(_EXPECTED_MODELICA_EXP)
         exp_def = (
             SimpleModelicaExperimentDefinition(
-                model, custom_function=custom_function_no_param
+                model.entity, custom_function=custom_function_no_param
             )
             .with_extensions([ext])
             .with_modifiers({'h0': Range(0.1, 0.5, 3)})
@@ -959,7 +959,7 @@ class TestSimpleModelicaExperimentDefinition:
         expected = get_expected_with_ext_first(_EXPECTED_MODELICA_EXP)
         exp_def = (
             SimpleModelicaExperimentDefinition(
-                model, custom_function=custom_function_no_param
+                model.entity, custom_function=custom_function_no_param
             )
             .with_extensions([ext])
             .with_modifiers({'h0': Range(0.1, 0.5, 3)})
@@ -977,7 +977,7 @@ class TestSimpleModelicaExperimentDefinition:
         expected = get_expected_with_ext_first(_EXPECTED_MODELICA_EXP)
         exp_def = (
             SimpleModelicaExperimentDefinition(
-                model, custom_function=custom_function_no_param
+                model.entity, custom_function=custom_function_no_param
             )
             .with_extensions([ext])
             .with_cases([{'p': 3}])
@@ -995,7 +995,7 @@ class TestSimpleModelicaExperimentDefinition:
         expected = get_expected_with_ext_first(_EXPECTED_MODELICA_EXP)
         exp_def = (
             SimpleModelicaExperimentDefinition(
-                model, custom_function=custom_function_no_param
+                model.entity, custom_function=custom_function_no_param
             )
             .with_initialize_from(experiment)
             .with_extensions([ext])
@@ -1013,7 +1013,7 @@ class TestSimpleModelicaExperimentDefinition:
         expected = get_expected_with_cases_first(_EXPECTED_MODELICA_EXP)
         exp_def = (
             SimpleModelicaExperimentDefinition(
-                model, custom_function=custom_function_no_param
+                model.entity, custom_function=custom_function_no_param
             )
             .with_cases([{'p': 3}])
             .with_initialize_from(experiment)
@@ -1031,7 +1031,7 @@ class TestSimpleModelicaExperimentDefinition:
         expected = get_expected_with_cases_first(_EXPECTED_MODELICA_EXP)
         exp_def = (
             SimpleModelicaExperimentDefinition(
-                model, custom_function=custom_function_no_param
+                model.entity, custom_function=custom_function_no_param
             )
             .with_modifiers({'h0': Range(0.1, 0.5, 3)})
             .with_initialize_from(experiment)
@@ -1043,7 +1043,7 @@ class TestSimpleModelicaExperimentDefinition:
 
     def test_experiment_definition_with_options(self, model, custom_function_no_param):
         definition = SimpleModelicaExperimentDefinition(
-            model,
+            model.entity,
             custom_function=custom_function_no_param,
             compiler_options=custom_function_no_param.get_compiler_options().with_values(
                 a=2, b=1
@@ -1073,7 +1073,7 @@ class TestSimpleModelicaExperimentDefinition:
         self, model, custom_function_no_param
     ):
         definition = SimpleModelicaExperimentDefinition(
-            model, custom_function=custom_function_no_param
+            model.entity, custom_function=custom_function_no_param
         ).with_modifiers({'h0': Range(0.1, 0.5, 3), 'v': Choices(0.1, 0.5, 3)})
         config = definition.to_dict()
         assert config["experiment"]["base"]["modifiers"]["variables"] == {
@@ -1085,7 +1085,7 @@ class TestSimpleModelicaExperimentDefinition:
         self, model, custom_function_no_param
     ):
         definition = SimpleModelicaExperimentDefinition(
-            model, custom_function=custom_function_no_param
+            model.entity, custom_function=custom_function_no_param
         ).with_modifiers(
             {'h0': Uniform(0.1, 0.5), 'v': Beta(0.1, 0.5), 't': Normal(0.1, 0.5, -5)}
         )
@@ -1112,7 +1112,7 @@ class TestSimpleModelicaExperimentDefinition:
             mock_file.assert_called_with("test.mat", "rb")
 
         definition = SimpleModelicaExperimentDefinition(
-            model, custom_function=custom_function_no_param
+            model.entity, custom_function=custom_function_no_param
         ).with_initialize_from(result)
         config = definition.to_dict()
         assert (
@@ -1125,7 +1125,7 @@ class TestSimpleModelicaExperimentDefinition:
     ):
         experiment = experiment.entity
         definition = SimpleModelicaExperimentDefinition(
-            model, custom_function=custom_function_no_param
+            model.entity, custom_function=custom_function_no_param
         ).with_initialize_from(experiment)
         config = definition.to_dict()
         assert (
@@ -1137,7 +1137,7 @@ class TestSimpleModelicaExperimentDefinition:
     ):
         case_1 = experiment.entity.get_case(IDs.CASE_PRIMARY)
         definition = SimpleModelicaExperimentDefinition(
-            model, custom_function=custom_function_no_param
+            model.entity, custom_function=custom_function_no_param
         ).with_initialize_from(case_1)
         config = definition.to_dict()
         assert config["experiment"]["base"]["modifiers"]["initializeFromCase"] == {
@@ -1150,7 +1150,9 @@ class TestSimpleModelicaExperimentDefinition:
     ):
         experiment = experiment.entity
         definition = SimpleModelicaExperimentDefinition(
-            model, custom_function=custom_function_no_param, initialize_from=experiment
+            model.entity,
+            custom_function=custom_function_no_param,
+            initialize_from=experiment,
         )
 
         # Reinitializing with case entity
@@ -1178,7 +1180,7 @@ class TestSimpleModelicaExperimentDefinition:
         ext1 = SimpleExperimentExtension().with_modifiers(p=2)
         ext2 = SimpleExperimentExtension({'final_time': 10}).with_modifiers(p=3)
         definition = SimpleModelicaExperimentDefinition(
-            model, custom_function=custom_function_no_param
+            model.entity, custom_function=custom_function_no_param
         ).with_extensions([ext1, ext2])
         config = definition.to_dict()
         assert config["experiment"]["extensions"] == [
@@ -1201,7 +1203,7 @@ class TestSimpleModelicaExperimentDefinition:
         ext2 = SimpleExperimentExtension({'final_time': 10}).with_modifiers(p=3)
         ext2 = ext2.with_initialize_from(experiment)
         definition = SimpleModelicaExperimentDefinition(
-            model, custom_function=custom_function_no_param
+            model.entity, custom_function=custom_function_no_param
         ).with_extensions([ext1, ext2])
         config = definition.to_dict()
         assert config["experiment"]["extensions"] == [
@@ -1223,7 +1225,7 @@ class TestSimpleModelicaExperimentDefinition:
             .with_initialize_from(case_1)
         )
         definition = SimpleModelicaExperimentDefinition(
-            model, custom_function=custom_function_no_param
+            model.entity, custom_function=custom_function_no_param
         ).with_extensions([ext1, ext2])
         config = definition.to_dict()
         assert config["experiment"]["extensions"] == [
@@ -1262,7 +1264,7 @@ class TestSimpleModelicaExperimentDefinition:
 
     def test_experiment_definition_with_cases(self, model, custom_function_no_param):
         definition = SimpleModelicaExperimentDefinition(
-            model, custom_function=custom_function_no_param
+            model.entity, custom_function=custom_function_no_param
         ).with_cases([{'p': 2}, {'p': 3}])
         config = definition.to_dict()
         assert config["experiment"]["extensions"] == [
