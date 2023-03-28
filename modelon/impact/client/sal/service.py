@@ -1,7 +1,7 @@
 """Service class."""
 import inspect
 import logging
-from typing import Optional
+from typing import Optional, Union, Dict, Any, Callable
 
 from modelon.impact.client.sal import exceptions
 from modelon.impact.client.sal.http import HTTPClient
@@ -16,11 +16,12 @@ from modelon.impact.client.sal.exports import ExportService
 from modelon.impact.client.sal.imports import ImportService
 from modelon.impact.client.sal.context import Context
 from modelon.impact.client.sal.uri import URI
+from modelon.impact.client.jupyterhub.sal import JupyterContext
 
 logger = logging.getLogger(__name__)
 
 
-def _decorate_all_methods(cls, decorator):
+def _decorate_all_methods(cls: Any, decorator: Callable) -> Any:
     for method_name, method in inspect.getmembers(cls, lambda x: inspect.ismethod(x)):
         setattr(cls, method_name, decorator(method))
 
@@ -30,7 +31,9 @@ def _decorate_all_methods(cls, decorator):
 class Service:
     _JUPYTERHUB_VERSION_HEADER = 'x-jupyterhub-version'
 
-    def __init__(self, uri: URI, context: Optional[Context] = None):
+    def __init__(
+        self, uri: URI, context: Optional[Union[Context, JupyterContext]] = None
+    ):
         self._base_uri = uri
         self._http_client = HTTPClient(context)
         self.workspace = WorkspaceService(self._base_uri, self._http_client)
@@ -45,9 +48,9 @@ class Service:
         self.exports = ExportService(self._base_uri, self._http_client)
         self.imports = ImportService(self._base_uri, self._http_client)
 
-    def add_login_retry_with(self, api_key: Optional[str] = None):
-        def retry_with_login_decorator(func):
-            def wrapped(*args, **kwargs):
+    def add_login_retry_with(self, api_key: Optional[str] = None) -> None:
+        def retry_with_login_decorator(func: Callable) -> Callable:
+            def wrapped(*args: Any, **kwargs: Any) -> Callable:
                 try:
                     return func(*args, **kwargs)
                 except exceptions.HTTPError as e:
@@ -79,7 +82,7 @@ class Service:
             self.external_result, retry_with_login_decorator
         )
 
-    def api_get_metadata(self):
+    def api_get_metadata(self) -> Dict[str, Any]:
         url = (self._base_uri / "api/").resolve()
         response = self._http_client.get_json_response(url)
         if self._JUPYTERHUB_VERSION_HEADER in response.headers:
@@ -90,7 +93,7 @@ class Service:
 
         return response.data
 
-    def api_login(self, api_key: Optional[str] = None):
+    def api_login(self, api_key: Optional[str] = None) -> Dict[str, Any]:
         login_data = {"secretKey": api_key} if api_key else {}
         url = (self._base_uri / "api/login").resolve()
         return self._http_client.post_json(url, login_data)

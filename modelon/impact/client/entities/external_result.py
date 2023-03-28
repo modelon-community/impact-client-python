@@ -38,10 +38,10 @@ class ExternalResult:
         self._result_id = result_id
         self._sal = service
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"Result id '{self._result_id}'"
 
-    def __eq__(self, obj):
+    def __eq__(self, obj: object) -> bool:
         return isinstance(obj, ExternalResult) and obj._result_id == self._result_id
 
     @property
@@ -61,5 +61,5 @@ class ExternalResult:
         workspace_id = upload_meta.get("workspaceId")
         return _ExternalResultMetaData(id, name, description, workspace_id)
 
-    def delete(self):
+    def delete(self) -> None:
         self._sal.external_result.delete_uploaded_result(self._result_id)

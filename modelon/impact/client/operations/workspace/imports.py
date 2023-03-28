@@ -1,3 +1,4 @@
+from typing import Dict, Any
 from modelon.impact.client.entities.workspace import Workspace, WorkspaceDefinition
 from modelon.impact.client.sal.service import Service
 from modelon.impact.client.operations.base import AsyncOperation, AsyncOperationStatus
@@ -21,29 +22,29 @@ class WorkspaceImportOperation(AsyncOperation):
         self._location = location
         self._sal = service
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"Workspace import operations for id '{self.id}'"
 
-    def __eq__(self, obj):
+    def __eq__(self, obj: object) -> bool:
         return (
             isinstance(obj, WorkspaceImportOperation)
             and obj._location == self._location
         )
 
     @property
-    def id(self):
+    def id(self) -> str:
         """Workspace import id."""
         return self._location.split('/')[-1]
 
     @property
-    def name(self):
+    def name(self) -> str:
         """Return the name of operation."""
         return "Workspace import"
 
-    def _info(self):
+    def _info(self) -> Dict[str, Any]:
         return self._sal.imports.get_import_status(self._location)["data"]
 
-    def data(self):
+    def data(self) -> Workspace:
         """Returns a new Workspace class instance.
 
         Returns:
@@ -61,7 +62,7 @@ class WorkspaceImportOperation(AsyncOperation):
         resp = self._sal.workspace.workspace_get(workspace_id)
         return Workspace(resp["id"], WorkspaceDefinition(resp["definition"]), self._sal)
 
-    def status(self):
+    def status(self) -> AsyncOperationStatus:
         """Returns the upload status as an enumeration.
 
         Returns:

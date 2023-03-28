@@ -1,10 +1,11 @@
+from __future__ import annotations
 from copy import deepcopy
 from collections.abc import Mapping
-from typing import Union, List, Dict, Any
+from typing import Union, List, Dict, Any, Iterator
 from abc import ABC
 
 
-def _set_options(options, **modified):
+def _set_options(options: Dict[str, Any], **modified: Any) -> Dict[str, Any]:
     opts = deepcopy(options)
     for name, value in modified.items():
         opts[name] = value
@@ -19,25 +20,24 @@ class BaseExecutionOptions(Mapping, ABC):
         self._values = values
         self._custom_function_name = custom_function_name
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"{type(self).__name__} for '{self._custom_function_name}'"
 
-    def __getitem__(self, key):
+    def __getitem__(self, key: str) -> Any:
         return self._values[key]
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[Any]:
         return self._values.__iter__()
 
-    def __len__(self):
+    def __len__(self) -> int:
         return self._values.__len__()
 
-    def with_values(self, **modified):
+    def with_values(self, **modified: Any) -> Any:
         """Sets/updates the options.
 
         Args:
 
-            parameters:
-                A keyworded, variable-length argument list of options.
+            parameters: A keyworded, variable-length argument list of options.
 
         Example::
 
@@ -66,7 +66,7 @@ class SolverOptions(BaseExecutionOptions):
 
 
 class SimulationOptions(BaseExecutionOptions):
-    def with_result_filter(self, pattern: Union[str, List[str]]):
+    def with_result_filter(self, pattern: Union[str, List[str]]) -> SimulationOptions:
         """Sets the variable filter for results.
 
         Args:
@@ -95,24 +95,24 @@ class ProjectExecutionOptions:
         self._name = name
 
     @property
-    def custom_function(self):
+    def custom_function(self) -> str:
         return self._name
 
     @property
-    def compiler_options(self):
+    def compiler_options(self) -> CompilerOptions:
         return CompilerOptions(self._data.get("compiler", {}), self.custom_function)
 
     @property
-    def runtime_options(self):
+    def runtime_options(self) -> RuntimeOptions:
         return RuntimeOptions(self._data.get("runtime", {}), self.custom_function)
 
     @property
-    def simulation_options(self):
+    def simulation_options(self) -> SimulationOptions:
         return SimulationOptions(self._data.get("simulation", {}), self.custom_function)
 
     @property
-    def solver_options(self):
+    def solver_options(self) -> SolverOptions:
         return SolverOptions(self._data.get("solver", {}), self.custom_function)
 
-    def to_dict(self):
+    def to_dict(self) -> Dict[str, Any]:
         return {"customFunction": self._name, **self._data}

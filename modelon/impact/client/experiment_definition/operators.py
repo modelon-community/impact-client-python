@@ -1,5 +1,5 @@
 """This module contains operators for parametrizing batch runs."""
-
+from typing import Any
 from abc import abstractmethod
 from dataclasses import dataclass
 
@@ -8,7 +8,7 @@ class Operator:
     """Base class for an Operator."""
 
     @abstractmethod
-    def __str__(self):
+    def __str__(self) -> str:
         "Returns a string representation of the operator"
 
 
@@ -43,7 +43,7 @@ class Range(Operator):
     end_value: float
     no_of_steps: int
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"range({self.start_value},{self.end_value},{self.no_of_steps})"
 
 
@@ -66,10 +66,10 @@ class Choices(Operator):
 
     """
 
-    def __init__(self, *values):
+    def __init__(self, *values: Any):
         self.values = values
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"choices({', '.join(map(str, self.values))})"
 
 
@@ -101,7 +101,7 @@ class Uniform(Operator):
     start: float
     end: float
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"uniform({self.start},{self.end})"
 
 
@@ -132,7 +132,7 @@ class Beta(Operator):
     alpha: float
     beta: float
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"beta({self.alpha},{self.alpha})"
 
 
@@ -175,5 +175,5 @@ class Normal(Operator):
     start: float = float('-inf')
     end: float = float('inf')
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"normal({self.mean},{self.variance},{self.start},{self.end})"

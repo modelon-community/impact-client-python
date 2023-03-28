@@ -1,3 +1,4 @@
+from typing import Dict, Any
 from modelon.impact.client.sal.service import Service
 from modelon.impact.client.operations.base import AsyncOperation, AsyncOperationStatus
 from modelon.impact.client import exceptions
@@ -13,28 +14,28 @@ class ContentImportOperation(AsyncOperation):
         self._location = location
         self._sal = service
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"Content import operations for id '{self.id}'"
 
-    def __eq__(self, obj):
+    def __eq__(self, obj: object) -> bool:
         return (
             isinstance(obj, ContentImportOperation) and obj._location == self._location
         )
 
     @property
-    def id(self):
+    def id(self) -> str:
         """Content import id."""
         return self._location.split('/')[-1]
 
     @property
-    def name(self):
+    def name(self) -> str:
         """Return the name of operation."""
         return "Content import"
 
-    def _info(self):
+    def _info(self) -> Dict[str, Any]:
         return self._sal.imports.get_import_status(self._location)["data"]
 
-    def data(self):
+    def data(self) -> ProjectContent:
         """Returns a new Workspace class instance.
 
         Returns:
@@ -53,7 +54,7 @@ class ContentImportOperation(AsyncOperation):
         resp = self._sal.project.project_content_get(project_id, content_id)
         return ProjectContent(resp, project_id, self._sal)
 
-    def status(self):
+    def status(self) -> AsyncOperationStatus:
         """Returns the upload status as an enumeration.
 
         Returns:

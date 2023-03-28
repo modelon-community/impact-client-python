@@ -1,3 +1,4 @@
+from __future__ import annotations
 from dataclasses import dataclass
 import logging
 import os
@@ -49,7 +50,9 @@ class VcsReference:
     vcs_uri: str
 
 
-def _get_project_entry_reference(reference):
+def _get_project_entry_reference(
+    reference: Any,
+) -> Union[ReleasedProjectReference, VcsReference, Reference]:
     if "name" in reference:
         return ReleasedProjectReference(
             id=reference.get('id'),
@@ -64,28 +67,28 @@ def _get_project_entry_reference(reference):
 
 
 class ProjectEntry:
-    def __init__(self, data) -> None:
+    def __init__(self, data: Any) -> None:
         self._data = data
 
     @property
-    def reference(self):
+    def reference(self) -> Union[ReleasedProjectReference, VcsReference, Reference]:
         return _get_project_entry_reference(self._data.get('reference'))
 
     @property
-    def id(self):
+    def id(self) -> str:
         return self.reference.id
 
     @property
-    def disabled(self):
+    def disabled(self) -> bool:
         return self._data.get('disabled')
 
     @property
-    def disabled_content(self):
+    def disabled_content(self) -> bool:
         return self._data.get('disabledContent')
 
 
 class WorkspaceDefinition:
-    def __init__(self, data) -> None:
+    def __init__(self, data: Any) -> None:
         self._data = data
 
     @property
@@ -126,12 +129,12 @@ class WorkspaceDefinition:
         return definition_path
 
     @classmethod
-    def from_file(cls, path: str):
+    def from_file(cls, path: str) -> WorkspaceDefinition:
         with open(path) as json_file:
             data = json.load(json_file)
         return cls(data)
 
-    def to_dict(self):
+    def to_dict(self) -> Dict[str, Any]:
         return self._data
 
 
@@ -148,10 +151,10 @@ class Workspace:
         self._workspace_definition = workspace_definition
         self._sal = service
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"Workspace with id '{self._workspace_id}'"
 
-    def __eq__(self, obj):
+    def __eq__(self, obj: object) -> bool:
         return isinstance(obj, Workspace) and obj._workspace_id == self._workspace_id
 
     @property
@@ -160,7 +163,7 @@ class Workspace:
         return self._workspace_id
 
     @property
-    def definition(self):
+    def definition(self) -> WorkspaceDefinition:
         return self._workspace_definition
 
     def get_custom_function(self, name: str) -> CustomFunction:
@@ -217,7 +220,7 @@ class Workspace:
             for custom_function in custom_functions["data"]["items"]
         ]
 
-    def delete(self):
+    def delete(self) -> None:
         """Deletes a workspace.
 
         Example::
@@ -258,7 +261,7 @@ class Workspace:
         )
         return ExternalResultImportOperation(resp["data"]["location"], self._sal)
 
-    def export(self, options: Dict[str, Any]):
+    def export(self, options: Dict[str, Any]) -> WorkspaceExportOperation:
         """Exports the workspace as a binary compressed archive. Similar to
         :obj:`~modelon.impact.client.entities.workspace.Workspace.download`,
         but gives more control for getting the workspace async.
@@ -304,7 +307,7 @@ class Workspace:
         resp = self._sal.workspace.workspace_export_setup(self._workspace_id, options)
         return WorkspaceExportOperation(resp["data"]["location"], self._sal)
 
-    def download(self, options: Dict[str, Any], path: str):
+    def download(self, options: Dict[str, Any], path: str) -> str:
         """Downloads the workspace as a binary compressed archive. Returns the
         local path to the downloaded workspace archive. Similar to
         :obj:`~modelon.impact.client.entities.workspace.Workspace.export`, but
@@ -352,7 +355,7 @@ class Workspace:
         ops = self.export(options).wait()
         return ops.download_as(ws_path)
 
-    def clone(self) -> 'Workspace':
+    def clone(self) -> Workspace:
         """Clones the workspace. Returns a clone Workspace class object.
 
         Returns:
@@ -370,7 +373,9 @@ class Workspace:
             resp["workspace_id"], WorkspaceDefinition(resp["definition"]), self._sal
         )
 
-    def get_model(self, class_name: str, project: Optional[Project] = None):
+    def get_model(
+        self, class_name: str, project: Optional[Project] = None
+    ) -> modelon.impact.client.entities.model.Model:
         """Returns a Model class object.
 
         Args:
@@ -560,7 +565,9 @@ class Workspace:
             self._sal,
         )
 
-    def get_projects(self, vcs_info: bool = True, include_disabled: bool = False):
+    def get_projects(
+        self, vcs_info: bool = True, include_disabled: bool = False
+    ) -> List[Project]:
         """Return the list of projects for a workspace.
 
         Returns:
@@ -589,7 +596,9 @@ class Workspace:
         ]
         return projects
 
-    def get_dependencies(self, vcs_info: bool = True, include_disabled: bool = False):
+    def get_dependencies(
+        self, vcs_info: bool = True, include_disabled: bool = False
+    ) -> List[Project]:
         """Return the list of project dependencies for a workspace.
 
         Returns:
@@ -617,7 +626,7 @@ class Workspace:
             for item in resp["data"]["items"]
         ]
 
-    def create_project(self, name: str):
+    def create_project(self, name: str) -> Project:
         """Creates a new project in the workspace.
 
         Returns:
@@ -640,7 +649,7 @@ class Workspace:
             self._sal,
         )
 
-    def get_default_project(self):
+    def get_default_project(self) -> Project:
         """Return the default project for a workspace.
 
         Returns:
@@ -669,14 +678,14 @@ class Workspace:
             self._sal,
         )
 
-    def get_shared_definition(self, strict: bool = False):
+    def get_shared_definition(self, strict: bool = False) -> WorkspaceDefinition:
         return WorkspaceDefinition(
             self._sal.workspace.shared_definition_get(
                 self._workspace_id, strict=strict
             )["definition"]
         )
 
-    def import_project_from_zip(self, path_to_project):
+    def import_project_from_zip(self, path_to_project: str) -> ProjectImportOperation:
         """Imports a Project from a compressed(.zip) project file and adds it
         to the workspace. Returns the project class object.
 
@@ -701,7 +710,9 @@ class Workspace:
         )
         return ProjectImportOperation(resp["data"]["location"], self._sal)
 
-    def import_dependency_from_zip(self, path_to_dependency):
+    def import_dependency_from_zip(
+        self, path_to_dependency: str
+    ) -> ProjectImportOperation:
         """Imports a Project dependency from a compressed(.zip) project file
         and adds it to the workspace. Returns the project class object.
 

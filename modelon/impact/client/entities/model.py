@@ -25,7 +25,10 @@ SimulationOptionsOrDict = Union[SimulationOptions, Dict[str, Any]]
 SolverOptionsOrDict = Union[SolverOptions, Dict[str, Any]]
 
 
-def _assert_valid_compilation_options(compiler_options=None, runtime_options=None):
+def _assert_valid_compilation_options(
+    compiler_options: Optional[CompilerOptionsOrDict] = None,
+    runtime_options: Optional[RuntimeOptionsOrDict] = None,
+) -> None:
     if compiler_options is not None and not isinstance(
         compiler_options, (CompilerOptions, dict)
     ):
@@ -53,10 +56,10 @@ class Model:
         self._project_id = project_id
         self._sal = service
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"Class name '{self._class_name}'"
 
-    def __eq__(self, obj):
+    def __eq__(self, obj: object) -> bool:
         return isinstance(obj, Model) and obj._class_name == self._class_name
 
     @property
@@ -196,7 +199,7 @@ class Model:
         solver_options: Optional[SolverOptionsOrDict] = None,
         simulation_options: Optional[SimulationOptionsOrDict] = None,
         simulation_log_level: str = "WARNING",
-    ):
+    ) -> base.SimpleModelicaExperimentDefinition:
         """Returns a new experiment definition using this Model.
 
         Args:
@@ -269,17 +272,17 @@ class Model:
         options = self._sal.project.project_options_get(
             self._project_id, self._workspace_id, custom_function=custom_function.name
         )
-        options = ProjectExecutionOptions(options, custom_function.name)
+        project_options = ProjectExecutionOptions(options, custom_function.name)
         return base.SimpleModelicaExperimentDefinition(
             model=self,
             custom_function=custom_function,
-            compiler_options=compiler_options or options.compiler_options,
+            compiler_options=compiler_options or project_options.compiler_options,
             fmi_target=fmi_target,
             fmi_version=fmi_version,
             platform=platform,
             compiler_log_level=compiler_log_level,
-            runtime_options=runtime_options or options.runtime_options,
-            solver_options=solver_options or options.solver_options,
-            simulation_options=simulation_options or options.simulation_options,
+            runtime_options=runtime_options or project_options.runtime_options,
+            solver_options=solver_options or project_options.solver_options,
+            simulation_options=simulation_options or project_options.simulation_options,
             simulation_log_level=simulation_log_level,
         )

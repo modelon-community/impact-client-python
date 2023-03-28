@@ -1,3 +1,5 @@
+from __future__ import annotations
+from typing import Optional, Dict, Union, Any, TYPE_CHECKING
 from modelon.impact.client.entities.external_result import ExternalResult
 from modelon.impact.client.entities.case import Case
 from modelon.impact.client.entities.experiment import Experiment
@@ -7,15 +9,34 @@ from modelon.impact.client.options import (
     RuntimeOptions,
     CompilerOptions,
 )
-
-import modelon.impact.client.entities.model
-
 from modelon.impact.client.entities.custom_function import CustomFunction
-
+import modelon.impact.client.entities.model
 import modelon.impact.client.entities.model_executable
+import modelon.impact.client.experiment_definition.extension
+
+CaseOrExperimentOrExternalResult = Union[Case, Experiment, ExternalResult]
+RuntimeOptionsOrDict = Union[RuntimeOptions, Dict[str, Any]]
+SimulationOptionsOrDict = Union[SimulationOptions, Dict[str, Any]]
+SolverOptionsOrDict = Union[SolverOptions, Dict[str, Any]]
+CompilerOptionsOrDict = Union[CompilerOptions, Dict[str, Any]]
+
+if TYPE_CHECKING:
+    from modelon.impact.client.entities.model import Model
+    from modelon.impact.client.entities.model_executable import ModelExecutable
+    from modelon.impact.client.experiment_definition.base import (
+        SimpleFMUExperimentDefinition,
+        SimpleModelicaExperimentDefinition,
+    )
 
 
-def validate_and_set_initialize_from(entity, definition):
+def validate_and_set_initialize_from(
+    entity: CaseOrExperimentOrExternalResult,
+    definition: Union[
+        SimpleFMUExperimentDefinition,
+        SimpleModelicaExperimentDefinition,
+        modelon.impact.client.experiment_definition.extension.SimpleExperimentExtension,
+    ],
+) -> None:
     if isinstance(entity, Experiment):
         if len(entity.get_cases()) > 1:
             raise ValueError(
@@ -25,7 +46,10 @@ def validate_and_set_initialize_from(entity, definition):
         definition._initialize_from_experiment = entity
     elif isinstance(entity, Case):
         definition._initialize_from_case = entity
-    elif isinstance(entity, ExternalResult):
+    elif isinstance(entity, ExternalResult) and not isinstance(
+        definition,
+        modelon.impact.client.experiment_definition.extension.SimpleExperimentExtension,
+    ):
         definition._initialize_from_external_result = entity
     else:
         raise TypeError(
@@ -36,24 +60,24 @@ def validate_and_set_initialize_from(entity, definition):
         )
 
 
-def assert_unique_exp_initialization(*initializing_from):
-    initializing_from = [entity for entity in initializing_from if entity is not None]
-    if len(initializing_from) > 1:
+def assert_unique_exp_initialization(*initializing_from: Any) -> None:
+    entities = [entity for entity in initializing_from if entity is not None]
+    if len(entities) > 1:
         raise ValueError(
             "An experiment can only be initialized from one entity. Experiment is "
-            f"configured to initialize from {' and '.join(map(str, initializing_from))}"
+            f"configured to initialize from {' and '.join(map(str, entities))}"
         )
 
 
 def assert_valid_args(
-    model=None,
-    fmu=None,
-    custom_function=None,
-    solver_options=None,
-    simulation_options=None,
-    compiler_options=None,
-    runtime_options=None,
-):
+    model: Optional[Model] = None,
+    fmu: Optional[ModelExecutable] = None,
+    custom_function: Optional[CustomFunction] = None,
+    solver_options: Optional[SolverOptionsOrDict] = None,
+    simulation_options: Optional[SimulationOptionsOrDict] = None,
+    compiler_options: Optional[CompilerOptionsOrDict] = None,
+    runtime_options: Optional[RuntimeOptionsOrDict] = None,
+) -> None:
     if fmu and not isinstance(
         fmu, modelon.impact.client.entities.model_executable.ModelExecutable
     ):

@@ -28,7 +28,7 @@ class AsyncOperationStatus(enum.Enum):
     READY = 'ready'
     ERROR = 'error'
 
-    def done(self):
+    def done(self) -> bool:
         return self in [AsyncOperationStatus.READY, AsyncOperationStatus.ERROR]
 
 
@@ -36,17 +36,17 @@ class BaseOperation(ABC):
     """Abstract base operation class."""
 
     @abstractmethod
-    def data(self):
+    def data(self) -> Any:
         """Returns the operation class."""
         pass
 
     @abstractmethod
-    def status(self):
+    def status(self) -> Any:
         """Returns the operation status as an enumeration."""
         pass
 
     @abstractmethod
-    def cancel(self):
+    def cancel(self) -> Any:
         """Terminates the operation."""
         pass
 
@@ -57,7 +57,7 @@ class BaseOperation(ABC):
         pass
 
     @abstractmethod
-    def wait(self, timeout):
+    def wait(self, timeout: Optional[float]) -> Any:
         """Waits for the operation to finish."""
         pass
 
@@ -105,7 +105,7 @@ class AsyncOperation(BaseOperation):
 
             time.sleep(0.5)
 
-    def cancel(self):
+    def cancel(self) -> None:
         raise NotImplementedError('Cancel is not supported for this operation')
 
 
@@ -128,7 +128,9 @@ class ExecutionOperation(BaseOperation):
         """
         return self.status() == Status.DONE
 
-    def wait(self, timeout: Optional[float] = None, status: Status = Status.DONE):
+    def wait(
+        self, timeout: Optional[float] = None, status: Status = Status.DONE
+    ) -> Any:
         """Waits until the operation achieves the set status. Returns the
         operation class instance if the set status is achieved.
 

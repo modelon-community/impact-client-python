@@ -1,21 +1,22 @@
 """This module provides an entry-point to the client APIs."""
 import logging
-from typing import List, Optional
+from typing import List, Optional, Dict, Any
 from dataclasses import dataclass
 from semantic_version import SimpleSpec, Version  # type: ignore
 import modelon.impact.client.configuration
-from modelon.impact.client.entities.project import Project, ProjectDefinition, VcsUri
-from modelon.impact.client.entities.workspace import WorkspaceDefinition, Workspace
 import modelon.impact.client.sal.service
 import modelon.impact.client.sal.exceptions
-import modelon.impact.client.credential_manager
 import modelon.impact.client.jupyterhub
+from modelon.impact.client.credential_manager import CredentialManager
 from modelon.impact.client.operations.project_import import ProjectImportOperation
 from modelon.impact.client.operations.workspace.imports import WorkspaceImportOperation
+from modelon.impact.client.entities.project import Project, ProjectDefinition, VcsUri
+from modelon.impact.client.entities.workspace import WorkspaceDefinition, Workspace
 from modelon.impact.client.operations.workspace.conversion import (
     WorkspaceConversionOperation,
 )
 from modelon.impact.client.sal.uri import URI
+from modelon.impact.client.sal.context import Context
 from modelon.impact.client import exceptions
 
 
@@ -27,7 +28,7 @@ class Selection:
     entry_id: str
     project: Project
 
-    def to_dict(self):
+    def to_dict(self) -> Dict[str, Any]:
         return {'id': self.entry_id, 'project': {'id': self.project.id}}
 
 
@@ -133,11 +134,11 @@ class Client:
 
     def __init__(
         self,
-        url=None,
-        interactive=None,
-        credential_manager=None,
-        context=None,
-        jupyterhub_credential_manager=None,
+        url: Optional[str] = None,
+        interactive: Optional[bool] = None,
+        credential_manager: Optional[CredentialManager] = None,
+        context: Optional[Context] = None,
+        jupyterhub_credential_manager: Optional[CredentialManager] = None,
     ):
         if url is None:
             url = modelon.impact.client.configuration.get_client_url()
@@ -151,23 +152,21 @@ class Client:
         try:
             self._validate_compatible_api_version()
         except modelon.impact.client.sal.exceptions.AccessingJupyterHubError:
-            self._uri, context = modelon.impact.client.jupyterhub.authorize(
+            self._uri, jupyter_context = modelon.impact.client.jupyterhub.authorize(
                 self._uri,
                 interactive,
                 context,
                 jupyterhub_credential_manager,
             )
-            self._sal = modelon.impact.client.sal.service.Service(self._uri, context)
+            self._sal = modelon.impact.client.sal.service.Service(
+                self._uri, jupyter_context
+            )
             self._validate_compatible_api_version()
 
         if credential_manager is None:
             help_hint = f"can be generated at {self._uri / 'admin/keys'}"
             help_text = f"Enter Modelon Impact API key ({help_hint}):"
-            credential_manager = (
-                modelon.impact.client.credential_manager.CredentialManager(
-                    interactive_help_text=help_text
-                )
-            )
+            credential_manager = CredentialManager(interactive_help_text=help_text)
         self._credential_manager = credential_manager
 
         try:
@@ -192,7 +191,7 @@ class Client:
                 "Add-on licenses or your assigned user license could not be validated"
             )
 
-    def _validate_compatible_api_version(self):
+    def _validate_compatible_api_version(self) -> None:
         try:
             version = self._sal.api_get_metadata()["version"]
         except modelon.impact.client.sal.exceptions.CommunicationError as exce:
@@ -209,7 +208,9 @@ class Client:
                 f"that supports version '{version}' of the HTTP REST API."
             )
 
-    def _authenticate_against_api(self, interactive, api_key=None):
+    def _authenticate_against_api(
+        self, interactive: bool, api_key: Optional[str] = None
+    ) -> Optional[str]:
         if not api_key:
             api_key = self._credential_manager.get_key(interactive=interactive)
 
@@ -227,7 +228,7 @@ class Client:
 
         return api_key
 
-    def get_workspace(self, workspace_id):
+    def get_workspace(self, workspace_id: str) -> Workspace:
         """Returns a Workspace class object.
 
         Args:
@@ -248,7 +249,7 @@ class Client:
         resp = self._sal.workspace.workspace_get(workspace_id)
         return Workspace(resp["id"], WorkspaceDefinition(resp["definition"]), self._sal)
 
-    def get_workspaces(self):
+    def get_workspaces(self) -> List[Workspace]:
         """Returns a list of Workspace class object.
 
         Returns:
@@ -267,7 +268,9 @@ class Client:
             for item in resp["data"]["items"]
         ]
 
-    def convert_workspace(self, workspace_id: str, backup_name: Optional[str] = None):
+    def convert_workspace(
+        self, workspace_id: str, backup_name: Optional[str] = None
+    ) -> WorkspaceConversionOperation:
         """Converts a workspace of an old version up to the new version the
         server is using.
 
@@ -287,7 +290,7 @@ class Client:
         resp = self._sal.workspace.workspace_conversion_setup(workspace_id, backup_name)
         return WorkspaceConversionOperation(resp["data"]["location"], self._sal)
 
-    def get_project(self, project_id: str, vcs_info: bool = True):
+    def get_project(self, project_id: str, vcs_info: bool = True) -> Project:
         """Returns a project class object.
 
         Args:
@@ -314,7 +317,7 @@ class Client:
             self._sal,
         )
 
-    def get_projects(self, vcs_info=True):
+    def get_projects(self, vcs_info: bool = True) -> List[Project]:
         """Returns a list of project class object.
 
         Args:
@@ -345,7 +348,7 @@ class Client:
             for item in resp["data"]["items"]
         ]
 
-    def create_workspace(self, workspace_id):
+    def create_workspace(self, workspace_id: str) -> Workspace:
         """Creates and returns a Workspace. Returns a workspace class object.
 
         Args:
@@ -366,7 +369,7 @@ class Client:
         resp = self._sal.workspace.workspace_create(workspace_id)
         return Workspace(resp["id"], WorkspaceDefinition(resp["definition"]), self._sal)
 
-    def upload_workspace(self, path_to_workspace):
+    def upload_workspace(self, path_to_workspace: str) -> Workspace:
         """Imports a Workspace from a compressed(.zip) workspace file. Returns
         the workspace class object of the imported workspace. Similar to
         :obj:`~modelon.impact.client.Client.import_workspace_from_zip`, but
@@ -389,7 +392,9 @@ class Client:
         """
         return self.import_workspace_from_zip(path_to_workspace).wait()
 
-    def import_workspace_from_zip(self, path_to_workspace):
+    def import_workspace_from_zip(
+        self, path_to_workspace: str
+    ) -> WorkspaceImportOperation:
         """Imports a Workspace from a compressed(.zip) workspace file.
         Similar to
         :obj:`~modelon.impact.client.Client.upload_workspace`,
@@ -419,7 +424,7 @@ class Client:
         self,
         shared_definition: WorkspaceDefinition,
         selections: Optional[List[Selection]] = None,
-    ):
+    ) -> WorkspaceImportOperation:
         resp = self._sal.workspace.import_from_shared_definition(
             {"definition": shared_definition.to_dict()},
             selected_matchings=[selection.to_dict() for selection in selections]
@@ -454,7 +459,7 @@ class Client:
             )
         return ProjectMatchings(project_matchings)
 
-    def import_project_from_zip(self, path_to_project):
+    def import_project_from_zip(self, path_to_project: str) -> ProjectImportOperation:
         """Imports a Project from a compressed(.zip) project file. Returns the
         project class object.
 

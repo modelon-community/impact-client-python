@@ -1,3 +1,7 @@
+from __future__ import annotations
+from typing import Any
+
+
 class Error(Exception):
     pass
 
@@ -16,7 +20,7 @@ class OperationTimeOutError(Error):
 
 class OperationFailureError(Error):
     @classmethod
-    def for_operation(cls, operation_name: str):
+    def for_operation(cls, operation_name: str) -> OperationFailureError:
         return cls(
             f"{operation_name} was cancelled before completion! "
             f"Log file generated for cancelled {operation_name} is empty!"
@@ -25,7 +29,9 @@ class OperationFailureError(Error):
 
 class OperationNotCompleteError(Error):
     @classmethod
-    def for_operation(cls, operation_name: str, status):
+    def for_operation(
+        cls, operation_name: str, status: Any
+    ) -> OperationNotCompleteError:
         return cls(
             f"{operation_name} is still in progress! Status : {status}."
             f" Please call the wait() method on the {operation_name} operation"

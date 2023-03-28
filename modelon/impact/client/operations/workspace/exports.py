@@ -1,15 +1,20 @@
+from __future__ import annotations
 import os
+from typing import Dict, Any, TYPE_CHECKING
 from modelon.impact.client.sal.service import Service
 from modelon.impact.client.operations.base import AsyncOperation, AsyncOperationStatus
 from modelon.impact.client import exceptions
 
+if TYPE_CHECKING:
+    from modelon.impact.client.sal.exports import ExportService
+
 
 class Export:
-    def __init__(self, export_service, download_uri):
+    def __init__(self, export_service: ExportService, download_uri: str):
         self._export_sal = export_service
         self._download_uri = download_uri
 
-    def download_as(self, path_to_download):
+    def download_as(self, path_to_download: str) -> str:
         """Writes the binary archive to a file. Returns the path to downloaded
         archive.
 
@@ -49,29 +54,29 @@ class WorkspaceExportOperation(AsyncOperation):
         self._location = location
         self._sal = service
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"Workspace export operations for id '{self.id}'"
 
-    def __eq__(self, obj):
+    def __eq__(self, obj: object) -> bool:
         return (
             isinstance(obj, WorkspaceExportOperation)
             and obj._location == self._location
         )
 
     @property
-    def id(self):
+    def id(self) -> str:
         """Workspace export id."""
         return self._location.split('/')[-1]
 
     @property
-    def name(self):
+    def name(self) -> str:
         """Return the name of operation."""
         return "Workspace export"
 
-    def _info(self):
+    def _info(self) -> Dict[str, Any]:
         return self._sal.exports.get_export_status(self._location)["data"]
 
-    def data(self):
+    def data(self) -> Export:
         """Returns a Export class instance.
 
         Returns:
@@ -86,7 +91,7 @@ class WorkspaceExportOperation(AsyncOperation):
             )
         return Export(self._sal.exports, info["data"]["downloadUri"])
 
-    def status(self):
+    def status(self) -> AsyncOperationStatus:
         """Returns the upload status as an enumeration.
 
         Returns:

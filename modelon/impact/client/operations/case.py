@@ -1,3 +1,4 @@
+from __future__ import annotations
 from modelon.impact.client.entities import case
 from modelon.impact.client.operations.base import ExecutionOperation, Status
 from modelon.impact.client.sal.service import Service
@@ -6,30 +7,30 @@ from modelon.impact.client.sal.service import Service
 class CaseOperation(ExecutionOperation):
     """An operation class for the modelon.impact.client.entities.Case class."""
 
-    def __init__(self, workspace_id, exp_id, case_id, service: Service):
+    def __init__(self, workspace_id: str, exp_id: str, case_id: str, service: Service):
         super().__init__()
         self._workspace_id = workspace_id
         self._exp_id = exp_id
         self._case_id = case_id
         self._sal = service
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"Case operation for id '{self._case_id}'"
 
-    def __eq__(self, obj):
+    def __eq__(self, obj: object) -> bool:
         return isinstance(obj, CaseOperation) and obj._case_id == self._case_id
 
     @property
-    def id(self):
+    def id(self) -> str:
         """Case id."""
         return self._case_id
 
     @property
-    def name(self):
+    def name(self) -> str:
         """Return the name of operation."""
         return "Execution"
 
-    def data(self):
+    def data(self) -> case.Case:
         """Returns a new Case class instance.
 
         Returns:
@@ -45,7 +46,7 @@ class CaseOperation(ExecutionOperation):
             self._case_id, self._workspace_id, self._exp_id, self._sal, case_data
         )
 
-    def status(self):
+    def status(self) -> Status:
         """Returns the execution status as an enumeration.
 
         Returns:
@@ -66,7 +67,7 @@ class CaseOperation(ExecutionOperation):
             ]
         )
 
-    def cancel(self):
+    def cancel(self) -> None:
         """Terminates the execution process.
 
         Example::

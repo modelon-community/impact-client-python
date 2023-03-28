@@ -1,7 +1,16 @@
+from __future__ import annotations
 import logging
-from typing import Any, List, Dict, Optional
+from typing import Any, List, Dict, Optional, TYPE_CHECKING
 from modelon.impact.client.sal.service import Service
 from modelon.impact.client.options import ProjectExecutionOptions
+
+if TYPE_CHECKING:
+    from modelon.impact.client.options import (
+        CompilerOptions,
+        RuntimeOptions,
+        SimulationOptions,
+        SolverOptions,
+    )
 
 logger = logging.getLogger(__name__)
 
@@ -30,11 +39,11 @@ class _Parameter:
         return self._name
 
     @property
-    def value(self):
+    def value(self) -> Any:
         return self._value
 
     @value.setter
-    def value(self, value):
+    def value(self, value: Any) -> None:
         if not isinstance(value, self._JSON_2_PY_TYPE[self._value_type]):
             raise ValueError(
                 f"Cannot set {self._name} to {value}, its type is {self._value_type}"
@@ -73,10 +82,10 @@ class CustomFunction:
         }
         self._sal = service
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"Custom function '{self._name}'"
 
-    def __eq__(self, obj):
+    def __eq__(self, obj: object) -> bool:
         return isinstance(obj, CustomFunction) and obj._name == self._name
 
     @property
@@ -84,7 +93,7 @@ class CustomFunction:
         "Custom function name"
         return self._name
 
-    def with_parameters(self, **modified) -> 'CustomFunction':
+    def with_parameters(self, **modified: Any) -> CustomFunction:
         """Sets/updates the custom_function parameters for an experiment.
 
         Args:
@@ -118,7 +127,9 @@ class CustomFunction:
         """Custom_function parameters and value as a dictionary."""
         return {p.name: p.value for p in self._param_by_name.values()}
 
-    def get_options(self, use_defaults: Optional[bool] = False):
+    def get_options(
+        self, use_defaults: Optional[bool] = False
+    ) -> ProjectExecutionOptions:
         """Get project execution option.
 
         Args:
@@ -141,7 +152,7 @@ class CustomFunction:
             )
         return ProjectExecutionOptions(options, self.name)
 
-    def get_compiler_options(self, use_defaults: bool = False):
+    def get_compiler_options(self, use_defaults: bool = False) -> CompilerOptions:
         """Return a modelon.impact.client.options.CompilerOptions object.
 
         Returns:
@@ -159,7 +170,7 @@ class CustomFunction:
         """
         return self.get_options(use_defaults=use_defaults).compiler_options
 
-    def get_runtime_options(self, use_defaults: bool = False):
+    def get_runtime_options(self, use_defaults: bool = False) -> RuntimeOptions:
         """Return a modelon.impact.client.options.RuntimeOptions object.
 
         Returns:
@@ -177,7 +188,7 @@ class CustomFunction:
         """
         return self.get_options(use_defaults=use_defaults).runtime_options
 
-    def get_solver_options(self, use_defaults: bool = False):
+    def get_solver_options(self, use_defaults: bool = False) -> SolverOptions:
         """Return a modelon.impact.client.options.SolverOptions object.
 
         Returns:
@@ -196,7 +207,7 @@ class CustomFunction:
         """
         return self.get_options(use_defaults=use_defaults).solver_options
 
-    def get_simulation_options(self, use_defaults: bool = False):
+    def get_simulation_options(self, use_defaults: bool = False) -> SimulationOptions:
         """Return a modelon.impact.client.options.SimulationOptions object.
 
         Returns:

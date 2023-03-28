@@ -1,11 +1,9 @@
-#
-# Copyright (c) 2022 Modelon AB
-#
+from __future__ import annotations
 import enum
 import logging
 from pathlib import Path
 from dataclasses import dataclass
-from typing import Optional, Union
+from typing import Optional, Union, List, Dict, Any
 from modelon.impact.client.options import ProjectExecutionOptions
 from modelon.impact.client.entities.content import ContentType, ProjectContent
 from modelon.impact.client.operations.content_import import ContentImportOperation
@@ -40,7 +38,7 @@ class GitRepoURL:
     sha1: str = ""
     """Commit hash."""
 
-    def __str__(self):
+    def __str__(self) -> str:
         repo_url = self.url
         if self.refname or self.sha1:
             repo_url += '@'
@@ -51,7 +49,7 @@ class GitRepoURL:
         return repo_url
 
     @classmethod
-    def from_dict(cls, data):
+    def from_dict(cls, data: Any) -> GitRepoURL:
         return cls(
             url=data.get("url"), refname=data.get("refname"), sha1=data.get("sha1")
         )
@@ -92,7 +90,7 @@ class SvnRepoURL:
             return 'HEAD'
         return rev
 
-    def __str__(self):
+    def __str__(self) -> str:
         segments = [self.root_url]
         if self.branch:
             segments.append(self.branch)
@@ -104,7 +102,7 @@ class SvnRepoURL:
         return repo_url
 
     @classmethod
-    def from_dict(cls, data):
+    def from_dict(cls, data: Any) -> SvnRepoURL:
         return cls(
             root_url=data.get("rootUrl"),
             branch=data.get("branch"),
@@ -121,7 +119,7 @@ class VcsUri:
     protocol: str
     subdir: str
 
-    def __str__(self):
+    def __str__(self) -> str:
         uri = f"{self.service_kind.lower()}+{self.protocol}://{self.repourl}"
         subdir = self.subdir
         if subdir not in ["", "."]:
@@ -129,7 +127,7 @@ class VcsUri:
         return uri
 
     @classmethod
-    def from_dict(cls, data):
+    def from_dict(cls, data: Any) -> VcsUri:
         repo_url = data.get("repoUrl")
         service_kind = data.get("serviceKind")
         return cls(
@@ -146,16 +144,16 @@ class VcsUri:
 class ProjectDependency:
     """Dependency entry for a project."""
 
-    def __init__(self, data):
+    def __init__(self, data: Dict[str, Any]):
         self._data = data
 
     @property
-    def name(self):
+    def name(self) -> Optional[str]:
         """The name of the project dependency."""
         return self._data.get('name')
 
     @property
-    def version_specifier(self):
+    def version_specifier(self) -> Optional[str]:
         """Version specifier."""
         return self._data.get('versionSpecifier')
 
@@ -163,32 +161,32 @@ class ProjectDependency:
 class ProjectDefinition:
     """Impact project definition."""
 
-    def __init__(self, data):
+    def __init__(self, data: Dict[str, Any]):
         self._data = data
 
     @property
-    def name(self):
+    def name(self) -> Optional[str]:
         return self._data.get("name")
 
     @property
-    def version(self):
+    def version(self) -> Optional[str]:
         return self._data.get("version")
 
     @property
-    def format(self):
+    def format(self) -> Optional[str]:
         return self._data.get("format")
 
     @property
-    def dependencies(self):
+    def dependencies(self) -> List[ProjectDependency]:
         dependencies = self._data.get('dependencies', [])
         return [ProjectDependency(dependency) for dependency in dependencies]
 
     @property
-    def content(self):
+    def content(self) -> list:
         return self._data.get('content', [])
 
     @property
-    def execution_options(self):
+    def execution_options(self) -> List[ProjectExecutionOptions]:
         execution_options = self._data.get('executionOptions', [])
         return [
             ProjectExecutionOptions(
@@ -197,7 +195,7 @@ class ProjectDefinition:
             for execution_option in execution_options
         ]
 
-    def to_dict(self):
+    def to_dict(self) -> Dict[str, Any]:
         return self._data
 
 
@@ -218,10 +216,10 @@ class Project:
         self._project_type = project_type
         self._sal = service
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"Project with id '{self._project_id}'"
 
-    def __eq__(self, obj):
+    def __eq__(self, obj: object) -> bool:
         return isinstance(obj, Project) and obj._project_id == self._project_id
 
     @property
@@ -230,7 +228,7 @@ class Project:
         return self._project_id
 
     @property
-    def definition(self):
+    def definition(self) -> ProjectDefinition:
         return self._project_definition
 
     @property
@@ -239,10 +237,10 @@ class Project:
         return self._vcs_uri
 
     @property
-    def project_type(self):
+    def project_type(self) -> ProjectType:
         return self._project_type
 
-    def delete(self):
+    def delete(self) -> None:
         """Deletes a project.
 
         Example::
@@ -252,10 +250,10 @@ class Project:
         """
         self._sal.project.project_delete(self._project_id)
 
-    def _get_project_content(self, content):
+    def _get_project_content(self, content: Dict[str, str]) -> ProjectContent:
         return ProjectContent(content, self._project_id, self._sal)
 
-    def get_contents(self):
+    def get_contents(self) -> List[ProjectContent]:
         """Get project contents.
 
         Example::
@@ -280,6 +278,7 @@ class Project:
 
             content_type:
                 The type of the project content.
+
         Example::
             from modelon.impact.client import ContentType
             project.get_content_by_name(name, ContentType.MODELICA)
@@ -308,7 +307,9 @@ class Project:
         """
         return self.get_content_by_name(name, ContentType.MODELICA)
 
-    def upload_content(self, path_to_content: str, content_type: ContentType):
+    def upload_content(
+        self, path_to_content: str, content_type: ContentType
+    ) -> ContentImportOperation:
         """Upload content to a project.
 
         Args:
@@ -330,7 +331,7 @@ class Project:
         )
         return ContentImportOperation(resp['data']['location'], self._sal)
 
-    def upload_modelica_library(self, path_to_lib: str):
+    def upload_modelica_library(self, path_to_lib: str) -> ContentImportOperation:
         """Uploads/adds a non-encrypted Modelica library or a Modelica model to
         the project.
 
@@ -355,7 +356,7 @@ class Project:
 
     def get_options(
         self, custom_function: CustomFunction, use_defaults: Optional[bool] = False
-    ):
+    ) -> ProjectExecutionOptions:
         """Get project execution option.
 
         Args:

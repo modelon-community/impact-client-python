@@ -1,6 +1,6 @@
 from dataclasses import dataclass, asdict
 from abc import abstractmethod, ABC
-from typing import Optional
+from typing import Optional, Dict, Any
 import logging
 
 
@@ -11,11 +11,11 @@ class ExpansionAlgorithm(ABC):
     """Base class for an expansion algorithm."""
 
     @abstractmethod
-    def __str__(self):
+    def __str__(self) -> str:
         "Returns a string representation of the expansion algorithm"
 
     @abstractmethod
-    def get_parameters_as_dict(self):
+    def get_parameters_as_dict(self) -> Optional[Dict[str, Any]]:
         "Returns parameters as a dictionary"
 
 
@@ -41,10 +41,10 @@ class LatinHypercube(ExpansionAlgorithm):
     samples: int
     seed: Optional[int] = None
 
-    def __str__(self):
+    def __str__(self) -> str:
         return "LATINHYPERCUBE"
 
-    def get_parameters_as_dict(self):
+    def get_parameters_as_dict(self) -> Optional[Dict[str, Any]]:
         return asdict(self)
 
 
@@ -65,10 +65,10 @@ class FullFactorial(ExpansionAlgorithm):
 
     """
 
-    def __str__(self):
+    def __str__(self) -> str:
         return "FULLFACTORIAL"
 
-    def get_parameters_as_dict(self):
+    def get_parameters_as_dict(self) -> Optional[Dict[str, Any]]:
         return None
 
 
@@ -96,8 +96,8 @@ class Sobol(ExpansionAlgorithm):
 
     samples: int
 
-    def __str__(self):
+    def __str__(self) -> str:
         return "SOBOL"
 
-    def get_parameters_as_dict(self):
+    def get_parameters_as_dict(self) -> Optional[Dict[str, Any]]:
         return asdict(self)

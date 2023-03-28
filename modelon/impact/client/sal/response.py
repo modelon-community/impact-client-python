@@ -1,6 +1,6 @@
 """Response class."""
 import re
-from typing import Text, Union, Dict, Any
+from typing import Text, Dict, Any
 from modelon.impact.client.sal import exceptions
 
 
@@ -11,7 +11,7 @@ class ResponseError:
 
 
 class Response:
-    def __init__(self, resp_obj):
+    def __init__(self, resp_obj: Any):
         self._resp_obj = resp_obj
 
     def _is_json(self) -> bool:
@@ -46,7 +46,7 @@ class Response:
 
 
 class JSONResponse(Response):
-    def __init__(self, resp_obj):
+    def __init__(self, resp_obj: Any):
         super().__init__(resp_obj)
 
     @property
@@ -67,7 +67,7 @@ class JSONResponse(Response):
 
 
 class TextResponse(Response):
-    def __init__(self, resp_obj):
+    def __init__(self, resp_obj: Any):
         super().__init__(resp_obj)
 
     def _is_txt(self) -> bool:
@@ -87,7 +87,7 @@ class TextResponse(Response):
 
 
 class ZIPResponse(Response):
-    def __init__(self, resp_obj):
+    def __init__(self, resp_obj: Any):
         super().__init__(resp_obj)
 
     def _is_zip(self) -> bool:
@@ -108,7 +108,7 @@ class ZIPResponse(Response):
 
 
 class FileResponse(Response):
-    def __init__(self, resp_obj, content_type: str):
+    def __init__(self, resp_obj: Any, content_type: str):
         super().__init__(resp_obj)
         self.content_type = content_type
 
@@ -116,7 +116,7 @@ class FileResponse(Response):
         return self.content_type in self._resp_obj.headers.get("content-type")
 
     @property
-    def stream(self) -> Union[Text, bytes]:
+    def stream(self) -> bytes:
         if not self._resp_obj.ok:
             raise exceptions.HTTPError(self.error.message, self._resp_obj.status_code)
 
@@ -142,15 +142,15 @@ class FileResponse(Response):
 
 
 class CSVResponse(FileResponse):
-    def __init__(self, resp_obj):
+    def __init__(self, resp_obj: Any):
         super().__init__(resp_obj, "text/csv")
 
 
 class OctetStreamResponse(FileResponse):
-    def __init__(self, resp_obj):
+    def __init__(self, resp_obj: Any):
         super().__init__(resp_obj, "application/octet-stream")
 
 
 class MatStreamResponse(FileResponse):
-    def __init__(self, resp_obj):
+    def __init__(self, resp_obj: Any):
         super().__init__(resp_obj, "application/vnd.impact.mat.v1+octet-stream")

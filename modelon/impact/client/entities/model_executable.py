@@ -18,7 +18,9 @@ SimulationOptionsOrDict = Union[SimulationOptions, Dict[str, Any]]
 SolverOptionsOrDict = Union[SolverOptions, Dict[str, Any]]
 
 
-def _assert_compilation_is_complete(status, operation_name="Operation"):
+def _assert_compilation_is_complete(
+    status: ModelExecutableStatus, operation_name: str = "Operation"
+) -> None:
     if status == ModelExecutableStatus.NOTSTARTED:
         raise exceptions.OperationNotCompleteError.for_operation(operation_name, status)
     elif status == ModelExecutableStatus.CANCELLED:
@@ -31,12 +33,12 @@ class _ModelExecutableRunInfo:
         self._errors = errors
 
     @property
-    def status(self):
+    def status(self) -> ModelExecutableStatus:
         """Status info for a Model-Executable."""
         return self._status
 
     @property
-    def errors(self):
+    def errors(self) -> List[str]:
         """A list of errors.
 
         Is empty unless 'status' attribute is 'FAILED'
@@ -62,10 +64,10 @@ class ModelExecutable:
         self._info = info
         self._modifiers = modifiers
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"FMU with id '{self._fmu_id}'"
 
-    def __eq__(self, obj):
+    def __eq__(self, obj: object) -> bool:
         return isinstance(obj, ModelExecutable) and obj._fmu_id == self._fmu_id
 
     def __hash__(self) -> int:
@@ -154,7 +156,7 @@ class ModelExecutable:
             self._sal.model_executable.compile_log(self._workspace_id, self._fmu_id)
         )
 
-    def delete(self):
+    def delete(self) -> None:
         """Deletes an FMU.
 
         Example::
@@ -193,7 +195,7 @@ class ModelExecutable:
         solver_options: Optional[SolverOptionsOrDict] = None,
         simulation_options: Optional[SimulationOptionsOrDict] = None,
         simulation_log_level: str = "WARNING",
-    ):
+    ) -> base.SimpleFMUExperimentDefinition:
         """Returns a new experiment definition using this FMU.
 
         Args:
@@ -231,7 +233,7 @@ class ModelExecutable:
             simulation_log_level,
         )
 
-    def download(self, path: Optional[str] = None):
+    def download(self, path: Optional[str] = None) -> str:
         """Downloads an FMU binary that is compiled. Returns the local path to
         the downloaded FMU archive.
 

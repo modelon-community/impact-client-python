@@ -1,3 +1,4 @@
+from __future__ import annotations
 from modelon.impact.client.operations import base
 import modelon.impact.client.entities.experiment
 from modelon.impact.client.sal.service import Service
@@ -13,23 +14,23 @@ class ExperimentOperation(base.ExecutionOperation):
         self._exp_id = exp_id
         self._sal = service
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"Experiment operation for id '{self._exp_id}'"
 
-    def __eq__(self, obj):
+    def __eq__(self, obj: object) -> bool:
         return isinstance(obj, ExperimentOperation) and obj._exp_id == self._exp_id
 
     @property
-    def id(self):
+    def id(self) -> str:
         """Experiment id."""
         return self._exp_id
 
     @property
-    def name(self):
+    def name(self) -> str:
         """Return the name of operation."""
         return "Execution"
 
-    def data(self):
+    def data(self) -> modelon.impact.client.entities.experiment.Experiment:
         """Returns a new Experiment class instance.
 
         Returns:
@@ -42,7 +43,7 @@ class ExperimentOperation(base.ExecutionOperation):
             self._workspace_id, self._exp_id, self._sal
         )
 
-    def status(self):
+    def status(self) -> base.Status:
         """Returns the execution status as an enumeration.
 
         Returns:
@@ -63,7 +64,7 @@ class ExperimentOperation(base.ExecutionOperation):
             ]
         )
 
-    def cancel(self):
+    def cancel(self) -> None:
         """Terminates the execution process.
 
         Example::

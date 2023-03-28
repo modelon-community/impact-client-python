@@ -1,14 +1,15 @@
-#
-# Copyright (c) 2022 Modelon AB
-#
+from __future__ import annotations
 import enum
 import os
 import logging
 from pathlib import Path
-from typing import List, Dict, Optional, Union
+from typing import List, Dict, Optional, Union, TYPE_CHECKING
 
-import modelon.impact.client.entities.model
+from modelon.impact.client.entities.model import Model
 from modelon.impact.client.sal.service import Service
+
+if TYPE_CHECKING:
+    from modelon.impact.client.entities.workspace import Workspace
 
 logger = logging.getLogger(__name__)
 
@@ -33,14 +34,14 @@ class ProjectContent:
         self._project_id = project_id
         self._sal = service
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"Project content with id '{self.id}'"
 
-    def __eq__(self, obj):
+    def __eq__(self, obj: object) -> bool:
         return isinstance(obj, ProjectContent) and obj.id == self.id
 
     @property
-    def relpath(self):
+    def relpath(self) -> Path:
         """Relative path in the project.
 
         Can be file (e.g., SomeLib.mo) or folder
@@ -54,20 +55,20 @@ class ProjectContent:
         return ContentType(self._content['contentType'])
 
     @property
-    def id(self):
+    def id(self) -> str:
         """Content ID."""
         return self._content['id']
 
     @property
-    def name(self):
+    def name(self) -> Optional[str]:
         """Modelica library name."""
         return self._content.get('name')
 
     @property
-    def default_disabled(self):
+    def default_disabled(self) -> str:
         return self._content['defaultDisabled']
 
-    def delete(self):
+    def delete(self) -> None:
         """Deletes a project content.
 
         Example::
@@ -79,7 +80,7 @@ class ProjectContent:
 
     def upload_fmu(
         self,
-        workspace,
+        workspace: Workspace,
         fmu_path: str,
         class_name: Optional[str] = None,
         overwrite: bool = False,
@@ -87,7 +88,7 @@ class ProjectContent:
         exclude_patterns: Optional[Union[str, List[str]]] = None,
         top_level_inputs: Optional[Union[str, List[str]]] = None,
         step_size: float = 0.0,
-    ):
+    ) -> Model:
         """Uploads a FMU to the workspace.
 
         Args:
@@ -165,6 +166,4 @@ class ProjectContent:
 
         if resp["importWarnings"]:
             logger.warning(f"Import Warnings: {'. '.join(resp['importWarnings'])}")
-        return modelon.impact.client.entities.model.Model(
-            resp['fmuClassPath'], workspace.id, self._project_id, self._sal
-        )
+        return Model(resp['fmuClassPath'], workspace.id, self._project_id, self._sal)

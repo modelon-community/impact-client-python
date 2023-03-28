@@ -10,7 +10,9 @@ from modelon.impact.client import exceptions
 logger = logging.getLogger(__name__)
 
 
-def _assert_experiment_is_complete(status, operation_name="Operation"):
+def _assert_experiment_is_complete(
+    status: ExperimentStatus, operation_name: str = "Operation"
+) -> None:
     if status == ExperimentStatus.NOTSTARTED:
         raise exceptions.OperationNotCompleteError.for_operation(operation_name, status)
     elif status == ExperimentStatus.CANCELLED:
@@ -35,12 +37,12 @@ class _ExperimentRunInfo:
         self._not_started = not_started
 
     @property
-    def status(self):
+    def status(self) -> ExperimentStatus:
         """Status info for an Experiment."""
         return self._status
 
     @property
-    def errors(self):
+    def errors(self) -> List[str]:
         """A list of errors.
 
         Is empty unless 'status' attribute is 'FAILED'
@@ -49,22 +51,22 @@ class _ExperimentRunInfo:
         return self._errors
 
     @property
-    def successful(self):
+    def successful(self) -> int:
         """Number of cases in experiment that are successful."""
         return self._successful
 
     @property
-    def failed(self):
+    def failed(self) -> int:
         """Number of cases in experiment thar have failed."""
         return self._failed
 
     @property
-    def cancelled(self):
+    def cancelled(self) -> int:
         """Number of cases in experiment that are cancelled."""
         return self._cancelled
 
     @property
-    def not_started(self):
+    def not_started(self) -> int:
         """Number of cases in experiment that have not yet started."""
         return self._not_started
 
@@ -94,10 +96,10 @@ class Experiment:
         self._sal = service
         self._info = info
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"Experiment with id '{self._exp_id}'"
 
-    def __eq__(self, obj):
+    def __eq__(self, obj: object) -> bool:
         return isinstance(obj, Experiment) and obj._exp_id == self._exp_id
 
     @property
@@ -154,7 +156,7 @@ class Experiment:
 
     def execute(
         self, with_cases: Optional[List[Case]] = None, sync_case_changes: bool = True
-    ):
+    ) -> experiment.ExperimentOperation:
         """Exceutes an experiment. Returns an
         modelon.impact.client.operations.experiment.ExperimentOperation class
         object.
@@ -358,7 +360,7 @@ class Experiment:
             for j in case_nbrs
         }
 
-    def delete(self):
+    def delete(self) -> None:
         """Deletes an experiment.
 
         Example::
@@ -368,7 +370,7 @@ class Experiment:
         """
         self._sal.experiment.experiment_delete(self._workspace_id, self._exp_id)
 
-    def set_label(self, label: str):
+    def set_label(self, label: str) -> None:
         """Sets a label (string) for an experiment to distinguish it.
 
         Example::

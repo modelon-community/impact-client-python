@@ -1,3 +1,4 @@
+from typing import Dict, Any
 from modelon.impact.client.entities.project import Project, ProjectDefinition
 from modelon.impact.client.sal.service import Service
 from modelon.impact.client.operations.base import AsyncOperation, AsyncOperationStatus
@@ -21,28 +22,28 @@ class ProjectImportOperation(AsyncOperation):
         self._location = location
         self._sal = service
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"Project import operations for id '{self.id}'"
 
-    def __eq__(self, obj):
+    def __eq__(self, obj: object) -> bool:
         return (
             isinstance(obj, ProjectImportOperation) and obj._location == self._location
         )
 
     @property
-    def id(self):
+    def id(self) -> str:
         """Project import id."""
         return self._location.split('/')[-1]
 
     @property
-    def name(self):
+    def name(self) -> str:
         """Return the name of operation."""
         return "Project import"
 
-    def _info(self):
+    def _info(self) -> Dict[str, Any]:
         return self._sal.imports.get_import_status(self._location)["data"]
 
-    def data(self):
+    def data(self) -> Project:
         """Returns a new Project class instance.
 
         Returns:
@@ -66,7 +67,7 @@ class ProjectImportOperation(AsyncOperation):
             self._sal,
         )
 
-    def status(self):
+    def status(self) -> AsyncOperationStatus:
         """Returns the upload status as an enumeration.
 
         Returns:
