@@ -1,3 +1,13 @@
+# [3.0.0-dev.18](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.17...v3.0.0-dev.18) (2023-03-28)
+
+
+### Bug Fixes
+
+* add missing type hints ([03dc33b](https://github.com/modelon-community/impact-client-python/commit/03dc33b5a187439210b73ebe3bd813ae17dd0ef3))
+* added keys() method to mypy ignore as maping expects KeysView object ([40de4a5](https://github.com/modelon-community/impact-client-python/commit/40de4a56397e89a18a5dc0aa45421c9e3cb8becc))
+* adding iterable as return type for get_contents to avoid mypy error in get_content_by_name ([dd03c9f](https://github.com/modelon-community/impact-client-python/commit/dd03c9ff22a124cb8403dd09faf5135fa3ea8362))
+* pyright fixes ([c0b727f](https://github.com/modelon-community/impact-client-python/commit/c0b727f04b2c01f107d0bc3b558513edb7f169b3))
+
 # [3.0.0-dev.17](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.16...v3.0.0-dev.17) (2023-03-28)
 
 
