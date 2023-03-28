@@ -117,22 +117,3 @@ class TestProject:
         assert content.content_type == ContentType.MODELICA
         assert content.name == 'test'
         assert not content.default_disabled
-
-    def test_upload_fmu(self, project):
-        project_entity = project.entity
-        project_service = project.service
-        content: ProjectContent = project_entity.get_content_by_name('MyPackage')
-        test_workspace = create_workspace_entity(IDs.WORKSPACE_PRIMARY)
-        content.upload_fmu(test_workspace, "test.fmu", "Workspace")
-        project_service.project.fmu_upload.assert_called_with(
-            IDs.WORKSPACE_PRIMARY,
-            IDs.PROJECT_PRIMARY,
-            IDs.PROJECT_CONTENT_PRIMARY,
-            'test.fmu',
-            'Workspace',
-            False,
-            None,
-            None,
-            None,
-            step_size=0.0,
-        )

@@ -81,9 +81,8 @@ class ProjectService:
         ).resolve()
         return self._http_client.get_json(url)
 
-    def fmu_upload(
+    def fmu_import(
         self,
-        workspace_id: str,
         project_id: str,
         content_id: str,
         fmu_path: str,
@@ -96,8 +95,7 @@ class ProjectService:
     ) -> Dict[str, Any]:
         url = (
             self._base_uri
-            / f"api/workspaces/{workspace_id}/projects/{project_id}/content/"
-            f"{content_id}/models"
+            / f"api/projects/{project_id}/content/{content_id}/fmu-imports"
         ).resolve()
         options = {
             "className": class_name,
