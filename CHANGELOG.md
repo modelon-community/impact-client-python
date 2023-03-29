@@ -1,3 +1,10 @@
+# [3.0.0-dev.20](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.19...v3.0.0-dev.20) (2023-03-29)
+
+
+### Bug Fixes
+
+* corrected the path in .releasesrc ([cebcc19](https://github.com/modelon-community/impact-client-python/commit/cebcc19d54fc936ee273faa58878f8ccc38bd468))
+
 # [3.0.0-dev.19](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.18...v3.0.0-dev.19) (2023-03-29)
 
 
