@@ -40,6 +40,7 @@ extensions = [
     'sphinx.ext.autosectionlabel',
     'sphinx.ext.napoleon',
     'sphinxcontrib.spelling',
+    'sphinx_search.extension',
 ]
 
 add_module_names = False
@@ -66,9 +67,9 @@ html_theme_options = {
 
 # The wordlist with known words, like Jupyterlab
 spelling_word_list_filename = "spelling_wordlist.txt"
-spelling_show_suggestions=True
-spelling_ignore_acronyms=True
-spelling_exclude_patterns=['modelon.*']
+spelling_show_suggestions = True
+spelling_ignore_acronyms = True
+spelling_exclude_patterns = ['modelon.*']
 
 # Enable google style docstrings
 napoleon_google_docstring = True
@@ -79,6 +80,6 @@ napoleon_google_docstring = True
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = []
 
-suppress_warnings = ['autosectionlabel.*'] # See https://github.com/sphinx-doc/sphinx/issues/7697
-
-
+suppress_warnings = [
+    'autosectionlabel.*'
+]  # See https://github.com/sphinx-doc/sphinx/issues/7697
