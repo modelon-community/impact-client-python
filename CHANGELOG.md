@@ -1,3 +1,15 @@
+# [3.0.0-dev.19](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.18...v3.0.0-dev.19) (2023-03-29)
+
+
+### Bug Fixes
+
+* use poetry for rtd build ([d233295](https://github.com/modelon-community/impact-client-python/commit/d23329547984e380fcc5d12dbd8e968c139e1daf))
+
+
+### Features
+
+* add readthedocs-sphinx-search extension to allow users to search as they type ([b0f36b8](https://github.com/modelon-community/impact-client-python/commit/b0f36b86a2618e8136f015bcc3037f104f03af74))
+
 # [3.0.0-dev.18](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.17...v3.0.0-dev.18) (2023-03-28)
 
 
