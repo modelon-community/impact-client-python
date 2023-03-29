@@ -34,8 +34,6 @@ build:
         docker build -t modelon-impact-client-build:latest . ;\
     fi
 
-
-
 shell:
 	$(call _run_interactive, bash)
 
