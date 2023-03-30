@@ -172,9 +172,9 @@ class CustomArtifact:
         downloaded artifact.
 
         Args:
-            path: The local path to the directory to store the downloaded custom artifact.
-                Default: None. If no path is given, custom artifact will be downloaded
-                in a temporary directory.
+            path: The local path to the directory to store the downloaded custom
+                artifact. Default: None. If no path is given, custom artifact
+                will be downloaded in a temporary directory.
 
         Returns:
             path: Local path to the downloaded custom artifact.

@@ -82,8 +82,8 @@ class Model:
         platform: str = "auto",
         force_compilation: bool = False,
     ) -> CompilationOperations:
-        """
-        Compiles the model to an FMU. Returns an ModelExecutableOperation class object.
+        """Compiles the model to an FMU. Returns an ModelExecutableOperation
+        class object.
 
         Args:
             compiler_options: An compilation options class instance of

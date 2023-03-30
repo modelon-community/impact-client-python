@@ -597,8 +597,7 @@ class Workspace:
         )
 
     def import_project_from_zip(self, path_to_project: str) -> ProjectImportOperation:
-        """
-        Imports a Project from a compressed(.zip) project file and adds it
+        """Imports a Project from a compressed(.zip) project file and adds it
         to the workspace. Returns the project class object.
 
         Args:
@@ -626,7 +625,8 @@ class Workspace:
         and adds it to the workspace. Returns the project class object.
 
         Args:
-            path_to_dependency: The path for the compressed project(.zip) to be uploaded.
+            path_to_dependency: The path for the compressed project(.zip) to be
+            uploaded.
 
         Returns:
             An ProjectImportOperation class object.

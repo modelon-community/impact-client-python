@@ -387,8 +387,8 @@ class SimpleModelicaExperimentDefinition(BaseExperimentDefinition):
             options for the custom_function input is used.
         fmi_target: Compiler target. Possible values are 'me' and 'cs'. Default: 'me'.
         fmi_version: The FMI version. Valid options are '1.0' and '2.0'. Default: '2.0'.
-        platform: Platform for FMU binary.The OS running the Impact server must match the
-            environment that runs the compiled FMU. This is necessary as the
+        platform: Platform for FMU binary.The OS running the Impact server must match
+            the environment that runs the compiled FMU. This is necessary as the
             binaries packaged with the FMU are based on the platform generating
             the FMU. For example, if the Impact server is running Linux the binary
             in the downloaded FMU is compiled for Linux. The downloaded FMU can
@@ -400,16 +400,17 @@ class SimpleModelicaExperimentDefinition(BaseExperimentDefinition):
             - 'win64': generate a 64 bit FMU
         compiler_log_level: The logging for the compiler. Possible values are "error",
             "warning", "info", "verbose" and "debug". Default: 'warning'.
-        runtime_options: The runtime options to use for this experiment. By default the options
-            is set to None, which means the default options for the
-            custom_function input is used.
-        solver_options: The solver options to use for this experiment. By default the options
-            is set to None, which means the default options for the
-            custom_function input is used.
-        simulation_options: The simulation options to use for this experiment. By default the
+        runtime_options: The runtime options to use for this experiment. By default the
             options is set to None, which means the default options for the
             custom_function input is used.
-        simulation_log_level: Simulation log level for this experiment. Default: 'WARNING'.
+        solver_options: The solver options to use for this experiment. By default the
+            options is set to None, which means the default options for the
+            custom_function input is used.
+        simulation_options: The simulation options to use for this experiment. By
+            default the options is set to None, which means the default options for the
+            custom_function input is used.
+        simulation_log_level: Simulation log level for this experiment.
+            Default: 'WARNING'.
 
     Example::
 

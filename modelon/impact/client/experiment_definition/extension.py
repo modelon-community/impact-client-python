@@ -38,7 +38,8 @@ class SimpleExperimentExtension(BaseExperimentExtension):
             a dictionary object containing the simulation options. By
             default, the options is set to None, which means an empty dictionary
             is passed in the experiment extension.
-        simulation_log_level: Simulation log level for this experiment. Default: 'WARNING'.
+        simulation_log_level: Simulation log level for this experiment.
+            Default: 'WARNING'.
 
     Example::
 

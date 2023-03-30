@@ -166,9 +166,9 @@ class Experiment:
 
         Args:
             with_cases: A list of cases objects to execute.
-            sync_case_changes: Boolean specifying if to sync the cases given with the 'with_cases'
-                argument against the server before executing the experiment.
-                Default is True.
+            sync_case_changes: Boolean specifying if to sync the cases given with the
+                'with_cases' argument against the server before executing the
+                experiment. Default is True.
 
         Returns:
             An ExperimentOperation class object.
