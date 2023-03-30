@@ -135,6 +135,7 @@ class CustomFunction:
                 If true, default compiler options are used.
 
         Example::
+
             opts = custom_function.get_compiler_options()
             opts_2 = opts.compiler_options.with_values(c_compiler='gcc')
 

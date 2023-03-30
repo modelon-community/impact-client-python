@@ -105,7 +105,7 @@ class SimpleFMUExperimentDefinition(BaseExperimentDefinition):
         simulation_log_level: Simulation log level for this experiment.
             Default is 'WARNING'.
 
-    Examples::
+    Example::
 
         fmu = model.compile().wait()
         simulation_options = custom_function.get_simulation_options()
@@ -411,7 +411,7 @@ class SimpleModelicaExperimentDefinition(BaseExperimentDefinition):
             custom_function input is used.
         simulation_log_level: Simulation log level for this experiment. Default: 'WARNING'.
 
-    Examples::
+    Example::
 
         model = workspace.get_model("Modelica.Blocks.Examples.PID_Controller")
         simulation_options = custom_function.get_simulation_options()

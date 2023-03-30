@@ -631,6 +631,7 @@ class Case:
             An CaseOperation class object.
 
         Example::
+
             case = experiment.get_case('case_1')
             case.input.parametrization = {'PI.k': 120}
             case.sync()

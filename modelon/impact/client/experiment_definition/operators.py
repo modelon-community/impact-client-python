@@ -22,7 +22,7 @@ class Range(Operator):
         no_of_steps: The number of steps to intermediate steps
         to take between start_value and end_value.
 
-    Examples::
+    Example::
 
         from modelon.impact.client import Range
 
@@ -47,7 +47,7 @@ class Choices(Operator):
     Args:
         values: Variable number of numerical arguments to sweep.
 
-    Examples::
+    Example::
 
         from modelon.impact.client import Choices
 
@@ -75,7 +75,7 @@ class Uniform(Operator):
         start (float): Starting value of the interval.
         end (float): End value of the interval. Requires start <= end.
 
-    Examples::
+    Example::
 
         from modelon.impact.client import Uniform
 
@@ -104,7 +104,7 @@ class Beta(Operator):
         beta (float): 'beta' resp. 'b' parameter of beta distribution, requires
             beta > 0
 
-    Examples::
+    Example::
 
         from modelon.impact.client import Beta
 
@@ -137,7 +137,7 @@ class Normal(Operator):
         start (float): Lower bound. Default: -inf
         end (float): Upper bound, requires end > start. Default: inf
 
-    Examples::
+    Example::
 
         from modelon.impact.client import Normal
 

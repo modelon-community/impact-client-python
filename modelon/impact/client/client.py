@@ -118,7 +118,7 @@ class Client:
             Request contexts to pass data alongside a HTTP request. Default is None and
             then the default context is used.
 
-    Examples::
+    Example::
 
         from modelon.impact.client import Client
 

@@ -40,7 +40,7 @@ class SimpleExperimentExtension(BaseExperimentExtension):
             is passed in the experiment extension.
         simulation_log_level: Simulation log level for this experiment. Default: 'WARNING'.
 
-    Examples::
+    Example::
 
         fmu = model.compile().wait()
         simulation_options = custom_function.get_simulation_options()
