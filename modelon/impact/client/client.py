@@ -235,14 +235,10 @@ class Client:
         """Returns a Workspace class object.
 
         Args:
-
-            workspace_id:
-                The name of the workspace.
+            workspace_id: The ID of the workspace.
 
         Returns:
-
-            workspace:
-                Workspace class object.
+            Workspace class object.
 
         Example::
 
@@ -251,6 +247,27 @@ class Client:
         """
         resp = self._sal.workspace.workspace_get(workspace_id)
         return Workspace(resp["id"], resp["definition"], self._sal)
+
+    def get_workspace_by_name(self, workspace_name: str) -> List[Workspace]:
+        """Returns a list of Workspace class objects with the given name.
+
+        Args:
+            workspace_name: The name of the workspace.
+
+        Returns:
+            A list of workspace class objects with the given name.
+
+        Example::
+
+            workspaces = client.get_workspace_by_name('TestWorkspace')
+
+        """
+        resp = self._sal.workspace.workspaces_get()
+        return [
+            Workspace(item["id"], item["definition"], self._sal)
+            for item in resp["data"]["items"]
+            if item['definition']['name'] == workspace_name
+        ]
 
     def get_workspaces(self) -> List[Workspace]:
         """Returns a list of Workspace class object.
@@ -353,25 +370,21 @@ class Client:
             for item in resp["data"]["items"]
         ]
 
-    def create_workspace(self, workspace_id: str) -> Workspace:
+    def create_workspace(self, workspace_name: str) -> Workspace:
         """Creates and returns a Workspace. Returns a workspace class object.
 
         Args:
-
-            workspace_id:
-                The name of the workspace to create.
+            workspace_name: The name of the workspace to create.
 
         Returns:
-
-            workspace:
-                The created workspace class object.
+            The created workspace class object.
 
         Example::
 
-            client.create_workspace('my_workspace')
+            workspace = client.create_workspace('my_workspace')
 
         """
-        resp = self._sal.workspace.workspace_create(workspace_id)
+        resp = self._sal.workspace.workspace_create(workspace_name)
         return Workspace(resp["id"], resp["definition"], self._sal)
 
     def upload_workspace(self, path_to_workspace: str) -> Workspace:

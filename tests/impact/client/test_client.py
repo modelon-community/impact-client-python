@@ -28,6 +28,13 @@ def test_get_workspace(single_workspace):
     assert workspace.id == IDs.WORKSPACE_PRIMARY
 
 
+def test_get_workspace_by_name(multiple_workspace):
+    client = Client(url=multiple_workspace.url, context=multiple_workspace.context)
+    workspaces = client.get_workspace_by_name(IDs.WORKSPACE_PRIMARY)
+    assert len(workspaces) == 1
+    assert workspaces[0].id == IDs.WORKSPACE_PRIMARY
+
+
 def test_get_workspaces(multiple_workspace):
     client = Client(url=multiple_workspace.url, context=multiple_workspace.context)
     workspaces = client.get_workspaces()
