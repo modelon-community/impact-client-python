@@ -6,6 +6,7 @@ from modelon.impact.client.operations.base import AsyncOperationStatus
 from modelon.impact.client.operations.external_result_import import (
     ExternalResultImportOperation,
 )
+from modelon.impact.client.entities.external_result import ExternalResult
 
 
 class TestExternalResultImportOperation:
@@ -16,6 +17,7 @@ class TestExternalResultImportOperation:
         upload_op = ExternalResultImportOperation(
             f'api/uploads/results/{IDs.IMPORT}',
             external_result_sal_upload_running,
+            ExternalResult,
         )
 
         # When, then
@@ -28,6 +30,7 @@ class TestExternalResultImportOperation:
         upload_op = ExternalResultImportOperation(
             f'api/uploads/results/{IDs.IMPORT}',
             external_result_sal_upload_error,
+            ExternalResult,
         )
 
         # When, then
@@ -38,6 +41,7 @@ class TestExternalResultImportOperation:
         upload_op = ExternalResultImportOperation(
             f'api/uploads/results/{IDs.IMPORT}',
             external_result_sal_upload_ready,
+            ExternalResult,
         )
 
         # When
@@ -63,6 +67,7 @@ class TestExternalResultImportOperation:
         upload_op = ExternalResultImportOperation(
             f'api/uploads/results/{IDs.IMPORT}',
             external_result_sal_upload_ready,
+            ExternalResult,
         )
 
         # When, then

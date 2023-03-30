@@ -10,7 +10,7 @@ import modelon.impact.client.jupyterhub
 from modelon.impact.client.credential_manager import CredentialManager
 from modelon.impact.client.operations.project_import import ProjectImportOperation
 from modelon.impact.client.operations.workspace.imports import WorkspaceImportOperation
-from modelon.impact.client.entities.project import Project, ProjectDefinition, VcsUri
+from modelon.impact.client.entities.project import Project, VcsUri
 from modelon.impact.client.entities.workspace import WorkspaceDefinition, Workspace
 from modelon.impact.client.operations.workspace.conversion import (
     WorkspaceConversionOperation,
@@ -250,7 +250,7 @@ class Client:
 
         """
         resp = self._sal.workspace.workspace_get(workspace_id)
-        return Workspace(resp["id"], WorkspaceDefinition(resp["definition"]), self._sal)
+        return Workspace(resp["id"], resp["definition"], self._sal)
 
     def get_workspaces(self) -> List[Workspace]:
         """Returns a list of Workspace class object.
@@ -267,7 +267,7 @@ class Client:
         """
         resp = self._sal.workspace.workspaces_get()
         return [
-            Workspace(item["id"], WorkspaceDefinition(item["definition"]), self._sal)
+            Workspace(item["id"], item["definition"], self._sal)
             for item in resp["data"]["items"]
         ]
 
@@ -291,7 +291,9 @@ class Client:
 
         """
         resp = self._sal.workspace.workspace_conversion_setup(workspace_id, backup_name)
-        return WorkspaceConversionOperation(resp["data"]["location"], self._sal)
+        return WorkspaceConversionOperation(
+            resp["data"]["location"], self._sal, Workspace
+        )
 
     def get_project(self, project_id: str, vcs_info: bool = True) -> Project:
         """Returns a project class object.
@@ -314,7 +316,7 @@ class Client:
         resp = self._sal.project.project_get(project_id, vcs_info)
         return Project(
             resp["id"],
-            ProjectDefinition(resp["definition"]),
+            resp["definition"],
             resp["projectType"],
             VcsUri.from_dict(resp["vcsUri"]) if resp.get("vcsUri") else None,
             self._sal,
@@ -343,7 +345,7 @@ class Client:
         return [
             Project(
                 item["id"],
-                ProjectDefinition(item["definition"]),
+                item["definition"],
                 item["projectType"],
                 VcsUri.from_dict(item["vcsUri"]) if item.get("vcsUri") else None,
                 self._sal,
@@ -370,7 +372,7 @@ class Client:
 
         """
         resp = self._sal.workspace.workspace_create(workspace_id)
-        return Workspace(resp["id"], WorkspaceDefinition(resp["definition"]), self._sal)
+        return Workspace(resp["id"], resp["definition"], self._sal)
 
     def upload_workspace(self, path_to_workspace: str) -> Workspace:
         """Imports a Workspace from a compressed(.zip) workspace file. Returns
@@ -421,7 +423,7 @@ class Client:
             client.import_workspace_from_zip(path_to_workspace).wait()
         """
         resp = self._sal.workspace.import_from_zip(path_to_workspace)
-        return WorkspaceImportOperation(resp["data"]["location"], self._sal)
+        return WorkspaceImportOperation(resp["data"]["location"], self._sal, Workspace)
 
     def import_workspace_from_shared_definition(
         self,
@@ -434,7 +436,7 @@ class Client:
             if selections
             else None,
         )
-        return WorkspaceImportOperation(resp["data"]["location"], self._sal)
+        return WorkspaceImportOperation(resp["data"]["location"], self._sal, Workspace)
 
     def get_project_matchings(
         self, shared_definition: WorkspaceDefinition
@@ -447,7 +449,7 @@ class Client:
             projects = [
                 Project(
                     project["id"],
-                    ProjectDefinition(project["definition"]),
+                    project["definition"],
                     project["projectType"],
                     VcsUri.from_dict(project["vcsUri"]),
                     self._sal,
@@ -483,4 +485,4 @@ class Client:
 
         """
         resp = self._sal.project.import_from_zip(path_to_project)
-        return ProjectImportOperation(resp["data"]["location"], self._sal)
+        return ProjectImportOperation(resp["data"]["location"], self._sal, Project)

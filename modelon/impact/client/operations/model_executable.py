@@ -1,9 +1,13 @@
+from __future__ import annotations
 import logging
-from typing import Dict, Optional, Any
-from modelon.impact.client.entities.model_executable import ModelExecutable
-from modelon.impact.client.sal.service import Service
+from typing import Dict, Optional, Any, Type, TYPE_CHECKING
+
 from modelon.impact.client.operations.base import ExecutionOperation, Status
 from modelon.impact.client import exceptions
+
+if TYPE_CHECKING:
+    from modelon.impact.client.sal.service import Service
+    from modelon.impact.client.entities.model_executable import ModelExecutable
 
 logger = logging.getLogger(__name__)
 
@@ -20,6 +24,7 @@ class CachedModelExecutableOperation(ExecutionOperation):
         workspace_id: str,
         fmu_id: str,
         service: Service,
+        entity: Type[ModelExecutable],
         info: Optional[Dict[str, Any]] = None,
         modifiers: Optional[Dict[str, Any]] = None,
     ):
@@ -29,6 +34,7 @@ class CachedModelExecutableOperation(ExecutionOperation):
         self._sal = service
         self._info = info
         self._modifiers = modifiers
+        self._entity = entity
 
     def __repr__(self) -> str:
         return f"Cached model executable operations for id '{self._fmu_id}'"
@@ -58,7 +64,7 @@ class CachedModelExecutableOperation(ExecutionOperation):
                 A model_executable class instance.
 
         """
-        return ModelExecutable(
+        return self._entity(
             self._workspace_id, self._fmu_id, self._sal, self._info, self._modifiers
         )
 
@@ -133,11 +139,18 @@ class ModelExecutableOperation(ExecutionOperation):
 
     """
 
-    def __init__(self, workspace_id: str, fmu_id: str, service: Service):
+    def __init__(
+        self,
+        workspace_id: str,
+        fmu_id: str,
+        service: Service,
+        entity: Type[ModelExecutable],
+    ):
         super().__init__()
         self._workspace_id = workspace_id
         self._fmu_id = fmu_id
         self._sal = service
+        self._entity = entity
 
     def __repr__(self) -> str:
         return f"Model executable operations for id '{self._fmu_id}'"
@@ -164,7 +177,7 @@ class ModelExecutableOperation(ExecutionOperation):
                 A model_executable class instance.
 
         """
-        return ModelExecutable(self._workspace_id, self._fmu_id, self._sal)
+        return self._entity(self._workspace_id, self._fmu_id, self._sal)
 
     def status(self) -> Status:
         """Returns the compilation status as an enumeration.

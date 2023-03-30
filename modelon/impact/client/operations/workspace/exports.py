@@ -1,12 +1,12 @@
 from __future__ import annotations
 import os
 from typing import Dict, Any, TYPE_CHECKING
-from modelon.impact.client.sal.service import Service
 from modelon.impact.client.operations.base import AsyncOperation, AsyncOperationStatus
 from modelon.impact.client import exceptions
 
 if TYPE_CHECKING:
     from modelon.impact.client.sal.exports import ExportService
+    from modelon.impact.client.sal.service import Service
 
 
 class Export:

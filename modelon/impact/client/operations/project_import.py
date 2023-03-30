@@ -1,8 +1,11 @@
-from typing import Dict, Any
-from modelon.impact.client.entities.project import Project, ProjectDefinition
+from __future__ import annotations
+from typing import Dict, Any, Type, TYPE_CHECKING
 from modelon.impact.client.sal.service import Service
 from modelon.impact.client.operations.base import AsyncOperation, AsyncOperationStatus
 from modelon.impact.client import exceptions
+
+if TYPE_CHECKING:
+    from modelon.impact.client.entities.project import Project
 
 
 class ProjectImportOperation(AsyncOperation):
@@ -13,14 +16,11 @@ class ProjectImportOperation(AsyncOperation):
 
     """
 
-    def __init__(
-        self,
-        location: str,
-        service: Service,
-    ):
+    def __init__(self, location: str, service: Service, entity: Type[Project]):
         super().__init__()
         self._location = location
         self._sal = service
+        self._entity = entity
 
     def __repr__(self) -> str:
         return f"Project import operations for id '{self.id}'"
@@ -59,9 +59,9 @@ class ProjectImportOperation(AsyncOperation):
             )
         project_id = info["data"]["projectId"]
         resp = self._sal.project.project_get(project_id, False)
-        return Project(
+        return self._entity(
             resp["id"],
-            ProjectDefinition(resp["definition"]),
+            resp["definition"],
             resp["projectType"],
             None,
             self._sal,

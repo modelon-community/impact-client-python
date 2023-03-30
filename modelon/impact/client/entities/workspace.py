@@ -17,6 +17,7 @@ from modelon.impact.client.operations.external_result_import import (
     ExternalResultImportOperation,
 )
 import modelon.impact.client.entities.model
+from modelon.impact.client.entities.external_result import ExternalResult
 from modelon.impact.client.entities.model_executable import ModelExecutable
 from modelon.impact.client.entities.experiment import Experiment
 from modelon.impact.client.entities.project import Project, ProjectDefinition, VcsUri
@@ -144,11 +145,15 @@ class Workspace:
     def __init__(
         self,
         workspace_id: str,
-        workspace_definition: WorkspaceDefinition,
+        workspace_definition: Union[WorkspaceDefinition, Dict[str, Any]],
         service: Service,
     ):
         self._workspace_id = workspace_id
-        self._workspace_definition = workspace_definition
+        self._workspace_definition = (
+            WorkspaceDefinition(workspace_definition)
+            if isinstance(workspace_definition, dict)
+            else workspace_definition
+        )
         self._sal = service
 
     def __repr__(self) -> str:
@@ -259,7 +264,9 @@ class Workspace:
         resp = self._sal.external_result.result_upload(
             self._workspace_id, path_to_result, label=label, description=description
         )
-        return ExternalResultImportOperation(resp["data"]["location"], self._sal)
+        return ExternalResultImportOperation(
+            resp["data"]["location"], self._sal, ExternalResult
+        )
 
     def export(self, options: Dict[str, Any]) -> WorkspaceExportOperation:
         """Exports the workspace as a binary compressed archive. Similar to
@@ -369,9 +376,7 @@ class Workspace:
 
         """
         resp = self._sal.workspace.workspace_clone(self._workspace_id)
-        return Workspace(
-            resp["workspace_id"], WorkspaceDefinition(resp["definition"]), self._sal
-        )
+        return Workspace(resp["workspace_id"], resp["definition"], self._sal)
 
     def get_model(
         self, class_name: str, project: Optional[Project] = None
@@ -563,6 +568,7 @@ class Workspace:
             self._workspace_id,
             self._sal.experiment.experiment_execute(self._workspace_id, exp_id),
             self._sal,
+            Experiment,
         )
 
     def get_projects(
@@ -708,7 +714,7 @@ class Workspace:
         resp = self._sal.workspace.import_project_from_zip(
             self._workspace_id, path_to_project
         )
-        return ProjectImportOperation(resp["data"]["location"], self._sal)
+        return ProjectImportOperation(resp["data"]["location"], self._sal, Project)
 
     def import_dependency_from_zip(
         self, path_to_dependency: str
@@ -735,4 +741,4 @@ class Workspace:
         resp = self._sal.workspace.import_dependency_from_zip(
             self._workspace_id, path_to_dependency
         )
-        return ProjectImportOperation(resp["data"]["location"], self._sal)
+        return ProjectImportOperation(resp["data"]["location"], self._sal, Project)

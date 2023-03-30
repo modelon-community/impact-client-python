@@ -4,7 +4,7 @@ import os
 import tempfile
 from datetime import datetime
 from typing import Any, Dict, Tuple, Optional, List, Union, Text, TYPE_CHECKING
-from modelon.impact.client.sal.service import Service
+
 from modelon.impact.client.sal.experiment import ResultFormat
 from modelon.impact.client.operations.case import CaseOperation
 from modelon.impact.client.entities.external_result import ExternalResult
@@ -17,7 +17,7 @@ from modelon.impact.client import exceptions
 
 if TYPE_CHECKING:
     from modelon.impact.client.sal.experiment import ExperimentService
-
+    from modelon.impact.client.sal.service import Service
 logger = logging.getLogger(__name__)
 
 
@@ -684,6 +684,7 @@ class Case:
             ),
             self._case_id,
             self._sal,
+            Case,
         )
 
     def _assert_unique_case_initialization(self, unsupported_init: str) -> None:

@@ -1,11 +1,15 @@
+from __future__ import annotations
 import logging
-from typing import Any, List, Dict, Optional
-from modelon.impact.client.sal.service import Service
+from typing import Any, List, Dict, Optional, TYPE_CHECKING
+
 from modelon.impact.client.operations import experiment
 from modelon.impact.client.entities.case import Case
 from modelon.impact.client.entities.asserts import assert_variable_in_result
 from modelon.impact.client.entities.status import ExperimentStatus
 from modelon.impact.client import exceptions
+
+if TYPE_CHECKING:
+    from modelon.impact.client.sal.service import Service
 
 logger = logging.getLogger(__name__)
 
@@ -199,6 +203,7 @@ class Experiment:
                 self._workspace_id, self._exp_id, case_ids
             ),
             self._sal,
+            Experiment,
         )
 
     def is_successful(self) -> bool:

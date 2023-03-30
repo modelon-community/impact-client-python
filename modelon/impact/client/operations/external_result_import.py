@@ -1,8 +1,12 @@
-from typing import Dict, Any
+from __future__ import annotations
+from typing import Dict, Any, Type, TYPE_CHECKING
+
 from modelon.impact.client import exceptions
-from modelon.impact.client.entities.external_result import ExternalResult
-from modelon.impact.client.sal.service import Service
 from modelon.impact.client.operations.base import AsyncOperation, AsyncOperationStatus
+
+if TYPE_CHECKING:
+    from modelon.impact.client.entities.external_result import ExternalResult
+    from modelon.impact.client.sal.service import Service
 
 
 class ExternalResultImportOperation(AsyncOperation):
@@ -12,10 +16,11 @@ class ExternalResultImportOperation(AsyncOperation):
 
     """
 
-    def __init__(self, location: str, service: Service):
+    def __init__(self, location: str, service: Service, entity: Type[ExternalResult]):
         super().__init__()
         self._location = location
         self._sal = service
+        self._entity = entity
 
     def __repr__(self) -> str:
         return f"Result import operations for id '{self.id}'"
@@ -54,7 +59,7 @@ class ExternalResultImportOperation(AsyncOperation):
                 f"External result upload failed! Cause: {info['error'].get('message')}"
             )
         resp = self._sal.external_result.get_uploaded_result(self.id)
-        return ExternalResult(resp['data']['id'], self._sal)
+        return self._entity(resp['data']['id'], self._sal)
 
     def status(self) -> AsyncOperationStatus:
         """Returns the upload status as an enumeration.

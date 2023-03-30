@@ -1,18 +1,30 @@
 from __future__ import annotations
-from modelon.impact.client.entities import case
+from typing import Type, TYPE_CHECKING
+
 from modelon.impact.client.operations.base import ExecutionOperation, Status
-from modelon.impact.client.sal.service import Service
+
+if TYPE_CHECKING:
+    from modelon.impact.client.entities.case import Case
+    from modelon.impact.client.sal.service import Service
 
 
 class CaseOperation(ExecutionOperation):
     """An operation class for the modelon.impact.client.entities.Case class."""
 
-    def __init__(self, workspace_id: str, exp_id: str, case_id: str, service: Service):
+    def __init__(
+        self,
+        workspace_id: str,
+        exp_id: str,
+        case_id: str,
+        service: Service,
+        entity: Type[Case],
+    ):
         super().__init__()
         self._workspace_id = workspace_id
         self._exp_id = exp_id
         self._case_id = case_id
         self._sal = service
+        self._entity = entity
 
     def __repr__(self) -> str:
         return f"Case operation for id '{self._case_id}'"
@@ -30,7 +42,7 @@ class CaseOperation(ExecutionOperation):
         """Return the name of operation."""
         return "Execution"
 
-    def data(self) -> case.Case:
+    def data(self) -> Case:
         """Returns a new Case class instance.
 
         Returns:
@@ -42,7 +54,7 @@ class CaseOperation(ExecutionOperation):
         case_data = self._sal.experiment.case_get(
             self._workspace_id, self._exp_id, self._case_id
         )
-        return case.Case(
+        return self._entity(
             self._case_id, self._workspace_id, self._exp_id, self._sal, case_data
         )
 

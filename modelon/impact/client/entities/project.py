@@ -205,13 +205,17 @@ class Project:
     def __init__(
         self,
         project_id: str,
-        project_definition: ProjectDefinition,
+        project_definition: Union[ProjectDefinition, Dict[str, Any]],
         project_type: ProjectType,
         vcs_uri: Optional[VcsUri],
         service: Service,
     ):
         self._project_id = project_id
-        self._project_definition = project_definition
+        self._project_definition = (
+            ProjectDefinition(project_definition)
+            if isinstance(project_definition, dict)
+            else project_definition
+        )
         self._vcs_uri = vcs_uri or None
         self._project_type = project_type
         self._sal = service
@@ -329,7 +333,9 @@ class Project:
         resp = self._sal.project.project_content_upload(
             path_to_content, self._project_id, content_type.value
         )
-        return ContentImportOperation(resp['data']['location'], self._sal)
+        return ContentImportOperation(
+            resp['data']['location'], self._sal, ProjectContent
+        )
 
     def upload_modelica_library(self, path_to_lib: str) -> ContentImportOperation:
         """Uploads/adds a non-encrypted Modelica library or a Modelica model to

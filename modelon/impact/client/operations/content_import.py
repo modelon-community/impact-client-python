@@ -1,18 +1,23 @@
-from typing import Dict, Any
-from modelon.impact.client.sal.service import Service
+from __future__ import annotations
+from typing import Dict, Any, TYPE_CHECKING, Type
+
 from modelon.impact.client.operations.base import AsyncOperation, AsyncOperationStatus
 from modelon.impact.client import exceptions
-from modelon.impact.client.entities.content import ProjectContent
+
+if TYPE_CHECKING:
+    from modelon.impact.client.sal.service import Service
+    from modelon.impact.client.entities.content import ProjectContent
 
 
 class ContentImportOperation(AsyncOperation):
     """An operation class for the
     modelon.impact.client.entities.project.ProjectContent class."""
 
-    def __init__(self, location: str, service: Service):
+    def __init__(self, location: str, service: Service, entity: Type[ProjectContent]):
         super().__init__()
         self._location = location
         self._sal = service
+        self._entity = entity
 
     def __repr__(self) -> str:
         return f"Content import operations for id '{self.id}'"
@@ -52,7 +57,7 @@ class ContentImportOperation(AsyncOperation):
         project_id = info["data"]["projectId"]
         content_id = info["data"]["contentId"]
         resp = self._sal.project.project_content_get(project_id, content_id)
-        return ProjectContent(resp, project_id, self._sal)
+        return self._entity(resp, project_id, self._sal)
 
     def status(self) -> AsyncOperationStatus:
         """Returns the upload status as an enumeration.

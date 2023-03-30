@@ -1,9 +1,12 @@
 from __future__ import annotations
-from typing import Dict, Any
+from typing import Dict, Any, Type, TYPE_CHECKING
 from modelon.impact.client import exceptions
-from modelon.impact.client.entities.workspace import Workspace, WorkspaceDefinition
+
 from modelon.impact.client.operations.base import AsyncOperation, AsyncOperationStatus
 from modelon.impact.client.sal.service import Service
+
+if TYPE_CHECKING:
+    from modelon.impact.client.entities.workspace import Workspace
 
 
 class WorkspaceConversionOperation(AsyncOperation):
@@ -14,10 +17,11 @@ class WorkspaceConversionOperation(AsyncOperation):
 
     """
 
-    def __init__(self, location: str, service: Service):
+    def __init__(self, location: str, service: Service, entity: Type[Workspace]):
         super().__init__()
         self._location = location
         self._sal = service
+        self._entity = entity
 
     def __repr__(self) -> str:
         return f"Workspace conversion operations for id '{self.id}'"
@@ -59,7 +63,7 @@ class WorkspaceConversionOperation(AsyncOperation):
 
         workspace_id = info["data"]["workspaceId"]
         resp = self._sal.workspace.workspace_get(workspace_id)
-        return Workspace(resp["id"], WorkspaceDefinition(resp["definition"]), self._sal)
+        return self._entity(resp["id"], resp["definition"], self._sal)
 
     def status(self) -> AsyncOperationStatus:
         """Returns the conversion status as an enumeration.
