@@ -172,16 +172,12 @@ class CustomArtifact:
         downloaded artifact.
 
         Args:
-
-            path:
-                The local path to the directory to store the downloaded custom artifact.
+            path: The local path to the directory to store the downloaded custom artifact.
                 Default: None. If no path is given, custom artifact will be downloaded
                 in a temporary directory.
 
         Returns:
-
-            path:
-                Local path to the downloaded custom artifact.
+            path: Local path to the downloaded custom artifact.
 
         Example::
 
@@ -204,9 +200,7 @@ class CustomArtifact:
         """Returns the custom artifact stream.
 
         Returns:
-
-            artifact:
-                The artifact byte stream.
+            artifact: The artifact byte stream.
 
         Example::
 
@@ -429,9 +423,8 @@ class Case:
         """Returns True if a case has completed successfully.
 
         Returns:
-
-            True -> If the case has executed successfully.
-            False -> If the case has failed execution.
+            True, if the case has executed successfully, False,
+            if the case has failed execution.
 
         Example::
 
@@ -444,9 +437,7 @@ class Case:
         """Returns the log class object for a finished case.
 
         Returns:
-
-            log:
-                The case execution log class object.
+            The case execution log class object.
 
         Example::
 
@@ -464,20 +455,13 @@ class Case:
         """Returns the result stream and the file name for a finished case.
 
         Args:
-
-            format:
-                The file format to download the result in. The only possible values
-                are 'mat' and 'csv'.
-                Default: 'mat'
+            format: The file format to download the result in. The only possible values
+                are 'mat' and 'csv'. Default: 'mat'
 
         Returns:
-
-            result:
-                The result byte stream.
-
-            filename:
-                The filename for the result. This name could be used to write the
-                result stream.
+            A tuple containing, respectively, the result byte stream.
+            and the filename for the result. This name could be used to
+            write the result stream.
 
         Raises:
 
@@ -504,12 +488,9 @@ class Case:
         """Returns result(Mapping) object containing the result trajectories.
 
         Returns:
-
-            trajectories:
-                A result trajectory dictionary object.
+            A result trajectory dictionary object.
 
         Raises:
-
             OperationNotCompleteError if simulation process is in progress.
             OperationFailureError if simulation process was cancelled.
 
@@ -536,15 +517,9 @@ class Case:
         """Returns a CustomArtifact class for a finished case.
 
         Returns:
-
-            custom artifact:
-                A CustomArtifact class object.
-
-            download_as:
-                File name for the downloaded artifact.
+            The CustomArtifact class object.
 
         Raises:
-
             OperationNotCompleteError if simulation process is in progress.
             OperationFailureError if simulation process has failed or was cancelled.
 
@@ -583,12 +558,9 @@ class Case:
         """Returns a list of CustomArtifact classes for a finished case.
 
         Returns:
-
-            custom artifacts:
-                A list of CustomArtifact class objects.
+            A list of CustomArtifact class objects.
 
         Raises:
-
             OperationNotCompleteError if simulation process is in progress.
             OperationFailureError if simulation process has failed or was cancelled.
 
@@ -619,9 +591,7 @@ class Case:
         """Returns the ModelExecutable class object simulated for the case.
 
         Returns:
-
-            FMU:
-                ModelExecutable class object.
+            ModelExecutable class object.
 
         Example::
 
@@ -650,20 +620,15 @@ class Case:
         )
 
     def execute(self, sync_case_changes: bool = True) -> CaseOperation:
-        """Exceutes a case. Returns an
-        modelon.impact.client.operations.case.CaseOperation class object.
+        """Exceutes a case. Returns an CaseOperation class object.
 
         Args:
-
-            sync_case_changes:
-                Boolean specifying if to sync case changes against the server
-                before executing the case. Default is True.
+            sync_case_changes: Boolean specifying if to sync case changes
+            against the server before executing the case. Default is True.
 
 
         Returns:
-
-            case_ops:
-                An modelon.impact.client.operations.case.CaseOperation class object.
+            An CaseOperation class object.
 
         Example::
             case = experiment.get_case('case_1')

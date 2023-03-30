@@ -17,16 +17,10 @@ class Range(Operator):
     """Range operator class for parameterizing batch runs.
 
     Args:
-
-        start_value:
-            The start value for the sweep parameter.
-
-        end_value:
-            The end value for the sweep parameter.
-
-        no_of_steps:
-            The number of steps to intermediate steps to take between start_value
-            and end_value.
+        start_value: The start value for the sweep parameter.
+        end_value: The end value for the sweep parameter.
+        no_of_steps: The number of steps to intermediate steps
+        to take between start_value and end_value.
 
     Examples::
 
@@ -51,9 +45,7 @@ class Choices(Operator):
     """Choices operator class for parameterizing batch runs.
 
     Args:
-
-        values:
-            Variable number of numerical arguments to sweep.
+        values: Variable number of numerical arguments to sweep.
 
     Examples::
 
@@ -80,12 +72,8 @@ class Uniform(Operator):
     https://en.wikipedia.org/wiki/Continuous_uniform_distribution.
 
     Args:
-
-        start (float):
-            Starting value of the interval.
-
-        end   (float):
-            End value of the interval. Requires start <= end.
+        start (float): Starting value of the interval.
+        end (float): End value of the interval. Requires start <= end.
 
     Examples::
 
@@ -111,12 +99,10 @@ class Beta(Operator):
     background, see e.g., https://en.wikipedia.org/wiki/Beta_distribution.
 
     Args:
-
-        alpha  (float):
-            'alpha' resp. 'a' parameter of beta distribution, requires alpha > 0
-
-        beta   (float):
-            'beta' resp. 'b' parameter of beta distribution, requires beta > 0
+        alpha (float): 'alpha' resp. 'a' parameter of beta distribution, requires
+            alpha > 0
+        beta (float): 'beta' resp. 'b' parameter of beta distribution, requires
+            beta > 0
 
     Examples::
 
@@ -146,18 +132,10 @@ class Normal(Operator):
     truncation.
 
     Args:
-
-        mean     (float):
-            Mean resp. location of the distribution.
-
-        variance (float):
-            Variance of the normal distribution. Requires var > 0.
-
-        start    (float):
-            Lower bound. Default: -inf
-
-        end      (float)
-            Upper bound, requires end > start. Default: inf
+        mean (float): Mean resp. location of the distribution.
+        variance (float): Variance of the normal distribution. Requires var > 0.
+        start (float): Lower bound. Default: -inf
+        end (float): Upper bound, requires end > start. Default: inf
 
     Examples::
 

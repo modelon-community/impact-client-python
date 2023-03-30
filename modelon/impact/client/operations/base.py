@@ -80,9 +80,7 @@ class AsyncOperation(BaseOperation[Entity]):
         instance if operation completes.
 
         Args:
-
-            timeout:
-                Time to wait in seconds for achieving the status. By default
+            timeout: Time to wait in seconds for achieving the status. By default
                 the timeout is set to 'None', which signifies an infinite time
                 to wait until the status is achieved.
 
@@ -91,7 +89,6 @@ class AsyncOperation(BaseOperation[Entity]):
             Entity class instance if operation completes.
 
         Raises:
-
             OperationTimeOutError if time exceeds set timeout.
 
         Example::
@@ -126,9 +123,8 @@ class ExecutionOperation(BaseOperation[Entity]):
         """Returns True if the operation has completed.
 
         Returns:
-
-            True -> If operation has completed.
-            False -> If operation has not completed.
+            True, if operation has completed.False, if operation has
+            not completed.
 
         Example::
 
@@ -145,9 +141,7 @@ class ExecutionOperation(BaseOperation[Entity]):
         operation class instance if the set status is achieved.
 
         Args:
-
-            timeout:
-                Time to wait in seconds for achieving the status. By default
+            timeout: Time to wait in seconds for achieving the status. By default
                 the timeout is set to 'None', which signifies an infinite time
                 to wait until the status is achieved.
 
@@ -160,7 +154,6 @@ class ExecutionOperation(BaseOperation[Entity]):
             Entity class instance if the set status is achieved.
 
         Raises:
-
             OperationTimeOutError if time exceeds set timeout.
 
         Example::

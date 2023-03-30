@@ -93,12 +93,10 @@ class Client:
     workspaces and upload or fetch existing workspaces.
 
     Args:
-
         url:
             The URL for Modelon Impact client host. Defaults to the value specified
             by env variable 'MODELON_IMPACT_CLIENT_URL' if set else uses the URL
             'http://localhost:8080/'.
-
         interactive:
             If True the client will prompt for an API key if no other login information
             can be found. An API key entered for this prompt will be saved to disk
@@ -113,16 +111,15 @@ class Client:
 
             Default is False. It is possible to change the default value through
             the environment variable 'MODELON_IMPACT_CLIENT_INTERACTIVE'.
-
         credential_manager:
             Help class for managing credentials for the Impact server. Default is None
             and then the default credential manager is used.
-
         context:
             Request contexts to pass data alongside a HTTP request. Default is None and
             then the default context is used.
 
     Examples::
+
         from modelon.impact.client import Client
 
         client = Client(url=impact_url)
@@ -273,13 +270,11 @@ class Client:
         """Returns a list of Workspace class object.
 
         Returns:
-
-            workspace:
-                A list of Workspace class objects.
+            A list of Workspace class objects.
 
         Example::
 
-            client.get_workspaces()
+            workspaces = client.get_workspaces()
 
         """
         resp = self._sal.workspace.workspaces_get()
@@ -295,14 +290,15 @@ class Client:
         server is using.
 
         Args:
-            workspace_id (str): The ID of the workspace to convert to the latest
-            backup_name (Optional[str], optional): If given then a backup will be
-            created with this name. Defaults to None.
+            workspace_id: The ID of the workspace to convert to the latest
+            backup_name: If given then a backup will be created with this
+            name. Defaults to None.
 
         Returns:
-            WorkspaceConversionOperation: The workspace conversion operation
+            The workspace conversion operation
 
         Example::
+
             workspace = client.convert_workspace(workspace_id, backup_name='old save')
             .wait()
 
@@ -316,14 +312,10 @@ class Client:
         """Returns a project class object.
 
         Args:
-
-            project_id:
-                The id of the project.
+            project_id: The id of the project.
 
         Returns:
-
-            project:
-                Project class objects.
+            Project class objects.
 
         Example::
 
@@ -343,15 +335,11 @@ class Client:
         """Returns a list of project class object.
 
         Args:
-
-            vcs_info:
-                If True, the versioning details are returned for the
+            vcs_info: If True, the versioning details are returned for the
                 projects under version control.
 
         Returns:
-
-            project:
-                A list of Project class objects.
+            A list of Project class objects.
 
         Example::
 
@@ -394,18 +382,15 @@ class Client:
         does the import in one go.
 
         Args:
-
-            path_to_workspace:
-                The path for the compressed workspace(.zip) to be uploaded.
+            path_to_workspace: The path for the compressed workspace(.zip)
+            to be uploaded.
 
         Returns:
-
-            workspace:
-                Workspace class object.
+            Workspace class object.
 
         Example::
 
-            client.upload_workspace(path_to_workspace)
+            workspace = client.upload_workspace(path_to_workspace)
 
         """
         return self.import_workspace_from_zip(path_to_workspace).wait()
@@ -421,15 +406,11 @@ class Client:
         .WorkspaceImportOperation class object.
 
         Args:
-
-            path_to_workspace:
-                The path for the compressed workspace(.zip) to be uploaded.
+            path_to_workspace: The path for the compressed
+            workspace(.zip) to be uploaded.
 
         Returns:
-
-            WorkspaceImportOperation:
-                An modelon.impact.client.operations.workspace.imports.
-                WorkspaceImportOperation class object.
+            A WorkspaceImportOperation class object.
 
         Example::
 
@@ -486,15 +467,11 @@ class Client:
         project class object.
 
         Args:
-
-            path_to_project:
-                The path for the compressed project(.zip) to be uploaded.
+            path_to_project: The path for the compressed project(.zip)
+            to be uploaded.
 
         Returns:
-
-            ProjectImportOperation:
-                An modelon.impact.client.operations.project_import.
-                ProjectImportOperation class object.
+            A ProjectImportOperation class object.
 
         Example::
 

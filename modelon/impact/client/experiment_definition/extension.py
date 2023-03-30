@@ -27,28 +27,18 @@ class SimpleExperimentExtension(BaseExperimentExtension):
     """A simple experiment extension class for defining experiement extensions.
 
     Args:
-
-        parameter_modifiers:
-            The custom function parameters passes as a dictionary. By default, the
-            parameter_modifier is set to None, which means the options set in
-            the experiment definition will be used.
-
-        solver_options:
-            A solver options class instance of
-            modelon.impact.client.options.SolverOptions or
+        parameter_modifiers: The custom function parameters passes as a dictionary.
+            By default, the parameter_modifier is set to None, which means the options
+            set in the experiment definition will be used.
+        solver_options: A solver options class instance of SolverOptions or
             a dictionary object containing the solver options. By
             default, the options is set to None, which means an empty dictionary
             is passed in the experiment extension.
-
-        simulation_options:
-            A simulation options class instance of
-            modelon.impact.client.options.SimulationOptions or
+        simulation_options: A simulation options class instance of SimulationOptions or
             a dictionary object containing the simulation options. By
             default, the options is set to None, which means an empty dictionary
             is passed in the experiment extension.
-
-        simulation_log_level:
-            Simulation log level for this experiment. Default: 'WARNING'.
+        simulation_log_level: Simulation log level for this experiment. Default: 'WARNING'.
 
     Examples::
 
@@ -95,7 +85,6 @@ class SimpleExperimentExtension(BaseExperimentExtension):
         """Sets the modifiers variables for an experiment extension.
 
         Args:
-
             modifiers: A dictionary of variable modifiers.
 
         Example::
@@ -141,8 +130,7 @@ class SimpleExperimentExtension(BaseExperimentExtension):
         """Sets the case label for an experiment extension.
 
         Args:
-
-            case_label (str): A case label string.
+            case_label: A case label string.
 
         Example::
 
@@ -178,11 +166,11 @@ class SimpleExperimentExtension(BaseExperimentExtension):
         extension.
 
         Args:
-
             entity: An instance of modelon.impact.client.entities.case.Case or
                 modelon.impact.client.entities.experiment.Experiment.
 
         Example::
+
             experiment = workspace.get_experiment(experiment_id)
             simulate_ext = SimpleExperimentExtension().initialize_from(experiment)
 
@@ -218,8 +206,7 @@ class SimpleExperimentExtension(BaseExperimentExtension):
         """Returns the experiment extensions as a dictionary.
 
         Returns:
-
-            extensions_dict (dict): A dictionary containing the experiment extensions.
+            A dictionary containing the experiment extensions.
 
         Example::
 

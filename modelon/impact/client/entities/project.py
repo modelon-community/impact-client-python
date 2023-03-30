@@ -282,12 +282,9 @@ class Project:
         """Gets the first matching project content with the given name.
 
         Args:
+            name: The name of the content.
 
-            name:
-                The name of the content.
-
-            content_type:
-                The type of the project content.
+            content_type: The type of the project content.
 
         Example::
             from modelon.impact.client import ContentType
@@ -307,8 +304,7 @@ class Project:
 
         Args:
 
-            name:
-                The Modelica library name.
+            name: The Modelica library name.
 
         Example::
 
@@ -324,13 +320,12 @@ class Project:
 
         Args:
 
-            path_to_content:
-                The path for the content to be imported.
+            path_to_content: The path for the content to be imported.
 
-            content_type:
-                The type of the imported content.
+            content_type: The type of the imported content.
 
         Example::
+
             from modelon.impact.client import ContentType
 
             project.upload_content('/home/test.mo', ContentType.MODELICA).wait()
@@ -348,7 +343,6 @@ class Project:
         the project.
 
         Args:
-
             path_to_lib:
                 The path for the library to be imported. Only '.mo' or '.zip' file
                 extension are supported for upload.
@@ -372,14 +366,11 @@ class Project:
         """Get project execution option.
 
         Args:
-
-            custom_function:
-                The CustomFunction class object.
-
-            use_defaults:
-                If true, default options are used.
+            custom_function: The CustomFunction class object.
+            use_defaults: If true, default options are used.
 
         Example::
+
             dynamic = workspace.get_custom_function('dynamic')
             project.get_options(dynamic)
 

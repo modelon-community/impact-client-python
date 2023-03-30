@@ -51,9 +51,7 @@ class ExternalResultImportOperation(AsyncOperation[Entity]):
         """Returns a new ExternalResult class instance.
 
         Returns:
-
-            external_result:
-                A ExternalResult class instance.
+            A ExternalResult class instance.
 
         """
         info = self._info()
@@ -68,11 +66,9 @@ class ExternalResultImportOperation(AsyncOperation[Entity]):
         """Returns the upload status as an enumeration.
 
         Returns:
-
-            upload_status:
-                The AsyncOperationStatus enum. The status can have the enum values
-                AsyncOperationStatus.READY, AsyncOperationStatus.RUNNING or
-                AsyncOperationStatus.ERROR
+            The AsyncOperationStatus enum. The status can have the enum values
+            AsyncOperationStatus.READY, AsyncOperationStatus.RUNNING or
+            AsyncOperationStatus.ERROR
 
         Example::
 

@@ -162,26 +162,19 @@ class Experiment:
     def execute(
         self, with_cases: Optional[List[Case]] = None, sync_case_changes: bool = True
     ) -> experiment.ExperimentOperation:
-        """Exceutes an experiment. Returns an
-        modelon.impact.client.operations.experiment.ExperimentOperation class
-        object.
+        """Exceutes an experiment. Returns an ExperimentOperation class object.
 
         Args:
-
-            with_cases:
-                A list of cases objects to execute.
-            sync_case_changes:
-                Boolean specifying if to sync the cases given with the 'with_cases'
+            with_cases: A list of cases objects to execute.
+            sync_case_changes: Boolean specifying if to sync the cases given with the 'with_cases'
                 argument against the server before executing the experiment.
                 Default is True.
 
         Returns:
-
-            experiment_ops:
-                An modelon.impact.client.operations.experiment.ExperimentOperation
-                class object.
+            An ExperimentOperation class object.
 
         Example::
+
             experiment = workspace.create_experiment(experiment_definition)
             experiment_ops = experiment.execute()
             experiment_ops.cancel()
@@ -212,9 +205,8 @@ class Experiment:
         the 'run_info' attribute to get more info.
 
         Returns:
-
-            True -> If execution process has completed successfully.
-            False -> If execution process has failed, is cancelled or still running.
+            True, if execution process has completed successfully. False, if
+            execution process has failed, is cancelled or still running.
 
         Example::
 
@@ -231,12 +223,9 @@ class Experiment:
         """Returns a list of variables available in the result.
 
         Returns:
-
-            variables:
-                An list of result variables.
+            An list of result variables.
 
         Raises:
-
             OperationNotCompleteError if simulation process is in progress.
             OperationFailureError if simulation process has failed or was cancelled.
 
@@ -254,9 +243,7 @@ class Experiment:
         """Returns a list of case objects for an experiment.
 
         Returns:
-
-            cases:
-                An list of case objects.
+            An list of case objects.
 
         Example::
 
@@ -273,14 +260,10 @@ class Experiment:
         """Returns a case object for a given case_id.
 
         Args:
-
-            case_id:
-                The case_id for the case.
+            case_id: The case_id for the case.
 
         Returns:
-
-            cases:
-                An case object.
+            An case object.
 
         Example::
 
@@ -298,14 +281,10 @@ class Experiment:
         """Returns a list of case objects for an experiment with the label.
 
         Args:
-
-            case_label:
-                The case_label for the case.
+            case_label: The case_label for the case.
 
         Returns:
-
-            cases:
-                An list of case objects.
+            An list of case objects.
 
         Example::
 
@@ -319,17 +298,12 @@ class Experiment:
         of result variables for all the cases.
 
         Args:
-
-            variables:
-                A list of result variables to fecth trajectories for.
+            variables: A list of result variables to fecth trajectories for.
 
         Returns:
-
-            trajectory:
-                A dictionary object containing the result trajectories for all cases.
+            A dictionary object containing the result trajectories for all cases.
 
         Raises:
-
             OperationNotCompleteError if simulation process is in progress.
             OperationFailureError if simulation process was cancelled.
             TypeError if the variable is not a list object.

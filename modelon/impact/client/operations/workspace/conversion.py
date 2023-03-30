@@ -53,8 +53,7 @@ class WorkspaceConversionOperation(AsyncOperation[Entity]):
         """Returns a Workspace class instance of the converted workspace.
 
         Returns:
-
-            An Workspace class instance.
+            A Workspace class instance.
 
         """
         info = self._info()
