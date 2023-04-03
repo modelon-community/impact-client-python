@@ -1,12 +1,18 @@
 from __future__ import annotations
 import os
 from typing import Dict, Any, TYPE_CHECKING
-from modelon.impact.client.operations.base import AsyncOperation, AsyncOperationStatus
+from modelon.impact.client.operations.base import (
+    AsyncOperation,
+    AsyncOperationStatus,
+    Entity,
+    BaseOperation,
+)
 from modelon.impact.client import exceptions
 
 if TYPE_CHECKING:
     from modelon.impact.client.sal.exports import ExportService
     from modelon.impact.client.sal.service import Service
+    from modelon.impact.client.operations.base import EntityFromOperation
 
 
 class Export:
@@ -40,17 +46,23 @@ class Export:
             f.write(data)
         return path_to_download
 
+    @classmethod
+    def from_operation(cls, operation: BaseOperation[Export], **kwargs: Any) -> Export:
+        assert isinstance(operation, WorkspaceExportOperation)
+        return cls(**kwargs, export_service=operation._sal.exports)
 
-class WorkspaceExportOperation(AsyncOperation):
-    """An export operation class for the
-    modelon.impact.client.entities.workspace.
 
-    Workspace class.
+class WorkspaceExportOperation(AsyncOperation[Entity]):
+    """
+    An export operation class for the
+    modelon.impact.client.entities.workspace.Workspace class.
 
     """
 
-    def __init__(self, location: str, service: Service):
-        super().__init__()
+    def __init__(
+        self, location: str, service: Service, create_entity: EntityFromOperation
+    ):
+        super().__init__(create_entity)
         self._location = location
         self._sal = service
 
@@ -76,7 +88,7 @@ class WorkspaceExportOperation(AsyncOperation):
     def _info(self) -> Dict[str, Any]:
         return self._sal.exports.get_export_status(self._location)["data"]
 
-    def data(self) -> Export:
+    def data(self) -> Entity:
         """Returns a Export class instance.
 
         Returns:
@@ -89,7 +101,7 @@ class WorkspaceExportOperation(AsyncOperation):
             raise exceptions.IllegalWorkspaceExport(
                 f"Workspace export failed! Cause: {info['error'].get('message')}"
             )
-        return Export(self._sal.exports, info["data"]["downloadUri"])
+        return self._create_entity(self, download_uri=info["data"]["downloadUri"])
 
     def status(self) -> AsyncOperationStatus:
         """Returns the upload status as an enumeration.

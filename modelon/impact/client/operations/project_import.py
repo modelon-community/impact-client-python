@@ -1,26 +1,30 @@
 from __future__ import annotations
-from typing import Dict, Any, Type, TYPE_CHECKING
+from typing import Dict, Any, TYPE_CHECKING
 from modelon.impact.client.sal.service import Service
-from modelon.impact.client.operations.base import AsyncOperation, AsyncOperationStatus
+from modelon.impact.client.operations.base import (
+    AsyncOperation,
+    AsyncOperationStatus,
+    Entity,
+)
 from modelon.impact.client import exceptions
 
 if TYPE_CHECKING:
-    from modelon.impact.client.entities.project import Project
+    from modelon.impact.client.operations.base import EntityFromOperation
 
 
-class ProjectImportOperation(AsyncOperation):
-    """An import operation class for the
-    modelon.impact.client.entities.project.
-
-    Project class.
-
+class ProjectImportOperation(AsyncOperation[Entity]):
+    """
+    An import operation class for the
+    modelon.impact.client.entities.project.Project class.
     """
 
-    def __init__(self, location: str, service: Service, entity: Type[Project]):
-        super().__init__()
+    def __init__(
+        self, location: str, service: Service, create_entity: EntityFromOperation
+    ):
+        super().__init__(create_entity)
         self._location = location
         self._sal = service
-        self._entity = entity
+        self._create_entity = create_entity
 
     def __repr__(self) -> str:
         return f"Project import operations for id '{self.id}'"
@@ -43,7 +47,7 @@ class ProjectImportOperation(AsyncOperation):
     def _info(self) -> Dict[str, Any]:
         return self._sal.imports.get_import_status(self._location)["data"]
 
-    def data(self) -> Project:
+    def data(self) -> Entity:
         """Returns a new Project class instance.
 
         Returns:
@@ -59,12 +63,11 @@ class ProjectImportOperation(AsyncOperation):
             )
         project_id = info["data"]["projectId"]
         resp = self._sal.project.project_get(project_id, False)
-        return self._entity(
-            resp["id"],
-            resp["definition"],
-            resp["projectType"],
-            None,
-            self._sal,
+        return self._create_entity(
+            self,
+            project_id=resp["id"],
+            project_definition=resp["definition"],
+            project_type=resp["projectType"],
         )
 
     def status(self) -> AsyncOperationStatus:

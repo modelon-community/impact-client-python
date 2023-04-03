@@ -13,7 +13,10 @@ from modelon.impact.client.entities.project import (
 from modelon.impact.client.entities.external_result import ExternalResult
 from modelon.impact.client.entities.model import Model
 from modelon.impact.client.operations.experiment import ExperimentOperation
-from modelon.impact.client.operations.workspace.exports import WorkspaceExportOperation
+from modelon.impact.client.operations.workspace.exports import (
+    WorkspaceExportOperation,
+    Export,
+)
 from modelon.impact.client.operations.workspace.conversion import (
     WorkspaceConversionOperation,
 )
@@ -360,37 +363,41 @@ def create_custom_function_entity(
 
 
 def create_experiment_operation(workspace_id, exp_id, service=None):
-    return ExperimentOperation(workspace_id, exp_id, service or MagicMock(), Experiment)
+    return ExperimentOperation[Experiment](
+        workspace_id, exp_id, service or MagicMock(), Experiment.from_operation
+    )
 
 
 def create_cached_model_exe_operation(
     workspace_id, fmu_id, service=None, info=None, modifiers=None
 ):
-    return CachedModelExecutableOperation(
+    return CachedModelExecutableOperation[ModelExecutable](
         workspace_id,
         fmu_id,
         service or MagicMock(),
-        ModelExecutable,
+        ModelExecutable.from_operation,
         info=info,
         modifiers=modifiers,
     )
 
 
 def create_model_exe_operation(workspace_id, fmu_id, service=None):
-    return ModelExecutableOperation(
-        workspace_id, fmu_id, service or MagicMock(), ModelExecutable
+    return ModelExecutableOperation[ModelExecutable](
+        workspace_id, fmu_id, service or MagicMock(), ModelExecutable.from_operation
     )
 
 
 def create_workspace_export_operation(ws_export_id, service=None):
-    return WorkspaceExportOperation(
-        f"api/workspace-exports/{ws_export_id}", service or MagicMock()
+    return WorkspaceExportOperation[Workspace](
+        f"api/workspace-exports/{ws_export_id}",
+        service or MagicMock(),
+        Export.from_operation,
     )
 
 
 def create_workspace_conversion_operation(ws_conversion_id, service=None):
-    return WorkspaceConversionOperation(
+    return WorkspaceConversionOperation[Workspace](
         f"api/workspace-conversions/{ws_conversion_id}",
         service or MagicMock(),
-        Workspace,
+        Workspace.from_conversion_operation,
     )

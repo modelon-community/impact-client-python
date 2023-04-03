@@ -291,8 +291,8 @@ class Client:
 
         """
         resp = self._sal.workspace.workspace_conversion_setup(workspace_id, backup_name)
-        return WorkspaceConversionOperation(
-            resp["data"]["location"], self._sal, Workspace
+        return WorkspaceConversionOperation[Workspace](
+            resp["data"]["location"], self._sal, Workspace.from_conversion_operation
         )
 
     def get_project(self, project_id: str, vcs_info: bool = True) -> Project:
@@ -423,7 +423,9 @@ class Client:
             client.import_workspace_from_zip(path_to_workspace).wait()
         """
         resp = self._sal.workspace.import_from_zip(path_to_workspace)
-        return WorkspaceImportOperation(resp["data"]["location"], self._sal, Workspace)
+        return WorkspaceImportOperation[Workspace](
+            resp["data"]["location"], self._sal, Workspace.from_import_operation
+        )
 
     def import_workspace_from_shared_definition(
         self,
@@ -436,7 +438,9 @@ class Client:
             if selections
             else None,
         )
-        return WorkspaceImportOperation(resp["data"]["location"], self._sal, Workspace)
+        return WorkspaceImportOperation[Workspace](
+            resp["data"]["location"], self._sal, Workspace.from_import_operation
+        )
 
     def get_project_matchings(
         self, shared_definition: WorkspaceDefinition
@@ -485,4 +489,6 @@ class Client:
 
         """
         resp = self._sal.project.import_from_zip(path_to_project)
-        return ProjectImportOperation(resp["data"]["location"], self._sal, Project)
+        return ProjectImportOperation[Project](
+            resp["data"]["location"], self._sal, Project.from_operation
+        )

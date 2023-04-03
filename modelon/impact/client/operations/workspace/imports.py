@@ -1,27 +1,31 @@
 from __future__ import annotations
-from typing import Dict, Any, Type, TYPE_CHECKING
+from typing import Dict, Any, TYPE_CHECKING
 
-from modelon.impact.client.operations.base import AsyncOperation, AsyncOperationStatus
+from modelon.impact.client.operations.base import (
+    AsyncOperation,
+    AsyncOperationStatus,
+    Entity,
+)
 from modelon.impact.client import exceptions
 
 if TYPE_CHECKING:
-    from modelon.impact.client.entities.workspace import Workspace
     from modelon.impact.client.sal.service import Service
+    from modelon.impact.client.operations.base import EntityFromOperation
 
 
-class WorkspaceImportOperation(AsyncOperation):
-    """An import operation class for the
-    modelon.impact.client.entities.workspace.
-
-    Workspace class.
-
+class WorkspaceImportOperation(AsyncOperation[Entity]):
+    """
+    An import operation class for the
+    modelon.impact.client.entities.workspace.Workspace class.
     """
 
-    def __init__(self, location: str, service: Service, entity: Type[Workspace]):
-        super().__init__()
+    def __init__(
+        self, location: str, service: Service, create_entity: EntityFromOperation
+    ):
+        super().__init__(create_entity)
         self._location = location
         self._sal = service
-        self._entity = entity
+        self._create_entity = create_entity
 
     def __repr__(self) -> str:
         return f"Workspace import operations for id '{self.id}'"
@@ -45,7 +49,7 @@ class WorkspaceImportOperation(AsyncOperation):
     def _info(self) -> Dict[str, Any]:
         return self._sal.imports.get_import_status(self._location)["data"]
 
-    def data(self) -> Workspace:
+    def data(self) -> Entity:
         """Returns a new Workspace class instance.
 
         Returns:
@@ -61,7 +65,9 @@ class WorkspaceImportOperation(AsyncOperation):
             )
         workspace_id = info["data"]["workspaceId"]
         resp = self._sal.workspace.workspace_get(workspace_id)
-        return self._entity(resp["id"], resp["definition"], self._sal)
+        return self._create_entity(
+            self, workspace_id=resp["id"], workspace_definition=resp["definition"]
+        )
 
     def status(self) -> AsyncOperationStatus:
         """Returns the upload status as an enumeration.

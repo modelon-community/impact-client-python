@@ -3,13 +3,16 @@ import enum
 import os
 import logging
 from pathlib import Path
-from typing import List, Dict, Optional, Union, TYPE_CHECKING
+from typing import List, Dict, Optional, Union, TYPE_CHECKING, Any
 
 from modelon.impact.client.entities.model import Model
 from modelon.impact.client.sal.service import Service
+from modelon.impact.client.operations.content_import import ContentImportOperation
 
 if TYPE_CHECKING:
     from modelon.impact.client.entities.workspace import Workspace
+    from modelon.impact.client.operations.base import BaseOperation
+
 
 logger = logging.getLogger(__name__)
 
@@ -167,3 +170,10 @@ class ProjectContent:
         if resp["importWarnings"]:
             logger.warning(f"Import Warnings: {'. '.join(resp['importWarnings'])}")
         return Model(resp['fmuClassPath'], workspace.id, self._project_id, self._sal)
+
+    @classmethod
+    def from_operation(
+        cls, operation: BaseOperation[ProjectContent], **kwargs: Any
+    ) -> ProjectContent:
+        assert isinstance(operation, ContentImportOperation)
+        return cls(**kwargs, service=operation._sal)

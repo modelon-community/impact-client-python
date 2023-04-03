@@ -176,11 +176,11 @@ class Model:
                 self._workspace_id, body, True
             )
             if fmu_id:
-                return CachedModelExecutableOperation(
+                return CachedModelExecutableOperation[ModelExecutable](
                     self._workspace_id,
                     fmu_id,
                     self._sal,
-                    ModelExecutable,
+                    ModelExecutable.from_operation,
                     None,
                     modifiers,
                 )
@@ -190,11 +190,11 @@ class Model:
             self._workspace_id, body, False
         )
 
-        return ModelExecutableOperation(
+        return ModelExecutableOperation[ModelExecutable](
             self._workspace_id,
             self._sal.model_executable.compile_model(self._workspace_id, fmu_id),
             self._sal,
-            ModelExecutable,
+            ModelExecutable.from_operation,
         )
 
     def new_experiment_definition(
