@@ -320,7 +320,7 @@ def create_project_entity(
         }
     return Project(
         project_id,
-        ProjectDefinition(definition),
+        definition,
         project_type,
         VcsUri.from_dict(vcs_uri) if vcs_uri else None,
         service or MagicMock(),

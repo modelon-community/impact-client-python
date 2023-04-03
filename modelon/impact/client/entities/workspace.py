@@ -593,7 +593,7 @@ class Workspace:
         projects = [
             Project(
                 item["id"],
-                ProjectDefinition(item['definition']),
+                item['definition'],
                 item["projectType"],
                 VcsUri.from_dict(item["vcsUri"]) if item.get("vcsUri") else None,
                 self._sal,
@@ -624,7 +624,7 @@ class Workspace:
         return [
             Project(
                 item["id"],
-                ProjectDefinition(item['definition']),
+                item['definition'],
                 item["projectType"],
                 VcsUri.from_dict(item["vcsUri"]) if item.get("vcsUri") else None,
                 self._sal,
@@ -649,7 +649,7 @@ class Workspace:
         resp = self._sal.workspace.project_create(self._workspace_id, name)
         return Project(
             resp["id"],
-            ProjectDefinition(resp['definition']),
+            resp['definition'],
             resp["projectType"],
             VcsUri.from_dict(resp["vcsUri"]) if resp.get("vcsUri") else None,
             self._sal,
@@ -678,7 +678,7 @@ class Workspace:
         )
         return Project(
             resp["id"],
-            ProjectDefinition(resp["definition"]),
+            resp["definition"],
             resp["projectType"],
             VcsUri.from_dict(resp["vcsUri"]) if resp.get("vcsUri") else None,
             self._sal,
