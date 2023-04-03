@@ -104,7 +104,7 @@ def jupyterhub_api(mock_server_base):
     mock_server = with_json_route(
         mock_server_base,
         'GET',
-        'api/',
+        'hub/api/',
         jupyter_api_json,
         extra_headers={'x-jupyterhub-version': '1.3.0'},
     )

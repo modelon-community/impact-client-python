@@ -1,4 +1,5 @@
 import logging
+import os
 from typing import Optional, Tuple
 from modelon.impact.client.credential_manager import CredentialManager
 from modelon.impact.client.jupyterhub import exceptions
@@ -17,6 +18,10 @@ def _get_jupyter_token(credential_manager: CredentialManager, interactive: bool)
     return jupyter_token
 
 
+def _running_in_jupyterhub_environment() -> bool:
+    return os.environ.get("JUPYTERHUB_SERVICE_PREFIX") is not None
+
+
 def authorize(
     uri: URI,
     interactive: bool,
@@ -24,6 +29,16 @@ def authorize(
     credential_manager: Optional[CredentialManager] = None,
     service: Optional[sal.JupyterHubService] = None,
 ) -> Tuple[URI, sal.JupyterContext]:
+
+    jupyter_context = sal.JupyterContext(base=context)
+    service = service or sal.JupyterHubService()
+
+    if _running_in_jupyterhub_environment():
+        jupyter_context.token = os.environ.get('JUPYTERHUB_API_TOKEN', '')
+        server = os.environ.get('JUPYTERHUB_SERVICE_PREFIX')
+        user = service.get_user_data(uri, jupyter_context, server)
+        return user.impact_server_uri(uri), jupyter_context
+
     help_text = f"Enter JupyterHub API token (can be generated at {uri / 'token'}):"
     credential_manager = credential_manager or CredentialManager(
         file_id="jupyterhub-api.key",
@@ -33,8 +48,6 @@ def authorize(
         ],
         interactive_help_text=help_text,
     )
-    jupyter_context = sal.JupyterContext(base=context)
-    service = service or sal.JupyterHubService()
 
     try:
         jupyter_context.token = _get_jupyter_token(credential_manager, interactive)

@@ -29,7 +29,7 @@ class JupyterContext:
 
 
 class JupyterUser:
-    def __init__(self, user_id: str, server: str):
+    def __init__(self, user_id: str, server: Optional[str]):
         self.id = user_id
         self._server = server
 
@@ -42,7 +42,9 @@ class JupyterUser:
 
 class JupyterHubService:
     @classmethod
-    def get_user_data(cls, uri: URI, context: JupyterContext) -> JupyterUser:
+    def get_user_data(
+        cls, uri: URI, context: JupyterContext, server: Optional[str] = None
+    ) -> JupyterUser:
         auth_token_url = (
             uri / f'hub/api/authorizations/token/{context.token}'
         ).resolve()
@@ -73,7 +75,7 @@ class JupyterHubService:
 
         try:
             user_data = user_response.json()
-            return JupyterUser(user_data['name'], user_data['server'])
+            return JupyterUser(user_data['name'], user_data.get('server', server))
         except (KeyError, json.decoder.JSONDecodeError) as e:
             raise exceptions.NotAJupyterHubUrl(
                 "User response data is not correct, "
