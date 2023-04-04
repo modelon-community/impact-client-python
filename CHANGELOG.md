@@ -1,3 +1,10 @@
+# [3.0.0-dev.21](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.20...v3.0.0-dev.21) (2023-04-04)
+
+
+### Bug Fixes
+
+* refactored login workflow to distinguish if python client is run within or outside JH environment ([ed79bf2](https://github.com/modelon-community/impact-client-python/commit/ed79bf29ef8fc6c1c24c3f5cb848909988164e52))
+
 # [3.0.0-dev.20](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.19...v3.0.0-dev.20) (2023-03-29)
 
 
