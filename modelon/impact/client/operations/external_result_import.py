@@ -14,10 +14,8 @@ if TYPE_CHECKING:
 
 
 class ExternalResultImportOperation(AsyncOperation[Entity]):
-    """
-    An operation class for the modelon.impact.client.entities.
-    external_result.ExternalResult class.
-    """
+    """An operation class for the
+    modelon.impact.client.entities.external_result.ExternalResult class."""
 
     def __init__(
         self, location: str, service: Service, create_entity: EntityFromOperation

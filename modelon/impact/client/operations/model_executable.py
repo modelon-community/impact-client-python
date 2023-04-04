@@ -13,9 +13,10 @@ logger = logging.getLogger(__name__)
 
 
 class CachedModelExecutableOperation(ExecutionOperation[Entity]):
-    """
-    An operation class for a cached modelon.impact.client.entities.
+    """An operation class for a cached modelon.impact.client.entities.
+
     model_executable.ModelExecutable class.
+
     """
 
     def __init__(

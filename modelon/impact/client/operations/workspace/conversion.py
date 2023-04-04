@@ -14,10 +14,8 @@ if TYPE_CHECKING:
 
 
 class WorkspaceConversionOperation(AsyncOperation[Entity]):
-    """
-    An conversion operation class for the
-    modelon.impact.client.entities.workspace.Workspace class.
-    """
+    """An conversion operation class for the
+    modelon.impact.client.entities.workspace.Workspace class."""
 
     def __init__(
         self, location: str, service: Service, create_entity: EntityFromOperation

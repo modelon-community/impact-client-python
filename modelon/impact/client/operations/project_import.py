@@ -13,10 +13,8 @@ if TYPE_CHECKING:
 
 
 class ProjectImportOperation(AsyncOperation[Entity]):
-    """
-    An import operation class for the
-    modelon.impact.client.entities.project.Project class.
-    """
+    """An import operation class for the
+    modelon.impact.client.entities.project.Project class."""
 
     def __init__(
         self, location: str, service: Service, create_entity: EntityFromOperation
