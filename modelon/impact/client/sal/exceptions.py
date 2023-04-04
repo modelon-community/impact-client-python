@@ -37,7 +37,3 @@ class ErrorJSONInvalidFormatError(ServiceAccessError):
 
 class NoResponseFetchVersionError(ServiceAccessError):
     pass
-
-
-class AccessingJupyterHubError(ServiceAccessError):
-    pass

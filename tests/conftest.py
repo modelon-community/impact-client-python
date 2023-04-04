@@ -35,5 +35,12 @@ def mock_server_base():
     mock_url = 'http://mock-impact.com'
 
     mock_server_base = MockedServer(mock_url, MockContex(session), adapter)
-
-    return with_json_route(mock_server_base, 'POST', 'api/login', {})
+    mock_server = with_json_route(mock_server_base, 'POST', 'api/login', {})
+    mock_server = with_json_route(
+        mock_server,
+        'GET',
+        'hub/api/',
+        {},
+        extra_headers={},
+    )
+    return mock_server

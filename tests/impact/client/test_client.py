@@ -60,7 +60,7 @@ def test_semantic_version_error(semantic_version_error):
 
 
 def assert_login_called(*, adapter, body):
-    login_call = adapter.request_history[1]
+    login_call = adapter.request_history[2]
     assert 'http://mock-impact.com/api/login' == login_call.url
     assert 'POST' == login_call.method
     assert body == login_call.json()

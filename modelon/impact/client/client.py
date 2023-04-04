@@ -149,9 +149,11 @@ class Client:
         self._uri = URI(url)
         self._sal = modelon.impact.client.sal.service.Service(self._uri, context)
 
-        try:
-            self._validate_compatible_api_version()
-        except modelon.impact.client.sal.exceptions.AccessingJupyterHubError:
+        if self._sal.is_jupyterhub_url():
+            logger.info(
+                "API response indicates that the URL '%s' hosts a JupyterHub.",
+                str(self._uri),
+            )
             self._uri, jupyter_context = modelon.impact.client.jupyterhub.authorize(
                 self._uri,
                 interactive,
@@ -161,7 +163,8 @@ class Client:
             self._sal = modelon.impact.client.sal.service.Service(
                 self._uri, jupyter_context
             )
-            self._validate_compatible_api_version()
+
+        self._validate_compatible_api_version()
 
         if credential_manager is None:
             help_hint = f"can be generated at {self._uri / 'admin/keys'}"

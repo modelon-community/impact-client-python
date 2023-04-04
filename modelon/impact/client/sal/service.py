@@ -82,14 +82,22 @@ class Service:
             self.external_result, retry_with_login_decorator
         )
 
+    def is_jupyterhub_url(self) -> bool:
+        url = (self._base_uri / "hub/api/").resolve()
+
+        try:
+            response = self._http_client.get_json_response(url)
+        except (
+            exceptions.CommunicationError,
+            exceptions.SSLError,
+            exceptions.HTTPError,
+        ):
+            return False
+        return self._JUPYTERHUB_VERSION_HEADER in response.headers
+
     def api_get_metadata(self) -> Dict[str, Any]:
         url = (self._base_uri / "api/").resolve()
         response = self._http_client.get_json_response(url)
-        if self._JUPYTERHUB_VERSION_HEADER in response.headers:
-            raise exceptions.AccessingJupyterHubError(
-                f"API response indicates that the URL '{self._base_uri}' "
-                "hosts a JupyterHub."
-            )
 
         return response.data
 
