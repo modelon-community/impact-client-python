@@ -3,24 +3,34 @@ from dataclasses import dataclass
 import logging
 import os
 import json
-from typing import Any, List, Dict, Optional, Union
+from typing import Any, List, Dict, Optional, Union, TYPE_CHECKING
 from modelon.impact.client.sal.service import Service
 from modelon.impact.client.experiment_definition.base import (
     SimpleModelicaExperimentDefinition,
     SimpleFMUExperimentDefinition,
 )
 from modelon.impact.client.entities.custom_function import CustomFunction
-from modelon.impact.client.operations.workspace.exports import WorkspaceExportOperation
+from modelon.impact.client.operations.workspace.exports import (
+    WorkspaceExportOperation,
+    Export,
+)
+from modelon.impact.client.operations.workspace.imports import WorkspaceImportOperation
+from modelon.impact.client.operations.workspace.conversion import (
+    WorkspaceConversionOperation,
+)
 from modelon.impact.client.operations.project_import import ProjectImportOperation
 from modelon.impact.client.operations.experiment import ExperimentOperation
 from modelon.impact.client.operations.external_result_import import (
     ExternalResultImportOperation,
 )
 import modelon.impact.client.entities.model
+from modelon.impact.client.entities.external_result import ExternalResult
 from modelon.impact.client.entities.model_executable import ModelExecutable
 from modelon.impact.client.entities.experiment import Experiment
-from modelon.impact.client.entities.project import Project, ProjectDefinition, VcsUri
+from modelon.impact.client.entities.project import Project, VcsUri
 
+if TYPE_CHECKING:
+    from modelon.impact.client.operations.base import BaseOperation
 
 logger = logging.getLogger(__name__)
 
@@ -144,11 +154,15 @@ class Workspace:
     def __init__(
         self,
         workspace_id: str,
-        workspace_definition: WorkspaceDefinition,
+        workspace_definition: Union[WorkspaceDefinition, Dict[str, Any]],
         service: Service,
     ):
         self._workspace_id = workspace_id
-        self._workspace_definition = workspace_definition
+        self._workspace_definition = (
+            WorkspaceDefinition(workspace_definition)
+            if isinstance(workspace_definition, dict)
+            else workspace_definition
+        )
         self._sal = service
 
     def __repr__(self) -> str:
@@ -259,7 +273,9 @@ class Workspace:
         resp = self._sal.external_result.result_upload(
             self._workspace_id, path_to_result, label=label, description=description
         )
-        return ExternalResultImportOperation(resp["data"]["location"], self._sal)
+        return ExternalResultImportOperation[ExternalResult](
+            resp["data"]["location"], self._sal, ExternalResult.from_operation
+        )
 
     def export(self, options: Dict[str, Any]) -> WorkspaceExportOperation:
         """Exports the workspace as a binary compressed archive. Similar to
@@ -305,7 +321,9 @@ class Workspace:
         """
         options["workspaceId"] = self._workspace_id
         resp = self._sal.workspace.workspace_export_setup(self._workspace_id, options)
-        return WorkspaceExportOperation(resp["data"]["location"], self._sal)
+        return WorkspaceExportOperation[Workspace](
+            resp["data"]["location"], self._sal, Export.from_operation
+        )
 
     def download(self, options: Dict[str, Any], path: str) -> str:
         """Downloads the workspace as a binary compressed archive. Returns the
@@ -369,9 +387,7 @@ class Workspace:
 
         """
         resp = self._sal.workspace.workspace_clone(self._workspace_id)
-        return Workspace(
-            resp["workspace_id"], WorkspaceDefinition(resp["definition"]), self._sal
-        )
+        return Workspace(resp["workspace_id"], resp["definition"], self._sal)
 
     def get_model(
         self, class_name: str, project: Optional[Project] = None
@@ -559,10 +575,11 @@ class Workspace:
 
         """
         exp_id = self.create_experiment(definition, user_data).id
-        return ExperimentOperation(
+        return ExperimentOperation[Experiment](
             self._workspace_id,
             self._sal.experiment.experiment_execute(self._workspace_id, exp_id),
             self._sal,
+            Experiment.from_operation,
         )
 
     def get_projects(
@@ -587,7 +604,7 @@ class Workspace:
         projects = [
             Project(
                 item["id"],
-                ProjectDefinition(item['definition']),
+                item['definition'],
                 item["projectType"],
                 VcsUri.from_dict(item["vcsUri"]) if item.get("vcsUri") else None,
                 self._sal,
@@ -618,7 +635,7 @@ class Workspace:
         return [
             Project(
                 item["id"],
-                ProjectDefinition(item['definition']),
+                item['definition'],
                 item["projectType"],
                 VcsUri.from_dict(item["vcsUri"]) if item.get("vcsUri") else None,
                 self._sal,
@@ -643,7 +660,7 @@ class Workspace:
         resp = self._sal.workspace.project_create(self._workspace_id, name)
         return Project(
             resp["id"],
-            ProjectDefinition(resp['definition']),
+            resp['definition'],
             resp["projectType"],
             VcsUri.from_dict(resp["vcsUri"]) if resp.get("vcsUri") else None,
             self._sal,
@@ -672,7 +689,7 @@ class Workspace:
         )
         return Project(
             resp["id"],
-            ProjectDefinition(resp["definition"]),
+            resp["definition"],
             resp["projectType"],
             VcsUri.from_dict(resp["vcsUri"]) if resp.get("vcsUri") else None,
             self._sal,
@@ -708,7 +725,9 @@ class Workspace:
         resp = self._sal.workspace.import_project_from_zip(
             self._workspace_id, path_to_project
         )
-        return ProjectImportOperation(resp["data"]["location"], self._sal)
+        return ProjectImportOperation[Project](
+            resp["data"]["location"], self._sal, Project.from_operation
+        )
 
     def import_dependency_from_zip(
         self, path_to_dependency: str
@@ -735,4 +754,20 @@ class Workspace:
         resp = self._sal.workspace.import_dependency_from_zip(
             self._workspace_id, path_to_dependency
         )
-        return ProjectImportOperation(resp["data"]["location"], self._sal)
+        return ProjectImportOperation[Project](
+            resp["data"]["location"], self._sal, Project.from_operation
+        )
+
+    @classmethod
+    def from_import_operation(
+        cls, operation: BaseOperation[Workspace], **kwargs: Any
+    ) -> Workspace:
+        assert isinstance(operation, WorkspaceImportOperation)
+        return cls(**kwargs, service=operation._sal)
+
+    @classmethod
+    def from_conversion_operation(
+        cls, operation: BaseOperation[Workspace], **kwargs: Any
+    ) -> Workspace:
+        assert isinstance(operation, WorkspaceConversionOperation)
+        return cls(**kwargs, service=operation._sal)

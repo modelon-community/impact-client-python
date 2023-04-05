@@ -1,23 +1,29 @@
 from __future__ import annotations
-from typing import Dict, Any
+from typing import Dict, Any, TYPE_CHECKING
 from modelon.impact.client import exceptions
-from modelon.impact.client.entities.workspace import Workspace, WorkspaceDefinition
-from modelon.impact.client.operations.base import AsyncOperation, AsyncOperationStatus
+
+from modelon.impact.client.operations.base import (
+    AsyncOperation,
+    AsyncOperationStatus,
+    Entity,
+)
 from modelon.impact.client.sal.service import Service
 
+if TYPE_CHECKING:
+    from modelon.impact.client.operations.base import EntityFromOperation
 
-class WorkspaceConversionOperation(AsyncOperation):
+
+class WorkspaceConversionOperation(AsyncOperation[Entity]):
     """An conversion operation class for the
-    modelon.impact.client.entities.workspace.
+    modelon.impact.client.entities.workspace.Workspace class."""
 
-    Workspace class.
-
-    """
-
-    def __init__(self, location: str, service: Service):
-        super().__init__()
+    def __init__(
+        self, location: str, service: Service, create_entity: EntityFromOperation
+    ):
+        super().__init__(create_entity)
         self._location = location
         self._sal = service
+        self._create_entity = create_entity
 
     def __repr__(self) -> str:
         return f"Workspace conversion operations for id '{self.id}'"
@@ -43,7 +49,7 @@ class WorkspaceConversionOperation(AsyncOperation):
             "data"
         ]
 
-    def data(self) -> Workspace:
+    def data(self) -> Entity:
         """Returns a Workspace class instance of the converted workspace.
 
         Returns:
@@ -59,7 +65,9 @@ class WorkspaceConversionOperation(AsyncOperation):
 
         workspace_id = info["data"]["workspaceId"]
         resp = self._sal.workspace.workspace_get(workspace_id)
-        return Workspace(resp["id"], WorkspaceDefinition(resp["definition"]), self._sal)
+        return self._create_entity(
+            self, workspace_id=resp["id"], workspace_definition=resp["definition"]
+        )
 
     def status(self) -> AsyncOperationStatus:
         """Returns the conversion status as an enumeration.

@@ -3,12 +3,16 @@ import enum
 import logging
 from pathlib import Path
 from dataclasses import dataclass
-from typing import Optional, Union, List, Dict, Any, Iterable
+from typing import Optional, Union, List, Dict, Any, Iterable, TYPE_CHECKING
 from modelon.impact.client.options import ProjectExecutionOptions
 from modelon.impact.client.entities.content import ContentType, ProjectContent
 from modelon.impact.client.operations.content_import import ContentImportOperation
+from modelon.impact.client.operations.project_import import ProjectImportOperation
 from modelon.impact.client.entities.custom_function import CustomFunction
 from modelon.impact.client.sal.service import Service
+
+if TYPE_CHECKING:
+    from modelon.impact.client.operations.base import BaseOperation
 
 logger = logging.getLogger(__name__)
 RepoURL = Union['GitRepoURL', 'SvnRepoURL']
@@ -205,15 +209,21 @@ class Project:
     def __init__(
         self,
         project_id: str,
-        project_definition: ProjectDefinition,
-        project_type: ProjectType,
+        project_definition: Union[ProjectDefinition, Dict[str, Any]],
+        project_type: Union[ProjectType, str],
         vcs_uri: Optional[VcsUri],
         service: Service,
     ):
         self._project_id = project_id
-        self._project_definition = project_definition
+        self._project_definition = (
+            ProjectDefinition(project_definition)
+            if isinstance(project_definition, dict)
+            else project_definition
+        )
         self._vcs_uri = vcs_uri or None
-        self._project_type = project_type
+        self._project_type = (
+            ProjectType(project_type) if isinstance(project_type, str) else project_type
+        )
         self._sal = service
 
     def __repr__(self) -> str:
@@ -329,7 +339,9 @@ class Project:
         resp = self._sal.project.project_content_upload(
             path_to_content, self._project_id, content_type.value
         )
-        return ContentImportOperation(resp['data']['location'], self._sal)
+        return ContentImportOperation[ProjectContent](
+            resp['data']['location'], self._sal, ProjectContent.from_operation
+        )
 
     def upload_modelica_library(self, path_to_lib: str) -> ContentImportOperation:
         """Uploads/adds a non-encrypted Modelica library or a Modelica model to
@@ -381,3 +393,10 @@ class Project:
                 self._project_id, custom_function._workspace_id, custom_function.name
             )
         return ProjectExecutionOptions(options, custom_function.name)
+
+    @classmethod
+    def from_operation(
+        cls, operation: BaseOperation[Project], **kwargs: Any
+    ) -> Project:
+        assert isinstance(operation, ProjectImportOperation)
+        return cls(**kwargs, vcs_uri=None, service=operation._sal)

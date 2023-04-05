@@ -1,18 +1,28 @@
 from __future__ import annotations
-from modelon.impact.client.operations import base
-import modelon.impact.client.entities.experiment
-from modelon.impact.client.sal.service import Service
+from typing import TYPE_CHECKING
+from modelon.impact.client.operations.base import ExecutionOperation, Entity, Status
+
+if TYPE_CHECKING:
+    from modelon.impact.client.sal.service import Service
+    from modelon.impact.client.operations.base import EntityFromOperation
 
 
-class ExperimentOperation(base.ExecutionOperation):
+class ExperimentOperation(ExecutionOperation[Entity]):
     """An operation class for the
     modelon.impact.client.entities.experiment.Experiment class."""
 
-    def __init__(self, workspace_id: str, exp_id: str, service: Service):
-        super().__init__()
+    def __init__(
+        self,
+        workspace_id: str,
+        exp_id: str,
+        service: Service,
+        create_entity: EntityFromOperation,
+    ):
+        super().__init__(create_entity)
         self._workspace_id = workspace_id
         self._exp_id = exp_id
         self._sal = service
+        self._create_entity = create_entity
 
     def __repr__(self) -> str:
         return f"Experiment operation for id '{self._exp_id}'"
@@ -30,7 +40,7 @@ class ExperimentOperation(base.ExecutionOperation):
         """Return the name of operation."""
         return "Execution"
 
-    def data(self) -> modelon.impact.client.entities.experiment.Experiment:
+    def data(self) -> Entity:
         """Returns a new Experiment class instance.
 
         Returns:
@@ -39,11 +49,11 @@ class ExperimentOperation(base.ExecutionOperation):
                 An experiment class instance.
 
         """
-        return modelon.impact.client.entities.experiment.Experiment(
-            self._workspace_id, self._exp_id, self._sal
+        return self._create_entity(
+            self, workspace_id=self._workspace_id, exp_id=self._exp_id
         )
 
-    def status(self) -> base.Status:
+    def status(self) -> Status:
         """Returns the execution status as an enumeration.
 
         Returns:
@@ -58,7 +68,7 @@ class ExperimentOperation(base.ExecutionOperation):
             workspace.execute(definition).status()
 
         """
-        return base.Status(
+        return Status(
             self._sal.experiment.execute_status(self._workspace_id, self._exp_id)[
                 "status"
             ]

@@ -1,11 +1,16 @@
+from __future__ import annotations
 import logging
-from typing import Any, List, Dict, Optional
-from modelon.impact.client.sal.service import Service
+from typing import Any, List, Dict, Optional, TYPE_CHECKING
+
 from modelon.impact.client.operations import experiment
 from modelon.impact.client.entities.case import Case
 from modelon.impact.client.entities.asserts import assert_variable_in_result
 from modelon.impact.client.entities.status import ExperimentStatus
 from modelon.impact.client import exceptions
+
+if TYPE_CHECKING:
+    from modelon.impact.client.sal.service import Service
+    from modelon.impact.client.operations.base import BaseOperation
 
 logger = logging.getLogger(__name__)
 
@@ -193,12 +198,13 @@ class Experiment:
                 case.sync()
 
         case_ids = [case.id for case in with_cases] if with_cases is not None else None
-        return experiment.ExperimentOperation(
+        return experiment.ExperimentOperation[Experiment](
             self._workspace_id,
             self._sal.experiment.experiment_execute(
                 self._workspace_id, self._exp_id, case_ids
             ),
             self._sal,
+            Experiment.from_operation,
         )
 
     def is_successful(self) -> bool:
@@ -381,3 +387,10 @@ class Experiment:
         self._sal.experiment.experiment_set_label(
             self._workspace_id, self._exp_id, label
         )
+
+    @classmethod
+    def from_operation(
+        cls, operation: BaseOperation[Experiment], **kwargs: Any
+    ) -> Experiment:
+        assert isinstance(operation, experiment.ExperimentOperation)
+        return cls(**kwargs, service=operation._sal)

@@ -1,4 +1,12 @@
+from __future__ import annotations
+from typing import TYPE_CHECKING, Any
+from modelon.impact.client.operations.external_result_import import (
+    ExternalResultImportOperation,
+)
 from modelon.impact.client.sal.service import Service
+
+if TYPE_CHECKING:
+    from modelon.impact.client.operations.base import BaseOperation
 
 
 class _ExternalResultMetaData:
@@ -63,3 +71,10 @@ class ExternalResult:
 
     def delete(self) -> None:
         self._sal.external_result.delete_uploaded_result(self._result_id)
+
+    @classmethod
+    def from_operation(
+        cls, operation: BaseOperation[ExternalResult], **kwargs: Any
+    ) -> ExternalResult:
+        assert isinstance(operation, ExternalResultImportOperation)
+        return cls(**kwargs, service=operation._sal)

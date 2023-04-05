@@ -1,18 +1,30 @@
 from __future__ import annotations
-from modelon.impact.client.entities import case
-from modelon.impact.client.operations.base import ExecutionOperation, Status
-from modelon.impact.client.sal.service import Service
+from typing import TYPE_CHECKING
+
+from modelon.impact.client.operations.base import ExecutionOperation, Status, Entity
+
+if TYPE_CHECKING:
+    from modelon.impact.client.sal.service import Service
+    from modelon.impact.client.operations.base import EntityFromOperation
 
 
-class CaseOperation(ExecutionOperation):
+class CaseOperation(ExecutionOperation[Entity]):
     """An operation class for the modelon.impact.client.entities.Case class."""
 
-    def __init__(self, workspace_id: str, exp_id: str, case_id: str, service: Service):
-        super().__init__()
+    def __init__(
+        self,
+        workspace_id: str,
+        exp_id: str,
+        case_id: str,
+        service: Service,
+        create_entity: EntityFromOperation,
+    ):
+        super().__init__(create_entity)
         self._workspace_id = workspace_id
         self._exp_id = exp_id
         self._case_id = case_id
         self._sal = service
+        self._create_entity = create_entity
 
     def __repr__(self) -> str:
         return f"Case operation for id '{self._case_id}'"
@@ -30,7 +42,7 @@ class CaseOperation(ExecutionOperation):
         """Return the name of operation."""
         return "Execution"
 
-    def data(self) -> case.Case:
+    def data(self) -> Entity:
         """Returns a new Case class instance.
 
         Returns:
@@ -42,8 +54,12 @@ class CaseOperation(ExecutionOperation):
         case_data = self._sal.experiment.case_get(
             self._workspace_id, self._exp_id, self._case_id
         )
-        return case.Case(
-            self._case_id, self._workspace_id, self._exp_id, self._sal, case_data
+        return self._create_entity(
+            self,
+            case_id=self._case_id,
+            workspace_id=self._workspace_id,
+            exp_id=self._exp_id,
+            info=case_data,
         )
 
     def status(self) -> Status:

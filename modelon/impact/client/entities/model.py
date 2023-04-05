@@ -1,12 +1,12 @@
+from __future__ import annotations
 import logging
-from typing import Any, Dict, Optional, Union
-from modelon.impact.client.sal.service import Service
+from typing import Any, Dict, Optional, Union, TYPE_CHECKING
+
 from modelon.impact.client.operations.model_executable import (
     ModelExecutableOperation,
     CachedModelExecutableOperation,
 )
 from modelon.impact.client.experiment_definition import base
-from modelon.impact.client.entities.custom_function import CustomFunction
 from modelon.impact.client.options import (
     ProjectExecutionOptions,
     CompilerOptions,
@@ -14,6 +14,11 @@ from modelon.impact.client.options import (
     SimulationOptions,
     SolverOptions,
 )
+from modelon.impact.client.entities.model_executable import ModelExecutable
+
+if TYPE_CHECKING:
+    from modelon.impact.client.entities.custom_function import CustomFunction
+    from modelon.impact.client.sal.service import Service
 
 logger = logging.getLogger(__name__)
 
@@ -171,8 +176,13 @@ class Model:
                 self._workspace_id, body, True
             )
             if fmu_id:
-                return CachedModelExecutableOperation(
-                    self._workspace_id, fmu_id, self._sal, None, modifiers
+                return CachedModelExecutableOperation[ModelExecutable](
+                    self._workspace_id,
+                    fmu_id,
+                    self._sal,
+                    ModelExecutable.from_operation,
+                    None,
+                    modifiers,
                 )
 
         # No cached FMU, setup up a new one
@@ -180,10 +190,11 @@ class Model:
             self._workspace_id, body, False
         )
 
-        return ModelExecutableOperation(
+        return ModelExecutableOperation[ModelExecutable](
             self._workspace_id,
             self._sal.model_executable.compile_model(self._workspace_id, fmu_id),
             self._sal,
+            ModelExecutable.from_operation,
         )
 
     def new_experiment_definition(

@@ -4,8 +4,9 @@ import os
 import tempfile
 from datetime import datetime
 from typing import Any, Dict, Tuple, Optional, List, Union, Text, TYPE_CHECKING
-from modelon.impact.client.sal.service import Service
+
 from modelon.impact.client.sal.experiment import ResultFormat
+from modelon.impact.client.operations.base import BaseOperation
 from modelon.impact.client.operations.case import CaseOperation
 from modelon.impact.client.entities.external_result import ExternalResult
 from modelon.impact.client.entities.log import Log
@@ -17,7 +18,7 @@ from modelon.impact.client import exceptions
 
 if TYPE_CHECKING:
     from modelon.impact.client.sal.experiment import ExperimentService
-
+    from modelon.impact.client.sal.service import Service
 logger = logging.getLogger(__name__)
 
 
@@ -677,13 +678,14 @@ class Case:
         if sync_case_changes:
             self.sync()
 
-        return CaseOperation(
+        return CaseOperation[Case](
             self._workspace_id,
             self._sal.experiment.experiment_execute(
                 self._workspace_id, self._exp_id, [self._case_id]
             ),
             self._case_id,
             self._sal,
+            Case.from_operation,
         )
 
     def _assert_unique_case_initialization(self, unsupported_init: str) -> None:
@@ -694,3 +696,8 @@ class Case:
                 f"To resolve this, set the '{unsupported_init}' attribute "
                 "to None and re-try."
             )
+
+    @classmethod
+    def from_operation(cls, operation: BaseOperation[Case], **kwargs: Any) -> Case:
+        assert isinstance(operation, CaseOperation)
+        return cls(**kwargs, service=operation._sal)

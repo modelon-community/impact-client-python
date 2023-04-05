@@ -6,6 +6,7 @@ from modelon.impact.client.operations.base import AsyncOperationStatus
 from modelon.impact.client.operations.external_result_import import (
     ExternalResultImportOperation,
 )
+from modelon.impact.client.entities.external_result import ExternalResult
 
 
 class TestExternalResultImportOperation:
@@ -13,9 +14,10 @@ class TestExternalResultImportOperation:
         self, external_result_sal_upload_running
     ):
         # Given
-        upload_op = ExternalResultImportOperation(
+        upload_op = ExternalResultImportOperation[ExternalResult](
             f'api/uploads/results/{IDs.IMPORT}',
             external_result_sal_upload_running,
+            ExternalResult.from_operation,
         )
 
         # When, then
@@ -25,9 +27,10 @@ class TestExternalResultImportOperation:
         self, external_result_sal_upload_error
     ):
         # Given
-        upload_op = ExternalResultImportOperation(
+        upload_op = ExternalResultImportOperation[ExternalResult](
             f'api/uploads/results/{IDs.IMPORT}',
             external_result_sal_upload_error,
+            ExternalResult.from_operation,
         )
 
         # When, then
@@ -35,9 +38,10 @@ class TestExternalResultImportOperation:
 
     def test_given_ready_when_wait_then_ok(self, external_result_sal_upload_ready):
         # Given
-        upload_op = ExternalResultImportOperation(
+        upload_op = ExternalResultImportOperation[ExternalResult](
             f'api/uploads/results/{IDs.IMPORT}',
             external_result_sal_upload_ready,
+            ExternalResult.from_operation,
         )
 
         # When
@@ -60,9 +64,10 @@ class TestExternalResultImportOperation:
         self, external_result_sal_upload_ready
     ):
         # Given
-        upload_op = ExternalResultImportOperation(
+        upload_op = ExternalResultImportOperation[ExternalResult](
             f'api/uploads/results/{IDs.IMPORT}',
             external_result_sal_upload_ready,
+            ExternalResult.from_operation,
         )
 
         # When, then

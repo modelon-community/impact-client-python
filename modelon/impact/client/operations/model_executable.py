@@ -1,14 +1,18 @@
+from __future__ import annotations
 import logging
-from typing import Dict, Optional, Any
-from modelon.impact.client.entities.model_executable import ModelExecutable
-from modelon.impact.client.sal.service import Service
-from modelon.impact.client.operations.base import ExecutionOperation, Status
+from typing import Dict, Optional, Any, TYPE_CHECKING
+
+from modelon.impact.client.operations.base import ExecutionOperation, Status, Entity
 from modelon.impact.client import exceptions
+
+if TYPE_CHECKING:
+    from modelon.impact.client.sal.service import Service
+    from modelon.impact.client.operations.base import EntityFromOperation
 
 logger = logging.getLogger(__name__)
 
 
-class CachedModelExecutableOperation(ExecutionOperation):
+class CachedModelExecutableOperation(ExecutionOperation[Entity]):
     """An operation class for a cached modelon.impact.client.entities.
 
     model_executable.ModelExecutable class.
@@ -20,15 +24,17 @@ class CachedModelExecutableOperation(ExecutionOperation):
         workspace_id: str,
         fmu_id: str,
         service: Service,
+        create_entity: EntityFromOperation,
         info: Optional[Dict[str, Any]] = None,
         modifiers: Optional[Dict[str, Any]] = None,
     ):
-        super().__init__()
+        super().__init__(create_entity)
         self._workspace_id = workspace_id
         self._fmu_id = fmu_id
         self._sal = service
         self._info = info
         self._modifiers = modifiers
+        self._create_entity = create_entity
 
     def __repr__(self) -> str:
         return f"Cached model executable operations for id '{self._fmu_id}'"
@@ -49,7 +55,7 @@ class CachedModelExecutableOperation(ExecutionOperation):
         """Return the name of operation."""
         return "Looking for cached FMU"
 
-    def data(self) -> ModelExecutable:
+    def data(self) -> Entity:
         """Returns a new ModelExecutable class instance.
 
         Returns:
@@ -58,8 +64,12 @@ class CachedModelExecutableOperation(ExecutionOperation):
                 A model_executable class instance.
 
         """
-        return ModelExecutable(
-            self._workspace_id, self._fmu_id, self._sal, self._info, self._modifiers
+        return self._create_entity(
+            self,
+            workspace_id=self._workspace_id,
+            fmu_id=self._fmu_id,
+            info=self._info,
+            modifiers=self._modifiers,
         )
 
     def status(self) -> Status:
@@ -86,7 +96,7 @@ class CachedModelExecutableOperation(ExecutionOperation):
 
     def wait(
         self, timeout: Optional[float] = None, status: Status = Status.DONE
-    ) -> ModelExecutable:
+    ) -> Entity:
         """Waits until the operation achieves the set status. Returns the
         operation class instance if the set status is achieved.
 
@@ -104,7 +114,7 @@ class CachedModelExecutableOperation(ExecutionOperation):
 
         Returns:
 
-            Operation class instance if the set status is achieved.
+            Entity class instance if the set status is achieved.
 
         Raises:
 
@@ -126,18 +136,25 @@ class CachedModelExecutableOperation(ExecutionOperation):
         return self.data()
 
 
-class ModelExecutableOperation(ExecutionOperation):
+class ModelExecutableOperation(ExecutionOperation[Entity]):
     """An operation class for the modelon.impact.client.entities.
 
     model_executable.ModelExecutable class.
 
     """
 
-    def __init__(self, workspace_id: str, fmu_id: str, service: Service):
-        super().__init__()
+    def __init__(
+        self,
+        workspace_id: str,
+        fmu_id: str,
+        service: Service,
+        create_entity: EntityFromOperation,
+    ):
+        super().__init__(create_entity)
         self._workspace_id = workspace_id
         self._fmu_id = fmu_id
         self._sal = service
+        self._create_entity = create_entity
 
     def __repr__(self) -> str:
         return f"Model executable operations for id '{self._fmu_id}'"
@@ -155,7 +172,7 @@ class ModelExecutableOperation(ExecutionOperation):
         """Return the name of operation."""
         return "Compilation"
 
-    def data(self) -> ModelExecutable:
+    def data(self) -> Entity:
         """Returns a new ModelExecutable class instance.
 
         Returns:
@@ -164,7 +181,9 @@ class ModelExecutableOperation(ExecutionOperation):
                 A model_executable class instance.
 
         """
-        return ModelExecutable(self._workspace_id, self._fmu_id, self._sal)
+        return self._create_entity(
+            self, workspace_id=self._workspace_id, fmu_id=self._fmu_id
+        )
 
     def status(self) -> Status:
         """Returns the compilation status as an enumeration.

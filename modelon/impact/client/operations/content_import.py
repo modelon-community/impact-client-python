@@ -1,18 +1,29 @@
-from typing import Dict, Any
-from modelon.impact.client.sal.service import Service
-from modelon.impact.client.operations.base import AsyncOperation, AsyncOperationStatus
+from __future__ import annotations
+from typing import Dict, Any, TYPE_CHECKING
+
+from modelon.impact.client.operations.base import (
+    AsyncOperation,
+    AsyncOperationStatus,
+    Entity,
+)
 from modelon.impact.client import exceptions
-from modelon.impact.client.entities.content import ProjectContent
+
+if TYPE_CHECKING:
+    from modelon.impact.client.sal.service import Service
+    from modelon.impact.client.operations.base import EntityFromOperation
 
 
-class ContentImportOperation(AsyncOperation):
+class ContentImportOperation(AsyncOperation[Entity]):
     """An operation class for the
     modelon.impact.client.entities.project.ProjectContent class."""
 
-    def __init__(self, location: str, service: Service):
-        super().__init__()
+    def __init__(
+        self, location: str, service: Service, create_entity: EntityFromOperation
+    ):
+        super().__init__(create_entity)
         self._location = location
         self._sal = service
+        self._create_entity = create_entity
 
     def __repr__(self) -> str:
         return f"Content import operations for id '{self.id}'"
@@ -35,7 +46,7 @@ class ContentImportOperation(AsyncOperation):
     def _info(self) -> Dict[str, Any]:
         return self._sal.imports.get_import_status(self._location)["data"]
 
-    def data(self) -> ProjectContent:
+    def data(self) -> Entity:
         """Returns a new Workspace class instance.
 
         Returns:
@@ -52,7 +63,7 @@ class ContentImportOperation(AsyncOperation):
         project_id = info["data"]["projectId"]
         content_id = info["data"]["contentId"]
         resp = self._sal.project.project_content_get(project_id, content_id)
-        return ProjectContent(resp, project_id, self._sal)
+        return self._create_entity(self, content=resp, project_id=project_id)
 
     def status(self) -> AsyncOperationStatus:
         """Returns the upload status as an enumeration.

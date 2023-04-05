@@ -1,12 +1,19 @@
+from __future__ import annotations
 import enum
 import time
 import logging
 
-from abc import ABC, abstractmethod
-from typing import Any, Optional
+from abc import abstractmethod
+from typing import Any, Optional, TypeVar, Protocol, Generic
 from modelon.impact.client import exceptions
 
 logger = logging.getLogger(__name__)
+Entity = TypeVar("Entity")
+
+
+class EntityFromOperation(Protocol[Entity]):
+    def __call__(self, operation: BaseOperation[Entity], **kwargs: Any) -> Entity:
+        ...
 
 
 @enum.unique
@@ -32,12 +39,15 @@ class AsyncOperationStatus(enum.Enum):
         return self in [AsyncOperationStatus.READY, AsyncOperationStatus.ERROR]
 
 
-class BaseOperation(ABC):
+class BaseOperation(Generic[Entity]):
     """Abstract base operation class."""
 
+    def __init__(self, create_entity: EntityFromOperation):
+        self._create_entity = create_entity
+
     @abstractmethod
-    def data(self) -> Any:
-        """Returns the operation class."""
+    def data(self) -> Entity:
+        """Returns the Entity class."""
         pass
 
     @abstractmethod
@@ -57,15 +67,15 @@ class BaseOperation(ABC):
         pass
 
     @abstractmethod
-    def wait(self, timeout: Optional[float]) -> Any:
+    def wait(self, timeout: Optional[float]) -> Entity:
         """Waits for the operation to finish."""
         pass
 
 
-class AsyncOperation(BaseOperation):
+class AsyncOperation(BaseOperation[Entity]):
     """File operation class containing base functionality."""
 
-    def wait(self, timeout: Optional[float] = None) -> Any:
+    def wait(self, timeout: Optional[float] = None) -> Entity:
         """Waits until the operation completes. Returns the operation class
         instance if operation completes.
 
@@ -78,7 +88,7 @@ class AsyncOperation(BaseOperation):
 
         Returns:
 
-            Operation class instance if operation completes.
+            Entity class instance if operation completes.
 
         Raises:
 
@@ -109,7 +119,7 @@ class AsyncOperation(BaseOperation):
         raise NotImplementedError('Cancel is not supported for this operation')
 
 
-class ExecutionOperation(BaseOperation):
+class ExecutionOperation(BaseOperation[Entity]):
     """Execution operation class containing base functionality."""
 
     def is_complete(self) -> bool:
@@ -130,7 +140,7 @@ class ExecutionOperation(BaseOperation):
 
     def wait(
         self, timeout: Optional[float] = None, status: Status = Status.DONE
-    ) -> Any:
+    ) -> Entity:
         """Waits until the operation achieves the set status. Returns the
         operation class instance if the set status is achieved.
 
@@ -147,7 +157,7 @@ class ExecutionOperation(BaseOperation):
 
         Returns:
 
-            Operation class instance if the set status is achieved.
+            Entity class instance if the set status is achieved.
 
         Raises:
 

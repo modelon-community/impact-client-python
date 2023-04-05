@@ -1,21 +1,29 @@
+from __future__ import annotations
 import logging
 import os
 import tempfile
-from typing import Any, List, Dict, Optional, Union
-from modelon.impact.client.sal.service import Service
+from typing import Any, List, Dict, Optional, Union, TYPE_CHECKING
+
 from modelon.impact.client.entities.asserts import assert_successful_operation
-from modelon.impact.client.entities.custom_function import CustomFunction
 from modelon.impact.client.entities.log import Log
 from modelon.impact.client.entities.status import ModelExecutableStatus
-from modelon.impact.client.options import SimulationOptions, SolverOptions
-from modelon.impact.client.experiment_definition import base
+import modelon.impact.client.experiment_definition.base as base
 from modelon.impact.client import exceptions
+from modelon.impact.client.operations.model_executable import (
+    ModelExecutableOperation,
+    CachedModelExecutableOperation,
+)
 
+if TYPE_CHECKING:
+    from modelon.impact.client.sal.service import Service
+    from modelon.impact.client.entities.custom_function import CustomFunction
+    from modelon.impact.client.options import SimulationOptions, SolverOptions
+    from modelon.impact.client.operations.base import BaseOperation
+
+    SimulationOptionsOrDict = Union[SimulationOptions, Dict[str, Any]]
+    SolverOptionsOrDict = Union[SolverOptions, Dict[str, Any]]
 
 logger = logging.getLogger(__name__)
-
-SimulationOptionsOrDict = Union[SimulationOptions, Dict[str, Any]]
-SolverOptionsOrDict = Union[SolverOptions, Dict[str, Any]]
 
 
 def _assert_compilation_is_complete(
@@ -270,3 +278,12 @@ class ModelExecutable:
         with open(fmu_path, "wb") as f:
             f.write(data)
         return fmu_path
+
+    @classmethod
+    def from_operation(
+        cls, operation: BaseOperation[ModelExecutable], **kwargs: Any
+    ) -> ModelExecutable:
+        assert isinstance(
+            operation, (ModelExecutableOperation, CachedModelExecutableOperation)
+        )
+        return cls(**kwargs, service=operation._sal)
