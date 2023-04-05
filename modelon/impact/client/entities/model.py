@@ -87,11 +87,11 @@ class Model:
 
         Args:
             compiler_options: An compilation options class instance of
-                modelon.impact.client.options.CompilerOptions or
-                a dictionary object containing the compiler options.
+                CompilerOptions or a dictionary object containing the 
+                compiler options.
             runtime_options: An runtime options class instance of
-                modelon.impact.client.options.RuntimeOptions or
-                a dictionary object containing the runtime options. Default: None.
+                RuntimeOptions or a dictionary object containing the 
+                runtime options. Default: None.
             compiler_log_level: The logging for the compiler. Possible values are
                 "error", "warning", "info", "verbose" and "debug". Default: 'warning'.
             fmi_target: Compiler target. Possible values are 'me' and 'cs'.

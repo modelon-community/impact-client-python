@@ -167,8 +167,7 @@ class SimpleExperimentExtension(BaseExperimentExtension):
         extension.
 
         Args:
-            entity: An instance of modelon.impact.client.entities.case.Case or
-                modelon.impact.client.entities.experiment.Experiment.
+            entity: An instance of Case or Experiment classes.
 
         Example::
 

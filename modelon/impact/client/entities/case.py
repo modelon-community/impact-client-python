@@ -389,8 +389,7 @@ class Case:
     def initialize_from_case(self, case: Case) -> None:
         if not isinstance(case, Case):
             raise TypeError(
-                "The value must be an instance of modelon.impact.client.entities."
-                "case.Case"
+                "The value must be an instance of Case"
             )
         self._assert_unique_case_initialization('initialize_from_external_result')
         self._info['input']['initialize_from_case'] = {
@@ -413,8 +412,7 @@ class Case:
     def initialize_from_external_result(self, result: ExternalResult) -> None:
         if not isinstance(result, ExternalResult):
             raise TypeError(
-                "The value must be an instance of "
-                "modelon.impact.client.entities.external_result.ExternalResult"
+                "The value must be an instance of ExternalResult"
             )
         self._assert_unique_case_initialization('initialize_from_case')
         self._info['input']['initialize_from_external_result'] = {"uploadId": result.id}
@@ -488,7 +486,8 @@ class Case:
         """Returns result(Mapping) object containing the result trajectories.
 
         Returns:
-            A result trajectory dictionary object.
+            A Result object (mapping) that allows requesting trajectory data given 
+            a variable name.
 
         Raises:
             OperationNotCompleteError if simulation process is in progress.

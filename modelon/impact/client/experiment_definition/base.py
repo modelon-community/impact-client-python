@@ -72,8 +72,7 @@ def _assert_valid_extensions(
         if not isinstance(extension, SimpleExperimentExtension):
             raise TypeError(
                 "The extension object in the experiment extension list "
-                "must be an instance of modelon.impact.client.experiment_definition."
-                "extension.SimpleExperimentExtension class!"
+                "must be an instance of SimpleExperimentExtension class!"
             )
 
 
@@ -633,10 +632,9 @@ class SimpleModelicaExperimentDefinition(BaseExperimentDefinition):
 
         Args:
             experiment_extensions:
-                "A list of experiment extension objects."
-                "Extension object must an instance of "
-                "modelon.impact.client.experiment_definition."
-                "extension.SimpleExperimentExtension class."
+                A list of experiment extension objects.
+                Extension object must an instance of 
+                SimpleExperimentExtension class.
 
         Example::
 

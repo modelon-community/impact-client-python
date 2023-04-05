@@ -54,9 +54,7 @@ def validate_and_set_initialize_from(
     else:
         raise TypeError(
             "The entity argument be an instance of "
-            "modelon.impact.client.entities.case.Case or "
-            "modelon.impact.client.entities.experiment.Experiment or "
-            "modelon.impact.client.entities.external_result.ExternalResult!"
+            "Case or Experiment or ExternalResult!"
         )
 
 
@@ -105,12 +103,12 @@ def assert_valid_args(
     ):
         raise TypeError(
             "Compiler options object must either be a dictionary or an "
-            "instance of modelon.impact.client.options.CompilerOptions class!"
+            "instance of CompilerOptions class!"
         )
     if runtime_options is not None and not isinstance(
         runtime_options, (RuntimeOptions, dict)
     ):
         raise TypeError(
             "Runtime options object must either be a dictionary or an "
-            "instance of modelon.impact.client.options.RuntimeOptions class!"
+            "instance of RuntimeOptions class!"
         )

@@ -8,8 +8,7 @@ if TYPE_CHECKING:
 
 
 class ExperimentOperation(ExecutionOperation[Entity]):
-    """An operation class for the
-    modelon.impact.client.entities.experiment.Experiment class."""
+    """An operation class for the Experiment class."""
 
     def __init__(
         self,

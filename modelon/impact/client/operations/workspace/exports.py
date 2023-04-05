@@ -49,8 +49,7 @@ class Export:
 
 
 class WorkspaceExportOperation(AsyncOperation[Entity]):
-    """An export operation class for the
-    modelon.impact.client.entities.workspace.Workspace class."""
+    """An export operation class for the Workspace class."""
 
     def __init__(
         self, location: str, service: Service, create_entity: EntityFromOperation

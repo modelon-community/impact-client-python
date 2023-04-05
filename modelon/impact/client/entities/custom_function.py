@@ -169,14 +169,14 @@ class CustomFunction:
         return self.get_options(use_defaults=use_defaults).compiler_options
 
     def get_runtime_options(self, use_defaults: bool = False) -> RuntimeOptions:
-        """Return a modelon.impact.client.options.RuntimeOptions object.
+        """Return a RuntimeOptions object.
 
         Args:
             use_defaults:
                 If True, default compiler options are used.
 
         Returns:
-            A modelon.impact.client.options.RuntimeOptions object.
+            A RuntimeOptions object.
 
         Example::
 

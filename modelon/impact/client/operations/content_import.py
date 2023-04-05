@@ -14,8 +14,7 @@ if TYPE_CHECKING:
 
 
 class ContentImportOperation(AsyncOperation[Entity]):
-    """An operation class for the
-    modelon.impact.client.entities.project.ProjectContent class."""
+    """An operation class for the ProjectContent class."""
 
     def __init__(
         self, location: str, service: Service, create_entity: EntityFromOperation

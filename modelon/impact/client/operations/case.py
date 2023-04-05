@@ -9,7 +9,7 @@ if TYPE_CHECKING:
 
 
 class CaseOperation(ExecutionOperation[Entity]):
-    """An operation class for the modelon.impact.client.entities.Case class."""
+    """An operation class for the Case class."""
 
     def __init__(
         self,

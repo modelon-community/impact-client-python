@@ -402,8 +402,7 @@ class Client:
         Similar to
         :obj:`~modelon.impact.client.Client.upload_workspace`,
         but gives more control for getting the workspace async.
-        Returns an modelon.impact.client.operations.workspace.imports
-        .WorkspaceImportOperation class object.
+        Returns an WorkspaceImportOperation class object.
 
         Args:
             path_to_workspace: The path for the compressed

@@ -439,9 +439,8 @@ class Workspace:
         else:
             raise TypeError(
                 "Definition object must either be a dictionary or an instance of either"
-                "modelon.impact.client.experiment_definition.base."
-                "SimpleModelicaExperimentDefinition class or modelon.impact.client."
-                "experiment_definition.base.SimpleFMUExperimentDefinition.!"
+                "SimpleModelicaExperimentDefinition or SimpleFMUExperimentDefinition"
+                "class!"
             )
         resp = self._sal.workspace.experiment_create(
             self._workspace_id, definition_as_dict, user_data
@@ -453,9 +452,8 @@ class Workspace:
         definition: ExperimentDefinition,
         user_data: Optional[Dict[str, Any]] = None,
     ) -> ExperimentOperation:
-        """Exceutes an experiment. Returns an
-        modelon.impact.client.operations.experiment.ExperimentOperation class
-        object.
+        """
+        Exceutes an experiment.
 
         Args:
             definition:
@@ -468,8 +466,7 @@ class Workspace:
 
 
         Returns:
-            An modelon.impact.client.operations.experiment.ExperimentOperation
-            class object.
+            An ExperimentOperation class object.
 
         Example::
 
@@ -493,8 +490,7 @@ class Workspace:
         """Return the list of projects for a workspace.
 
         Returns:
-            A list of modelon.impact.client.entities.project.Project
-            class object.
+            A list of Project class objects.
 
         Example::
 
