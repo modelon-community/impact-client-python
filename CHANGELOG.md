@@ -1,3 +1,13 @@
+# [3.0.0-dev.22](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.21...v3.0.0-dev.22) (2023-04-05)
+
+
+### Bug Fixes
+
+* docformatter fixes ([9711ee7](https://github.com/modelon-community/impact-client-python/commit/9711ee7115f7d0f757a00d5e19924cbff20dc100))
+* partial resolution of circular imports ([81cbdd4](https://github.com/modelon-community/impact-client-python/commit/81cbdd410f669132fee5a53850186edbb5a7b805))
+* use dict instead of converting to ProjectDefintion while creating Project instance ([57826de](https://github.com/modelon-community/impact-client-python/commit/57826de6990780cf9f1b1a223dfd379f4cc7d868))
+* using callback protocol for creating entity from operation ([3e51aec](https://github.com/modelon-community/impact-client-python/commit/3e51aec71c235d7cc047d86de00993c4307cf9c8))
+
 # [3.0.0-dev.21](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.20...v3.0.0-dev.21) (2023-04-04)
 
 
