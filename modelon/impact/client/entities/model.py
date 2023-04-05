@@ -39,14 +39,14 @@ def _assert_valid_compilation_options(
     ):
         raise TypeError(
             "Compiler options object must either be a dictionary or an "
-            "instance of modelon.impact.client.options.CompilerOptions class!"
+            "instance of CompilerOptions class!"
         )
     if runtime_options is not None and not isinstance(
         runtime_options, (RuntimeOptions, dict)
     ):
         raise TypeError(
             "Runtime options object must either be a dictionary or an "
-            "instance of modelon.impact.client.options.RuntimeOptions class!"
+            "instance of RuntimeOptions class!"
         )
 
 
@@ -87,10 +87,10 @@ class Model:
 
         Args:
             compiler_options: An compilation options class instance of
-                CompilerOptions or a dictionary object containing the 
+                CompilerOptions or a dictionary object containing the
                 compiler options.
             runtime_options: An runtime options class instance of
-                RuntimeOptions or a dictionary object containing the 
+                RuntimeOptions or a dictionary object containing the
                 runtime options. Default: None.
             compiler_log_level: The logging for the compiler. Possible values are
                 "error", "warning", "info", "verbose" and "debug". Default: 'warning'.

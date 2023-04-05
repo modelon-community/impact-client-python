@@ -162,7 +162,7 @@ class Experiment:
     def execute(
         self, with_cases: Optional[List[Case]] = None, sync_case_changes: bool = True
     ) -> experiment.ExperimentOperation:
-        """Exceutes an experiment. Returns an ExperimentOperation class object.
+        """Executes an experiment. Returns an ExperimentOperation class object.
 
         Args:
             with_cases: A list of cases objects to execute.

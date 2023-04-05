@@ -174,7 +174,7 @@ class ModelExecutable:
         """Returns a list of settable parameters for the FMU.
 
         Returns:
-            A list of parameters than can be set on the FMU.
+            A list of parameters that can be set on the FMU.
 
         Raises:
             OperationNotCompleteError if compilation process is in progress.

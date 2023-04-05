@@ -416,7 +416,7 @@ class Workspace:
         """Creates an experiment. Returns an Experiment class object.
 
         Args:
-            definition: An parametrized experiment definition class of type
+            definition: A parametrized experiment definition class of type
                 SimpleModelicaExperimentDefinition or SimpleFMUExperimentDefinition.
             user_data:
                 Optional dictionary object with custom data to attach to the experiment.
@@ -452,8 +452,7 @@ class Workspace:
         definition: ExperimentDefinition,
         user_data: Optional[Dict[str, Any]] = None,
     ) -> ExperimentOperation:
-        """
-        Exceutes an experiment.
+        """Executes an experiment.
 
         Args:
             definition:

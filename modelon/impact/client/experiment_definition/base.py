@@ -633,7 +633,7 @@ class SimpleModelicaExperimentDefinition(BaseExperimentDefinition):
         Args:
             experiment_extensions:
                 A list of experiment extension objects.
-                Extension object must an instance of 
+                Extension object must an instance of
                 SimpleExperimentExtension class.
 
         Example::

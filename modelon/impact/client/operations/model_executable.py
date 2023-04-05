@@ -13,9 +13,7 @@ logger = logging.getLogger(__name__)
 
 
 class CachedModelExecutableOperation(ExecutionOperation[Entity]):
-    """An operation class for a cached ModelExecutable class.
-
-    """
+    """An operation class for a cached ModelExecutable class."""
 
     def __init__(
         self,
@@ -129,9 +127,7 @@ class CachedModelExecutableOperation(ExecutionOperation[Entity]):
 
 
 class ModelExecutableOperation(ExecutionOperation[Entity]):
-    """An operation class for the ModelExecutable class.
-
-    """
+    """An operation class for the ModelExecutable class."""
 
     def __init__(
         self,

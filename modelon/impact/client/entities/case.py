@@ -388,9 +388,7 @@ class Case:
     @initialize_from_case.setter
     def initialize_from_case(self, case: Case) -> None:
         if not isinstance(case, Case):
-            raise TypeError(
-                "The value must be an instance of Case"
-            )
+            raise TypeError("The value must be an instance of Case")
         self._assert_unique_case_initialization('initialize_from_external_result')
         self._info['input']['initialize_from_case'] = {
             'experimentId': case.experiment_id,
@@ -411,9 +409,7 @@ class Case:
     @initialize_from_external_result.setter
     def initialize_from_external_result(self, result: ExternalResult) -> None:
         if not isinstance(result, ExternalResult):
-            raise TypeError(
-                "The value must be an instance of ExternalResult"
-            )
+            raise TypeError("The value must be an instance of ExternalResult")
         self._assert_unique_case_initialization('initialize_from_case')
         self._info['input']['initialize_from_external_result'] = {"uploadId": result.id}
 
@@ -486,7 +482,7 @@ class Case:
         """Returns result(Mapping) object containing the result trajectories.
 
         Returns:
-            A Result object (mapping) that allows requesting trajectory data given 
+            A Result object (mapping) that allows requesting trajectory data given
             a variable name.
 
         Raises:
@@ -619,7 +615,7 @@ class Case:
         )
 
     def execute(self, sync_case_changes: bool = True) -> CaseOperation:
-        """Exceutes a case. Returns an CaseOperation class object.
+        """Executes a case. Returns an CaseOperation class object.
 
         Args:
             sync_case_changes: Boolean specifying if to sync case changes
