@@ -277,18 +277,12 @@ class Workspace:
             resp["data"]["location"], self._sal, ExternalResult.from_operation
         )
 
-    def export(self, options: Dict[str, Any]) -> WorkspaceExportOperation:
+    def export(self) -> WorkspaceExportOperation:
         """Exports the workspace as a binary compressed archive. Similar to
         :obj:`~modelon.impact.client.entities.workspace.Workspace.download`,
         but gives more control for getting the workspace async.
         Returns an modelon.impact.client.operations.workspace.exports
         .WorkspaceExportOperation class object.
-
-        Args:
-
-            options:
-                The definition of what workspace resources to include when
-                exporting the workspace.
 
         Returns:
 
@@ -298,44 +292,20 @@ class Workspace:
 
         Example::
 
-            options = {
-                "contents": {
-                    "libraries": [
-                        {"name": "LiquidCooling", "resources_to_exclude": []},
-                        {
-                            "name": "Workspace",
-                            "resources_to_exclude": ["my_plot.png", "my_sheet.csv"],
-                        },
-                    ],
-                    "experiment_ids": [
-                        "_nics_multibody_examples_elementary_doublependulum_20191029",
-                        "modelica_blocks_examples_pid_controller_20191023_151659_f32a30d",
-                    ],
-                    "fmu_ids": [
-                        "_nics_multibody_examples_elementary_doublependulum_20191029_089",
-                        "modelica_blocks_examples_pid_controller_20191023_151659_f32a30d",
-                    ],
-                }
-            }
-            path = workspace.export(options).wait().download_as('/home/workspace.zip')
+            path = workspace.export().wait().download_as('/home/workspace.zip')
         """
-        options["workspaceId"] = self._workspace_id
-        resp = self._sal.workspace.workspace_export_setup(self._workspace_id, options)
+        resp = self._sal.workspace.workspace_export_setup(self._workspace_id)
         return WorkspaceExportOperation[Workspace](
             resp["data"]["location"], self._sal, Export.from_operation
         )
 
-    def download(self, options: Dict[str, Any], path: str) -> str:
+    def download(self, path: str) -> str:
         """Downloads the workspace as a binary compressed archive. Returns the
         local path to the downloaded workspace archive. Similar to
         :obj:`~modelon.impact.client.entities.workspace.Workspace.export`, but
         does the entire setup and download in one go.
 
         Args:
-
-            options:
-                The definition of what workspace resources to include when
-                exporting the workspace.
 
             path:
                 The local path to store the downloaded workspace.
@@ -347,30 +317,11 @@ class Workspace:
 
         Example::
 
-            options = {
-                "contents": {
-                    "libraries": [
-                        {"name": "LiquidCooling", "resources_to_exclude": []},
-                        {
-                            "name": "Workspace",
-                            "resources_to_exclude": ["my_plot.png", "my_sheet.csv"],
-                        },
-                    ],
-                    "experiment_ids": [
-                        "_nics_multibody_examples_elementary_doublependulum_20191029_0",
-                        "modelica_blocks_examples_pid_controller_20191023_151659_f32a30d",
-                    ],
-                    "fmu_ids": [
-                        "_nics_multibody_examples_elementary_doublependulum_20191029_08",
-                        "modelica_blocks_examples_pid_controller_20191023_151659_f32a30d",
-                    ],
-                }
-            }
-            workspace.download(options, path)
+            workspace.download(path)
 
         """
         ws_path = os.path.join(path, self._workspace_id + ".zip")
-        ops = self.export(options).wait()
+        ops = self.export().wait()
         return ops.download_as(ws_path)
 
     def clone(self) -> Workspace:
