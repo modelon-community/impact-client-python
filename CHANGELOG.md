@@ -1,3 +1,10 @@
+# [3.0.0-dev.24](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.23...v3.0.0-dev.24) (2023-04-06)
+
+
+### Bug Fixes
+
+* catching general exception while checking for jupyter hub url ([9a9ae39](https://github.com/modelon-community/impact-client-python/commit/9a9ae39a58a9e09e10b6027bd230586aaea1da27))
+
 # [3.0.0-dev.23](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.22...v3.0.0-dev.23) (2023-04-06)
 
 
