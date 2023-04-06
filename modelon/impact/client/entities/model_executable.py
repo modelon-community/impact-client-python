@@ -129,9 +129,8 @@ class ModelExecutable:
         'run_info' attribute to get more info.
 
         Returns:
-
-            True -> If model has compiled successfully.
-            False -> If compilation process has failed, is running or is cancelled.
+            True, if model has compiled successfully. False, if compilation
+            process has failed, is running or is cancelled.
 
         Example::
 
@@ -144,12 +143,9 @@ class ModelExecutable:
         """Returns the compilation log object.
 
         Returns:
-
-            log:
-                The compilation log object.
+            The compilation log object.
 
         Raises:
-
             OperationNotCompleteError if compilation process is in progress.
             OperationFailureError if compilation process was cancelled.
 
@@ -178,12 +174,9 @@ class ModelExecutable:
         """Returns a list of settable parameters for the FMU.
 
         Returns:
-
-            settable_parameters:
-                A list of parameters than can be set on the FMU.
+            A list of parameters that can be set on the FMU.
 
         Raises:
-
             OperationNotCompleteError if compilation process is in progress.
             OperationFailureError if compilation process has failed or was cancelled.
 
@@ -207,19 +200,15 @@ class ModelExecutable:
         """Returns a new experiment definition using this FMU.
 
         Args:
-
-            custom_function:
-                The custom function to use for this experiment.
-            solver_options:
-                The solver options to use for this experiment. By default the options
-                is set to None, which means the default options for the
+            custom_function: The custom function to use for this experiment.
+            solver_options: The solver options to use for this experiment. By default
+                the options is set to None, which means the default options for the
                 custom_function input is used.
-            simulation_options:
-                The simulation_options to use for this experiment. By default the
-                options is set to None, which means the default options for the
-                custom_function input is used.
-            simulation_log_level:
-                Simulation log level for this experiment. Default is 'WARNING'.
+            simulation_options: The simulation_options to use for this experiment.
+                By default the options is set to None, which means the default options
+                for the custom_function input is used.
+            simulation_log_level: Simulation log level for this experiment. Default
+                is 'WARNING'.
 
         Example::
 
@@ -246,18 +235,13 @@ class ModelExecutable:
         the downloaded FMU archive.
 
         Args:
-
-            path:
-                The local path to store the downloaded FMU. Default: None.
+            path: The local path to store the downloaded FMU. Default: None.
                 If no path is given, FMU will be downloaded in a temporary directory.
 
         Returns:
-
-            path:
-                Local path to the downloaded FMU.
+            Local path to the downloaded FMU.
 
         Raises:
-
             OperationNotCompleteError if compilation process is in progress.
             OperationFailureError if compilation process has failed or was cancelled.
 

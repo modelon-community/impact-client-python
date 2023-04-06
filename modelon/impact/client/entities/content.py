@@ -95,22 +95,17 @@ class ProjectContent:
         """Uploads a FMU to the workspace.
 
         Args:
-
             workspace:
                 Workspace class object
-
             fmu_path:
                 The path for the FMU to be imported.
-
             class_name:
                 Qualified name of generated class. By default, 'class_name' is
                 set to the name of the library followed by a name based
                 on the filename of the imported FMU.
-
             overwrite:
                 Determines if any already existing files should be overwritten.
                 Default: False.
-
             include_patterns, exclude_patterns:
                 Specifies what variables from the FMU to include and/or exclude in the
                 wrapper model. These two arguments are patterns or lists of patterns as
@@ -121,7 +116,6 @@ class ProjectContent:
                 Derivatives and variables with a leading underscore in the name are
                 always excluded.
                 Default value: None (which means to include all the variables).
-
             top_level_inputs:
                 Specify what inputs that should be kept as inputs, i.e. with or without
                 the input keyword. The argument is a pattern similar to the arguments
@@ -132,7 +126,6 @@ class ProjectContent:
                 then no input is imported as an input.
                 Default value: None (which means all inputs are kept as inputs)
                 Type: str or a list of strings
-
             step_size:
                 Specify what value to set for the parameter for step size in the
                 generated model. By default the parameter is set to zero, which
@@ -146,6 +139,7 @@ class ProjectContent:
                 Type: number
 
         Example::
+
             workspace = client.get_workspace("test")
             content.upload_fmu(workspace, 'C:/A.fmu',"Test")
             content.upload_fmu(workspace, 'C:/B.fmu',"Test",class_name="Test.Model")

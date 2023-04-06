@@ -41,6 +41,7 @@ extensions = [
     'sphinx.ext.napoleon',
     'sphinxcontrib.spelling',
     'sphinx_search.extension',
+    'sphinx_autodoc_typehints',
 ]
 
 add_module_names = False

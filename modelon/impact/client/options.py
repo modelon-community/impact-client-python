@@ -36,7 +36,6 @@ class BaseExecutionOptions(Mapping, ABC):
         """Sets/updates the options.
 
         Args:
-
             parameters: A keyworded, variable-length argument list of options.
 
         Example::
@@ -70,7 +69,6 @@ class SimulationOptions(BaseExecutionOptions):
         """Sets the variable filter for results.
 
         Args:
-
             pattern:
                 A filter pattern for choosing which variables to actually
                 store result for. The syntax can be found in

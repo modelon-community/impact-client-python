@@ -13,11 +13,7 @@ logger = logging.getLogger(__name__)
 
 
 class CachedModelExecutableOperation(ExecutionOperation[Entity]):
-    """An operation class for a cached modelon.impact.client.entities.
-
-    model_executable.ModelExecutable class.
-
-    """
+    """An operation class for a cached ModelExecutable class."""
 
     def __init__(
         self,
@@ -59,9 +55,7 @@ class CachedModelExecutableOperation(ExecutionOperation[Entity]):
         """Returns a new ModelExecutable class instance.
 
         Returns:
-
-            model_executable:
-                A model_executable class instance.
+            A model_executable class instance.
 
         """
         return self._create_entity(
@@ -76,11 +70,9 @@ class CachedModelExecutableOperation(ExecutionOperation[Entity]):
         """Returns the compilation status as an enumeration.
 
         Returns:
-
-            status:
-                The compilation status enum. The status has the enum value
-                Status.DONE as a cached FMU is only possible for a
-                successfully finished compilation.
+            The compilation status enum. The status has the enum value
+            Status.DONE as a cached FMU is only possible for a
+            successfully finished compilation.
 
         Example::
 
@@ -101,9 +93,7 @@ class CachedModelExecutableOperation(ExecutionOperation[Entity]):
         operation class instance if the set status is achieved.
 
         Args:
-
-            timeout:
-                Time to wait in seconds for achieving the status.This argument is
+            timeout: Time to wait in seconds for achieving the status.This argument is
                 not accounted for the CachedModelExecutableOperation class as the
                 model has a successfully compiled status(Status.DONE) in this class.
 
@@ -137,11 +127,7 @@ class CachedModelExecutableOperation(ExecutionOperation[Entity]):
 
 
 class ModelExecutableOperation(ExecutionOperation[Entity]):
-    """An operation class for the modelon.impact.client.entities.
-
-    model_executable.ModelExecutable class.
-
-    """
+    """An operation class for the ModelExecutable class."""
 
     def __init__(
         self,
@@ -176,9 +162,7 @@ class ModelExecutableOperation(ExecutionOperation[Entity]):
         """Returns a new ModelExecutable class instance.
 
         Returns:
-
-            model_executable:
-                A model_executable class instance.
+            A ModelExecutable class instance.
 
         """
         return self._create_entity(
@@ -189,11 +173,9 @@ class ModelExecutableOperation(ExecutionOperation[Entity]):
         """Returns the compilation status as an enumeration.
 
         Returns:
-
-            status:
-                The compilation status enum. The status can have the enum values
-                Status.PENDING, Status.RUNNING, Status.STOPPING, Status.CANCELLED
-                or Status.DONE
+            The compilation status enum. The status can have the enum values
+            Status.PENDING, Status.RUNNING, Status.STOPPING, Status.CANCELLED
+            or Status.DONE
 
         Example::
 

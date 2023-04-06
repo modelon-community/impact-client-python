@@ -97,9 +97,7 @@ class CustomFunction:
         """Sets/updates the custom_function parameters for an experiment.
 
         Args:
-
-            parameters:
-                A keyworded, variable-length argument list of custom_function
+            parameters: A keyworded, variable-length argument list of custom_function
                 parameters.
 
         Example::
@@ -133,11 +131,11 @@ class CustomFunction:
         """Get project execution option.
 
         Args:
-
             use_defaults:
                 If true, default compiler options are used.
 
         Example::
+
             opts = custom_function.get_compiler_options()
             opts_2 = opts.compiler_options.with_values(c_compiler='gcc')
 
@@ -155,13 +153,13 @@ class CustomFunction:
     def get_compiler_options(self, use_defaults: bool = False) -> CompilerOptions:
         """Return a modelon.impact.client.options.CompilerOptions object.
 
-        Returns:
-
-            compiler_options:
-                A modelon.impact.client.options.CompilerOptions object.
-
+        Args:
             use_defaults:
-                If true, default compiler options are used.
+                If True, default compiler options are used.
+
+        Returns:
+            A CompilerOptions object.
+
         Example::
 
             opts = custom_function.get_compiler_options()
@@ -171,15 +169,15 @@ class CustomFunction:
         return self.get_options(use_defaults=use_defaults).compiler_options
 
     def get_runtime_options(self, use_defaults: bool = False) -> RuntimeOptions:
-        """Return a modelon.impact.client.options.RuntimeOptions object.
+        """Return a RuntimeOptions object.
+
+        Args:
+            use_defaults:
+                If True, default compiler options are used.
 
         Returns:
+            A RuntimeOptions object.
 
-            runtime_options:
-                A modelon.impact.client.options.RuntimeOptions object.
-
-            use_defaults:
-                If true, default runtime options are used.
         Example::
 
             opts = custom_function.get_runtime_options()
@@ -191,13 +189,12 @@ class CustomFunction:
     def get_solver_options(self, use_defaults: bool = False) -> SolverOptions:
         """Return a modelon.impact.client.options.SolverOptions object.
 
-        Returns:
-
-            solver_options:
-                A modelon.impact.client.options.SolverOptions object.
-
+        Args:
             use_defaults:
-                If true, default solver options are used.
+                If True, default compiler options are used.
+
+        Returns:
+            A SolverOptions object.
 
         Example::
 
@@ -208,15 +205,15 @@ class CustomFunction:
         return self.get_options(use_defaults=use_defaults).solver_options
 
     def get_simulation_options(self, use_defaults: bool = False) -> SimulationOptions:
-        """Return a modelon.impact.client.options.SimulationOptions object.
+        """Return a SimulationOptions object.
+
+        Args:
+            use_defaults:
+                If True, default compiler options are used.
 
         Returns:
+            A SimulationOptions object.
 
-            simulation_options:
-                A modelon.impact.client.options.SimulationOptions object.
-
-            use_defaults:
-                If true, default simulation options are used.
         Example::
 
             opts = custom_function.get_simulation_options()

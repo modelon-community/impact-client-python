@@ -14,8 +14,7 @@ if TYPE_CHECKING:
 
 
 class WorkspaceImportOperation(AsyncOperation[Entity]):
-    """An import operation class for the
-    modelon.impact.client.entities.workspace.Workspace class."""
+    """An import operation class for the Workspace class."""
 
     def __init__(
         self, location: str, service: Service, create_entity: EntityFromOperation
@@ -51,9 +50,7 @@ class WorkspaceImportOperation(AsyncOperation[Entity]):
         """Returns a new Workspace class instance.
 
         Returns:
-
-            workspace:
-                A Workspace class instance.
+            A Workspace class instance.
 
         """
         info = self._info()
@@ -71,11 +68,9 @@ class WorkspaceImportOperation(AsyncOperation[Entity]):
         """Returns the upload status as an enumeration.
 
         Returns:
-
-            upload_status:
-                The AsyncOperationStatus enum. The status can have the enum values
-                AsyncOperationStatus.READY, AsyncOperationStatus.RUNNING or
-                AsyncOperationStatus.ERROR
+            The AsyncOperationStatus enum. The status can have the enum values
+            AsyncOperationStatus.READY, AsyncOperationStatus.RUNNING or
+            AsyncOperationStatus.ERROR
 
         Example::
 

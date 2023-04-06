@@ -25,14 +25,10 @@ class Export:
         archive.
 
         Args:
-
-            path_to_download:
-                The path to store the downloaded workspace.
+            path_to_download: The path to store the downloaded workspace.
 
         Returns:
-
-            path:
-                Local path to the downloaded archive.
+            local path to the downloaded archive.
 
         Example::
 
@@ -53,8 +49,7 @@ class Export:
 
 
 class WorkspaceExportOperation(AsyncOperation[Entity]):
-    """An export operation class for the
-    modelon.impact.client.entities.workspace.Workspace class."""
+    """An export operation class for the Workspace class."""
 
     def __init__(
         self, location: str, service: Service, create_entity: EntityFromOperation
@@ -89,7 +84,6 @@ class WorkspaceExportOperation(AsyncOperation[Entity]):
         """Returns a Export class instance.
 
         Returns:
-
             An Export class instance.
 
         """
@@ -104,11 +98,9 @@ class WorkspaceExportOperation(AsyncOperation[Entity]):
         """Returns the upload status as an enumeration.
 
         Returns:
-
-            upload_status:
-                The AsyncOperationStatus enum. The status can have the enum values
-                AsyncOperationStatus.READY, AsyncOperationStatus.RUNNING or
-                AsyncOperationStatus.ERROR
+            The AsyncOperationStatus enum. The status can have the enum values
+            AsyncOperationStatus.READY, AsyncOperationStatus.RUNNING or
+            AsyncOperationStatus.ERROR
 
         Example::
 

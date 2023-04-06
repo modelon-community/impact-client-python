@@ -14,8 +14,7 @@ if TYPE_CHECKING:
 
 
 class ExternalResultImportOperation(AsyncOperation[Entity]):
-    """An operation class for the
-    modelon.impact.client.entities.external_result.ExternalResult class."""
+    """An operation class for the ExternalResult class."""
 
     def __init__(
         self, location: str, service: Service, create_entity: EntityFromOperation
@@ -51,9 +50,7 @@ class ExternalResultImportOperation(AsyncOperation[Entity]):
         """Returns a new ExternalResult class instance.
 
         Returns:
-
-            external_result:
-                A ExternalResult class instance.
+            A ExternalResult class instance.
 
         """
         info = self._info()
@@ -68,11 +65,9 @@ class ExternalResultImportOperation(AsyncOperation[Entity]):
         """Returns the upload status as an enumeration.
 
         Returns:
-
-            upload_status:
-                The AsyncOperationStatus enum. The status can have the enum values
-                AsyncOperationStatus.READY, AsyncOperationStatus.RUNNING or
-                AsyncOperationStatus.ERROR
+            The AsyncOperationStatus enum. The status can have the enum values
+            AsyncOperationStatus.READY, AsyncOperationStatus.RUNNING or
+            AsyncOperationStatus.ERROR
 
         Example::
 

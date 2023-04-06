@@ -8,8 +8,7 @@ if TYPE_CHECKING:
 
 
 class ExperimentOperation(ExecutionOperation[Entity]):
-    """An operation class for the
-    modelon.impact.client.entities.experiment.Experiment class."""
+    """An operation class for the Experiment class."""
 
     def __init__(
         self,
@@ -44,9 +43,7 @@ class ExperimentOperation(ExecutionOperation[Entity]):
         """Returns a new Experiment class instance.
 
         Returns:
-
-            experiment:
-                An experiment class instance.
+            An experiment class instance.
 
         """
         return self._create_entity(
@@ -57,11 +54,9 @@ class ExperimentOperation(ExecutionOperation[Entity]):
         """Returns the execution status as an enumeration.
 
         Returns:
-
-            status:
-                The execution status enum. The status can have the enum values
-                Status.PENDING, Status.RUNNING, Status.STOPPING, Status.CANCELLED
-                or Status.DONE
+            The execution status enum. The status can have the enum values
+            Status.PENDING, Status.RUNNING, Status.STOPPING, Status.CANCELLED
+            or Status.DONE
 
         Example::
 

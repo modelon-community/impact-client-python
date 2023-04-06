@@ -9,7 +9,7 @@ if TYPE_CHECKING:
 
 
 class CaseOperation(ExecutionOperation[Entity]):
-    """An operation class for the modelon.impact.client.entities.Case class."""
+    """An operation class for the Case class."""
 
     def __init__(
         self,
@@ -46,9 +46,7 @@ class CaseOperation(ExecutionOperation[Entity]):
         """Returns a new Case class instance.
 
         Returns:
-
-            experiment:
-                An Case class instance.
+            An Case class instance.
 
         """
         case_data = self._sal.experiment.case_get(
@@ -66,11 +64,9 @@ class CaseOperation(ExecutionOperation[Entity]):
         """Returns the execution status as an enumeration.
 
         Returns:
-
-            status:
-                The execution status enum. The status can have the enum values
-                Status.PENDING, Status.RUNNING, Status.STOPPING, Status.CANCELLED
-                or Status.DONE
+            The execution status enum. The status can have the enum values
+            Status.PENDING, Status.RUNNING, Status.STOPPING, Status.CANCELLED
+            or Status.DONE
 
         Example::
 

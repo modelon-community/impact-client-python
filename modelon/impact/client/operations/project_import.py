@@ -13,8 +13,7 @@ if TYPE_CHECKING:
 
 
 class ProjectImportOperation(AsyncOperation[Entity]):
-    """An import operation class for the
-    modelon.impact.client.entities.project.Project class."""
+    """An import operation class for the Project class."""
 
     def __init__(
         self, location: str, service: Service, create_entity: EntityFromOperation
@@ -49,9 +48,7 @@ class ProjectImportOperation(AsyncOperation[Entity]):
         """Returns a new Project class instance.
 
         Returns:
-
-            project:
-                A Project class instance.
+            A Project class instance.
 
         """
         info = self._info()
@@ -72,11 +69,9 @@ class ProjectImportOperation(AsyncOperation[Entity]):
         """Returns the upload status as an enumeration.
 
         Returns:
-
-            upload_status:
-                The AsyncOperationStatus enum. The status can have the enum values
-                AsyncOperationStatus.READY, AsyncOperationStatus.RUNNING or
-                AsyncOperationStatus.ERROR
+            The AsyncOperationStatus enum. The status can have the enum values
+            AsyncOperationStatus.READY, AsyncOperationStatus.RUNNING or
+            AsyncOperationStatus.ERROR
 
         Example::
 
