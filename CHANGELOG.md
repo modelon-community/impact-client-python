@@ -1,3 +1,16 @@
+# [3.0.0-dev.25](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.24...v3.0.0-dev.25) (2023-04-06)
+
+
+### Bug Fixes
+
+* added an extension to auto-generate type hints ([1d7b8d6](https://github.com/modelon-community/impact-client-python/commit/1d7b8d60d135e5a629b647a462882eb44c229991))
+* convert full import name to just class name ([3d7766d](https://github.com/modelon-community/impact-client-python/commit/3d7766df49f50e85cf4be2d89bf7f09bfdc064c5))
+* fixed docs for creating and fetching workspaces ([58a0d12](https://github.com/modelon-community/impact-client-python/commit/58a0d12a3cf91b4458ffab819829c9a86c93b86e))
+* lint fixes ([1bbff57](https://github.com/modelon-community/impact-client-python/commit/1bbff575f180f43105965e8416886d279c2850a6))
+* made code compliant with google doc style. Remove return value as sphinx automatically generated from type hints ([5049f2f](https://github.com/modelon-community/impact-client-python/commit/5049f2f87767f773f965fa4b1cbb6508f4a1f5f1))
+* rename Examples-> Example, adding return after Example to make code examples render correctly ([6b1155a](https://github.com/modelon-community/impact-client-python/commit/6b1155a71845f57f4687e047e277e013cb08913a))
+* spelling and formatting fixes ([aa97edd](https://github.com/modelon-community/impact-client-python/commit/aa97eddff8beb0b099a4ed19c0006ce1e985765a))
+
 # [3.0.0-dev.24](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.23...v3.0.0-dev.24) (2023-04-06)
 
 
