@@ -10,6 +10,7 @@ from modelon.impact.client.options import (
     SolverOptions,
     RuntimeOptions,
 )
+from modelon.impact.client.sal import exceptions
 from tests.impact.client.helpers import (
     with_csv_route,
     with_exception,
@@ -125,6 +126,28 @@ def jupyterhub_api(mock_server_base):
         'GET',
         'user/user-name/impact/api/users/me',
         {'data': {'license': 'impact-pro'}},
+    )
+    return mock_server
+
+
+@pytest.fixture
+def is_jh_url_uncaught_exception(mock_server_base):
+    mock_server = with_exception(
+        mock_server_base,
+        'GET',
+        'hub/api/',
+        Exception,
+    )
+    return mock_server
+
+
+@pytest.fixture
+def is_jh_url_communication_error(mock_server_base):
+    mock_server = with_exception(
+        mock_server_base,
+        'GET',
+        'hub/api/',
+        exceptions.CommunicationError,
     )
     return mock_server
 
