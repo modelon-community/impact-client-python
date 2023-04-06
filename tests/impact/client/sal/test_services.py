@@ -14,6 +14,41 @@ class TestService:
         data = service.api_get_metadata()
         assert data == {'version': '4.0.0'}
 
+    def test_is_jh_url_correct_jh_headers(self, jupyterhub_api):
+        uri = URI(jupyterhub_api.url)
+        service = modelon.impact.client.sal.service.Service(
+            uri=uri, context=jupyterhub_api.context
+        )
+        assert service.is_jupyterhub_url()
+
+    def test_is_jh_url_no_jh_headers(self, mock_server_base):
+        uri = URI(mock_server_base.url)
+        service = modelon.impact.client.sal.service.Service(
+            uri=uri, context=mock_server_base.context
+        )
+        assert not service.is_jupyterhub_url()
+
+    def test_is_jh_url_uncaught_exception(self, is_jh_url_uncaught_exception, caplog):
+        uri = URI(is_jh_url_uncaught_exception.url)
+        service = modelon.impact.client.sal.service.Service(
+            uri=uri, context=is_jh_url_uncaught_exception.context
+        )
+        assert not service.is_jupyterhub_url()
+        assert (
+            'Unknown exception trying to determine '
+            'if URL is to JupyterHub or Modelon Impact,'
+            ' will assume the URL goes directly to the Modelon Impact API\n'
+            in caplog.text
+        )
+
+    def test_is_jh_url_known_exception(self, is_jh_url_communication_error, caplog):
+        uri = URI(is_jh_url_communication_error.url)
+        service = modelon.impact.client.sal.service.Service(
+            uri=uri, context=is_jh_url_communication_error.context
+        )
+        assert not service.is_jupyterhub_url()
+        assert caplog.text == ''
+
     def test_given_no_error_when_access_then_no_login_and_ok(self, create_workspace):
         # Given
         uri = URI(create_workspace.url)
@@ -82,4 +117,3 @@ class TestService:
 
         # Then
         assert len(create_workspace_fail_bad_input.adapter.request_history) == 1
-

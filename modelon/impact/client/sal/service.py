@@ -91,7 +91,15 @@ class Service:
             exceptions.CommunicationError,
             exceptions.SSLError,
             exceptions.HTTPError,
+            exceptions.ErrorBodyIsNotJSONError,
         ):
+            return False
+        except Exception:
+            logger.warning(
+                'Unknown exception trying to determine if URL is to JupyterHub or '
+                'Modelon Impact, will assume the URL goes directly to the '
+                'Modelon Impact API'
+            )
             return False
         return self._JUPYTERHUB_VERSION_HEADER in response.headers
 
