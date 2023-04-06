@@ -1,3 +1,15 @@
+# [3.0.0-dev.23](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.22...v3.0.0-dev.23) (2023-04-06)
+
+
+### Bug Fixes
+
+* remove options argument from export api ([9417ca6](https://github.com/modelon-community/impact-client-python/commit/9417ca6ceea1813efe7721e9e7253243f15818e9))
+
+
+### BREAKING CHANGES
+
+* the options argument is removed from the download method in workspace entity
+
 # [3.0.0-dev.22](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.21...v3.0.0-dev.22) (2023-04-05)
 
 
