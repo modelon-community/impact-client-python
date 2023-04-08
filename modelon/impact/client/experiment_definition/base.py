@@ -12,13 +12,14 @@ from modelon.impact.client.experiment_definition.expansion import (
     ExpansionAlgorithm,
     FullFactorial,
 )
+from modelon.impact.client.entities.external_result import ExternalResult
+from modelon.impact.client.entities.case import Case
+from modelon.impact.client.entities.experiment import Experiment
 from modelon.impact.client.experiment_definition.util import (
     get_options,
     case_to_identifier_dict,
 )
 from modelon.impact.client.experiment_definition.asserts import (
-    validate_and_set_initialize_from,
-    assert_unique_exp_initialization,
     assert_valid_args,
 )
 
@@ -26,15 +27,12 @@ if TYPE_CHECKING:
     from modelon.impact.client.entities.model import Model
     from modelon.impact.client.entities.custom_function import CustomFunction
     from modelon.impact.client.entities.model_executable import ModelExecutable
-    from modelon.impact.client.entities.external_result import ExternalResult
     from modelon.impact.client.options import (
         SolverOptions,
         SimulationOptions,
         CompilerOptions,
         RuntimeOptions,
     )
-    from modelon.impact.client.entities.case import Case
-    from modelon.impact.client.entities.experiment import Experiment
 
     CaseOrExperimentOrExternalResult = Union[Case, Experiment, ExternalResult]
     RuntimeOptionsOrDict = Union[RuntimeOptions, Dict[str, Any]]
@@ -43,6 +41,21 @@ if TYPE_CHECKING:
     CompilerOptionsOrDict = Union[CompilerOptions, Dict[str, Any]]
 
 logger = logging.getLogger(__name__)
+
+
+def _validate_initialize_from(
+    entity: Optional[CaseOrExperimentOrExternalResult],
+) -> None:
+    if entity and not isinstance(entity, (Case, Experiment, ExternalResult)):
+        raise TypeError(
+            "The entity argument be an instance of "
+            "Case or Experiment or ExternalResult!"
+        )
+    if isinstance(entity, Experiment) and len(entity.get_cases()) > 1:
+        raise ValueError(
+            "Cannot initialize from an experiment containing multiple"
+            " cases! Please specify a case object instead."
+        )
 
 
 def _assert_successful_compilation(fmu: ModelExecutable) -> None:
@@ -103,6 +116,8 @@ class SimpleFMUExperimentDefinition(BaseExperimentDefinition):
             means the default options for the custom_function input is used.
         simulation_log_level: Simulation log level for this experiment.
             Default is 'WARNING'.
+        initialize_from: Optional entity to initialize from. An instance of
+            Case or Experiment or ExternalResult. Default: None
 
     Example::
 
@@ -123,6 +138,7 @@ class SimpleFMUExperimentDefinition(BaseExperimentDefinition):
         solver_options: Optional[SolverOptionsOrDict] = None,
         simulation_options: Optional[SimulationOptionsOrDict] = None,
         simulation_log_level: str = "WARNING",
+        initialize_from: Optional[CaseOrExperimentOrExternalResult] = None,
     ):
         assert_valid_args(
             fmu=fmu,
@@ -141,11 +157,9 @@ class SimpleFMUExperimentDefinition(BaseExperimentDefinition):
         )
 
         self._simulation_log_level = simulation_log_level
+        self._initialize_from = initialize_from
         self._variable_modifiers = fmu._variable_modifiers()
         self._extensions: List[SimpleExperimentExtension] = []
-        self._initialize_from_experiment: Optional[Experiment] = None
-        self._initialize_from_case: Optional[Case] = None
-        self._initialize_from_external_result: Optional[ExternalResult] = None
 
     def validate(self) -> None:
         add = set(self._variable_modifiers.keys()) - set(
@@ -190,10 +204,8 @@ class SimpleFMUExperimentDefinition(BaseExperimentDefinition):
             self._solver_options,
             self._simulation_options,
             self._simulation_log_level,
+            self._initialize_from,
         )
-        new._initialize_from_experiment = self._initialize_from_experiment
-        new._initialize_from_case = self._initialize_from_case
-        new._initialize_from_external_result = self._initialize_from_external_result
         new._extensions = self._extensions
         for variable, value in modifiers_aggregate.items():
             new._variable_modifiers[variable] = (
@@ -243,13 +255,10 @@ class SimpleFMUExperimentDefinition(BaseExperimentDefinition):
             self._solver_options,
             self._simulation_options,
             self._simulation_log_level,
+            self._initialize_from,
         )
         new._variable_modifiers = self._variable_modifiers
         new._extensions = self._extensions + exp_ext
-        new._initialize_from_experiment = self._initialize_from_experiment
-        new._initialize_from_case = self._initialize_from_case
-        new._initialize_from_external_result = self._initialize_from_external_result
-
         return new
 
     def with_cases(
@@ -312,62 +321,59 @@ class SimpleFMUExperimentDefinition(BaseExperimentDefinition):
                 "extensions": [ext.to_dict() for ext in self._extensions],
             }
         }
-        if self._initialize_from_experiment:
+        if isinstance(self.initialize_from, Experiment):
             exp_dict["experiment"]["base"]["modifiers"][
                 "initializeFrom"
-            ] = self._initialize_from_experiment.id
-        elif self._initialize_from_case:
+            ] = self.initialize_from.id
+        elif isinstance(self.initialize_from, Case):
             exp_dict["experiment"]["base"]["modifiers"][
                 "initializeFromCase"
-            ] = case_to_identifier_dict(self._initialize_from_case)
-        elif self._initialize_from_external_result:
+            ] = case_to_identifier_dict(self.initialize_from)
+        elif isinstance(self.initialize_from, ExternalResult):
             exp_dict["experiment"]["base"]["modifiers"][
                 "initializeFromExternalResult"
-            ] = self._initialize_from_external_result.id
+            ] = self.initialize_from.id
         return exp_dict
 
-    def initialize_from(
-        self, entity: CaseOrExperimentOrExternalResult
+    @property
+    def initialize_from(self) -> Optional[CaseOrExperimentOrExternalResult]:
+        return self._initialize_from
+
+    def with_initialize_from(
+        self, entity: Optional[CaseOrExperimentOrExternalResult] = None
     ) -> SimpleFMUExperimentDefinition:
         """Sets the experiment or case to initialize from for an experiment.
 
         Args:
-            entity: An instance of Case or Experiment."
+            entity: An instance of Case or Experiment or ExternalResult."
 
         Example::
 
             experiment = workspace.get_experiment(experiment_id)
             fmu = model.compile().wait()
             experiment_definition = fmu.new_experiment_definition(custom_function).
-            initialize_from(experiment)
+            experiment_definition.with_initialize_from(experiment)
 
             experiment = workspace.get_experiment(experiment_id)
             case = experiment.get_case('case_1')
             fmu = model.compile().wait()
             experiment_definition = fmu.new_experiment_definition(custom_function).
-            initialize_from(case)
+            experiment_definition.with_initialize_from(case)
 
             result = workspace.upload_result('C:/A.mat').wait()
             fmu = model.compile().wait()
             experiment_definition = fmu.new_experiment_definition(custom_function).
-            initialize_from(result)
+            experiment_definition.with_initialize_from(result)
 
         """
+        _validate_initialize_from(entity)
         new = SimpleFMUExperimentDefinition(
             self._fmu,
             self._custom_function,
             self._solver_options,
             self._simulation_options,
             self._simulation_log_level,
-        )
-        new._initialize_from_experiment = self._initialize_from_experiment
-        new._initialize_from_case = self._initialize_from_case
-        new._initialize_from_external_result = self._initialize_from_external_result
-        validate_and_set_initialize_from(entity, new)
-        assert_unique_exp_initialization(
-            new._initialize_from_experiment,
-            new._initialize_from_case,
-            new._initialize_from_external_result,
+            entity,
         )
         new._variable_modifiers = self._variable_modifiers
         new._extensions = self._extensions
@@ -410,6 +416,8 @@ class SimpleModelicaExperimentDefinition(BaseExperimentDefinition):
             custom_function input is used.
         simulation_log_level: Simulation log level for this experiment.
             Default: 'WARNING'.
+        initialize_from: Optional entity to initialize from. An instance of
+            Case or Experiment or ExternalResult. Default: None
 
     Example::
 
@@ -440,6 +448,7 @@ class SimpleModelicaExperimentDefinition(BaseExperimentDefinition):
         solver_options: Optional[SolverOptionsOrDict] = None,
         simulation_options: Optional[SimulationOptionsOrDict] = None,
         simulation_log_level: str = "WARNING",
+        initialize_from: Optional[CaseOrExperimentOrExternalResult] = None,
     ):
         assert_valid_args(
             model=model,
@@ -468,11 +477,9 @@ class SimpleModelicaExperimentDefinition(BaseExperimentDefinition):
             custom_function.get_simulation_options, simulation_options
         )
         self._simulation_log_level = simulation_log_level
+        self._initialize_from = initialize_from
         self._variable_modifiers: Dict[str, Any] = {}
         self._extensions: List[SimpleExperimentExtension] = []
-        self._initialize_from_experiment: Optional[Experiment] = None
-        self._initialize_from_case: Optional[Case] = None
-        self._initialize_from_external_result: Optional[ExternalResult] = None
         self._expansion = FullFactorial()
 
     def validate(self) -> None:
@@ -514,10 +521,8 @@ class SimpleModelicaExperimentDefinition(BaseExperimentDefinition):
             solver_options=self._solver_options,
             simulation_options=self._simulation_options,
             simulation_log_level=self._simulation_log_level,
+            initialize_from=self._initialize_from,
         )
-        new._initialize_from_experiment = self._initialize_from_experiment
-        new._initialize_from_case = self._initialize_from_case
-        new._initialize_from_external_result = self._initialize_from_external_result
         new._extensions = self._extensions
         new._expansion = self._expansion
 
@@ -565,39 +570,42 @@ class SimpleModelicaExperimentDefinition(BaseExperimentDefinition):
             solver_options=self._solver_options,
             simulation_options=self._simulation_options,
             simulation_log_level=self._simulation_log_level,
+            initialize_from=self._initialize_from,
         )
-        new._initialize_from_experiment = self._initialize_from_experiment
-        new._initialize_from_case = self._initialize_from_case
-        new._initialize_from_external_result = self._initialize_from_external_result
         new._extensions = self._extensions
         new._expansion = expansion
         new._variable_modifiers = self._variable_modifiers
         return new
 
-    def initialize_from(
-        self, entity: CaseOrExperimentOrExternalResult
+    @property
+    def initialize_from(self) -> Optional[CaseOrExperimentOrExternalResult]:
+        return self._initialize_from
+
+    def with_initialize_from(
+        self, entity: Optional[CaseOrExperimentOrExternalResult] = None
     ) -> SimpleModelicaExperimentDefinition:
         """Sets the experiment or case to initialize from for an experiment.
 
         Args:
-            entity: An instance of Case or Experiment.
+            entity: An instance of Case or Experiment or ExternalResult.
 
         Example::
 
             experiment = workspace.get_experiment(experiment_id)
-            experiment_definition = model.new_experiment_definition(custom_function).
-            initialize_from(experiment)
+            experiment_definition = model.new_experiment_definition(custom_function)
+            experiment_definition.with_initialize_from(experiment)
 
             experiment = workspace.get_experiment(experiment_id)
             case = experiment.get_case('case_1')
-            experiment_definition = model.new_experiment_definition(custom_function).
-            initialize_from(case)
+            experiment_definition = model.new_experiment_definition(custom_function)
+            experiment_definition.with_initialize_from(case)
 
             result = workspace.upload_result('C:/A.mat').wait()
-            experiment_definition = model.new_experiment_definition(custom_function).
-            initialize_from(result)
+            experiment_definition = model.new_experiment_definition(custom_function)
+            experiment_definition.with_initialize_from(result)
 
         """
+        _validate_initialize_from(entity)
         new = SimpleModelicaExperimentDefinition(
             model=self._model,
             custom_function=self._custom_function,
@@ -610,17 +618,9 @@ class SimpleModelicaExperimentDefinition(BaseExperimentDefinition):
             solver_options=self._solver_options,
             simulation_options=self._simulation_options,
             simulation_log_level=self._simulation_log_level,
+            initialize_from=entity,
         )
-        new._initialize_from_experiment = self._initialize_from_experiment
-        new._initialize_from_case = self._initialize_from_case
-        new._initialize_from_external_result = self._initialize_from_external_result
         new._expansion = self._expansion
-        validate_and_set_initialize_from(entity, new)
-        assert_unique_exp_initialization(
-            new._initialize_from_experiment,
-            new._initialize_from_case,
-            new._initialize_from_external_result,
-        )
         new._variable_modifiers = self._variable_modifiers
         new._extensions = self._extensions
         return new
@@ -675,12 +675,10 @@ class SimpleModelicaExperimentDefinition(BaseExperimentDefinition):
             solver_options=self._solver_options,
             simulation_options=self._simulation_options,
             simulation_log_level=self._simulation_log_level,
+            initialize_from=self._initialize_from,
         )
         new._variable_modifiers = self._variable_modifiers
         new._extensions = self._extensions + exp_ext
-        new._initialize_from_experiment = self._initialize_from_experiment
-        new._initialize_from_case = self._initialize_from_case
-        new._initialize_from_external_result = self._initialize_from_external_result
         new._expansion = self._expansion
         return new
 
@@ -764,16 +762,16 @@ class SimpleModelicaExperimentDefinition(BaseExperimentDefinition):
             exp_dict["experiment"]["base"]["expansion"][
                 "parameters"
             ] = expansion_parameters
-        if self._initialize_from_experiment:
+        if isinstance(self.initialize_from, Experiment):
             exp_dict["experiment"]["base"]["modifiers"][
                 "initializeFrom"
-            ] = self._initialize_from_experiment.id
-        elif self._initialize_from_case:
+            ] = self.initialize_from.id
+        elif isinstance(self.initialize_from, Case):
             exp_dict["experiment"]["base"]["modifiers"][
                 "initializeFromCase"
-            ] = case_to_identifier_dict(self._initialize_from_case)
-        elif self._initialize_from_external_result:
+            ] = case_to_identifier_dict(self.initialize_from)
+        elif isinstance(self.initialize_from, ExternalResult):
             exp_dict["experiment"]["base"]["modifiers"][
                 "initializeFromExternalResult"
-            ] = self._initialize_from_external_result.id
+            ] = self.initialize_from.id
         return exp_dict
