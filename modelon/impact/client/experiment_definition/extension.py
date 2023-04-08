@@ -4,19 +4,31 @@ from abc import ABC
 from typing import Optional, Dict, Any, Union
 
 from modelon.impact.client.experiment_definition.operators import Operator
-from modelon.impact.client.entities.external_result import ExternalResult
 from modelon.impact.client.entities.experiment import Experiment
 from modelon.impact.client.entities.case import Case
 from modelon.impact.client.experiment_definition.util import (
     get_options,
     case_to_identifier_dict,
 )
-from modelon.impact.client.experiment_definition.asserts import (
-    validate_and_set_initialize_from,
-    assert_unique_exp_initialization,
-)
+
+CaseOrExperiment = Union[Case, Experiment]
 
 logger = logging.getLogger(__name__)
+
+
+def _validate_initialize_from(entity: Optional[CaseOrExperiment]) -> None:
+    if not entity:
+        return
+    if entity and not isinstance(entity, (Experiment, Case)):
+        raise TypeError(
+            "It is only supported to specify initialize from either Experiment "
+            "or Case for experiment extensions"
+        )
+    if isinstance(entity, Experiment) and len(entity.get_cases()) > 1:
+        raise ValueError(
+            "Cannot initialize from an experiment containing multiple"
+            " cases! Please specify a case object instead."
+        )
 
 
 class BaseExperimentExtension(ABC):
@@ -40,6 +52,8 @@ class SimpleExperimentExtension(BaseExperimentExtension):
             is passed in the experiment extension.
         simulation_log_level: Simulation log level for this experiment.
             Default: 'WARNING'.
+        initialize_from: Optional entity to initialize from. An instance of
+            Case or Experiment. Default: None
 
     Example::
 
@@ -68,7 +82,9 @@ class SimpleExperimentExtension(BaseExperimentExtension):
         solver_options: Optional[Dict[str, Any]] = None,
         simulation_options: Optional[Dict[str, Any]] = None,
         simulation_log_level: Optional[str] = None,
+        initialize_from: Optional[CaseOrExperiment] = None,
     ):
+        _validate_initialize_from(initialize_from)
         self._parameter_modifiers = (
             {} if parameter_modifiers is None else parameter_modifiers
         )
@@ -76,8 +92,7 @@ class SimpleExperimentExtension(BaseExperimentExtension):
         self._simulation_options = get_options(dict, simulation_options)
         self._simulation_log_level = simulation_log_level
         self._variable_modifiers: Dict[str, Any] = {}
-        self._initialize_from_experiment: Optional[Experiment] = None
-        self._initialize_from_case: Optional[Case] = None
+        self._initialize_from = initialize_from
         self._case_label: Optional[str] = None
 
     def with_modifiers(
@@ -114,9 +129,8 @@ class SimpleExperimentExtension(BaseExperimentExtension):
             self._solver_options,
             self._simulation_options,
             self._simulation_log_level,
+            self._initialize_from,
         )
-        new._initialize_from_experiment = self._initialize_from_experiment
-        new._initialize_from_case = self._initialize_from_case
         new._case_label = self._case_label
         for variable, value in modifiers_aggregate.items():
             if isinstance(value, Operator):
@@ -152,16 +166,19 @@ class SimpleExperimentExtension(BaseExperimentExtension):
             self._solver_options,
             self._simulation_options,
             self._simulation_log_level,
+            self._initialize_from,
         )
-        new._initialize_from_experiment = self._initialize_from_experiment
-        new._initialize_from_case = self._initialize_from_case
         new._variable_modifiers = self._variable_modifiers
         new._case_label = case_label
 
         return new
 
-    def initialize_from(
-        self, entity: Union[Experiment, Case]
+    @property
+    def initialize_from(self) -> Optional[CaseOrExperiment]:
+        return self._initialize_from
+
+    def with_initialize_from(
+        self, entity: Optional[CaseOrExperiment] = None
     ) -> SimpleExperimentExtension:
         """Sets the experiment or case to initialize from for an experiment
         extension.
@@ -172,31 +189,22 @@ class SimpleExperimentExtension(BaseExperimentExtension):
         Example::
 
             experiment = workspace.get_experiment(experiment_id)
-            simulate_ext = SimpleExperimentExtension().initialize_from(experiment)
+            simulate_ext = SimpleExperimentExtension()
+            simulate_ext.with_initialize_from(experiment)
 
             experiment = workspace.get_experiment(experiment_id)
             case = experiment.get_case('case_1')
-            simulate_ext = SimpleExperimentExtension().initialize_from(case)
+            simulate_ext = SimpleExperimentExtension()
+            simulate_ext.with_initialize_from(case)
 
         """
+        _validate_initialize_from(entity)
         new = SimpleExperimentExtension(
             self._parameter_modifiers,
             self._solver_options,
             self._simulation_options,
             self._simulation_log_level,
-        )
-        if isinstance(entity, ExternalResult):
-            raise TypeError(
-                "It is not supported to specify initialize from external result for "
-                "experiment extensions"
-            )
-
-        new._initialize_from_experiment = self._initialize_from_experiment
-        new._initialize_from_case = self._initialize_from_case
-        validate_and_set_initialize_from(entity, new)
-        assert_unique_exp_initialization(
-            new._initialize_from_experiment,
-            new._initialize_from_case,
+            entity,
         )
         new._variable_modifiers = self._variable_modifiers
         new._case_label = self._case_label
@@ -243,15 +251,12 @@ class SimpleExperimentExtension(BaseExperimentExtension):
             ext_dict.setdefault("analysis", {})
             ext_dict["analysis"]["simulationLogLevel"] = self._simulation_log_level
 
-        if self._initialize_from_experiment:
+        if isinstance(self.initialize_from, Experiment):
             ext_dict.setdefault("modifiers", {})
-            ext_dict["modifiers"][
-                "initializeFrom"
-            ] = self._initialize_from_experiment.id
-
-        elif self._initialize_from_case:
+            ext_dict["modifiers"]["initializeFrom"] = self.initialize_from.id
+        elif isinstance(self.initialize_from, Case):
             ext_dict["modifiers"]["initializeFromCase"] = case_to_identifier_dict(
-                self._initialize_from_case
+                self.initialize_from
             )
 
         if self._case_label:
