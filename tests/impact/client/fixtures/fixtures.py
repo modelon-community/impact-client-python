@@ -474,16 +474,6 @@ def get_export_archive(sem_ver_check, mock_server_base):
     return with_zip_route(mock_server_base, 'GET', f'api/exports/{IDs.EXPORT}', content)
 
 
-# TODO: Cloning workspace is not implemented on feature branch
-# @pytest.fixture
-# def clone_workspace(sem_ver_check, mock_server_base):
-#     json = {"workspace_id": "clone_44e8ad8c036"}
-
-#     return with_json_route(
-#         mock_server_base, 'POST', 'api/workspaces/Workspace/clone', json
-#     )
-
-
 @pytest.fixture
 def get_fmu(sem_ver_check, mock_server_base):
     json = {"id": IDs.FMU_PRIMARY}

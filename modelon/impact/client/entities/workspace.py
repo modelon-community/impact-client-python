@@ -306,20 +306,6 @@ class Workspace:
         ops = self.export().wait()
         return ops.download_as(ws_path)
 
-    def clone(self) -> Workspace:
-        """Clones the workspace. Returns a clone Workspace class object.
-
-        Returns:
-            Clones workspace class object.
-
-        Example::
-
-            workspace.clone()
-
-        """
-        resp = self._sal.workspace.workspace_clone(self._workspace_id)
-        return Workspace(resp["workspace_id"], resp["definition"], self._sal)
-
     def get_model(
         self, class_name: str, project: Optional[Project] = None
     ) -> modelon.impact.client.entities.model.Model:

@@ -52,17 +52,6 @@ class TestWorkspace:
         resp = workspace.entity.export()
         assert resp == create_workspace_export_operation(IDs.EXPORT)
 
-    # TODO: Cloning workspace is not implemented on feature branch
-    # def test_clone(self, workspace):
-    #     clone = workspace.entity.clone()
-    #     assert clone == create_workspace_entity('MyClonedWorkspace')
-
-    # TODO: Cloning workspace is not implemented on feature branch
-    # def test_get_custom_function_from_clone(self, workspace):
-    #     clone = workspace.entity.clone()
-    #     custom_function = clone.get_custom_function('dynamic')
-    #     assert 'dynamic' == custom_function.name
-
     def test_get_model(self, workspace):
         model = workspace.entity.get_model("Modelica.Blocks.PID")
         assert model == create_model_entity(

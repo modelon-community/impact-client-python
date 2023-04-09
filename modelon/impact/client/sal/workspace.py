@@ -66,10 +66,6 @@ class WorkspaceService:
         url = (self._base_uri / location).resolve()
         return self._http_client.get_json(url)
 
-    def workspace_clone(self, workspace_id: str) -> Dict[str, Any]:
-        url = (self._base_uri / f"api/workspaces/{workspace_id}/clone").resolve()
-        return self._http_client.post_json(url)
-
     def fmus_get(self, workspace_id: str) -> Dict[str, Any]:
         url = (
             self._base_uri / f"api/workspaces/{workspace_id}/model-executables"
