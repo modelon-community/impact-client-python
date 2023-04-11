@@ -1,3 +1,10 @@
+# [3.0.0-dev.26](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.25...v3.0.0-dev.26) (2023-04-11)
+
+
+### Bug Fixes
+
+* add py.typed marker ([8761cc1](https://github.com/modelon-community/impact-client-python/commit/8761cc1699c490d488707e0f27202693bc35778f))
+
 # [3.0.0-dev.25](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.24...v3.0.0-dev.25) (2023-04-06)
 
 
