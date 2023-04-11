@@ -19,6 +19,11 @@ from modelon.impact.client.entities.model_executable import ModelExecutable
 if TYPE_CHECKING:
     from modelon.impact.client.entities.custom_function import CustomFunction
     from modelon.impact.client.sal.service import Service
+    from modelon.impact.client.entities.external_result import ExternalResult
+    from modelon.impact.client.entities.case import Case
+    from modelon.impact.client.entities.experiment import Experiment
+
+    CaseOrExperimentOrExternalResult = Union[Case, Experiment, ExternalResult]
 
 logger = logging.getLogger(__name__)
 
@@ -195,6 +200,7 @@ class Model:
         solver_options: Optional[SolverOptionsOrDict] = None,
         simulation_options: Optional[SimulationOptionsOrDict] = None,
         simulation_log_level: str = "WARNING",
+        initialize_from: Optional[CaseOrExperimentOrExternalResult] = None,
     ) -> base.SimpleModelicaExperimentDefinition:
         """Returns a new experiment definition using this Model.
 
@@ -231,6 +237,8 @@ class Model:
                 custom_function input is used.
             simulation_log_level:
                 Simulation log level for this experiment. Default is 'WARNING'.
+            initialize_from: Optional entity to initialize from. An instance of
+                Case or Experiment or ExternalResult. Default: None
 
         Example::
 
@@ -263,4 +271,5 @@ class Model:
             solver_options=solver_options or project_options.solver_options,
             simulation_options=simulation_options or project_options.simulation_options,
             simulation_log_level=simulation_log_level,
+            initialize_from=initialize_from,
         )
