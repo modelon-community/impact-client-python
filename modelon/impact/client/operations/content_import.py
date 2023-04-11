@@ -57,7 +57,7 @@ class ContentImportOperation(AsyncOperation[Entity]):
             raise exceptions.IllegalContentImport(
                 f"Content import failed! Cause: {info['error'].get('message')}"
             )
-        project_id = info["data"]["projectId"]
+        project_id = self._location.split('/')[-3]
         content_id = info["data"]["contentId"]
         resp = self._sal.project.project_content_get(project_id, content_id)
         return self._create_entity(self, content=resp, project_id=project_id)
