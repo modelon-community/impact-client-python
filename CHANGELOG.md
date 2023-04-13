@@ -1,3 +1,15 @@
+# [3.0.0-dev.27](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.26...v3.0.0-dev.27) (2023-04-13)
+
+
+### Bug Fixes
+
+* removed clone() method from Worksace entity ([3041b5c](https://github.com/modelon-community/impact-client-python/commit/3041b5cc0829f5568b719fca3ba1abcb8025eed1))
+
+
+### BREAKING CHANGES
+
+* clone method in Workpace entity has been removed
+
 # [3.0.0-dev.26](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.25...v3.0.0-dev.26) (2023-04-11)
 
 
