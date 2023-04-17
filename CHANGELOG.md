@@ -1,3 +1,11 @@
+# [3.0.0-dev.28](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.27...v3.0.0-dev.28) (2023-04-17)
+
+
+### Bug Fixes
+
+* get project id from location for content import ([cf47fdc](https://github.com/modelon-community/impact-client-python/commit/cf47fdc2cf18c2287362c6791edd346e692c28ed))
+* removed project ID from mock content import fixtures ([339e0d7](https://github.com/modelon-community/impact-client-python/commit/339e0d7ae54236f68897a38099ebab8804d917af))
+
 # [3.0.0-dev.27](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.26...v3.0.0-dev.27) (2023-04-13)
 
 
