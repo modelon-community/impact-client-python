@@ -10,7 +10,7 @@ import modelon.impact.client.jupyterhub
 from modelon.impact.client.credential_manager import CredentialManager
 from modelon.impact.client.operations.project_import import ProjectImportOperation
 from modelon.impact.client.operations.workspace.imports import WorkspaceImportOperation
-from modelon.impact.client.entities.project import Project, VcsUri
+from modelon.impact.client.entities.project import Project, VcsUri, ProjectType
 from modelon.impact.client.entities.workspace import WorkspaceDefinition, Workspace
 from modelon.impact.client.operations.workspace.conversion import (
     WorkspaceConversionOperation,
@@ -331,12 +331,16 @@ class Client:
             self._sal,
         )
 
-    def get_projects(self, vcs_info: bool = True) -> List[Project]:
+    def get_projects(
+        self, vcs_info: bool = True, project_type: Optional[ProjectType] = None
+    ) -> List[Project]:
         """Returns a list of project class object.
 
         Args:
             vcs_info: If True, the versioning details are returned for the
                 projects under version control.
+            type: Used to filter so only projects of a specified projectType
+                are returned. If not given all project types are returned.
 
         Returns:
             A list of Project class objects.
@@ -346,7 +350,9 @@ class Client:
             client.get_projects()
 
         """
-        resp = self._sal.project.projects_get(vcs_info=vcs_info)
+        resp = self._sal.project.projects_get(
+            vcs_info=vcs_info, project_type=project_type
+        )
         return [
             Project(
                 item["id"],

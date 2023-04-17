@@ -169,16 +169,16 @@ class ProjectDefinition:
         self._data = data
 
     @property
-    def name(self) -> Optional[str]:
-        return self._data.get("name")
+    def name(self) -> str:
+        return self._data["name"]
 
     @property
     def version(self) -> Optional[str]:
         return self._data.get("version")
 
     @property
-    def format(self) -> Optional[str]:
-        return self._data.get("format")
+    def format(self) -> str:
+        return self._data["format"]
 
     @property
     def dependencies(self) -> List[ProjectDependency]:
@@ -236,6 +236,11 @@ class Project:
     def id(self) -> str:
         """Project id."""
         return self._project_id
+
+    @property
+    def name(self) -> str:
+        """Project name."""
+        return self.definition.name
 
     @property
     def definition(self) -> ProjectDefinition:
