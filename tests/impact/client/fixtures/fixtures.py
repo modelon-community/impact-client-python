@@ -1921,7 +1921,6 @@ def project():
             'status': 'ready',
             'data': {
                 'resourceUri': content_url,
-                'projectId': IDs.PROJECT_PRIMARY,
                 'contentId': IDs.PROJECT_CONTENT_PRIMARY,
             },
         }
