@@ -21,9 +21,12 @@ class ProjectService:
         url = (self._base_uri / f"api/projects?vcsInfo={vcs_info}{prj_type}").resolve()
         return self._http_client.get_json(url)
 
-    def project_get(self, project_id: str, vcs_info: bool) -> Dict[str, Any]:
+    def project_get(
+        self, project_id: str, vcs_info: bool, size_info: bool
+    ) -> Dict[str, Any]:
         url = (
-            self._base_uri / f"api/projects/{project_id}?vcsInfo={vcs_info}"
+            self._base_uri
+            / f"api/projects/{project_id}?vcsInfo={vcs_info}&sizeInfo={size_info}"
         ).resolve()
         return self._http_client.get_json(url)
 

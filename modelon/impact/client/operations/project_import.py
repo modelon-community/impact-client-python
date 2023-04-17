@@ -57,7 +57,7 @@ class ProjectImportOperation(AsyncOperation[Entity]):
                 f"Project import failed! Cause: {info['error'].get('message')}"
             )
         project_id = info["data"]["projectId"]
-        resp = self._sal.project.project_get(project_id, False)
+        resp = self._sal.project.project_get(project_id, False, False)
         return self._create_entity(
             self,
             project_id=resp["id"],

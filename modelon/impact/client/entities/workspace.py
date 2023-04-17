@@ -586,7 +586,9 @@ class Workspace:
                 f'No default project exists for the workspace {self._workspace_id}!'
             )
         resp = self._sal.project.project_get(
-            self._workspace_definition.default_project_id, vcs_info=True
+            self._workspace_definition.default_project_id,
+            vcs_info=True,
+            size_info=False,
         )
         return Project(
             resp["id"],

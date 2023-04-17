@@ -1900,6 +1900,7 @@ def project():
             "executionOptions": [],
         },
         "projectType": "LOCAL",
+        "size": 1008,
     }
     project_service.project_content_get.return_value = {
         "id": IDs.PROJECT_CONTENT_SECONDARY,
