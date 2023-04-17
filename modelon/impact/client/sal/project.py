@@ -1,8 +1,12 @@
 """Project service module."""
+from __future__ import annotations
 import json
-from typing import Dict, Any, Optional, Union, List
+from typing import Dict, Any, Optional, Union, List, TYPE_CHECKING
 from modelon.impact.client.sal.http import HTTPClient
 from modelon.impact.client.sal.uri import URI
+
+if TYPE_CHECKING:
+    from modelon.impact.client.entities.project import ProjectType
 
 
 class ProjectService:
@@ -10,8 +14,11 @@ class ProjectService:
         self._base_uri = uri
         self._http_client = http_client
 
-    def projects_get(self, vcs_info: bool) -> Dict[str, Any]:
-        url = (self._base_uri / f"api/projects?vcsInfo={vcs_info}").resolve()
+    def projects_get(
+        self, vcs_info: bool, project_type: Optional[ProjectType] = None
+    ) -> Dict[str, Any]:
+        prj_type = '&type=' + str(project_type) if project_type else ""
+        url = (self._base_uri / f"api/projects?vcsInfo={vcs_info}{prj_type}").resolve()
         return self._http_client.get_json(url)
 
     def project_get(self, project_id: str, vcs_info: bool) -> Dict[str, Any]:
