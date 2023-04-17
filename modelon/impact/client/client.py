@@ -313,6 +313,8 @@ class Client:
 
         Args:
             project_id: The id of the project.
+            vcs_info: If True, the versioning details are returned for the
+                project(if under version control).
 
         Returns:
             Project class objects.
@@ -322,7 +324,9 @@ class Client:
             client.get_project('hcbhsb11313321')
 
         """
-        resp = self._sal.project.project_get(project_id, vcs_info)
+        resp = self._sal.project.project_get(
+            project_id, vcs_info=vcs_info, size_info=False
+        )
         return Project(
             resp["id"],
             resp["definition"],

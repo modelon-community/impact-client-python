@@ -14,6 +14,9 @@ from modelon.impact.client.operations.base import AsyncOperationStatus
 
 
 class TestProject:
+    def test_get_project_size(self, project):
+        assert project.entity.size == 1008
+
     def test_get_project_options(self, project, custom_function):
         options = project.entity.get_options(custom_function)
         assert options.to_dict() == {
