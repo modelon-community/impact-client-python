@@ -1,3 +1,20 @@
+# [3.0.0-dev.29](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.28...v3.0.0-dev.29) (2023-04-18)
+
+
+### Bug Fixes
+
+* renamed intitialize_from to with_initialize_from in SimpleFMUExperimentDefinition, SimpleModelicaExperimentDefinition and SimpleExperimentExtension ([cf6b908](https://github.com/modelon-community/impact-client-python/commit/cf6b90887fe78e02db533d032657e7b7d4f249aa))
+
+
+### Features
+
+* allow passing initialize_from in new_experiment_definition method in model entity ([8bb697c](https://github.com/modelon-community/impact-client-python/commit/8bb697c8a6092c02a10e9b26149d3732f77e9a54))
+
+
+### BREAKING CHANGES
+
+* initialize_from method in SimpleExperimentExtension, SimpleFMUExperimentDefinition and SimpleModelicaExperimentDefinition are now renamed to with_initialize_from
+
 # [3.0.0-dev.28](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.27...v3.0.0-dev.28) (2023-04-17)
 
 
