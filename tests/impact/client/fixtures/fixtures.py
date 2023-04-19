@@ -1020,8 +1020,6 @@ def workspace():
     ws_service.experiment_create.return_value = {
         "experiment_id": IDs.EXPERIMENT_PRIMARY
     }
-    # TODO: Cloning workspace is not implemented on feature branch
-    # ws_service.workspace_clone.return_value = {"workspace_id": "MyClonedWorkspace"}
     ws_service.fmus_get.return_value = {
         'data': {'items': [{'id': IDs.FMU_PRIMARY}, {'id': IDs.FMU_SECONDARY}]}
     }
