@@ -114,15 +114,6 @@ class TestWorkspaceService:
         )
         assert data["data"]["status"] == "ready"
 
-    # TODO: Cloning workspace is not implemented on feature branch
-    # def test_clone_workspace(self, clone_workspace):
-    #     uri = URI(clone_workspace.url)
-    #     service = modelon.impact.client.sal.service.Service(
-    #         uri=uri, context=clone_workspace.context
-    #     )
-    #     data = service.workspace.workspace_clone("Workspace")
-    #     assert data == {'workspace_id': 'clone_44e8ad8c036'}
-
     def test_get_fmu(self, get_fmu):
         uri = URI(get_fmu.url)
         service = modelon.impact.client.sal.service.Service(
