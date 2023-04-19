@@ -172,6 +172,13 @@ class Workspace:
         return isinstance(obj, Workspace) and obj._workspace_id == self._workspace_id
 
     @property
+    def size(self) -> float:
+        """Workspace size in bytes."""
+        return self._sal.workspace.workspace_get(workspace_id=self.id, size_info=True)[
+            "sizeInfo"
+        ]["total"]
+
+    @property
     def id(self) -> str:
         """Workspace id."""
         return self._workspace_id
@@ -481,6 +488,12 @@ class Workspace:
     ) -> List[Project]:
         """Return the list of projects for a workspace.
 
+        Args:
+            vcs_info: If True, the versioning details are returned for the
+            project(if under version control).
+            include_disabled: If True, projects disabled in the workspace
+            are also lsited.
+
         Returns:
             A list of Project class objects.
 
@@ -508,6 +521,12 @@ class Workspace:
         self, vcs_info: bool = True, include_disabled: bool = False
     ) -> List[Project]:
         """Return the list of project dependencies for a workspace.
+
+        Args:
+            vcs_info: If True, the versioning details are returned for the
+            project(if under version control).
+            include_disabled: If True, projects disabled in the workspace
+            are also lsited.
 
         Returns:
             A list of Project class object.

@@ -17,6 +17,12 @@ class WorkspaceService:
         url = (self._base_uri / f"api/workspaces/{workspace_id}").resolve()
         self._http_client.delete_json(url)
 
+    def workspace_get(self, workspace_id: str, size_info: bool) -> Dict[str, Any]:
+        url = (
+            self._base_uri / f"api/workspaces/{workspace_id}?sizeInfo={size_info}"
+        ).resolve()
+        return self._http_client.get_json(url)
+
     def workspaces_get(self) -> Dict[str, Any]:
         url = (self._base_uri / "api/workspaces").resolve()
         return self._http_client.get_json(url)
@@ -43,10 +49,6 @@ class WorkspaceService:
             / f"api/workspaces/{workspace_id}/dependencies?vcsInfo={vcs_info}"
             f"&includeDisabled={include_disabled}"
         ).resolve()
-        return self._http_client.get_json(url)
-
-    def workspace_get(self, workspace_id: str) -> Dict[str, Any]:
-        url = (self._base_uri / f"api/workspaces/{workspace_id}").resolve()
         return self._http_client.get_json(url)
 
     def workspace_export_setup(self, workspace_id: str) -> Dict[str, Any]:

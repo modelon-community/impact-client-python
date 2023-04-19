@@ -59,7 +59,7 @@ class WorkspaceImportOperation(AsyncOperation[Entity]):
                 f"Workspace import failed! Cause: {info['error'].get('message')}"
             )
         workspace_id = info["data"]["workspaceId"]
-        resp = self._sal.workspace.workspace_get(workspace_id)
+        resp = self._sal.workspace.workspace_get(workspace_id, False)
         return self._create_entity(
             self, workspace_id=resp["id"], workspace_definition=resp["definition"]
         )
