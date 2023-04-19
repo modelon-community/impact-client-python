@@ -242,7 +242,7 @@ class Client:
             client.get_workspace('my_workspace')
 
         """
-        resp = self._sal.workspace.workspace_get(workspace_id)
+        resp = self._sal.workspace.workspace_get(workspace_id, size_info=False)
         return Workspace(resp["id"], resp["definition"], self._sal)
 
     def get_workspace_by_name(self, workspace_name: str) -> List[Workspace]:

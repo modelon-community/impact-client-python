@@ -213,6 +213,21 @@ def single_workspace(user_with_license):
 
 
 @pytest.fixture
+def single_workspace_with_size(user_with_license):
+    json = {
+        "definition": get_test_workspace_definition(),
+        "id": IDs.WORKSPACE_PRIMARY,
+        "sizeInfo": {"total": 7014},
+    }
+    return with_json_route(
+        user_with_license,
+        'GET',
+        f'api/workspaces/{IDs.WORKSPACE_PRIMARY}?sizeInfo=True',
+        json,
+    )
+
+
+@pytest.fixture
 def multiple_workspace(user_with_license):
     workspace_1_def = get_test_workspace_definition(IDs.WORKSPACE_PRIMARY)
     workspace_2_def = get_test_workspace_definition(IDs.WORKSPACE_SECONDARY)
@@ -1038,7 +1053,11 @@ def workspace():
         }
     }
     ws_service.workspace_download.return_value = b'\x00\x00\x00\x00'
-    ws_service.workspace_get.return_value = get_test_workspace_definition()
+    ws_service.workspace_get.return_value = {
+        "definition": get_test_workspace_definition(),
+        "id": IDs.WORKSPACE_PRIMARY,
+        "sizeInfo": {"total": 7014},
+    }
     ws_service.projects_get.return_value = {
         "data": {
             "items": [

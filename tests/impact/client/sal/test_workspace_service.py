@@ -41,10 +41,22 @@ class TestWorkspaceService:
         service = modelon.impact.client.sal.service.Service(
             uri=uri, context=single_workspace.context
         )
-        data = service.workspace.workspace_get(IDs.WORKSPACE_PRIMARY)
+        data = service.workspace.workspace_get(IDs.WORKSPACE_PRIMARY, False)
         assert data == {
             "definition": get_test_workspace_definition(),
             "id": IDs.WORKSPACE_PRIMARY,
+        }
+
+    def test_get_workspace_with_size(self, single_workspace_with_size):
+        uri = URI(single_workspace_with_size.url)
+        service = modelon.impact.client.sal.service.Service(
+            uri=uri, context=single_workspace_with_size.context
+        )
+        data = service.workspace.workspace_get(IDs.WORKSPACE_PRIMARY, True)
+        assert data == {
+            "definition": get_test_workspace_definition(),
+            "id": IDs.WORKSPACE_PRIMARY,
+            "sizeInfo": {"total": 7014},
         }
 
     def test_get_workspaces(self, multiple_workspace):
