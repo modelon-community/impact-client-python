@@ -281,6 +281,20 @@ class Project:
             for content in self._project_definition.content
         ]
 
+    def get_content(self, content_id: str) -> ProjectContent:
+        """Gets the project content with the given ID.
+
+        Args:
+            content_id: The ID of the workspace.
+
+        Example::
+
+            project.get_content("79sd8-3n2a4-e3t24")
+
+        """
+        resp = self._sal.project.project_content_get(self.id, content_id)
+        return ProjectContent(resp, self.id, self._sal)
+
     def get_content_by_name(
         self, name: str, content_type: Optional[ContentType] = None
     ) -> Optional[ProjectContent]:
@@ -292,6 +306,7 @@ class Project:
             content_type: The type of the project content.
 
         Example::
+
             from modelon.impact.client import ContentType
             project.get_content_by_name(name, ContentType.MODELICA)
 

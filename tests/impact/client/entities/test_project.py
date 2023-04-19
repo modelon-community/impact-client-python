@@ -44,6 +44,14 @@ class TestProject:
         assert contents[0].name == 'MyPackage'
         assert not contents[0].default_disabled
 
+    def test_get_project_content_by_id(self, project):
+        content = project.entity.get_content(IDs.PROJECT_CONTENT_SECONDARY)
+        assert content.id == IDs.PROJECT_CONTENT_SECONDARY
+        assert content.relpath == Path('test.mo')
+        assert content.content_type == ContentType.MODELICA
+        assert content.name == 'test'
+        assert not content.default_disabled
+
     def test_get_project_content_by_name(self, project):
         content = project.entity.get_content_by_name('MyPackage', ContentType.MODELICA)
         assert content.id == IDs.PROJECT_CONTENT_PRIMARY
