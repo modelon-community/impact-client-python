@@ -1,3 +1,10 @@
+# [3.0.0-dev.30](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.29...v3.0.0-dev.30) (2023-04-25)
+
+
+### Features
+
+* added possibility to get experiments for model ([351d860](https://github.com/modelon-community/impact-client-python/commit/351d8606539d2ad18618bbec5cbd1c35f05bd0cc))
+
 # [3.0.0-dev.29](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.28...v3.0.0-dev.29) (2023-04-18)
 
 
