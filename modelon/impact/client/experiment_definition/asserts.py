@@ -11,8 +11,9 @@ from modelon.impact.client.options import (
 )
 from modelon.impact.client.entities.custom_function import CustomFunction
 from modelon.impact.client.entities.interfaces.model import BaseModel
-import modelon.impact.client.entities.model_executable
-import modelon.impact.client.experiment_definition.extension
+from modelon.impact.client.entities.interfaces.model_executable import (
+    BaseModelExecutable,
+)
 
 CaseOrExperimentOrExternalResult = Union[Case, Experiment, ExternalResult]
 RuntimeOptionsOrDict = Union[RuntimeOptions, Dict[str, Any]]
@@ -34,9 +35,7 @@ def assert_valid_args(
     compiler_options: Optional[CompilerOptionsOrDict] = None,
     runtime_options: Optional[RuntimeOptionsOrDict] = None,
 ) -> None:
-    if fmu and not isinstance(
-        fmu, modelon.impact.client.entities.model_executable.ModelExecutable
-    ):
+    if fmu and not isinstance(fmu, BaseModelExecutable):
         raise TypeError("FMU must be an instance of ModelExecutable class!")
     if model and not isinstance(model, BaseModel):
         raise TypeError("Model must be an instance of Model class!")
