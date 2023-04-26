@@ -70,7 +70,8 @@ class TestModelExecutable:
 
     def test_download_fmu_failed_compilation(self, fmu_compile_failed):
         pytest.raises(
-            exceptions.OperationFailureError, fmu_compile_failed.download,
+            exceptions.OperationFailureError,
+            fmu_compile_failed.download,
         )
 
     def test_download_fmu_no_path(self, fmu):
@@ -81,4 +82,3 @@ class TestModelExecutable:
     def test_can_be_put_uniquely_in_set(self, fmu):
         fmu_set = set([fmu, fmu])
         assert len(fmu_set) == 1
-
