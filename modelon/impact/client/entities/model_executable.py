@@ -4,10 +4,15 @@ import os
 import tempfile
 from typing import Any, List, Dict, Optional, Union, TYPE_CHECKING
 
+from modelon.impact.client.entities.interfaces.model_executable import (
+    ModelExecutableInterface,
+)
 from modelon.impact.client.entities.asserts import assert_successful_operation
 from modelon.impact.client.entities.log import Log
 from modelon.impact.client.entities.status import ModelExecutableStatus
-import modelon.impact.client.experiment_definition.base as base
+from modelon.impact.client.experiment_definition.fmu_based import (
+    SimpleFMUExperimentDefinition,
+)
 from modelon.impact.client import exceptions
 from modelon.impact.client.operations.model_executable import (
     ModelExecutableOperation,
@@ -55,7 +60,7 @@ class _ModelExecutableRunInfo:
         return self._errors
 
 
-class ModelExecutable:
+class ModelExecutable(ModelExecutableInterface):
     """Class containing ModelExecutable functionalities."""
 
     def __init__(
@@ -66,25 +71,20 @@ class ModelExecutable:
         info: Optional[Dict[str, Any]] = None,
         modifiers: Optional[Dict[str, Any]] = None,
     ):
-        self._workspace_id = workspace_id
         self._fmu_id = fmu_id
+        self._workspace_id = workspace_id
         self._sal = service
         self._info = info
         self._modifiers = modifiers
 
-    def __repr__(self) -> str:
-        return f"FMU with id '{self._fmu_id}'"
-
     def __eq__(self, obj: object) -> bool:
         return isinstance(obj, ModelExecutable) and obj._fmu_id == self._fmu_id
 
+    def __repr__(self) -> str:
+        return f"FMU with id '{self._fmu_id}'"
+
     def __hash__(self) -> int:
         return self._fmu_id.__hash__()
-
-    @property
-    def id(self) -> str:
-        """FMU id."""
-        return self._fmu_id
 
     def _variable_modifiers(self) -> Dict[str, Any]:
         return {} if self._modifiers is None else self._modifiers
@@ -94,6 +94,11 @@ class ModelExecutable:
             self._info = self._sal.workspace.fmu_get(self._workspace_id, self._fmu_id)
 
         return self._info
+
+    @property
+    def id(self) -> str:
+        """FMU id."""
+        return self._fmu_id
 
     @property
     def info(self) -> Dict[str, Any]:
@@ -200,7 +205,7 @@ class ModelExecutable:
         solver_options: Optional[SolverOptionsOrDict] = None,
         simulation_options: Optional[SimulationOptionsOrDict] = None,
         simulation_log_level: str = "WARNING",
-    ) -> base.SimpleFMUExperimentDefinition:
+    ) -> SimpleFMUExperimentDefinition:
         """Returns a new experiment definition using this FMU.
 
         Args:
@@ -226,7 +231,7 @@ class ModelExecutable:
             experiment = workspace.execute(experiment_definition).wait()
 
         """
-        return base.SimpleFMUExperimentDefinition(
+        return SimpleFMUExperimentDefinition(
             self,
             custom_function,
             solver_options,

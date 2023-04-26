@@ -1,5 +1,9 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING, Any
+
+from modelon.impact.client.entities.interfaces.external_result import (
+    ExternalResultInterface,
+)
 from modelon.impact.client.operations.external_result_import import (
     ExternalResultImportOperation,
 )
@@ -39,7 +43,7 @@ class ExternalResultMetaData:
         return self._workspace_id
 
 
-class ExternalResult:
+class ExternalResult(ExternalResultInterface):
     """Class containing  external result."""
 
     def __init__(self, result_id: str, service: Service):

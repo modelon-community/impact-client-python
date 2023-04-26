@@ -6,7 +6,6 @@ from modelon.impact.client.entities.case import Case
 from modelon.impact.client.entities.project import (
     Project,
     ProjectContent,
-    ProjectDefinition,
     ProjectType,
     VcsUri,
 )
