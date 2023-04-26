@@ -5,6 +5,7 @@ import tempfile
 from datetime import datetime
 from typing import Any, Dict, Tuple, Optional, List, Union, Text, TYPE_CHECKING
 
+from modelon.impact.client.entities.interfaces.case import BaseCase
 from modelon.impact.client.sal.experiment import ResultFormat
 from modelon.impact.client.operations.base import BaseOperation
 from modelon.impact.client.operations.case import CaseOperation
@@ -285,7 +286,7 @@ class _CaseInput:
         return self._data['fmu_base_parametrization']
 
 
-class Case:
+class Case(BaseCase):
     """Class containing Case functionalities."""
 
     __slots__ = ['_case_id', '_workspace_id', '_exp_id', '_sal', '_info']
@@ -298,22 +299,14 @@ class Case:
         service: Service,
         info: Dict[str, Any],
     ):
-        self._case_id = case_id
+        super().__init__(case_id)
         self._workspace_id = workspace_id
         self._exp_id = exp_id
         self._sal = service
         self._info = info
 
-    def __repr__(self) -> str:
-        return f"Case with id '{self._case_id}'"
-
     def __eq__(self, obj: object) -> bool:
         return isinstance(obj, Case) and obj._case_id == self._case_id
-
-    @property
-    def id(self) -> str:
-        """Case id."""
-        return self._case_id
 
     @property
     def experiment_id(self) -> str:

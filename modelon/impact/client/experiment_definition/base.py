@@ -13,8 +13,8 @@ from modelon.impact.client.experiment_definition.expansion import (
     FullFactorial,
 )
 from modelon.impact.client.entities.external_result import ExternalResult
-from modelon.impact.client.entities.case import Case
-from modelon.impact.client.entities.experiment import Experiment
+from modelon.impact.client.entities.interfaces.case import BaseCase
+from modelon.impact.client.entities.interfaces.experiment import BaseExperiment
 from modelon.impact.client.experiment_definition.util import (
     get_options,
     case_to_identifier_dict,
@@ -24,6 +24,8 @@ from modelon.impact.client.experiment_definition.asserts import (
 )
 
 if TYPE_CHECKING:
+    from modelon.impact.client.entities.case import Case
+    from modelon.impact.client.entities.experiment import Experiment
     from modelon.impact.client.entities.model import Model
     from modelon.impact.client.entities.custom_function import CustomFunction
     from modelon.impact.client.entities.model_executable import ModelExecutable
@@ -46,12 +48,12 @@ logger = logging.getLogger(__name__)
 def _validate_initialize_from(
     entity: Optional[CaseOrExperimentOrExternalResult],
 ) -> None:
-    if entity and not isinstance(entity, (Case, Experiment, ExternalResult)):
+    if entity and not isinstance(entity, (BaseCase, BaseExperiment, ExternalResult)):
         raise TypeError(
             "The entity argument be an instance of "
             "Case or Experiment or ExternalResult!"
         )
-    if isinstance(entity, Experiment) and len(entity.get_cases()) > 1:
+    if isinstance(entity, BaseExperiment) and len(entity.get_cases()) > 1:
         raise ValueError(
             "Cannot initialize from an experiment containing multiple"
             " cases! Please specify a case object instead."
@@ -321,11 +323,11 @@ class SimpleFMUExperimentDefinition(BaseExperimentDefinition):
                 "extensions": [ext.to_dict() for ext in self._extensions],
             }
         }
-        if isinstance(self.initialize_from, Experiment):
+        if isinstance(self.initialize_from, BaseExperiment):
             exp_dict["experiment"]["base"]["modifiers"][
                 "initializeFrom"
             ] = self.initialize_from.id
-        elif isinstance(self.initialize_from, Case):
+        elif isinstance(self.initialize_from, BaseCase):
             exp_dict["experiment"]["base"]["modifiers"][
                 "initializeFromCase"
             ] = case_to_identifier_dict(self.initialize_from)
@@ -762,11 +764,11 @@ class SimpleModelicaExperimentDefinition(BaseExperimentDefinition):
             exp_dict["experiment"]["base"]["expansion"][
                 "parameters"
             ] = expansion_parameters
-        if isinstance(self.initialize_from, Experiment):
+        if isinstance(self.initialize_from, BaseExperiment):
             exp_dict["experiment"]["base"]["modifiers"][
                 "initializeFrom"
             ] = self.initialize_from.id
-        elif isinstance(self.initialize_from, Case):
+        elif isinstance(self.initialize_from, BaseCase):
             exp_dict["experiment"]["base"]["modifiers"][
                 "initializeFromCase"
             ] = case_to_identifier_dict(self.initialize_from)

@@ -1,17 +1,21 @@
 from __future__ import annotations
 import logging
 from abc import ABC
-from typing import Optional, Dict, Any, Union
+from typing import Optional, Dict, Any, Union, TYPE_CHECKING
 
 from modelon.impact.client.experiment_definition.operators import Operator
-from modelon.impact.client.entities.experiment import Experiment
-from modelon.impact.client.entities.case import Case
+from modelon.impact.client.entities.interfaces.experiment import BaseExperiment
+from modelon.impact.client.entities.interfaces.case import BaseCase
 from modelon.impact.client.experiment_definition.util import (
     get_options,
     case_to_identifier_dict,
 )
 
-CaseOrExperiment = Union[Case, Experiment]
+if TYPE_CHECKING:
+    from modelon.impact.client.entities.case import Case
+    from modelon.impact.client.entities.experiment import Experiment
+
+    CaseOrExperiment = Union[Case, Experiment]
 
 logger = logging.getLogger(__name__)
 
@@ -19,12 +23,12 @@ logger = logging.getLogger(__name__)
 def _validate_initialize_from(entity: Optional[CaseOrExperiment]) -> None:
     if not entity:
         return
-    if entity and not isinstance(entity, (Experiment, Case)):
+    if entity and not isinstance(entity, (BaseExperiment, BaseCase)):
         raise TypeError(
             "It is only supported to specify initialize from either Experiment "
             "or Case for experiment extensions"
         )
-    if isinstance(entity, Experiment) and len(entity.get_cases()) > 1:
+    if isinstance(entity, BaseExperiment) and len(entity.get_cases()) > 1:
         raise ValueError(
             "Cannot initialize from an experiment containing multiple"
             " cases! Please specify a case object instead."
@@ -251,10 +255,10 @@ class SimpleExperimentExtension(BaseExperimentExtension):
             ext_dict.setdefault("analysis", {})
             ext_dict["analysis"]["simulationLogLevel"] = self._simulation_log_level
 
-        if isinstance(self.initialize_from, Experiment):
+        if isinstance(self.initialize_from, BaseExperiment):
             ext_dict.setdefault("modifiers", {})
             ext_dict["modifiers"]["initializeFrom"] = self.initialize_from.id
-        elif isinstance(self.initialize_from, Case):
+        elif isinstance(self.initialize_from, BaseCase):
             ext_dict["modifiers"]["initializeFromCase"] = case_to_identifier_dict(
                 self.initialize_from
             )
