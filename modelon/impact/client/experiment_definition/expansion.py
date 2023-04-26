@@ -1,22 +1,12 @@
-from dataclasses import dataclass, asdict
-from abc import abstractmethod, ABC
-from typing import Optional, Dict, Any
 import logging
+from dataclasses import dataclass, asdict
+from typing import Optional, Dict, Any
 
+from modelon.impact.client.experiment_definition.interfaces.expansion import (
+    ExpansionAlgorithm,
+)
 
 logger = logging.getLogger(__name__)
-
-
-class ExpansionAlgorithm(ABC):
-    """Base class for an expansion algorithm."""
-
-    @abstractmethod
-    def __str__(self) -> str:
-        "Returns a string representation of the expansion algorithm"
-
-    @abstractmethod
-    def get_parameters_as_dict(self) -> Optional[Dict[str, Any]]:
-        "Returns parameters as a dictionary"
 
 
 @dataclass

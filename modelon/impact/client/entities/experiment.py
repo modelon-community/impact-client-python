@@ -3,6 +3,7 @@ import logging
 import enum
 from typing import Any, List, Dict, Optional, TYPE_CHECKING
 
+from modelon.impact.client.entities.interfaces.experiment import ExperimentInterface
 from modelon.impact.client.operations import experiment
 from modelon.impact.client.entities.case import Case
 from modelon.impact.client.entities.asserts import assert_variable_in_result
@@ -110,7 +111,7 @@ class ExperimentMetaData:
         return self._meta_data.get("label")
 
 
-class Experiment:
+class Experiment(ExperimentInterface):
     """Class containing Experiment functionalities."""
 
     def __init__(
@@ -120,17 +121,17 @@ class Experiment:
         service: Service,
         info: Optional[Dict[str, Any]] = None,
     ):
-        self._workspace_id = workspace_id
         self._exp_id = exp_id
+        self._workspace_id = workspace_id
         self._sal = service
         self._info = info
         self._fmu_info: Optional[Dict[str, Any]] = None
 
-    def __repr__(self) -> str:
-        return f"Experiment with id '{self._exp_id}'"
-
     def __eq__(self, obj: object) -> bool:
         return isinstance(obj, Experiment) and obj._exp_id == self._exp_id
+
+    def __repr__(self) -> str:
+        return f"Experiment with id '{self._exp_id}'"
 
     @property
     def id(self) -> str:

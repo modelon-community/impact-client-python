@@ -3,11 +3,12 @@ from dataclasses import dataclass
 import logging
 import os
 import json
-from typing import Any, List, Dict, Optional, Union, TYPE_CHECKING
+from typing import Any, List, Dict, Optional, Union, Type, TYPE_CHECKING
+
+from modelon.impact.client.entities.interfaces.workspace import WorkspaceInterface
 from modelon.impact.client.sal.service import Service
-from modelon.impact.client.experiment_definition.base import (
-    SimpleModelicaExperimentDefinition,
-    SimpleFMUExperimentDefinition,
+from modelon.impact.client.experiment_definition.interfaces.definition import (
+    BaseExperimentDefinition,
 )
 from modelon.impact.client.entities.custom_function import CustomFunction
 from modelon.impact.client.operations.workspace.exports import (
@@ -23,7 +24,7 @@ from modelon.impact.client.operations.experiment import ExperimentOperation
 from modelon.impact.client.operations.external_result_import import (
     ExternalResultImportOperation,
 )
-import modelon.impact.client.entities.model
+from modelon.impact.client.entities.model import Model
 from modelon.impact.client.entities.external_result import ExternalResult
 from modelon.impact.client.entities.model_executable import ModelExecutable
 from modelon.impact.client.entities.experiment import Experiment
@@ -35,8 +36,7 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 ExperimentDefinition = Union[
-    SimpleModelicaExperimentDefinition,
-    SimpleFMUExperimentDefinition,
+    Type[BaseExperimentDefinition],
     Dict[str, Any],
 ]
 
@@ -148,7 +148,7 @@ class WorkspaceDefinition:
         return self._data
 
 
-class Workspace:
+class Workspace(WorkspaceInterface):
     """Class containing Workspace functionalities."""
 
     def __init__(
@@ -165,11 +165,16 @@ class Workspace:
         )
         self._sal = service
 
+    def __eq__(self, obj: object) -> bool:
+        return isinstance(obj, Workspace) and obj._workspace_id == self._workspace_id
+
     def __repr__(self) -> str:
         return f"Workspace with id '{self._workspace_id}'"
 
-    def __eq__(self, obj: object) -> bool:
-        return isinstance(obj, Workspace) and obj._workspace_id == self._workspace_id
+    @property
+    def id(self) -> str:
+        """Workspace id."""
+        return self._workspace_id
 
     @property
     def size(self) -> float:
@@ -177,11 +182,6 @@ class Workspace:
         return self._sal.workspace.workspace_get(workspace_id=self.id, size_info=True)[
             "sizeInfo"
         ]["total"]
-
-    @property
-    def id(self) -> str:
-        """Workspace id."""
-        return self._workspace_id
 
     @property
     def definition(self) -> WorkspaceDefinition:
@@ -313,9 +313,7 @@ class Workspace:
         ops = self.export().wait()
         return ops.download_as(ws_path)
 
-    def get_model(
-        self, class_name: str, project: Optional[Project] = None
-    ) -> modelon.impact.client.entities.model.Model:
+    def get_model(self, class_name: str, project: Optional[Project] = None) -> Model:
         """Returns a Model class object.
 
         Args:
@@ -331,9 +329,7 @@ class Workspace:
 
         """
         project = project or self.get_default_project()
-        return modelon.impact.client.entities.model.Model(
-            class_name, self._workspace_id, project.id, self._sal
-        )
+        return Model(class_name, self._workspace_id, project.id, self._sal)
 
     def get_fmus(self) -> List[ModelExecutable]:
         """Returns a list of ModelExecutable class objects.
@@ -431,7 +427,7 @@ class Workspace:
         """
         if isinstance(
             definition,
-            (SimpleFMUExperimentDefinition, SimpleModelicaExperimentDefinition),
+            BaseExperimentDefinition,
         ):
             definition_as_dict = definition.to_dict()
         elif isinstance(definition, dict):

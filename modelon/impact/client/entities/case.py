@@ -5,13 +5,14 @@ import tempfile
 from datetime import datetime
 from typing import Any, Dict, Tuple, Optional, List, Union, Text, TYPE_CHECKING
 
+from modelon.impact.client.entities.interfaces.case import CaseInterface
 from modelon.impact.client.sal.experiment import ResultFormat
 from modelon.impact.client.operations.base import BaseOperation
 from modelon.impact.client.operations.case import CaseOperation
 from modelon.impact.client.entities.external_result import ExternalResult
 from modelon.impact.client.entities.log import Log
 from modelon.impact.client.entities.result import Result
-import modelon.impact.client.entities.model_executable
+from modelon.impact.client.entities.model_executable import ModelExecutable
 from modelon.impact.client.entities.status import CaseStatus
 from modelon.impact.client.entities.asserts import assert_successful_operation
 from modelon.impact.client import exceptions
@@ -285,7 +286,7 @@ class _CaseInput:
         return self._data['fmu_base_parametrization']
 
 
-class Case:
+class Case(CaseInterface):
     """Class containing Case functionalities."""
 
     __slots__ = ['_case_id', '_workspace_id', '_exp_id', '_sal', '_info']
@@ -304,11 +305,11 @@ class Case:
         self._sal = service
         self._info = info
 
-    def __repr__(self) -> str:
-        return f"Case with id '{self._case_id}'"
-
     def __eq__(self, obj: object) -> bool:
         return isinstance(obj, Case) and obj._case_id == self._case_id
+
+    def __repr__(self) -> str:
+        return f"Case with id '{self._case_id}'"
 
     @property
     def id(self) -> str:
@@ -582,7 +583,7 @@ class Case:
 
     def get_fmu(
         self,
-    ) -> modelon.impact.client.entities.model_executable.ModelExecutable:
+    ) -> ModelExecutable:
         """Returns the ModelExecutable class object simulated for the case.
 
         Returns:
@@ -597,9 +598,7 @@ class Case:
         """
         fmu_id = self.input.fmu_id
 
-        return modelon.impact.client.entities.model_executable.ModelExecutable(
-            self._workspace_id, fmu_id, self._sal
-        )
+        return ModelExecutable(self._workspace_id, fmu_id, self._sal)
 
     def sync(self) -> None:
         """Sync case state against server, pushing any changes that has been

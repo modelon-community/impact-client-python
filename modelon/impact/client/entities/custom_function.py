@@ -1,6 +1,10 @@
 from __future__ import annotations
 import logging
 from typing import Any, List, Dict, Optional, TYPE_CHECKING
+
+from modelon.impact.client.entities.interfaces.custom_function import (
+    CustomFunctionInterface,
+)
 from modelon.impact.client.sal.service import Service
 from modelon.impact.client.options import ProjectExecutionOptions
 
@@ -58,7 +62,7 @@ class _Parameter:
         self._value = value
 
 
-class CustomFunction:
+class CustomFunction(CustomFunctionInterface):
     """Class containing CustomFunction functionalities."""
 
     def __init__(
@@ -82,11 +86,11 @@ class CustomFunction:
         }
         self._sal = service
 
-    def __repr__(self) -> str:
-        return f"Custom function '{self._name}'"
-
     def __eq__(self, obj: object) -> bool:
         return isinstance(obj, CustomFunction) and obj._name == self._name
+
+    def __repr__(self) -> str:
+        return f"Custom function '{self._name}'"
 
     @property
     def name(self) -> str:
