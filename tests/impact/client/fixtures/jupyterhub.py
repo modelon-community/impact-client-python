@@ -57,7 +57,10 @@ def get_user_unknown_error(mock_server_base):
 @pytest.fixture
 def get_user_response_missing_fields(mock_server_base):
     return with_json_route(
-        mock_server_base, 'GET', 'hub/api/authorizations/token/secret-token', {},
+        mock_server_base,
+        'GET',
+        'hub/api/authorizations/token/secret-token',
+        {},
     )
 
 

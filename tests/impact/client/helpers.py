@@ -229,6 +229,120 @@ VERSIONED_PROJECT_BRANCH = {
 }
 
 
+def get_test_get_fmu():
+    return {
+        'id': IDs.FMU_PRIMARY,
+        'input': {
+            'class_name': IDs.MODELICA_CLASS_PATH,
+            'compiler_options': {'c_compiler': 'gcc'},
+            'runtime_options': {'a': 1},
+            'compiler_log_level': 'w',
+            'fmi_target': 'me',
+            'fmi_version': '2.0',
+            'platform': 'auto',
+            'model_snapshot': '1610523986117',
+            'toolchain_version': '0.0.1',
+            'compiled_on_sys': 'win32',
+        },
+        'run_info': {
+            'status': 'successful',
+            'datetime_started': 1610523986193,
+            'errors': [],
+            'datetime_finished': 1610523990763,
+        },
+        'meta': {
+            'created_epoch': 1610523986,
+            'input_hash': 'f47e0d051a804eee3cde3e3d98da5f39',
+            'fmu_file': 'model.fmu',
+        },
+    }
+
+
+def get_test_fmu_experiment_definition():
+    return {
+        'id': IDs.EXPERIMENT_PRIMARY,
+        'experiment': {
+            'version': 2,
+            'base': {
+                'model': {'fmu': {'id': IDs.FMU_PRIMARY}},
+                'modifiers': {'variables': {}},
+                'analysis': {
+                    'type': 'dynamic',
+                    'parameters': {'start_time': 0, 'final_time': 1, 'interval': 0},
+                    'simulationOptions': {'ncp': 500, 'dynamic_diagnostics': False},
+                    'solverOptions': {'solver': 'Cvode'},
+                    'simulationLogLevel': 'WARNING',
+                },
+            },
+            'extensions': [],
+        },
+        'meta_data': {
+            'created_epoch': 1682399802,
+            'experiment_hash': '7a9aac52afbe7452f236105f4c864ae4',
+            'label': '',
+            'model_names': [IDs.MODELICA_CLASS_PATH],
+        },
+        'run_info': {
+            'status': 'done',
+            'datetime_started': 1682399802753,
+            'datetime_finished': 1682399803066,
+            'failed': 0,
+            'successful': 1,
+            'cancelled': 0,
+            'not_started': 0,
+        },
+    }
+
+
+def get_test_modelica_experiment_definition():
+    return {
+        'id': IDs.EXPERIMENT_PRIMARY,
+        'experiment': {
+            'version': 2,
+            'base': {
+                'model': {
+                    'modelica': {
+                        'className': IDs.MODELICA_CLASS_PATH,
+                        'compilerOptions': {
+                            'c_compiler': 'gcc',
+                        },
+                        'runtimeOptions': {'a': 1},
+                        'compilerLogLevel': 'warning',
+                        'fmiTarget': 'me',
+                        'fmiVersion': '2.0',
+                        'platform': 'auto',
+                    }
+                },
+                'modifiers': {'variables': {}},
+                'analysis': {
+                    'type': 'dynamic',
+                    'parameters': {'start_time': 0, 'final_time': 1, 'interval': 0},
+                    'simulationOptions': {'ncp': 500, 'dynamic_diagnostics': False},
+                    'solverOptions': {'solver': 'Cvode'},
+                    'simulationLogLevel': 'WARNING',
+                },
+                'expansion': {'algorithm': 'FULLFACTORIAL'},
+            },
+            'extensions': [],
+        },
+        'meta_data': {
+            'created_epoch': 1682399102,
+            'experiment_hash': 'c32aa5210e066950a62db469158aeb43',
+            'label': '',
+            'model_names': [IDs.MODELICA_CLASS_PATH],
+        },
+        'run_info': {
+            'status': 'done',
+            'datetime_started': 1682399102855,
+            'datetime_finished': 1682399106597,
+            'failed': 0,
+            'successful': 1,
+            'cancelled': 0,
+            'not_started': 0,
+        },
+    }
+
+
 def get_test_workspace_definition(name=None):
     git_url = "https://github.com/project/test"
     vcs_uri = f"git+{git_url}.git@main:da6abb188a089527df1b54b27ace84274b819e4a"

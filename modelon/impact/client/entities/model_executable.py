@@ -124,6 +124,10 @@ class ModelExecutable:
             self._workspace_id, self._fmu_id, parameter_state
         )
 
+    def get_class_name(self) -> str:
+        """Return the model class name."""
+        return self._get_info()["input"]["class_name"]
+
     def is_successful(self) -> bool:
         """Returns True if the model has compiled successfully. Use the
         'run_info' attribute to get more info.

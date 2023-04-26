@@ -1,11 +1,18 @@
 from __future__ import annotations
 import logging
+import enum
 from typing import Any, List, Dict, Optional, TYPE_CHECKING
 
 from modelon.impact.client.operations import experiment
 from modelon.impact.client.entities.case import Case
 from modelon.impact.client.entities.asserts import assert_variable_in_result
 from modelon.impact.client.entities.status import ExperimentStatus
+from modelon.impact.client.options import (
+    CompilerOptions,
+    SimulationOptions,
+    RuntimeOptions,
+    SolverOptions,
+)
 from modelon.impact.client import exceptions
 
 if TYPE_CHECKING:
@@ -13,6 +20,14 @@ if TYPE_CHECKING:
     from modelon.impact.client.operations.base import BaseOperation
 
 logger = logging.getLogger(__name__)
+
+
+@enum.unique
+class _Workflow(enum.Enum):
+    """Workflow type."""
+
+    FMU_BASED = 'FMU_BASED'
+    CLASS_BASED = 'CLASS_BASED'
 
 
 def _assert_experiment_is_complete(
@@ -100,6 +115,7 @@ class Experiment:
         self._exp_id = exp_id
         self._sal = service
         self._info = info
+        self._fmu_info: Optional[Dict[str, Any]] = None
 
     def __repr__(self) -> str:
         return f"Experiment with id '{self._exp_id}'"
@@ -368,3 +384,59 @@ class Experiment:
     ) -> Experiment:
         assert isinstance(operation, experiment.ExperimentOperation)
         return cls(**kwargs, service=operation._sal)
+
+    @property
+    def custom_function(self) -> str:
+        """Returns the custom function name."""
+        return self._get_info()["experiment"]["base"]["analysis"]["type"]
+
+    def _get_fmu_info(self, fmu_id: str) -> Dict[str, Any]:
+        if self._fmu_info is None:
+            self._fmu_info = self._sal.workspace.fmu_get(self._workspace_id, fmu_id)
+
+        return self._fmu_info
+
+    def _get_workflow(self) -> _Workflow:
+        model = self._get_info()["experiment"]["base"]["model"]
+        return _Workflow.CLASS_BASED if model.get("modelica") else _Workflow.FMU_BASED
+
+    def get_class_name(self) -> str:
+        """Return the model class name."""
+        model = self._get_info()["experiment"]["base"]["model"]
+        if self._get_workflow() == _Workflow.CLASS_BASED:
+            return model["modelica"]["className"]
+        return self._get_fmu_info(model["fmu"]["id"])['input']["class_name"]
+
+    def get_compiler_options(self) -> CompilerOptions:
+        """Return a CompilerOptions object."""
+        model = self._get_info()["experiment"]["base"]["model"]
+        if self._get_workflow() == _Workflow.CLASS_BASED:
+            return CompilerOptions(
+                model["modelica"].get("compilerOptions", {}), self.custom_function
+            )
+        fmu_info = self._get_fmu_info(model["fmu"]["id"])['input']
+        return CompilerOptions(
+            fmu_info.get("compiler_options", {}), self.custom_function
+        )
+
+    def get_runtime_options(self) -> RuntimeOptions:
+        """Return a RuntimeOptions object."""
+        model = self._get_info()["experiment"]["base"]["model"]
+        if self._get_workflow() == _Workflow.CLASS_BASED:
+            return RuntimeOptions(
+                model["modelica"].get("runtimeOptions", {}), self.custom_function
+            )
+        fmu_info = self._get_fmu_info(model["fmu"]["id"])['input']
+        return RuntimeOptions(fmu_info.get("runtime_options", {}), self.custom_function)
+
+    def get_simulation_options(self) -> SimulationOptions:
+        """Return a SimulationOptions object."""
+        analysis = self._get_info()["experiment"]["base"]["analysis"]
+        return SimulationOptions(
+            analysis.get("simulationOptions", {}), self.custom_function
+        )
+
+    def get_solver_options(self) -> SolverOptions:
+        """Return a SolverOptions object."""
+        analysis = self._get_info()["experiment"]["base"]["analysis"]
+        return SolverOptions(analysis.get("solverOptions", {}), self.custom_function)

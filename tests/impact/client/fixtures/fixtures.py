@@ -21,6 +21,9 @@ from tests.impact.client.helpers import (
     with_text_route,
     with_zip_route,
     json_request_list_item,
+    get_test_modelica_experiment_definition,
+    get_test_fmu_experiment_definition,
+    get_test_get_fmu,
 )
 from tests.impact.client.helpers import (
     create_project_entity,
@@ -1351,32 +1354,7 @@ def fmu():
     service = MagicMock()
     ws_service = service.workspace
     model_exe_service = service.model_executable
-    ws_service.fmu_get.return_value = {
-        'id': IDs.FMU_PRIMARY,
-        'input': {
-            'class_name': 'Workspace.PID_Controller',
-            'compiler_options': {'c_compiler': 'gcc'},
-            'runtime_options': {},
-            'compiler_log_level': 'w',
-            'fmi_target': 'me',
-            'fmi_version': '2.0',
-            'platform': 'auto',
-            'model_snapshot': '1610523986117',
-            'toolchain_version': '0.0.1',
-            'compiled_on_sys': 'win32',
-        },
-        'run_info': {
-            'status': 'successful',
-            'datetime_started': 1610523986193,
-            'errors': [],
-            'datetime_finished': 1610523990763,
-        },
-        'meta': {
-            'created_epoch': 1610523986,
-            'input_hash': 'f47e0d051a804eee3cde3e3d98da5f39',
-            'fmu_file': 'model.fmu',
-        },
-    }
+    ws_service.fmu_get.return_value = get_test_get_fmu()
     ws_service.fmu_download.return_value = b'\x00\x00\x00\x00'
     model_exe_service.compile_status.return_value = {"status": "done"}
     model_exe_service.settable_parameters_get.return_value = ['h0', 'v']
@@ -1395,32 +1373,7 @@ def fmu_with_modifiers():
     service = MagicMock()
     ws_service = service.workspace
     model_exe_service = service.model_executable
-    ws_service.fmu_get.return_value = {
-        'id': IDs.FMU_PRIMARY,
-        'input': {
-            'class_name': 'Workspace.PID_Controller',
-            'compiler_options': {'c_compiler': 'gcc'},
-            'runtime_options': {},
-            'compiler_log_level': 'w',
-            'fmi_target': 'me',
-            'fmi_version': '2.0',
-            'platform': 'auto',
-            'model_snapshot': '1610523986117',
-            'toolchain_version': '0.0.1',
-            'compiled_on_sys': 'win32',
-        },
-        'run_info': {
-            'status': 'successful',
-            'datetime_started': 1610523986193,
-            'errors': [],
-            'datetime_finished': 1610523990763,
-        },
-        'meta': {
-            'created_epoch': 1610523986,
-            'input_hash': 'f47e0d051a804eee3cde3e3d98da5f39',
-            'fmu_file': 'model.fmu',
-        },
-    }
+    ws_service.fmu_get.return_value = get_test_get_fmu()
     ws_service.fmu_download.return_value = b'\x00\x00\x00\x00'
     model_exe_service.compile_status.return_value = {"status": "done"}
     model_exe_service.settable_parameters_get.return_value = ['h0', 'v']
@@ -1516,13 +1469,27 @@ def fmu_compile_cancelled():
 
 
 @pytest.fixture
+def fmu_based_experiment():
+    service = MagicMock()
+    ws_service = service.workspace
+    exp_service = service.experiment
+    ws_service.fmu_get.return_value = get_test_get_fmu()
+    ws_service.experiment_get.return_value = get_test_fmu_experiment_definition()
+    exp_service.experiment_execute.return_value = IDs.EXPERIMENT_PRIMARY
+    return ExperimentMock(
+        create_experiment_entity(
+            IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY, service=service
+        ),
+        service,
+    )
+
+
+@pytest.fixture
 def experiment():
     service = MagicMock()
     ws_service = service.workspace
     exp_service = service.experiment
-    ws_service.experiment_get.return_value = {
-        "run_info": {"status": "done", "failed": 0, "successful": 1, "cancelled": 0}
-    }
+    ws_service.experiment_get.return_value = get_test_modelica_experiment_definition()
     exp_service.experiment_execute.return_value = IDs.EXPERIMENT_PRIMARY
     exp_service.execute_status.return_value = {"status": "done"}
     exp_service.result_variables_get.return_value = ["inertia.I", "time"]

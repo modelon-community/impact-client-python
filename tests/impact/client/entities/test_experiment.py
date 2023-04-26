@@ -5,7 +5,6 @@ from modelon.impact.client import exceptions
 from modelon.impact.client.entities.experiment import ExperimentStatus
 from tests.impact.client.helpers import (
     create_case_entity,
-    create_experiment_entity,
     create_experiment_operation,
     IDs,
 )
@@ -89,6 +88,30 @@ class TestExperiment:
         exp = experiment.get_trajectories(['inertia.I', 'time'])
         assert exp[IDs.CASE_PRIMARY]['inertia.I'] == [1, 2, 3, 4]
         assert exp[IDs.CASE_PRIMARY]['time'] == [5, 2, 9, 4]
+
+    def test_successful_fmu_based_experiment(self, fmu_based_experiment):
+        experiment = fmu_based_experiment.entity
+        assert experiment.get_class_name() == IDs.MODELICA_CLASS_PATH
+        assert experiment.custom_function == IDs.DYNAMIC_CF
+        assert dict(experiment.get_compiler_options()) == {'c_compiler': 'gcc'}
+        assert dict(experiment.get_runtime_options()) == {'a': 1}
+        assert dict(experiment.get_solver_options()) == {'solver': 'Cvode'}
+        assert dict(experiment.get_simulation_options()) == {
+            'dynamic_diagnostics': False,
+            'ncp': 500,
+        }
+
+    def test_successful_model_based_experiment(self, experiment):
+        experiment = experiment.entity
+        assert experiment.get_class_name() == IDs.MODELICA_CLASS_PATH
+        assert experiment.custom_function == IDs.DYNAMIC_CF
+        assert dict(experiment.get_compiler_options()) == {'c_compiler': 'gcc'}
+        assert dict(experiment.get_runtime_options()) == {'a': 1}
+        assert dict(experiment.get_solver_options()) == {'solver': 'Cvode'}
+        assert dict(experiment.get_simulation_options()) == {
+            'dynamic_diagnostics': False,
+            'ncp': 500,
+        }
 
     def test_successful_batch_execute(self, batch_experiment):
         assert batch_experiment.is_successful()

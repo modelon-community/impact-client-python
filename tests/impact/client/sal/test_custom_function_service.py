@@ -43,4 +43,3 @@ class TestCustomFunctionService:
             IDs.WORKSPACE_PRIMARY, 'cust_func'
         )
         assert data == {"compiler": {"generate_html_diagnostics": True}}
-
