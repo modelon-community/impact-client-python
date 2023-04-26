@@ -10,7 +10,9 @@ from modelon.impact.client.entities.interfaces.model_executable import (
 from modelon.impact.client.entities.asserts import assert_successful_operation
 from modelon.impact.client.entities.log import Log
 from modelon.impact.client.entities.status import ModelExecutableStatus
-import modelon.impact.client.experiment_definition.base as base
+from modelon.impact.client.experiment_definition.fmu_based import (
+    SimpleFMUExperimentDefinition,
+)
 from modelon.impact.client import exceptions
 from modelon.impact.client.operations.model_executable import (
     ModelExecutableOperation,
@@ -195,7 +197,7 @@ class ModelExecutable(BaseModelExecutable):
         solver_options: Optional[SolverOptionsOrDict] = None,
         simulation_options: Optional[SimulationOptionsOrDict] = None,
         simulation_log_level: str = "WARNING",
-    ) -> base.SimpleFMUExperimentDefinition:
+    ) -> SimpleFMUExperimentDefinition:
         """Returns a new experiment definition using this FMU.
 
         Args:
@@ -221,7 +223,7 @@ class ModelExecutable(BaseModelExecutable):
             experiment = workspace.execute(experiment_definition).wait()
 
         """
-        return base.SimpleFMUExperimentDefinition(
+        return SimpleFMUExperimentDefinition(
             self,
             custom_function,
             solver_options,

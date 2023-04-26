@@ -3,11 +3,10 @@ from dataclasses import dataclass
 import logging
 import os
 import json
-from typing import Any, List, Dict, Optional, Union, TYPE_CHECKING
+from typing import Any, List, Dict, Optional, Union, Type, TYPE_CHECKING
 from modelon.impact.client.sal.service import Service
-from modelon.impact.client.experiment_definition.base import (
-    SimpleModelicaExperimentDefinition,
-    SimpleFMUExperimentDefinition,
+from modelon.impact.client.experiment_definition.interfaces.definition import (
+    BaseExperimentDefinition,
 )
 from modelon.impact.client.entities.custom_function import CustomFunction
 from modelon.impact.client.operations.workspace.exports import (
@@ -35,8 +34,7 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 ExperimentDefinition = Union[
-    SimpleModelicaExperimentDefinition,
-    SimpleFMUExperimentDefinition,
+    Type[BaseExperimentDefinition],
     Dict[str, Any],
 ]
 
@@ -427,7 +425,7 @@ class Workspace:
         """
         if isinstance(
             definition,
-            (SimpleFMUExperimentDefinition, SimpleModelicaExperimentDefinition),
+            BaseExperimentDefinition,
         ):
             definition_as_dict = definition.to_dict()
         elif isinstance(definition, dict):

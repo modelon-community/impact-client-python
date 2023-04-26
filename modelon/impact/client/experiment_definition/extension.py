@@ -1,8 +1,10 @@
 from __future__ import annotations
 import logging
-from abc import ABC
 from typing import Optional, Dict, Any, Union, TYPE_CHECKING
 
+from modelon.impact.client.experiment_definition.interfaces.extension import (
+    BaseExperimentExtension,
+)
 from modelon.impact.client.experiment_definition.operators import Operator
 from modelon.impact.client.entities.interfaces.experiment import BaseExperiment
 from modelon.impact.client.entities.interfaces.case import BaseCase
@@ -33,10 +35,6 @@ def _validate_initialize_from(entity: Optional[CaseOrExperiment]) -> None:
             "Cannot initialize from an experiment containing multiple"
             " cases! Please specify a case object instead."
         )
-
-
-class BaseExperimentExtension(ABC):
-    """Base class for an experiment extension class."""
 
 
 class SimpleExperimentExtension(BaseExperimentExtension):

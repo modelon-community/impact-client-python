@@ -12,7 +12,7 @@ from modelon.impact.client.operations.case import CaseOperation
 from modelon.impact.client.entities.external_result import ExternalResult
 from modelon.impact.client.entities.log import Log
 from modelon.impact.client.entities.result import Result
-import modelon.impact.client.entities.model_executable
+from modelon.impact.client.entities.model_executable import ModelExecutable
 from modelon.impact.client.entities.status import CaseStatus
 from modelon.impact.client.entities.asserts import assert_successful_operation
 from modelon.impact.client import exceptions
@@ -575,7 +575,7 @@ class Case(BaseCase):
 
     def get_fmu(
         self,
-    ) -> modelon.impact.client.entities.model_executable.ModelExecutable:
+    ) -> ModelExecutable:
         """Returns the ModelExecutable class object simulated for the case.
 
         Returns:
@@ -590,9 +590,7 @@ class Case(BaseCase):
         """
         fmu_id = self.input.fmu_id
 
-        return modelon.impact.client.entities.model_executable.ModelExecutable(
-            self._workspace_id, fmu_id, self._sal
-        )
+        return ModelExecutable(self._workspace_id, fmu_id, self._sal)
 
     def sync(self) -> None:
         """Sync case state against server, pushing any changes that has been

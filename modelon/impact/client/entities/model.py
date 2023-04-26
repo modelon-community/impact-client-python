@@ -7,7 +7,9 @@ from modelon.impact.client.operations.model_executable import (
     ModelExecutableOperation,
     CachedModelExecutableOperation,
 )
-from modelon.impact.client.experiment_definition import base
+from modelon.impact.client.experiment_definition.model_based import (
+    SimpleModelicaExperimentDefinition,
+)
 from modelon.impact.client.options import (
     ProjectExecutionOptions,
     CompilerOptions,
@@ -194,7 +196,7 @@ class Model(BaseModel):
         simulation_options: Optional[SimulationOptionsOrDict] = None,
         simulation_log_level: str = "WARNING",
         initialize_from: Optional[CaseOrExperimentOrExternalResult] = None,
-    ) -> base.SimpleModelicaExperimentDefinition:
+    ) -> SimpleModelicaExperimentDefinition:
         """Returns a new experiment definition using this Model.
 
         Args:
@@ -252,7 +254,7 @@ class Model(BaseModel):
             self._project_id, self._workspace_id, custom_function=custom_function.name
         )
         project_options = ProjectExecutionOptions(options, custom_function.name)
-        return base.SimpleModelicaExperimentDefinition(
+        return SimpleModelicaExperimentDefinition(
             model=self,
             custom_function=custom_function,
             compiler_options=compiler_options or project_options.compiler_options,
