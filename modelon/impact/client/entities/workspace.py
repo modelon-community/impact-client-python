@@ -23,7 +23,7 @@ from modelon.impact.client.operations.experiment import ExperimentOperation
 from modelon.impact.client.operations.external_result_import import (
     ExternalResultImportOperation,
 )
-import modelon.impact.client.entities.model
+from modelon.impact.client.entities.model import Model
 from modelon.impact.client.entities.external_result import ExternalResult
 from modelon.impact.client.entities.model_executable import ModelExecutable
 from modelon.impact.client.entities.experiment import Experiment
@@ -313,9 +313,7 @@ class Workspace:
         ops = self.export().wait()
         return ops.download_as(ws_path)
 
-    def get_model(
-        self, class_name: str, project: Optional[Project] = None
-    ) -> modelon.impact.client.entities.model.Model:
+    def get_model(self, class_name: str, project: Optional[Project] = None) -> Model:
         """Returns a Model class object.
 
         Args:
@@ -331,9 +329,7 @@ class Workspace:
 
         """
         project = project or self.get_default_project()
-        return modelon.impact.client.entities.model.Model(
-            class_name, self._workspace_id, project.id, self._sal
-        )
+        return Model(class_name, self._workspace_id, project.id, self._sal)
 
     def get_fmus(self) -> List[ModelExecutable]:
         """Returns a list of ModelExecutable class objects.

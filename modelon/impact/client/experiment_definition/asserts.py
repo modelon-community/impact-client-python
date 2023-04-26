@@ -10,7 +10,7 @@ from modelon.impact.client.options import (
     CompilerOptions,
 )
 from modelon.impact.client.entities.custom_function import CustomFunction
-import modelon.impact.client.entities.model
+from modelon.impact.client.entities.interfaces.model import BaseModel
 import modelon.impact.client.entities.model_executable
 import modelon.impact.client.experiment_definition.extension
 
@@ -38,7 +38,7 @@ def assert_valid_args(
         fmu, modelon.impact.client.entities.model_executable.ModelExecutable
     ):
         raise TypeError("FMU must be an instance of ModelExecutable class!")
-    if model and not isinstance(model, modelon.impact.client.entities.model.Model):
+    if model and not isinstance(model, BaseModel):
         raise TypeError("Model must be an instance of Model class!")
     if custom_function and not isinstance(custom_function, CustomFunction):
         raise TypeError("Custom_function must be an instance of CustomFunction class!")
