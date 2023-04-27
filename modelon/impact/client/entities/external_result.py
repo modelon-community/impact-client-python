@@ -9,7 +9,7 @@ if TYPE_CHECKING:
     from modelon.impact.client.operations.base import BaseOperation
 
 
-class _ExternalResultMetaData:
+class ExternalResultMetaData:
     """Class containing external result metadata."""
 
     def __init__(self, id: str, name: str, description: str, workspace_id: str):
@@ -58,7 +58,7 @@ class ExternalResult:
         return self._result_id
 
     @property
-    def metadata(self) -> _ExternalResultMetaData:
+    def metadata(self) -> ExternalResultMetaData:
         """External result metadata."""
         upload_meta = self._sal.external_result.get_uploaded_result(self._result_id)[
             "data"
@@ -67,7 +67,7 @@ class ExternalResult:
         name = upload_meta.get("name")
         description = upload_meta.get("description")
         workspace_id = upload_meta.get("workspaceId")
-        return _ExternalResultMetaData(id, name, description, workspace_id)
+        return ExternalResultMetaData(id, name, description, workspace_id)
 
     def delete(self) -> None:
         self._sal.external_result.delete_uploaded_result(self._result_id)

@@ -39,7 +39,7 @@ def _assert_experiment_is_complete(
         raise exceptions.OperationFailureError.for_operation(operation_name)
 
 
-class _ExperimentRunInfo:
+class ExperimentRunInfo:
     def __init__(
         self,
         status: ExperimentStatus,
@@ -91,7 +91,7 @@ class _ExperimentRunInfo:
         return self._not_started
 
 
-class _ExperimentMetaData:
+class ExperimentMetaData:
     def __init__(self, user_data: Dict[str, Any]):
         self._user_data = user_data
 
@@ -137,7 +137,7 @@ class Experiment:
         return self._info
 
     @property
-    def run_info(self) -> _ExperimentRunInfo:
+    def run_info(self) -> ExperimentRunInfo:
         """Experiment run information."""
         run_info = self._get_info()["run_info"]
 
@@ -147,12 +147,12 @@ class Experiment:
         successful = run_info.get("successful", 0)
         cancelled = run_info.get("cancelled", 0)
         not_started = run_info.get("not_started", 0)
-        return _ExperimentRunInfo(
+        return ExperimentRunInfo(
             status, errors, failed, successful, cancelled, not_started
         )
 
     @property
-    def metadata(self) -> Optional[_ExperimentMetaData]:
+    def metadata(self) -> Optional[ExperimentMetaData]:
         """Experiment metadata.
 
         Returns custom user_data dictionary object attached to the
@@ -165,7 +165,7 @@ class Experiment:
         if meta_data is not None:
             user_data = meta_data.get("user_data")
             if user_data is not None:
-                return _ExperimentMetaData(user_data)
+                return ExperimentMetaData(user_data)
 
         return None
 
