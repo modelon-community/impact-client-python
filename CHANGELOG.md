@@ -1,3 +1,10 @@
+# [3.0.0-dev.31](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.30...v3.0.0-dev.31) (2023-04-27)
+
+
+### Features
+
+* added possibility to get custom_function, class name and options from experiment ([94274b5](https://github.com/modelon-community/impact-client-python/commit/94274b5ab4d74590a40e633eda6cceb0fd71412a))
+
 # [3.0.0-dev.30](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.29...v3.0.0-dev.30) (2023-04-25)
 
 
