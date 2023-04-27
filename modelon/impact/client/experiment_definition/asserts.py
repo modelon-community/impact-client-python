@@ -13,7 +13,9 @@ from modelon.impact.client.options import (
     RuntimeOptions,
     CompilerOptions,
 )
-from modelon.impact.client.entities.custom_function import CustomFunction
+from modelon.impact.client.entities.interfaces.custom_function import (
+    BaseCustomFunction,
+)
 from modelon.impact.client.entities.interfaces.model import BaseModel
 from modelon.impact.client.entities.interfaces.model_executable import (
     BaseModelExecutable,
@@ -28,6 +30,7 @@ if TYPE_CHECKING:
     from modelon.impact.client.experiment_definition.extension import (
         SimpleExperimentExtension,
     )
+    from modelon.impact.client.entities.custom_function import CustomFunction
 
     CaseOrExperimentOrExternalResult = Union[Case, Experiment, ExternalResult]
     RuntimeOptionsOrDict = Union[RuntimeOptions, Dict[str, Any]]
@@ -49,7 +52,7 @@ def assert_valid_args(
         raise TypeError("FMU must be an instance of ModelExecutable class!")
     if model and not isinstance(model, BaseModel):
         raise TypeError("Model must be an instance of Model class!")
-    if custom_function and not isinstance(custom_function, CustomFunction):
+    if custom_function and not isinstance(custom_function, BaseCustomFunction):
         raise TypeError("Custom_function must be an instance of CustomFunction class!")
     if solver_options is not None and not isinstance(
         solver_options, (SolverOptions, dict)

@@ -1,6 +1,8 @@
 from __future__ import annotations
 import logging
 from typing import Any, List, Dict, Optional, TYPE_CHECKING
+
+from modelon.impact.client.entities.interfaces.custom_function import BaseCustomFunction
 from modelon.impact.client.sal.service import Service
 from modelon.impact.client.options import ProjectExecutionOptions
 
@@ -58,7 +60,7 @@ class _Parameter:
         self._value = value
 
 
-class CustomFunction:
+class CustomFunction(BaseCustomFunction):
     """Class containing CustomFunction functionalities."""
 
     def __init__(
@@ -68,7 +70,7 @@ class CustomFunction:
         parameter_data: List[Dict[str, Any]],
         service: Service,
     ):
-        self._name = name
+        super().__init__(name)
         self._workspace_id = workspace_id
         self._parameter_data = parameter_data
         self._param_by_name = {
@@ -82,16 +84,8 @@ class CustomFunction:
         }
         self._sal = service
 
-    def __repr__(self) -> str:
-        return f"Custom function '{self._name}'"
-
     def __eq__(self, obj: object) -> bool:
         return isinstance(obj, CustomFunction) and obj._name == self._name
-
-    @property
-    def name(self) -> str:
-        "Custom function name"
-        return self._name
 
     def with_parameters(self, **modified: Any) -> CustomFunction:
         """Sets/updates the custom_function parameters for an experiment.
