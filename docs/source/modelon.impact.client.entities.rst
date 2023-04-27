@@ -1,6 +1,14 @@
 modelon.impact.client.entities package
 ======================================
 
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 5
+
+   modelon.impact.client.entities.interfaces
+
 Submodules
 ----------
 
