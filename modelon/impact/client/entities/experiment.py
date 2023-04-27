@@ -40,6 +40,8 @@ def _assert_experiment_is_complete(
 
 
 class ExperimentRunInfo:
+    """Class containing experiment run information."""
+
     def __init__(
         self,
         status: ExperimentStatus,
@@ -140,7 +142,16 @@ class Experiment:
 
     @property
     def run_info(self) -> ExperimentRunInfo:
-        """Experiment run information."""
+        """Experiment run information.
+
+        Returns:
+            A ExperimentRunInfo class object.
+
+        Example::
+
+            status = experiment.run_info.status
+
+        """
         run_info = self._get_info()["run_info"]
 
         status = ExperimentStatus(run_info["status"])
