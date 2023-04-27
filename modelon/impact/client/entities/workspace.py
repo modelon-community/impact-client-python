@@ -4,6 +4,8 @@ import logging
 import os
 import json
 from typing import Any, List, Dict, Optional, Union, Type, TYPE_CHECKING
+
+from modelon.impact.client.entities.interfaces.workspace import BaseWorkspace
 from modelon.impact.client.sal.service import Service
 from modelon.impact.client.experiment_definition.interfaces.definition import (
     BaseExperimentDefinition,
@@ -146,7 +148,7 @@ class WorkspaceDefinition:
         return self._data
 
 
-class Workspace:
+class Workspace(BaseWorkspace):
     """Class containing Workspace functionalities."""
 
     def __init__(
@@ -155,16 +157,13 @@ class Workspace:
         workspace_definition: Union[WorkspaceDefinition, Dict[str, Any]],
         service: Service,
     ):
-        self._workspace_id = workspace_id
+        super().__init__(workspace_id)
         self._workspace_definition = (
             WorkspaceDefinition(workspace_definition)
             if isinstance(workspace_definition, dict)
             else workspace_definition
         )
         self._sal = service
-
-    def __repr__(self) -> str:
-        return f"Workspace with id '{self._workspace_id}'"
 
     def __eq__(self, obj: object) -> bool:
         return isinstance(obj, Workspace) and obj._workspace_id == self._workspace_id
@@ -175,11 +174,6 @@ class Workspace:
         return self._sal.workspace.workspace_get(workspace_id=self.id, size_info=True)[
             "sizeInfo"
         ]["total"]
-
-    @property
-    def id(self) -> str:
-        """Workspace id."""
-        return self._workspace_id
 
     @property
     def definition(self) -> WorkspaceDefinition:
