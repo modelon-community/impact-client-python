@@ -1,3 +1,13 @@
+# [3.0.0-dev.32](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.31...v3.0.0-dev.32) (2023-04-27)
+
+
+### Features
+
+* add support for fetching project content by id ([b4bbd9a](https://github.com/modelon-community/impact-client-python/commit/b4bbd9ac8fa6cc180fe989723c2aa7307b7bbc32))
+* added possibility to fetch project size ([d793892](https://github.com/modelon-community/impact-client-python/commit/d7938922659822a36fbfe38fc45c2fe7f40bd3fd))
+* added possibility to fetch workspace size ([66a8ed2](https://github.com/modelon-community/impact-client-python/commit/66a8ed24c1dfb8ae9950c39019658ac3e67196dd))
+* added projectType filter for get projects ([0a4de76](https://github.com/modelon-community/impact-client-python/commit/0a4de76ff68777e1929212d67d284e29d6073394))
+
 # [3.0.0-dev.31](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.30...v3.0.0-dev.31) (2023-04-27)
 
 
