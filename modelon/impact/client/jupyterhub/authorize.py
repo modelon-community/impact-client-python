@@ -22,6 +22,10 @@ def _running_in_jupyterhub_environment() -> bool:
     return os.environ.get("JUPYTERHUB_SERVICE_PREFIX") is not None
 
 
+def _running_with_same_jupyterhub_server(uri: URI) -> bool:
+    return str(uri) in os.environ.get('IMPACT_URL', '')
+
+
 def authorize(
     uri: URI,
     interactive: bool,
@@ -33,7 +37,9 @@ def authorize(
     jupyter_context = sal.JupyterContext(base=context)
     service = service or sal.JupyterHubService()
 
-    if _running_in_jupyterhub_environment():
+    if _running_in_jupyterhub_environment() and _running_with_same_jupyterhub_server(
+        uri
+    ):
         jupyter_context.token = os.environ.get('JUPYTERHUB_API_TOKEN', '')
         server = os.environ.get('JUPYTERHUB_SERVICE_PREFIX')
         user = service.get_user_data(uri, jupyter_context, server)
