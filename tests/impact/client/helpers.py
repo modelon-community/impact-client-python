@@ -169,6 +169,7 @@ class IDs:
     CUSTOM_ARTIFACT_ID = 'ABCD'
     RESULT_MAT = 'result.mat'
     MODELICA_CLASS_PATH = 'Modelica.Blocks.Examples.PID_Controller'
+    EXPERIMENT_LABEL ='EXPERIMENT_LABEL'
 
 
 VERSIONED_PROJECT_TRUNK = {
@@ -328,7 +329,7 @@ def get_test_modelica_experiment_definition():
         'meta_data': {
             'created_epoch': 1682399102,
             'experiment_hash': 'c32aa5210e066950a62db469158aeb43',
-            'label': '',
+            'label': IDs.EXPERIMENT_LABEL,
             'model_names': [IDs.MODELICA_CLASS_PATH],
         },
         'run_info': {

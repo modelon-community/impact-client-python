@@ -104,6 +104,11 @@ class ExperimentMetaData:
         """User data dictionary object attached to experiment, if any."""
         return self._meta_data.get("user_data", {})
 
+    @property
+    def label(self) -> Optional[str]:
+        """Experiment label."""
+        return self._meta_data.get("label")
+
 
 class Experiment:
     """Class containing Experiment functionalities."""

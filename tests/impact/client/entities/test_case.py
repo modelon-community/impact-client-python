@@ -235,15 +235,6 @@ class TestCase:
             "to None and re-try."
         )
 
-    def test_set_case_label(self, experiment):
-        exp = experiment.entity
-        service = experiment.service
-        exp_sal = service.experiment
-        exp.set_label('Label')
-        exp_sal.experiment_set_label.assert_has_calls(
-            [mock.call(IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY, 'Label')]
-        )
-
     def test_case_input(self, experiment):
         exp = experiment.entity
 

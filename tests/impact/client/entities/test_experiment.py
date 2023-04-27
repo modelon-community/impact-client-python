@@ -221,3 +221,17 @@ class TestExperiment:
         workspace_service.experiment_create.assert_has_calls(
             [mock.call(IDs.WORKSPACE_PRIMARY, {}, user_data)]
         )
+
+    def test_set_experiment_label(self, experiment):
+        exp = experiment.entity
+        service = experiment.service
+        exp_sal = service.experiment
+        exp.set_label(IDs.EXPERIMENT_LABEL)
+        exp_sal.experiment_set_label.assert_has_calls(
+            [mock.call(IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY, IDs.EXPERIMENT_LABEL)]
+        )
+
+    def test_get_experiment_label(self, experiment):
+        exp = experiment.entity
+        label = exp.metadata.label
+        assert label == IDs.EXPERIMENT_LABEL
