@@ -92,13 +92,15 @@ class ExperimentRunInfo:
 
 
 class ExperimentMetaData:
-    def __init__(self, user_data: Dict[str, Any]):
-        self._user_data = user_data
+    """Class containing experiment metadata."""
+
+    def __init__(self, meta_data: Dict[str, Any]):
+        self._meta_data = meta_data
 
     @property
     def user_data(self) -> Dict[str, Any]:
         """User data dictionary object attached to experiment, if any."""
-        return self._user_data
+        return self._meta_data.get("user_data", {})
 
 
 class Experiment:
@@ -152,22 +154,21 @@ class Experiment:
         )
 
     @property
-    def metadata(self) -> Optional[ExperimentMetaData]:
+    def metadata(self) -> ExperimentMetaData:
         """Experiment metadata.
 
-        Returns custom user_data dictionary object attached to the
-        experiment, if any.
+        Returns:
+            A ExperimentMetaData class object.
+
+        Example::
+
+            user_data = experiment.metadata.user_data
 
         """
 
         info = self._get_info()
-        meta_data = info.get("meta_data")
-        if meta_data is not None:
-            user_data = meta_data.get("user_data")
-            if user_data is not None:
-                return ExperimentMetaData(user_data)
-
-        return None
+        meta_data = info.get("meta_data", {})
+        return ExperimentMetaData(meta_data)
 
     @property
     def info(self) -> Dict[str, Any]:
