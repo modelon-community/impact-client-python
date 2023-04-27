@@ -1,3 +1,17 @@
+# [3.0.0-dev.33](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.32...v3.0.0-dev.33) (2023-04-27)
+
+
+### Bug Fixes
+
+* added docs for ExperimentRunInfo class ([9a79f3f](https://github.com/modelon-community/impact-client-python/commit/9a79f3f902ec5542c0fa8dde55a8eb08cc2cfdfc))
+* make ExternalResultMetaData, ExperimentMetaData and ExperimentRunInfo classes public ([b3aa10e](https://github.com/modelon-community/impact-client-python/commit/b3aa10eeb9866e98edb4eca2609c54a77c5c377a))
+* updated the metadata property in Experiment entity such that it always return an ExperimentMetaData ([aefe32c](https://github.com/modelon-community/impact-client-python/commit/aefe32c05aeb54dcf0d6d632840833f6d25c659d))
+
+
+### Features
+
+* added a label property to experiment metadata class ([c45ca1a](https://github.com/modelon-community/impact-client-python/commit/c45ca1a4efcfed8d788baaaff7f053acd93cc15c))
+
 # [3.0.0-dev.32](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.31...v3.0.0-dev.32) (2023-04-27)
 
 
