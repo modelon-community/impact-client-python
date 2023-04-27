@@ -3,10 +3,10 @@ from typing import Optional, Dict, List, Union, Any, TYPE_CHECKING
 
 from modelon.impact.client.entities.interfaces.case import BaseCase
 from modelon.impact.client.entities.interfaces.experiment import BaseExperiment
+from modelon.impact.client.entities.interfaces.external_result import BaseExternalResult
 from modelon.impact.client.experiment_definition.interfaces.extension import (
     BaseExperimentExtension,
 )
-from modelon.impact.client.entities.external_result import ExternalResult
 from modelon.impact.client.options import (
     SolverOptions,
     SimulationOptions,
@@ -26,6 +26,7 @@ if TYPE_CHECKING:
     from modelon.impact.client.entities.case import Case
     from modelon.impact.client.entities.experiment import Experiment
     from modelon.impact.client.entities.model import Model
+    from modelon.impact.client.entities.external_result import ExternalResult
     from modelon.impact.client.entities.model_executable import ModelExecutable
     from modelon.impact.client.experiment_definition.extension import (
         SimpleExperimentExtension,
@@ -87,7 +88,9 @@ def assert_valid_args(
 def validate_initialize_from(
     entity: Optional[CaseOrExperimentOrExternalResult],
 ) -> None:
-    if entity and not isinstance(entity, (BaseCase, BaseExperiment, ExternalResult)):
+    if entity and not isinstance(
+        entity, (BaseCase, BaseExperiment, BaseExternalResult)
+    ):
         raise TypeError(
             "The entity argument be an instance of "
             "Case or Experiment or ExternalResult!"

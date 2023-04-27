@@ -8,9 +8,9 @@ from modelon.impact.client.experiment_definition.operators import Operator
 from modelon.impact.client.experiment_definition.extension import (
     SimpleExperimentExtension,
 )
-from modelon.impact.client.entities.external_result import ExternalResult
 from modelon.impact.client.entities.interfaces.case import BaseCase
 from modelon.impact.client.entities.interfaces.experiment import BaseExperiment
+from modelon.impact.client.entities.interfaces.external_result import BaseExternalResult
 from modelon.impact.client.experiment_definition.util import (
     get_options,
     case_to_identifier_dict,
@@ -28,6 +28,7 @@ if TYPE_CHECKING:
     from modelon.impact.client.entities.experiment import Experiment
     from modelon.impact.client.entities.custom_function import CustomFunction
     from modelon.impact.client.entities.model_executable import ModelExecutable
+    from modelon.impact.client.entities.external_result import ExternalResult
     from modelon.impact.client.options import (
         SolverOptions,
         SimulationOptions,
@@ -275,7 +276,7 @@ class SimpleFMUExperimentDefinition(BaseExperimentDefinition):
             exp_dict["experiment"]["base"]["modifiers"][
                 "initializeFromCase"
             ] = case_to_identifier_dict(self.initialize_from)
-        elif isinstance(self.initialize_from, ExternalResult):
+        elif isinstance(self.initialize_from, BaseExternalResult):
             exp_dict["experiment"]["base"]["modifiers"][
                 "initializeFromExternalResult"
             ] = self.initialize_from.id

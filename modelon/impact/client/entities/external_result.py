@@ -1,5 +1,7 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING, Any
+
+from modelon.impact.client.entities.interfaces.external_result import BaseExternalResult
 from modelon.impact.client.operations.external_result_import import (
     ExternalResultImportOperation,
 )
@@ -39,23 +41,15 @@ class ExternalResultMetaData:
         return self._workspace_id
 
 
-class ExternalResult:
+class ExternalResult(BaseExternalResult):
     """Class containing  external result."""
 
     def __init__(self, result_id: str, service: Service):
-        self._result_id = result_id
+        super().__init__(result_id)
         self._sal = service
-
-    def __repr__(self) -> str:
-        return f"Result id '{self._result_id}'"
 
     def __eq__(self, obj: object) -> bool:
         return isinstance(obj, ExternalResult) and obj._result_id == self._result_id
-
-    @property
-    def id(self) -> str:
-        """Result id."""
-        return self._result_id
 
     @property
     def metadata(self) -> ExternalResultMetaData:
