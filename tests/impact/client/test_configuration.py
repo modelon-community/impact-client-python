@@ -2,7 +2,7 @@ import modelon.impact.client.configuration as configuration
 
 
 def test_get_client_url_default():
-    assert "http://localhost:8080/" == configuration.get_client_url()
+    assert "https://impact.modelon.cloud/" == configuration.get_client_url()
 
 
 def test_get_client_url_env(monkeypatch):
