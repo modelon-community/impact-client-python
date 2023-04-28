@@ -13,7 +13,7 @@ based on the automatically populated ``JUPYTERHUB_API_TOKEN`` environment variab
 An API key must be used in addition to the ``JUPYTERHUB API TOKEN`` to authenticate against the Modelon 
 Impact server operating inside the JupyterHub environment. If the client library is used within the
 JupyterHub environment, this is likewise handled automatically based on the key stored at 
-``/.impact/api.key`` in that environment.
+``~/.impact/api.key`` in that environment.
 
 The python client could be easily initialized as follows for a user accessing the client library 
 in the JupyterHub environment:
@@ -55,7 +55,7 @@ button. While initializing the client, you will be asked to enter the JupyterHub
     Enter JupyterHub API token:
 
 When the token has been entered the first time, it will be stored at located in the directory
-``.impact`` in the users home folder and used in future requests and the prompt will not be 
+``~/.impact`` in the users home folder and used in future requests and the prompt will not be 
 shown again. 
 
 Another option is to save the token in the environmental variable ``JUPYTERHUB_API_TOKEN``, which 
@@ -97,7 +97,7 @@ The environment variable ``MODELON_IMPACT_CLIENT_API_KEY`` can be used to set th
 +++++++++++++++++++
 
 It may also be stored in a credentials file named ``api.key`` located in the directory
-``.impact`` in the users home folder. The client class will look for the key there if
+``~/.impact`` in the users home folder. The client class will look for the key there if
 the key is not set as an environment variable.
 
 This file is used by the client to store the key in interactive mode and might be
