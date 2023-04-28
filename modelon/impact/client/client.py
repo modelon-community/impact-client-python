@@ -96,7 +96,7 @@ class Client:
         url:
             The URL for Modelon Impact client host. Defaults to the value specified
             by env variable 'MODELON_IMPACT_CLIENT_URL' if set else uses the URL
-            'http://localhost:8080/'.
+            'https://impact.modelon.cloud/'.
         interactive:
             If True the client will prompt for an API key if no other login information
             can be found. An API key entered for this prompt will be saved to disk

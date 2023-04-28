@@ -14,7 +14,7 @@ def get_client_url() -> str:
     """
     url = os.environ.get("MODELON_IMPACT_CLIENT_URL")
     if url is None:
-        url = "http://localhost:8080/"
+        url = "https://impact.modelon.cloud/"
         logger.warning("No URL for client was specified, will use: {}".format(url))
     return url
 
