@@ -1,3 +1,10 @@
+# [3.0.0-dev.35](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.34...v3.0.0-dev.35) (2023-04-28)
+
+
+### Bug Fixes
+
+* default to https://impact.modelon.cloud/ if no url is provided by user or no environmental variable is set ([0e6593f](https://github.com/modelon-community/impact-client-python/commit/0e6593f878f79172ae5191dcc34b80844d3e5f4c))
+
 # [3.0.0-dev.34](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.33...v3.0.0-dev.34) (2023-04-28)
 
 
