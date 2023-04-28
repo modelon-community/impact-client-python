@@ -16,7 +16,7 @@ from modelon.impact.client.options import (
 from modelon.impact.client.entities.interfaces.custom_function import (
     BaseCustomFunction,
 )
-from modelon.impact.client.entities.interfaces.model import BaseModel
+from modelon.impact.client.entities.interfaces.model import ModelProtocol
 from modelon.impact.client.entities.interfaces.model_executable import (
     BaseModelExecutable,
 )
@@ -51,7 +51,7 @@ def assert_valid_args(
 ) -> None:
     if fmu and not isinstance(fmu, BaseModelExecutable):
         raise TypeError("FMU must be an instance of ModelExecutable class!")
-    if model and not isinstance(model, BaseModel):
+    if model and not isinstance(model, ModelProtocol):
         raise TypeError("Model must be an instance of Model class!")
     if custom_function and not isinstance(custom_function, BaseCustomFunction):
         raise TypeError("Custom_function must be an instance of CustomFunction class!")

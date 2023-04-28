@@ -2,7 +2,7 @@ from __future__ import annotations
 import logging
 from typing import Any, Dict, Optional, Union, TYPE_CHECKING
 
-from modelon.impact.client.entities.interfaces.model import BaseModel
+from modelon.impact.client.entities.interfaces.model import ModelProtocol
 from modelon.impact.client.operations.model_executable import (
     ModelExecutableOperation,
     CachedModelExecutableOperation,
@@ -58,19 +58,27 @@ def _assert_valid_compilation_options(
         )
 
 
-class Model(BaseModel):
+class Model(ModelProtocol):
     """Class containing Model functionalities."""
 
     def __init__(
         self, class_name: str, workspace_id: str, project_id: str, service: Service
     ):
-        super().__init__(class_name)
+        self._class_name = class_name
         self._workspace_id = workspace_id
         self._project_id = project_id
         self._sal = service
 
     def __eq__(self, obj: object) -> bool:
         return isinstance(obj, Model) and obj._class_name == self._class_name
+
+    def __repr__(self) -> str:
+        return f"Class name '{self._class_name}'"
+
+    @property
+    def name(self) -> str:
+        """Class name."""
+        return self._class_name
 
     def compile(
         self,
