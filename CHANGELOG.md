@@ -1,3 +1,10 @@
+# [3.0.0-dev.34](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.33...v3.0.0-dev.34) (2023-04-28)
+
+
+### Bug Fixes
+
+* check if the user given URL is as substring of the IMPACT_URL value to validate if we connect to the same server as current notebook is running or not ([553f817](https://github.com/modelon-community/impact-client-python/commit/553f81795674af172820d5a8c0740a1d60918380))
+
 # [3.0.0-dev.33](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.32...v3.0.0-dev.33) (2023-04-27)
 
 
