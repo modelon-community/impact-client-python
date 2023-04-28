@@ -55,7 +55,7 @@ button. While initializing the client, you will be asked to enter the JupyterHub
     Enter JupyterHub API token:
 
 When the token has been entered the first time, it will be stored at located in the directory
-``~/.impact`` in the users home folder and used in future requests and the prompt will not be 
+``~/.impact`` in the users home folder as 'jupyterhub-api.key' and used in future requests and the prompt will not be 
 shown again. 
 
 Another option is to save the token in the environmental variable ``JUPYTERHUB_API_TOKEN``, which 
@@ -67,6 +67,13 @@ Revoking the token will cause the prompt to be shown again and a new token needs
 
 After authenticating against the JupyterHub API, the user must also authenticate against the Modelon Impact server 
 by following the instructions in the section :ref:`below<Modelon Impact API key generation>`.
+
+**Note:**
+The token used to authenticate JupyterHub is looked up in the following preference order:-
+
+1. Token set via interactive prompt
+2. Token saved in the environment variable - ``JUPYTERHUB_API_TOKEN``
+3. Token saved in file - ~/.impact/jupyterhub-api.key
 
 Modelon Impact API key generation
 #################################
@@ -133,3 +140,10 @@ The stored API key can also be modified using the ``CredentialManager`` class.
     >>>> credential_manager.write_key_to_file('my-new-key')
     >>>> credential_manager.get_key_from_file()
     'my-new-key'
+
+**Note:**
+The API key used to authenticate Modelon Impact is looked up in the following preference order:-
+
+1. API key set via interactive prompt
+2. API key saved in the environment variable - ``MODELON_IMPACT_CLIENT_API_KEY``
+3. API key saved in file - ~/.impact/api.key
