@@ -1,3 +1,11 @@
+# [3.0.0-dev.36](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.35...v3.0.0-dev.36) (2023-05-02)
+
+
+### Bug Fixes
+
+* added an abstract interface class for entities ([1885d4b](https://github.com/modelon-community/impact-client-python/commit/1885d4b2998466362e9cf66e9a8d74f493fd14d2))
+* updated docs ([e948f95](https://github.com/modelon-community/impact-client-python/commit/e948f9567481d771bc0de89344eeb120b21ad742))
+
 # [3.0.0-dev.35](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.34...v3.0.0-dev.35) (2023-04-28)
 
 
