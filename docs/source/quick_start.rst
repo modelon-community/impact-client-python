@@ -128,6 +128,22 @@ A more flexible and customized way to define a series of simulations::
 
    experiment_definition = experiment_definition.with_cases([{'PI.k': 20}, {'PI.k': 30}])
 
+A workflow to upload/add a non-encrypted Modelica library or a Modelica model to a project.::
+
+   from modelon.impact.client import Client
+
+   client = Client(url=<impact-domain>)
+   workspace = client.create_workspace(<workspace-name>)
+
+   # Get the default project
+   project = workspace.get_default_project()
+
+   # Upload a single Modelica model file
+   mo_modelica_content = project.import_model_library('A.mo').wait()
+
+   # Upload a zipped modelica library
+   zip_modelica_content = project.import_model_library('B.zip').wait()
+
 A workflow to fetch artifacts to do some analysis locally could be accomplished like below::
 
    from modelon.impact.client import Client
