@@ -376,8 +376,8 @@ class Project:
 
         Example::
 
-            project.import_modelica_library('C:/A.mo')
-            project.import_modelica_library('C:/B.zip')
+            content  = project.import_modelica_library('C:/A.mo').wait()
+            content  = project.import_modelica_library('C:/B.zip').wait()
 
         """
         if Path(path_to_lib).suffix.lower() not in ['.mo', '.zip']:
