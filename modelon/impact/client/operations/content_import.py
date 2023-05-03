@@ -40,16 +40,16 @@ class ContentImportOperation(AsyncOperation[Entity]):
     @property
     def name(self) -> str:
         """Return the name of operation."""
-        return "Content import"
+        return "Project content import"
 
     def _info(self) -> Dict[str, Any]:
         return self._sal.imports.get_import_status(self._location)["data"]
 
     def data(self) -> Entity:
-        """Returns a new Workspace class instance.
+        """Returns a new ProjectContent class instance.
 
         Returns:
-            A Workspace class instance.
+            A ProjectContent class instance.
 
         """
         info = self._info()
