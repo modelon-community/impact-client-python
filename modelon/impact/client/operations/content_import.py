@@ -72,7 +72,7 @@ class ContentImportOperation(AsyncOperation[Entity]):
 
         Example::
 
-            project.upload_content('path/to/model.mo').status()
+            project.import_content('path/to/model.mo').status()
 
         """
         return AsyncOperationStatus(self._info()["status"])

@@ -92,8 +92,8 @@ class TestProject:
         project.delete()
         service.project.project_delete.assert_called_with(IDs.PROJECT_PRIMARY)
 
-    def test_upload_project_content(self, project):
-        content_operation = project.entity.upload_content(
+    def test_import_content(self, project):
+        content_operation = project.entity.import_content(
             SINGLE_FILE_LIBRARY_PATH, content_type=ContentType.MODELICA
         )
         assert content_operation.status() == AsyncOperationStatus.READY
