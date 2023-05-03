@@ -105,8 +105,8 @@ class TestProject:
         assert content.name == 'test'
         assert not content.default_disabled
 
-    def test_upload_modelica_library(self, project):
-        content_operation = project.entity.upload_modelica_library(
+    def test_import_modelica_library(self, project):
+        content_operation = project.entity.import_modelica_library(
             SINGLE_FILE_LIBRARY_PATH
         )
         assert content_operation.status() == AsyncOperationStatus.READY
