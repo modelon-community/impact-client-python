@@ -365,7 +365,7 @@ class Project:
             resp['data']['location'], self._sal, ProjectContent.from_operation
         )
 
-    def upload_modelica_library(self, path_to_lib: str) -> ContentImportOperation:
+    def import_modelica_library(self, path_to_lib: str) -> ContentImportOperation:
         """Uploads/adds a non-encrypted Modelica library or a Modelica model to
         the project.
 
@@ -376,8 +376,8 @@ class Project:
 
         Example::
 
-            project.upload_model_library('C:/A.mo')
-            project.upload_model_library('C:/B.zip')
+            project.import_modelica_library('C:/A.mo')
+            project.import_modelica_library('C:/B.zip')
 
         """
         if Path(path_to_lib).suffix.lower() not in ['.mo', '.zip']:
