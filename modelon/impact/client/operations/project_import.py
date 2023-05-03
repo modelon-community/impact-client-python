@@ -75,7 +75,8 @@ class ProjectImportOperation(AsyncOperation[Entity]):
 
         Example::
 
-            client.import_from_shared_definition(definition, False).status()
+            status = client.import_project_from_zip(path_to_project).status()
+            status = workspace.import_project_from_zip(path_to_project).status()
 
         """
         return AsyncOperationStatus(self._info()["status"])
