@@ -340,7 +340,7 @@ class Project:
         """
         return self.get_content_by_name(name, ContentType.MODELICA)
 
-    def upload_content(
+    def import_content(
         self, path_to_content: str, content_type: ContentType
     ) -> ContentImportOperation:
         """Upload content to a project.
@@ -355,7 +355,7 @@ class Project:
 
             from modelon.impact.client import ContentType
 
-            project.upload_content('/home/test.mo', ContentType.MODELICA).wait()
+            project.import_content('/home/test.mo', ContentType.MODELICA).wait()
 
         """
         resp = self._sal.project.project_content_upload(
@@ -385,7 +385,7 @@ class Project:
                 "Only '.mo' or '.zip' file extension are supported for uploading "
                 "Modelica content into project."
             )
-        return self.upload_content(path_to_lib, ContentType.MODELICA)
+        return self.import_content(path_to_lib, ContentType.MODELICA)
 
     def get_options(
         self, custom_function: CustomFunction, use_defaults: Optional[bool] = False
