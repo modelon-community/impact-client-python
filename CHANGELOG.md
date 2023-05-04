@@ -1,3 +1,11 @@
+# [3.0.0-dev.37](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.36...v3.0.0-dev.37) (2023-05-04)
+
+
+### Bug Fixes
+
+* renamed upload_content to import_content ([91e710a](https://github.com/modelon-community/impact-client-python/commit/91e710ac32c25eb69f11e2fa94354abd4386bb10))
+* renamed upload_modelica_library to import_modelica_library ([19637cb](https://github.com/modelon-community/impact-client-python/commit/19637cb98cb6268574e92efcad9e90d749985dfa))
+
 # [3.0.0-dev.36](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.35...v3.0.0-dev.36) (2023-05-02)
 
 
