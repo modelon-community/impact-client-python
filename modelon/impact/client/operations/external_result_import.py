@@ -71,7 +71,7 @@ class ExternalResultImportOperation(AsyncOperation[Entity]):
 
         Example::
 
-            workspace.upload_result('C:/A.mat').status()
+            workspace.upload_result('A.mat').status()
 
         """
         return AsyncOperationStatus(self._info()["status"])

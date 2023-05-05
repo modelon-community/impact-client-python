@@ -309,7 +309,7 @@ class SimpleFMUExperimentDefinition(BaseExperimentDefinition):
             experiment_definition = fmu.new_experiment_definition(custom_function).
             experiment_definition.with_initialize_from(case)
 
-            result = workspace.upload_result('C:/A.mat').wait()
+            result = workspace.upload_result('A.mat').wait()
             fmu = model.compile().wait()
             experiment_definition = fmu.new_experiment_definition(custom_function).
             experiment_definition.with_initialize_from(result)

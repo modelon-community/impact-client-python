@@ -259,7 +259,7 @@ class ModelExecutable(ModelExecutableInterface):
             fmu =  model.compile().wait()
             if fmu.is_successful():
                 fmu_path = fmu.download()
-                fmu_path = fmu.download('C:/Downloads')
+                fmu_path = fmu.download('~/Downloads')
 
         """
         assert_successful_operation(self.is_successful(), "Compilation")

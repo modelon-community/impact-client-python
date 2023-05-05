@@ -93,7 +93,7 @@ class AsyncOperation(BaseOperation[Entity]):
 
         Example::
 
-            workspace.upload_result('C:/A.mat').wait(timeout = 120)
+            workspace.upload_result('A.mat').wait(timeout = 120)
 
         """
         start_t = time.time()

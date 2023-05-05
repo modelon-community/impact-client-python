@@ -270,7 +270,7 @@ class SimpleModelicaExperimentDefinition(BaseExperimentDefinition):
             experiment_definition = model.new_experiment_definition(custom_function)
             experiment_definition.with_initialize_from(case)
 
-            result = workspace.upload_result('C:/A.mat').wait()
+            result = workspace.upload_result('A.mat').wait()
             experiment_definition = model.new_experiment_definition(custom_function)
             experiment_definition.with_initialize_from(result)
 
