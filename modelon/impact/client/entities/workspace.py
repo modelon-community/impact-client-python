@@ -260,8 +260,8 @@ class Workspace(WorkspaceInterface):
 
         Example::
 
-            workspace.upload_result('C:/A.mat')
-            workspace.upload_result('C:/B.mat', label = "result_for_PID.mat",
+            workspace.upload_result('A.mat')
+            workspace.upload_result('B.mat', label = "result_for_PID.mat",
             description = "This is a result file for PID controller")
 
         """
