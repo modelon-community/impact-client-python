@@ -31,7 +31,7 @@ Python companion library for Modelon Impact that wraps its REST API framework an
    :hidden:
    :caption: Tutorials
 
-   setting_up_workspace.rst
+   working_with_workspaces.rst
    choosing_analysis_type.rst
    choosing_a_model.rst
    setup_run_experiment.rst
