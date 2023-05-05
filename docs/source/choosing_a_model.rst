@@ -3,10 +3,20 @@ Choosing a model
 
 *This tutorial sections covers choosing a model to use for analysis.*
 
-We can either choose a model from a library preloaded in Modelon Impact or upload a model to our workspace. To upload
-a model to our workspace, we can pass the path to the Modelica file::
+Modelica models and libraries are available in Modelon Impact within projects. We can either choose a model 
+from a preloaded Modelica project in Modelon Impact or import a Modelica model or library to our default
+project. To import a model to our workspace, we can pass the path to the Modelica file::
 
-   workspace.upload_model_library('C:/Model.mo')
+   project = workspace.get_default_project()
+   
+   # Upload a single Modelica model file
+   modelica_content = project.import_modelica_library('LibA.mo').wait()
+   
+   Or
+
+   # Upload a zipped modelica library
+   modelica_content = project.upload_model_library('LibB.zip').wait()
+
    model = workspace.get_model("Model")
 
 or choose a model from a preloaded library, like ``Modelica Standard Library``::
