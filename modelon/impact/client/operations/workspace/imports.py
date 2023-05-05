@@ -74,7 +74,7 @@ class WorkspaceImportOperation(AsyncOperation[Entity]):
 
         Example::
 
-            client.import_from_shared_definition(definition, False).status()
+            client.import_workspace_from_shared_definition(definition, False).status()
 
         """
         return AsyncOperationStatus(self._info()["status"])

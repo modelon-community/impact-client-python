@@ -39,9 +39,38 @@ class ProjectMatching:
     projects: List[Project]
 
     def get_selection(self, index: int) -> Selection:
+        """Returns the selection given the index of the selected project.
+
+        Args:
+            index: The index of the selected project
+
+        Returns:
+            A Selection class object.
+
+        Example::
+
+            matchings = client.get_project_matchings(imported_workspace_definition)
+            selection = matchings.entries[0].get_selection(index=0)
+
+        Example::
+
+            client.import_workspace_from_shared_definition(shared_definition).wait()
+
+        """
         return Selection(entry_id=self.entry_id, project=self.projects[index])
 
     def make_selection_interactive(self) -> Selection:
+        """Returns an interactively chosen Selection object.
+
+        Returns:
+            A Selection class object.
+
+        Example::
+
+            matchings = client.get_project_matchings(imported_workspace_definition)
+            selection = matchings.entries[0].make_selection_interactive()
+
+        """
         if len(self.projects) == 1:
             print(f"Only one project matches the URI {self.vcs_uri}!")
             selection = self.get_selection(index=0)
@@ -85,6 +114,27 @@ class ProjectMatchings:
     entries: List[ProjectMatching]
 
     def make_selections_interactive(self) -> List[Selection]:
+        """Returns a list of Selection class objects based on interactive input from
+        users. As import will fail if there are multiple possible matchings of local
+        projects for a project, this method is used to resolve to an unequivocal
+        'selection'. The list of preferred Selection objects could be specified
+        during workspace import in the
+        :obj:`~modelon.impact.client.Client.import_workspace_from_shared_definition`
+        method.
+
+        Returns:
+            A a list of Selection class objects.
+
+        Example::
+
+            # Interactive workflow
+            matchings = client.get_project_matchings(shared_definition)
+            selections = matchings.make_selections_interactive()
+            imported_workspace = client.import_workspace_from_shared_definition(
+                shared_definition, selections
+            ).wait()
+
+        """
         return [e.make_selection_interactive() for e in self.entries]
 
 
@@ -435,6 +485,39 @@ class Client:
         shared_definition: WorkspaceDefinition,
         selections: Optional[List[Selection]] = None,
     ) -> WorkspaceImportOperation:
+        """Imports a Workspace from a shared workspace definition.
+
+        Args:
+            shared_definition: The workspace definition for the shared workspace
+            selection: Optional list of Selection class objects. This can be specified
+            if there are multiple existing projects with the same version control URI.
+
+        Returns:
+            A WorkspaceImportOperation class object.
+
+        Example::
+
+            # Import with no conflicts
+            client.import_workspace_from_shared_definition(shared_definition).wait()
+
+            # Import with conflicts(Multiple existing projects matches the URI)
+            # Programatic workflow to resolve conflicts
+
+            matchings = client.get_project_matchings(shared_definition)
+            # Assume the first in list of matchings is good enough:
+            selections = [entry.get_selection(index=0) for entry in matchings.entries]
+            imported_workspace = client.import_workspace_from_shared_definition(
+                shared_definition, selections
+            ).wait()
+
+            # Interactive workflow
+            matchings = client.get_project_matchings(shared_definition)
+            selections = matchings.make_selections_interactive()
+            imported_workspace = client.import_workspace_from_shared_definition(
+                shared_definition, selections
+            ).wait()
+
+        """
         resp = self._sal.workspace.import_from_shared_definition(
             {"definition": shared_definition.to_dict()},
             selected_matchings=[selection.to_dict() for selection in selections]
@@ -448,6 +531,39 @@ class Client:
     def get_project_matchings(
         self, shared_definition: WorkspaceDefinition
     ) -> ProjectMatchings:
+        """Returns all projects matchings that would happen during a workspace import.
+        As import will fail if there are multiple possible matchings of local projects
+        for a project, this method is used to get these matchings which can be
+        resolved to an unequivocal 'selection'. Selections are used as (optional) input
+        to the
+        :obj:`~modelon.impact.client.Client.import_workspace_from_shared_definition`
+        method.
+
+        Args:
+            shared_definition: The workspace definition for the shared workspace
+
+        Returns:
+            A ProjectMatchings class object.
+
+        Example::
+
+            # Import with conflicts(Multiple existing projects matches the URI)
+            # Programatic workflow to resolve conflicts
+            matchings = client.get_project_matchings(shared_definition)
+            # Assume the first in list of matchings is good enough:
+            selections = [entry.get_selection(index=0) for entry in matchings.entries]
+            imported_workspace = client.import_from_shared_definition(
+                shared_definition, selections
+            ).wait()
+
+            # Interactive workflow
+            matchings = client.get_project_matchings(shared_definition)
+            selections = matchings.make_selections_interactive()
+            imported_workspace = client.import_workspace_from_shared_definition(
+                shared_definition, selections
+            ).wait()
+
+        """
         project_matchings = []
         matchings = self._sal.workspace.get_project_matchings(
             {"definition": shared_definition.to_dict()}
