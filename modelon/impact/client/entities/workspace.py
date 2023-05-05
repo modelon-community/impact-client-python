@@ -595,6 +595,20 @@ class Workspace(WorkspaceInterface):
         )
 
     def get_shared_definition(self, strict: bool = False) -> WorkspaceDefinition:
+        """Return the shared definition for a workspace.
+
+        Args:
+            strict: If True, the version control URIs for workspace projects and
+                dependencies are to specific commits or not.
+
+        Returns:
+            An WorkspaceDefinition class object.
+
+        Example::
+
+            definition = workspace.get_shared_definition()
+
+        """
         return WorkspaceDefinition(
             self._sal.workspace.shared_definition_get(
                 self._workspace_id, strict=strict
