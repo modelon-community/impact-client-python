@@ -71,9 +71,9 @@ by following the instructions in the section :ref:`below<Modelon Impact API key 
 **Note:**
 The token used to authenticate JupyterHub is looked up in the following preference order:-
 
-1. Token set via interactive prompt
-2. Token saved in the environment variable - ``JUPYTERHUB_API_TOKEN``
-3. Token saved in file - ``~/.impact/jupyterhub-api.key``
+1. Token saved in the environment variable - ``JUPYTERHUB_API_TOKEN``
+2. Token saved in file - ``~/.impact/jupyterhub-api.key``
+3. Token set via interactive prompt(if ``interactive`` is set to True)
 
 Modelon Impact API key generation
 #################################
@@ -144,6 +144,6 @@ The stored API key can also be modified using the ``CredentialManager`` class.
 **Note:**
 The API key used to authenticate Modelon Impact is looked up in the following preference order:-
 
-1. API key set via interactive prompt
-2. API key saved in the environment variable - ``MODELON_IMPACT_CLIENT_API_KEY``
-3. API key saved in file - ``~/.impact/api.key``
+1. API key saved in the environment variable - ``MODELON_IMPACT_CLIENT_API_KEY``
+2. API key saved in file - ``~/.impact/api.key``
+3. API key set via interactive prompt(if ``interactive`` is set to True)
