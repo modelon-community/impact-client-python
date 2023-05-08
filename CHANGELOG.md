@@ -1,3 +1,11 @@
+# [3.0.0-dev.38](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.37...v3.0.0-dev.38) (2023-05-08)
+
+
+### Bug Fixes
+
+* minor docstring fixes for operations ([2caa979](https://github.com/modelon-community/impact-client-python/commit/2caa979d8ff8d2a59c5fb5a640eaf4679cc35769))
+* moved fmu_import to model entity ([0bb9f27](https://github.com/modelon-community/impact-client-python/commit/0bb9f27eac97c060f9a7aaa0f76e3e1eca8ac60c))
+
 # [3.0.0-dev.37](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.36...v3.0.0-dev.37) (2023-05-04)
 
 
