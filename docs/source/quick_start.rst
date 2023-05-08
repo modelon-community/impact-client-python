@@ -12,7 +12,7 @@ A simple example using the :ref:`FMU based workflow <FMU based workflow>` is sho
 
    from modelon.impact.client import Client
 
-   client = Client(url=<impact-domain>)
+   client = Client(url=<impact-domain>) # url is optional; defaults to on-prem system on "https://impact.modelon.cloud"
    workspace = client.create_workspace(<workspace-name>)
 
    # Choose analysis type
@@ -38,7 +38,7 @@ A simple example using the :ref:`Class name based workflow <Setup and run an exp
 
    from modelon.impact.client import Client
 
-   client = Client(url=<impact-domain>)
+   client = Client(url=<impact-domain>) # url is optional; defaults to on-prem system on "https://impact.modelon.cloud"
    workspace = client.create_workspace(<workspace-name>)
 
    # Choose analysis type
@@ -66,7 +66,7 @@ An example of setting up and executing a series of simulations on a server and r
 
    from modelon.impact.client import Client, Range
 
-   client = Client(url=<impact-domain>)
+   client = Client(url=<impact-domain>) # url is optional; defaults to on-prem system on "https://impact.modelon.cloud"
    workspace = client.create_workspace(<workspace-name>)
 
    # Choose analysis type
@@ -102,7 +102,7 @@ A more flexible and customized way to define a series of simulations::
 
    from modelon.impact.client import Client, SimpleExperimentExtension
 
-   client = Client(url=<impact-domain>)
+   client = Client(url=<impact-domain>) # url is optional; defaults to on-prem system on "https://impact.modelon.cloud"
    workspace = client.create_workspace(<workspace-name>)
 
    # Choose analysis type
@@ -132,7 +132,7 @@ A workflow to upload/add a non-encrypted Modelica library or a Modelica model to
 
    from modelon.impact.client import Client
 
-   client = Client(url=<impact-domain>)
+   client = Client(url=<impact-domain>) # url is optional; defaults to on-prem system on "https://impact.modelon.cloud"
    workspace = client.create_workspace(<workspace-name>)
 
    # Get the default project
@@ -148,7 +148,7 @@ A workflow to fetch artifacts to do some analysis locally could be accomplished 
 
    from modelon.impact.client import Client
 
-   client = Client(url=<impact-domain>)
+   client = Client(url=<impact-domain>) # url is optional; defaults to on-prem system on "https://impact.modelon.cloud"
    workspace = client.create_workspace(<workspace-name>)
 
    # Compile and download model

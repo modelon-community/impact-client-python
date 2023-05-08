@@ -11,17 +11,18 @@ section to configure an API key::
 
    from modelon.impact.client import Client
 
-   client = Client(url=<impact-domain>)
+   client = Client(url=<impact-domain>) # url is optional; defaults to on-prem system on "https://impact.modelon.cloud"
 
 Once the client is initialized, we can create a workspace, use an existing workspace or upload one.
 
 Workspaces
 **********
 
-In Modelon Impact, each workspace has a distinct ID that is basically a slug of the workspace name. 
+In Modelon Impact, each workspace has a distinct ID that defaults to a slug of the workspace name.
 The workspace name need not be unique and can consist of any string. It may have special 
-characters, spaces, mixed case, emojis, etc. Also there could be multiple workspaces with the same name, 
-but each one can be distinguished by its ID.
+characters, spaces, mixed case, emojis, etc. There could be multiple workspaces with the same name, 
+but each one can be distinguished by its ID. Workspace ID is fixed on creation and does not change when 
+a workspace is renamed.
    
 We can either create a new workspace with a name::
 
@@ -56,10 +57,11 @@ would result in multiple workspaces being created with same name.
 Workspace sharing
 *****************
 
-A workspace in Modelon Impact can be shared as a zipped artifact or as a snapshot. 
+A workspace in Modelon Impact can be shared as a zipped artifact(snapshot) or as workspace definition referring to version controlled 
+projects and preinstalled libraries. 
 
-Zipped export
-#############
+Zipped(snapshot) export
+#######################
 
 A zipped archive export of the workspace bundles all Projects (with Modelica packages including resources, and also results and FMUs). 
 This ZIP file can then be uploaded at another point. The below code snippet exports an existing workspace::
@@ -77,8 +79,8 @@ The exported workspace could then be imported::
 
    workspace = client.import_workspace_from_zip(path_to_exported_workpace).wait()
 
-Snapshot export
-###############
+Workspace definition export
+###########################
 
 Workspaces could also be shared via 'definitions'. This approach creates a workspace definition that can be shared with other users.
 This requires that all projects used in the workspace is either version controlled or a released project. A user could export the 

@@ -11,13 +11,14 @@ project. To import a model to our workspace, we can pass the path to the Modelic
    
    # Upload a single Modelica model file
    modelica_content = project.import_modelica_library('LibA.mo').wait()
-   
+   model = workspace.get_model("LibA.Model")
+
    Or
 
    # Upload a zipped modelica library
    modelica_content = project.upload_model_library('LibB.zip').wait()
 
-   model = workspace.get_model("Model")
+   model = workspace.get_model("LibB.Model")
 
 or choose a model from a preloaded library, like ``Modelica Standard Library``::
 
