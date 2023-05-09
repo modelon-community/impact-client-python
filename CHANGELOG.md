@@ -1,3 +1,15 @@
+# [3.0.0-dev.39](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.38...v3.0.0-dev.39) (2023-05-09)
+
+
+### Bug Fixes
+
+* added docs on preference order for token and api key ([c01a8d0](https://github.com/modelon-community/impact-client-python/commit/c01a8d057315b24935d754f06225c39b9091553a))
+* corrected '.impact' to ~/.impact ([50a438e](https://github.com/modelon-community/impact-client-python/commit/50a438e137edf6bc64393e4319d6b86428a4669e))
+* corrected the docs to upload modelica content to a project ([d4484ea](https://github.com/modelon-community/impact-client-python/commit/d4484ea1656b34f178022586f5648d4a67511397))
+* feedback fixes ([3cd167a](https://github.com/modelon-community/impact-client-python/commit/3cd167a9860ae51f3199d4ebbf45d6a8fd15bb7c))
+* remove linearize reference from choosing analysis type docs ([1fc62fc](https://github.com/modelon-community/impact-client-python/commit/1fc62fc15fbcfbbbb1e5b7e5fe9c87d314949286))
+* typo fix ([1bcd33f](https://github.com/modelon-community/impact-client-python/commit/1bcd33fc627523c2648f6798f37c99c7cc92ef11))
+
 # [3.0.0-dev.38](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.37...v3.0.0-dev.38) (2023-05-08)
 
 
