@@ -11,7 +11,7 @@ section to configure an API key::
 
    from modelon.impact.client import Client
 
-   client = Client(url=<impact-domain>) # url is optional; defaults to on-prem system on "https://impact.modelon.cloud"
+   client = Client(url=<impact-domain>) # url is optional; defaults to on-prem OR "https://impact.modelon.cloud"
 
 Once the client is initialized, we can create a workspace, use an existing workspace or upload one.
 
