@@ -36,7 +36,7 @@ def _datetime_from_unix_time(unix_time: Optional[int]) -> Optional[datetime]:
     return datetime.fromtimestamp(unix_time / 1e3) if unix_time else None
 
 
-class _CaseRunInfo:
+class CaseRunInfo:
     """Class containing Case run info."""
 
     def __init__(
@@ -81,7 +81,7 @@ class _CaseRunInfo:
         return self._datetime_finished
 
 
-class _CaseAnalysis:
+class CaseAnalysis:
     """Class containing Case analysis configuration."""
 
     __slots__ = ['_analysis']
@@ -218,7 +218,7 @@ class CustomArtifact:
         return result_stream
 
 
-class _CaseMeta:
+class CaseMeta:
     """Class containing Case meta."""
 
     __slots__ = ['_data']
@@ -236,7 +236,7 @@ class _CaseMeta:
         self._data['label'] = label
 
 
-class _CaseInput:
+class CaseInput:
     """Class containing Case input."""
 
     __slots__ = ['_data']
@@ -245,8 +245,8 @@ class _CaseInput:
         self._data = data
 
     @property
-    def analysis(self) -> _CaseAnalysis:
-        return _CaseAnalysis(self._data['analysis'])
+    def analysis(self) -> CaseAnalysis:
+        return CaseAnalysis(self._data['analysis'])
 
     @property
     def parametrization(self) -> Dict[str, Any]:
@@ -328,17 +328,17 @@ class Case(CaseInterface):
         return self._info
 
     @property
-    def run_info(self) -> _CaseRunInfo:
+    def run_info(self) -> CaseRunInfo:
         """Case run information."""
         run_info = self._info["run_info"]
         started = _datetime_from_unix_time(run_info.get("datetime_started"))
         finished = _datetime_from_unix_time(run_info.get("datetime_finished"))
-        return _CaseRunInfo(
+        return CaseRunInfo(
             CaseStatus(run_info["status"]), run_info["consistent"], started, finished
         )
 
     @property
-    def input(self) -> _CaseInput:
+    def input(self) -> CaseInput:
         """Case input attributes.
 
         Example::
@@ -353,10 +353,10 @@ class Case(CaseInterface):
          dir(case.input) # See nested attributes
 
         """
-        return _CaseInput(self._info['input'])
+        return CaseInput(self._info['input'])
 
     @property
-    def meta(self) -> _CaseMeta:
+    def meta(self) -> CaseMeta:
         """Case meta attributes.
 
         Example::
@@ -368,7 +368,7 @@ class Case(CaseInterface):
          dir(case.input) # See nested attributes
 
         """
-        return _CaseMeta(self._info['meta'])
+        return CaseMeta(self._info['meta'])
 
     @property
     def initialize_from_case(self) -> Optional[Case]:

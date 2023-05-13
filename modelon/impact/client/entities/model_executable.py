@@ -40,7 +40,7 @@ def _assert_compilation_is_complete(
         raise exceptions.OperationFailureError.for_operation(operation_name)
 
 
-class _ModelExecutableRunInfo:
+class ModelExecutableRunInfo:
     def __init__(self, status: ModelExecutableStatus, errors: List[str]):
         self._status = status
         self._errors = errors
@@ -107,12 +107,12 @@ class ModelExecutable(ModelExecutableInterface):
         return self._get_info()
 
     @property
-    def run_info(self) -> _ModelExecutableRunInfo:
+    def run_info(self) -> ModelExecutableRunInfo:
         """Compilation run information."""
         run_info = self._get_info()["run_info"]
         status = ModelExecutableStatus(run_info["status"])
         errors = run_info.get("errors", [])
-        return _ModelExecutableRunInfo(status, errors)
+        return ModelExecutableRunInfo(status, errors)
 
     @property
     def metadata(self) -> Dict[str, Any]:
