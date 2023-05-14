@@ -1,6 +1,8 @@
 """This module provides an entry-point to the client APIs."""
+from __future__ import annotations
 import logging
-from typing import List, Optional, Dict, Any
+import enum
+from typing import List, Optional, Dict, Any, Union, Iterable
 from dataclasses import dataclass
 from semantic_version import SimpleSpec, Version  # type: ignore
 import modelon.impact.client.configuration
@@ -10,6 +12,10 @@ import modelon.impact.client.jupyterhub
 from modelon.impact.client.credential_manager import CredentialManager
 from modelon.impact.client.operations.project_import import ProjectImportOperation
 from modelon.impact.client.operations.workspace.imports import WorkspaceImportOperation
+from modelon.impact.client.operations.experiment import ExperimentOperation
+from modelon.impact.client.operations.model_executable import ModelExecutableOperation
+from modelon.impact.client.entities.experiment import Experiment
+from modelon.impact.client.entities.model_executable import ModelExecutable
 from modelon.impact.client.entities.project import Project, VcsUri, ProjectType
 from modelon.impact.client.entities.workspace import WorkspaceDefinition, Workspace
 from modelon.impact.client.operations.workspace.conversion import (
@@ -21,6 +27,33 @@ from modelon.impact.client import exceptions
 
 
 logger = logging.getLogger(__name__)
+
+
+@enum.unique
+class ExecutionKind(enum.Enum):
+    COMPILATION = 'COMPILATION'
+    EXPERIMENT = 'EXPERIMENT'
+
+
+@dataclass
+class Execution:
+    kind: ExecutionKind
+    workspace_id: str
+    id: str
+
+    @classmethod
+    def from_dict(cls, execution: Dict[str, Any]) -> Execution:
+        kind = ExecutionKind(execution["kind"])
+        id = (
+            execution["fmu"]["id"]
+            if kind == ExecutionKind.COMPILATION
+            else execution["experiment"]["id"]
+        )
+        return cls(
+            kind=kind,
+            workspace_id=execution["workspace"]["id"],
+            id=id,
+        )
 
 
 @dataclass
@@ -607,3 +640,53 @@ class Client:
         return ProjectImportOperation[Project](
             resp["data"]["location"], self._sal, Project.from_operation
         )
+
+    def _experiment_operation_from_execution(
+        self, execution: Execution
+    ) -> ExperimentOperation:
+        return ExperimentOperation[Experiment](
+            execution.workspace_id,
+            execution.id,
+            self._sal,
+            Experiment.from_operation,
+        )
+
+    def _model_executable_operation_from_execution(
+        self, execution: Execution
+    ) -> ModelExecutableOperation:
+        return ModelExecutableOperation[ModelExecutable](
+            execution.workspace_id,
+            execution.id,
+            self._sal,
+            ModelExecutable.from_operation,
+        )
+
+    def _operation_from_execution(
+        self, execution: Execution
+    ) -> Optional[Union[ExperimentOperation, ModelExecutableOperation]]:
+        if execution.kind == ExecutionKind.EXPERIMENT:
+            return self._experiment_operation_from_execution(execution)
+        return self._model_executable_operation_from_execution(execution)
+
+    def get_executions(
+        self, workspace_id: Optional[str] = None
+    ) -> Iterable[Optional[Union[ExperimentOperation, ModelExecutableOperation]]]:
+        """Yields running/acitve executions.
+
+        Args:
+            workspace_id: The id of the workspace.
+
+        Yields:
+            An ExperimentOperation or a ModelExecutableOperation class.
+
+        Example::
+
+            list(client.get_executions())
+
+        """
+        executions = self._sal.get_executions()["data"]["items"]
+        for execution in executions:
+            execution = Execution.from_dict(execution)
+            if workspace_id and execution.workspace_id != workspace_id:
+                continue
+            yield self._operation_from_execution(execution)
