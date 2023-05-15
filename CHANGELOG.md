@@ -1,3 +1,10 @@
+# [3.0.0-dev.40](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.39...v3.0.0-dev.40) (2023-05-15)
+
+
+### Bug Fixes
+
+* made _CaseRunInfo,_CaseAnalysis, _CaseMeta, _CaseInput and _ModelExecutableRunInfo classes public ([745a371](https://github.com/modelon-community/impact-client-python/commit/745a371a97859aa6c3aa1610cbf88f50cc8281dc))
+
 # [3.0.0-dev.39](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.38...v3.0.0-dev.39) (2023-05-09)
 
 
