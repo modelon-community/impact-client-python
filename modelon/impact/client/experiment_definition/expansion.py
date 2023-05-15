@@ -42,16 +42,15 @@ class FullFactorial(ExpansionAlgorithm):
     """Full-factorial expansion class. Creates experiment with all possible
     combinations of the input Modifiers expressions.
 
-    Supported Modifier expressions:
-        Range
-        Choices
-        Singular Modifiers, e.g., Modifier('name', 1), Modifier('name', 'a')
+    Supported Modifier expressions:     Range     Choices     Singular
+    Modifiers, e.g., Modifier('name', 1), Modifier('name', 'a')
 
-    Will return a single empty case if no Modifiers provided in Experiment.
+    Will return a single empty case if no Modifiers provided in
+    Experiment.
 
-    Observe that the size of an Experiment with FullFactorial expansion is the product
-    of the Modifier lenghts. This number can grow very rapidly if using a lot of
-    Modifiers.
+    Observe that the size of an Experiment with FullFactorial expansion
+    is the product of the Modifier lenghts. This number can grow very
+    rapidly if using a lot of Modifiers.
 
     """
 
