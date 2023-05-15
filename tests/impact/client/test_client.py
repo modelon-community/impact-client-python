@@ -1,6 +1,8 @@
 import pytest
 from unittest.mock import MagicMock
 from modelon.impact.client import Client
+from modelon.impact.client.operations.model_executable import ModelExecutableOperation
+from modelon.impact.client.operations.experiment import ExperimentOperation
 from modelon.impact.client.entities.workspace import Workspace, WorkspaceDefinition
 from modelon.impact.client.entities.project import Project
 import modelon.impact.client.exceptions as exceptions
@@ -271,3 +273,24 @@ def test_import_project_from_zip(
     )
     imported_project = client.import_project_from_zip(TEST_WORKSPACE_PATH).wait()
     assert isinstance(imported_project, Project)
+
+
+def test_get_executions(executions, model_compile, experiment_execute):
+    client = Client(
+        url=executions.url,
+        context=executions.context,
+    )
+    opeartions = list(client.get_executions())
+    assert len(opeartions) == 2
+    assert isinstance(opeartions[0], ModelExecutableOperation)
+    assert isinstance(opeartions[1], ExperimentOperation)
+
+
+def test_get_executions_for_workspace(executions, model_compile, experiment_execute):
+    client = Client(
+        url=executions.url,
+        context=executions.context,
+    )
+    opeartions = list(client.get_executions(IDs.WORKSPACE_SECONDARY))
+    assert len(opeartions) == 1
+    assert isinstance(opeartions[0], ExperimentOperation)

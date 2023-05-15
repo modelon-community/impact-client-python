@@ -11,7 +11,7 @@ class TestExperimentService:
             uri=uri, context=experiment_execute.context
         )
         service.experiment.experiment_execute(
-            IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY
+            IDs.WORKSPACE_SECONDARY, IDs.EXPERIMENT_PRIMARY
         )
         assert experiment_execute.adapter.called
 
@@ -21,7 +21,7 @@ class TestExperimentService:
             uri=uri, context=experiment_execute.context
         )
         service.experiment.experiment_execute(
-            IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY, case_ids=[IDs.CASE_PRIMARY]
+            IDs.WORKSPACE_SECONDARY, IDs.EXPERIMENT_PRIMARY, case_ids=[IDs.CASE_PRIMARY]
         )
         assert experiment_execute.adapter.called
         assert experiment_execute.adapter.request_history[0].json() == {

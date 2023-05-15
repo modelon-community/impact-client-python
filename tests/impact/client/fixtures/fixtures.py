@@ -740,7 +740,7 @@ def delete_fmu(sem_ver_check, mock_server_base):
 
 @pytest.fixture
 def experiment_execute(sem_ver_check, mock_server_base):
-    experiment_url = get_experiment_url(IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY)
+    experiment_url = get_experiment_url(IDs.WORKSPACE_SECONDARY, IDs.EXPERIMENT_PRIMARY)
     return with_json_route_no_resp(
         mock_server_base, 'POST', f'{experiment_url}/execution'
     )
@@ -2246,4 +2246,32 @@ def get_versioned_new_project_branch(user_with_license, mock_server_base):
         'GET',
         f'api/projects/{IDs.VERSIONED_PROJECT_SECONDARY}?vcsInfo=true',
         VERSIONED_PROJECT_BRANCH,
+    )
+
+
+@pytest.fixture
+def executions(user_with_license, mock_server_base):
+    resp = {
+        "data": {
+            "items": [
+                {
+                    "status": "running",
+                    "workspace": {"id": IDs.WORKSPACE_PRIMARY},
+                    "kind": "COMPILATION",
+                    "fmu": {"id": IDs.FMU_PRIMARY},
+                },
+                {
+                    "status": "running",
+                    "workspace": {"id": IDs.WORKSPACE_SECONDARY},
+                    "kind": "EXPERIMENT",
+                    "experiment": {"id": IDs.EXPERIMENT_PRIMARY},
+                },
+            ]
+        }
+    }
+    return with_json_route(
+        mock_server_base,
+        'GET',
+        'api/executions',
+        resp,
     )
