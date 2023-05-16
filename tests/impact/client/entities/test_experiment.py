@@ -2,7 +2,10 @@ import pytest
 import unittest.mock as mock
 from modelon.impact.client import exceptions
 
-from modelon.impact.client.entities.experiment import ExperimentStatus
+from modelon.impact.client.entities.experiment import (
+    ExperimentStatus,
+    ExperimentResultPoint,
+)
 from tests.impact.client.helpers import (
     create_case_entity,
     create_experiment_operation,
@@ -64,6 +67,24 @@ class TestExperiment:
             [mock.call(IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY, ["case_3"])]
         )
         exp_sal.case_put.assert_not_called()
+
+    def test_experiment_get_last_time_point(self, experiment_last_time_point):
+        experiment = experiment_last_time_point.entity
+        exp = experiment.get_last_point(['inertia.I', 'time'])
+        assert isinstance(exp, ExperimentResultPoint)
+        assert exp.cases == ['case_1', 'case_2', 'case_3']
+        assert exp.variables == ['inertia.I', 'time']
+        assert exp.as_lists() == [[1.0, 1.0], [1.0, 2.0], [1.0, None]]
+
+    def test_experiment_get_last_time_point_all_variables(
+        self, experiment_last_time_point
+    ):
+        experiment = experiment_last_time_point.entity
+        exp = experiment.get_last_point()
+        assert isinstance(exp, ExperimentResultPoint)
+        assert exp.cases == ['case_1', 'case_2', 'case_3']
+        assert exp.variables == ['inertia.I', 'time']
+        assert exp.as_lists() == [[1.0, 1.0], [1.0, 2.0], [1.0, None]]
 
     def test_execute_successful(self, experiment):
         experiment = experiment.entity

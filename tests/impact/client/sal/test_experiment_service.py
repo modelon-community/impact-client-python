@@ -1,7 +1,7 @@
 from modelon.impact.client.sal.uri import URI
 import modelon.impact.client.sal.service
 from modelon.impact.client.sal.experiment import ResultFormat
-from tests.impact.client.helpers import IDs
+from tests.impact.client.helpers import IDs, LAST_POINT_TRAJECTORY
 
 
 class TestExperimentService:
@@ -90,9 +90,26 @@ class TestExperimentService:
             uri=uri, context=get_trajectories.context
         )
         data = service.experiment.trajectories_get(
-            IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY, ["variable1", "variable2"]
+            IDs.WORKSPACE_PRIMARY,
+            IDs.EXPERIMENT_PRIMARY,
+            ["variable1", "variable2"],
+            False,
         )
         assert data == [[[1.0, 1.0], [3.0, 3.0], [5.0, 5.0]]]
+
+    def test_get_last_time_point(self, get_last_point):
+        uri = URI(get_last_point.url)
+        service = modelon.impact.client.sal.service.Service(
+            uri=uri, context=get_last_point.context
+        )
+        data = service.experiment.trajectories_get(
+            IDs.WORKSPACE_PRIMARY,
+            IDs.EXPERIMENT_PRIMARY,
+            ["variable1", "variable2"],
+            True,
+            "application/vnd.impact.trajectories.v2+json",
+        )
+        assert data == LAST_POINT_TRAJECTORY
 
     def test_get_cases(self, get_cases):
         uri = URI(get_cases.url)
@@ -202,5 +219,6 @@ class TestExperimentService:
             IDs.EXPERIMENT_PRIMARY,
             IDs.CASE_PRIMARY,
             ["variable1", "variable2"],
+            False,
         )
         assert data == [[1.0, 2.0, 7.0], [2.0, 3.0, 5.0]]

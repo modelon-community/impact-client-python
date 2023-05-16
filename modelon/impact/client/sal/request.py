@@ -40,7 +40,7 @@ class Request:
             if self.method == "POST":
                 logger.debug("POST with JSON body: {}".format(self.body))
                 resp = self.context.session.post(
-                    self.url, json=self.body, files=self.files
+                    self.url, json=self.body, files=self.files, headers=self.headers
                 )
             elif self.method == "GET":
                 resp = self.context.session.get(self.url, headers=self.headers)

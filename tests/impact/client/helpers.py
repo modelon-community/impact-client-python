@@ -87,6 +87,7 @@ def with_text_route(mock_server_base, method, url, text_response, status_code=20
     )
     return mock_server_base
 
+
 def with_xml_route(mock_server_base, method, url, xml_response, status_code=200):
     xml = xml_response
     xml_header = {'content-type': 'application/xml'}
@@ -98,6 +99,7 @@ def with_xml_route(mock_server_base, method, url, xml_response, status_code=200)
         status_code=status_code,
     )
     return mock_server_base
+
 
 def with_csv_route(
     mock_server_base, method, url, text_response, status_code=200, content_header=None
@@ -255,6 +257,35 @@ MODEL_DESCRIPTION_XML = """<?xml version="1.0" encoding="UTF-8"?>
 	</ModelVariables>
 </fmiModelDescription>
 """
+
+LAST_POINT_TRAJECTORY = {
+    "data": {
+        "items": [
+            {
+                "caseId": "case_1",
+                "items": [
+                    {"fixed": True, "trajectory": [1.0]},
+                    {"fixed": False, "trajectory": [1.0]},
+                ],
+            },
+            {
+                "caseId": "case_2",
+                "items": [
+                    {"fixed": True, "trajectory": [1.0]},
+                    {"fixed": False, "trajectory": [2.0]},
+                ],
+            },
+            {
+                "caseId": "case_3",
+                "items": [
+                    {"fixed": True, "trajectory": [1.0]},
+                    None,
+                ],
+            },
+        ]
+    }
+}
+
 
 def get_test_get_fmu():
     return {

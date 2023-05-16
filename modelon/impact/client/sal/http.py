@@ -65,8 +65,9 @@ class HTTPClient:
         url: str,
         body: Optional[Dict[str, Any]] = None,
         files: Optional[Dict[str, Any]] = None,
+        headers: Optional[Dict[str, Any]] = None,
     ) -> Any:
-        request = RequestJSON(self._context, "POST", url, body, files)
+        request = RequestJSON(self._context, "POST", url, body, files, headers=headers)
         return request.execute().data
 
     def post_json_no_response_body(

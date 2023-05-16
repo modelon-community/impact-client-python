@@ -14,8 +14,11 @@ def _create_result_dict(
     exp_id: str,
     case_id: str,
     exp_sal: ExperimentService,
+    last_point_only: bool,
 ) -> Dict[str, Any]:
-    response = exp_sal.trajectories_get(workspace_id, exp_id, variables)
+    response = exp_sal.trajectories_get(
+        workspace_id, exp_id, variables, last_point_only
+    )
     case_index = int(case_id.split("_")[1])
     data = {
         variable: response[i][case_index - 1] for i, variable in enumerate(variables)
@@ -42,8 +45,9 @@ class Result(Mapping):
 
     def __getitem__(self, key: str) -> Any:
         assert_variable_in_result([key], self._variables)
+        # TODO: Implement support for last point only
         response = self._sal.experiment.case_trajectories_get(
-            self._workspace_id, self._exp_id, self._case_id, [key]
+            self._workspace_id, self._exp_id, self._case_id, [key], False
         )
         return response[0]
 
@@ -54,6 +58,7 @@ class Result(Mapping):
             self._exp_id,
             self._case_id,
             self._sal.experiment,
+            False,
         )
         return data.__iter__()
 
