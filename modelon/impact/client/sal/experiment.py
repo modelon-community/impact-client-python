@@ -73,14 +73,23 @@ class ExperimentService:
         return self._http_client.get_json(url)
 
     def trajectories_get(
-        self, workspace_id: str, experiment_id: str, variables: List[str]
-    ) -> List[str]:
-        body = {"variable_names": variables}
+        self,
+        workspace_id: str,
+        experiment_id: str,
+        variables: List[str],
+        last_point_only: bool,
+        format: Optional[str] = None,
+    ) -> Any:
+        body = {
+            "variable_names": variables,
+            "filter": {"lastPointOnly": last_point_only},
+        }
+        headers = {"Accept": format or "application/vnd.impact.trajectories.v1+json"}
         url = (
             self._base_uri
             / f"api/workspaces/{workspace_id}/experiments/{experiment_id}/trajectories"
         ).resolve()
-        return self._http_client.post_json(url, body=body)
+        return self._http_client.post_json(url, body=body, headers=headers)
 
     def cases_get(self, workspace_id: str, experiment_id: str) -> Dict[str, Any]:
         url = (
@@ -142,9 +151,17 @@ class ExperimentService:
         return mat_resp.stream, mat_resp.file_name
 
     def case_trajectories_get(
-        self, workspace_id: str, experiment_id: str, case_id: str, variables: List[str]
+        self,
+        workspace_id: str,
+        experiment_id: str,
+        case_id: str,
+        variables: List[str],
+        last_point_only: bool,
     ) -> List[str]:
-        body = {"variable_names": variables}
+        body = {
+            "variable_names": variables,
+            "filter": {"lastPointOnly": last_point_only},
+        }
         url = (
             self._base_uri
             / f"api/workspaces/{workspace_id}/experiments/{experiment_id}/cases/"

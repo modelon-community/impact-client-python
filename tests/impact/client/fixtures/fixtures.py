@@ -25,8 +25,6 @@ from tests.impact.client.helpers import (
     get_test_modelica_experiment_definition,
     get_test_fmu_experiment_definition,
     get_test_get_fmu,
-)
-from tests.impact.client.helpers import (
     create_project_entity,
     create_workspace_entity,
     create_model_exe_entity,
@@ -38,6 +36,7 @@ from tests.impact.client.helpers import (
     VERSIONED_PROJECT_BRANCH,
     VERSIONED_PROJECT_TRUNK,
     MODEL_DESCRIPTION_XML,
+    LAST_POINT_TRAJECTORY,
 )
 
 
@@ -685,11 +684,14 @@ def get_compile_log(sem_ver_check, mock_server_base):
     fmu_url = get_model_exe_url(IDs.WORKSPACE_PRIMARY, IDs.FMU_PRIMARY)
     return with_text_route(mock_server_base, 'GET', f'{fmu_url}/compilation/log', text)
 
+
 @pytest.fixture
 def get_model_description(sem_ver_check, mock_server_base):
-
     fmu_url = get_model_exe_url(IDs.WORKSPACE_PRIMARY, IDs.FMU_PRIMARY)
-    return with_xml_route(mock_server_base, 'GET', f'{fmu_url}/model-description', MODEL_DESCRIPTION_XML)
+    return with_xml_route(
+        mock_server_base, 'GET', f'{fmu_url}/model-description', MODEL_DESCRIPTION_XML
+    )
+
 
 @pytest.fixture
 def get_compile_status(sem_ver_check, mock_server_base):
@@ -788,6 +790,15 @@ def get_result_variables(sem_ver_check, mock_server_base):
 @pytest.fixture
 def get_trajectories(sem_ver_check, mock_server_base):
     json = [[[1.0, 1.0], [3.0, 3.0], [5.0, 5.0]]]
+    experiment_url = get_experiment_url(IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY)
+    return with_json_route(
+        mock_server_base, 'POST', f'{experiment_url}/trajectories', json
+    )
+
+
+@pytest.fixture
+def get_last_point(sem_ver_check, mock_server_base):
+    json = LAST_POINT_TRAJECTORY
     experiment_url = get_experiment_url(IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY)
     return with_json_route(
         mock_server_base, 'POST', f'{experiment_url}/trajectories', json
@@ -1614,6 +1625,24 @@ def experiment():
     exp_service.case_artifact_get.return_value = (bytes(4), IDs.RESULT_MAT)
     exp_service.trajectories_get.return_value = [[[1, 2, 3, 4]], [[5, 2, 9, 4]]]
     exp_service.case_trajectories_get.return_value = [[1, 2, 3, 4], [5, 2, 9, 4]]
+    return ExperimentMock(
+        create_experiment_entity(
+            IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY, service=service
+        ),
+        service,
+    )
+
+
+@pytest.fixture
+def experiment_last_time_point():
+    service = MagicMock()
+    ws_service = service.workspace
+    exp_service = service.experiment
+    ws_service.experiment_get.return_value = get_test_modelica_experiment_definition()
+    exp_service.experiment_execute.return_value = IDs.EXPERIMENT_PRIMARY
+    exp_service.execute_status.return_value = {"status": "done"}
+    exp_service.result_variables_get.return_value = ["inertia.I", "time"]
+    exp_service.trajectories_get.return_value = LAST_POINT_TRAJECTORY
     return ExperimentMock(
         create_experiment_entity(
             IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY, service=service

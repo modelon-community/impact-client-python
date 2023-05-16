@@ -1,7 +1,7 @@
 from __future__ import annotations
 import logging
 import enum
-from typing import Any, List, Dict, Optional, TYPE_CHECKING
+from typing import Any, List, Dict, Optional, Union, TYPE_CHECKING
 
 from modelon.impact.client.entities.interfaces.experiment import ExperimentInterface
 from modelon.impact.client.operations import experiment
@@ -21,6 +21,49 @@ if TYPE_CHECKING:
     from modelon.impact.client.operations.base import BaseOperation
 
 logger = logging.getLogger(__name__)
+
+ScalarValue = Union[float, int, str]
+
+
+@enum.unique
+class _TrajectoryResponseFormat(enum.Enum):
+    V1 = "application/vnd.impact.trajectories.v1+json"
+    v2 = "application/vnd.impact.trajectories.v2+json"
+
+
+class ExperimentResultPoint:
+    """Value class with the single time instance data in a experiment."""
+
+    def __init__(self, trajectories: List[Dict[str, Any]], variables: List[str]):
+        self._trajectories = trajectories
+        self._variables = variables
+
+    @property
+    def variables(self) -> List[str]:
+        """List of variables."""
+        return self._variables
+
+    @property
+    def cases(self) -> List[str]:
+        """List of case ids."""
+        return [case["caseId"] for case in self._trajectories]
+
+    def as_lists(self) -> List[Optional[List[Optional[ScalarValue]]]]:
+        """Return a list of results per case.
+
+        None indicates that the case was not run or failed. None value
+        for a variable indicated that the variable is not present in the
+        specific case output.
+
+        Example::
+
+            result_data = result.as_lists()
+
+        """
+        return [
+            [item["trajectory"][0] if item else None for item in case_data["items"]]
+            for case_data in self._trajectories
+        ]
 
 
 @enum.unique
@@ -343,6 +386,24 @@ class Experiment(ExperimentInterface):
         """
         return [case for case in self.get_cases() if case.meta.label == case_label]
 
+    def _validate_and_fetch_trajectories(
+        self,
+        variables: List[str],
+        only_last_point: bool = False,
+        format: _TrajectoryResponseFormat = _TrajectoryResponseFormat.V1,
+    ) -> Any:
+        if not isinstance(variables, list):
+            raise TypeError(
+                "Please specify the list of result keys for the trajectories of "
+                "intrest!"
+            )
+        _assert_experiment_is_complete(self.run_info.status, "Simulation")
+        assert_variable_in_result(variables, self.get_variables())
+
+        return self._sal.experiment.trajectories_get(
+            self._workspace_id, self._exp_id, variables, only_last_point, format.value
+        )
+
     def get_trajectories(self, variables: List[str]) -> Dict[str, Any]:
         """Returns a dictionary containing the result trajectories for a list
         of result variables for all the cases.
@@ -366,16 +427,8 @@ class Experiment(ExperimentInterface):
             time = result['case_1']['time']
 
         """
-        if not isinstance(variables, list):
-            raise TypeError(
-                "Please specify the list of result keys for the trajectories of "
-                "intrest!"
-            )
-        _assert_experiment_is_complete(self.run_info.status, "Simulation")
-        assert_variable_in_result(variables, self.get_variables())
-
-        response = self._sal.experiment.trajectories_get(
-            self._workspace_id, self._exp_id, variables
+        response = self._validate_and_fetch_trajectories(
+            variables, only_last_point=False, format=_TrajectoryResponseFormat.V1
         )
 
         if response:
@@ -389,6 +442,51 @@ class Experiment(ExperimentInterface):
             }
             for j in case_nbrs
         }
+
+    def get_last_point(
+        self, variables: Optional[List[str]] = None
+    ) -> ExperimentResultPoint:
+        """Returns a ExperimentResultPoint class for a list of result variables
+        for all the cases.
+
+        Args:
+            variables: An optional list of result variables to fetch
+            trajectories for.
+
+        Returns:
+            An ExperimentResultPoint class object.
+
+        Raises:
+            OperationNotCompleteError if simulation process is in progress.
+            OperationFailureError if simulation process was cancelled.
+            TypeError if the variable is not a list object.
+            ValueError if trajectory variable is not present in the result.
+
+        Example::
+
+            result = experiment.get_last_point(['h', 'time'])
+
+            # Convert to Pandas data frame
+            df = pd.DataFrame(data=result.as_lists(), columns=result.variables,
+                index=result.cases)
+            df.index.name = "Cases"
+
+        """
+        format = _TrajectoryResponseFormat.V1
+        if variables is None:
+            variables = self.get_variables()
+            trajectories = self._sal.experiment.trajectories_get(
+                self._workspace_id,
+                self._exp_id,
+                variables,
+                last_point_only=True,
+                format=format.value,
+            )
+        else:
+            trajectories = self._validate_and_fetch_trajectories(
+                variables, only_last_point=True, format=format
+            )
+        return ExperimentResultPoint(trajectories["data"]["items"], variables)
 
     def delete(self) -> None:
         """Deletes an experiment.
