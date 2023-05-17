@@ -1,7 +1,7 @@
 from __future__ import annotations
 from copy import deepcopy
 from collections.abc import Mapping
-from typing import Union, List, Dict, Any, Iterator
+from typing import List, Dict, Any, Iterator
 from abc import ABC
 
 
@@ -65,16 +65,16 @@ class SolverOptions(BaseExecutionOptions):
 
 
 class SimulationOptions(BaseExecutionOptions):
-    def with_result_filter(self, pattern: Union[str, List[str]]) -> SimulationOptions:
+    def with_result_filter(self, pattern: List[str]) -> SimulationOptions:
         """Sets the variable filter for results.
 
         Args:
             pattern:
-                A filter pattern for choosing which variables to actually
+                A list of filter patterns for choosing which variables to actually
                 store result for. The syntax can be found in
                 https://en.wikipedia.org/wiki/Glob_(programming).
                 An example for filter is `*der`, which would stores all
-                variables ending with `der`. Can also be a list.
+                variables ending with `der`.
 
         Example::
 
@@ -82,9 +82,9 @@ class SimulationOptions(BaseExecutionOptions):
                 pattern = ["*.phi"])
 
         """
-        if not isinstance(pattern, str):
-            pattern = str(pattern)
-        return self.with_values(filter=pattern)
+        if not isinstance(pattern, list):
+            raise ValueError("The filter pattern must be specified as a list!")
+        return self.with_values(filter=str(pattern))
 
 
 class ProjectExecutionOptions:
