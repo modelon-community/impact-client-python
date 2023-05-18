@@ -1,3 +1,6 @@
+import pytest
+
+
 def test_modify_options(
     compiler_options, runtime_options, solver_options, simulation_options
 ):
@@ -30,6 +33,16 @@ def test_append_options(
 
 def test_simulation_options_with_result_filter(simulation_options):
 
-    simulation_opts = simulation_options.with_result_filter(pattern=['*.phi'])
+    simulation_opts = simulation_options.with_result_filter(filter=['*.phi'])
 
     assert dict(simulation_opts) == {'filter': "['*.phi']", 'ncp': 2000}
+
+
+def test_simulation_options_with_result_filter_invalid_string_imput(simulation_options):
+    with pytest.raises(ValueError):
+        simulation_options.with_result_filter(filter='*.phi')
+
+
+def test_simulation_options_with_result_filter_invalid_list_imput(simulation_options):
+    with pytest.raises(ValueError):
+        simulation_options.with_result_filter(filter=['*.phi', 2])

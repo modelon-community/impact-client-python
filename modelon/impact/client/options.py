@@ -65,11 +65,11 @@ class SolverOptions(BaseExecutionOptions):
 
 
 class SimulationOptions(BaseExecutionOptions):
-    def with_result_filter(self, pattern: List[str]) -> SimulationOptions:
+    def with_result_filter(self, filter: List[str]) -> SimulationOptions:
         """Sets the variable filter for results.
 
         Args:
-            pattern:
+            filter:
                 A list of filter patterns for choosing which variables to actually
                 store result for. The syntax can be found in
                 https://en.wikipedia.org/wiki/Glob_(programming).
@@ -82,9 +82,13 @@ class SimulationOptions(BaseExecutionOptions):
                 pattern = ["*.phi"])
 
         """
-        if not isinstance(pattern, list):
-            raise ValueError("The filter pattern must be specified as a list!")
-        return self.with_values(filter=str(pattern))
+        if not isinstance(filter, list) or [
+            p for p in filter if not isinstance(p, str)
+        ]:
+            raise ValueError(
+                "The filter must be specified as a list of pattern strings!"
+            )
+        return self.with_values(filter=str(filter))
 
 
 class ProjectExecutionOptions:
