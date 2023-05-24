@@ -35,7 +35,7 @@ It also possible to use a combination of the range and choices operators to setu
 
    from modelon.impact.client import Choices
 
-   experiment_definition = experiment_definition.with_modifiers({'PI.k': Choices(10, 20),'PI.Ti.': Range(10, 100, 3)})
+   experiment_definition = experiment_definition.with_modifiers({'PI.k': Choices(10, 20),'PI.Ti': Range(10, 100, 3)})
 
 Experiment extensions
 ---------------------
