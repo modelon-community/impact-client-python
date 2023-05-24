@@ -39,7 +39,7 @@ The code snippet below shows examples of values that can be updated in a case::
 
    case_2 = experiment.get_case('case_2')
 
-   case_2.input.analysis.parameter = {'start_time': 0, 'final_time':10}
+   case_2.input.analysis.parameters = {'start_time': 0, 'final_time':10}
    case_2.input.analysis.simulation_options = {'ncp': 600}
    case_2.input.analysis.solver_options = {'atol': 1e-8}
    case_2.input.parametrization = {'PI.k': 120}
@@ -68,11 +68,14 @@ Of the default custom functions only the 'steady state' custom function supports
 This is useful in cases where a converged steady-state result could be used to initialize a failed
 steady-state simulation. The different possibilities to initialize are covered in the sections below.
 
-Consider the following scenario where a single case(case_2) in a steady-state batch simulation fails:: 
+Consider the following steady-state batch execution scenario for a model. The parameterization for the `sweep` parameter
+results in 3 cases, where let's say a single case(case_2) in the batch simulation fails::
 
    experiment_definition = experiment_definition.with_modifiers({'sweep': Range(10, 100, 3)})
    experiment = workspace.create_experiment(experiment_definition)
    experiment = experiment.execute().wait() # Case 2 fails
+
+We could try to resolve this by initializing the failed case with an appropriate case or result as covered in the sections below.
 
 Initialize from case
 ####################

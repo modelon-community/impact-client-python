@@ -52,6 +52,14 @@ modelon.impact.client.operations.external\_result\_import module
    :undoc-members:
    :show-inheritance:
 
+modelon.impact.client.operations.fmu\_import module
+---------------------------------------------------
+
+.. automodule:: modelon.impact.client.operations.fmu_import
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 modelon.impact.client.operations.model\_executable module
 ---------------------------------------------------------
 
