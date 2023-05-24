@@ -1,7 +1,9 @@
 Install Modelon Impact Client
 =============================
 
-You can install Modelon Impact Client with ``pip``, or by installing from source.
+You can install Modelon Impact Client with ``pip``, or by installing from source. To locate a Python client version
+that works with your version of Modelon Impact, refer to the 
+:ref:`compatibility <Modelon Impact Vs Python client version compatibility map>` mapping.
 
 Pip
 ---
@@ -33,3 +35,16 @@ Requirements
 
 Modelon Impact Client supports Python versions 3.9 or higher. The client library is developed in sync with 
 Modelon Impact and is kept updated with the latest changes in the tool.
+
+Modelon Impact Vs Python client version compatibility map
+---------------------------------------------------------
+
++-------------------------+--------------------------------------------------+
+| Modelon Impact version  |            Python client version                 |
++=========================+==================================================+
+|         1.1.x           | 1.1.x (pip install modelon-impact-client~=1.1.0) |
++-------------------------+--------------------------------------------------+
+|         1.5.x           | 1.2.x (pip install modelon-impact-client~=1.2.0) |
++-------------------------+--------------------------------------------------+
+|  1.8.x, 1.9.x, 1.10.x   | 2.4.x (pip install modelon-impact-client~=2.4.0) |
++-------------------------+--------------------------------------------------+
