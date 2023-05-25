@@ -1,3 +1,11 @@
+# [3.0.0-dev.43](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.42...v3.0.0-dev.43) (2023-05-25)
+
+
+### Bug Fixes
+
+* added additional checks and improved error message ([e7a9b25](https://github.com/modelon-community/impact-client-python/commit/e7a9b25d001ab48459abca0a0e5f2a22a8065e5d))
+* the filter option only accepts list of patterns ([9aa27d4](https://github.com/modelon-community/impact-client-python/commit/9aa27d445244a67257d759b71ae1aa47baf7e061))
+
 # [3.0.0-dev.42](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.41...v3.0.0-dev.42) (2023-05-25)
 
 
