@@ -1,3 +1,10 @@
+# [3.0.0-dev.42](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.41...v3.0.0-dev.42) (2023-05-25)
+
+
+### Bug Fixes
+
+* bump supported version range ([e789a35](https://github.com/modelon-community/impact-client-python/commit/e789a35f316077890ee1446d1a67a0c9999907b5))
+
 # [3.0.0-dev.41](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.40...v3.0.0-dev.41) (2023-05-24)
 
 
