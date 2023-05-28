@@ -1,3 +1,10 @@
+# [3.0.0-dev.44](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.43...v3.0.0-dev.44) (2023-05-28)
+
+
+### Bug Fixes
+
+* added mapping for python client-MI version compatibility ([9bc476b](https://github.com/modelon-community/impact-client-python/commit/9bc476b623e8d3e6e0f8e9c6cad69ce90fcf7877))
+
 # [3.0.0-dev.43](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.42...v3.0.0-dev.43) (2023-05-25)
 
 
