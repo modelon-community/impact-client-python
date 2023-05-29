@@ -7,6 +7,7 @@ from modelon.impact.client.sal.request import (
     RequestOctetStream,
     RequestText,
     RequestZip,
+    RequestXML,
 )
 from modelon.impact.client.sal.response import (
     JSONResponse,
@@ -40,6 +41,10 @@ class HTTPClient:
     ) -> CSVResponse:
         request = RequestCSV(self._context, "GET", url, headers=headers)
         return request.execute()
+
+    def get_xml(self, url: str, headers: Optional[Dict[str, Any]] = None) -> str:
+        request = RequestXML(self._context, "GET", url, headers=headers)
+        return request.execute().data
 
     def get_mat(
         self, url: str, headers: Optional[Dict[str, Any]] = None

@@ -87,6 +87,17 @@ def with_text_route(mock_server_base, method, url, text_response, status_code=20
     )
     return mock_server_base
 
+def with_xml_route(mock_server_base, method, url, xml_response, status_code=200):
+    xml = xml_response
+    xml_header = {'content-type': 'application/xml'}
+    mock_server_base.adapter.register_uri(
+        method,
+        f'{mock_server_base.url}/{url}',
+        text=xml,
+        headers=xml_header,
+        status_code=status_code,
+    )
+    return mock_server_base
 
 def with_csv_route(
     mock_server_base, method, url, text_response, status_code=200, content_header=None
@@ -229,7 +240,21 @@ VERSIONED_PROJECT_BRANCH = {
         "subdir": ".",
     },
 }
-
+MODEL_DESCRIPTION_XML = """<?xml version="1.0" encoding="UTF-8"?>
+<fmiModelDescription fmiVersion="2.0" modelName="Dynamic.BouncingBall" guid="3cf47fe7f8c4242085384d3bb524d5f1" generationTool="Optimica Compiler Toolkit" generationDateAndTime="2023-05-08T19:07:40" variableNamingConvention="structured" numberOfEventIndicators="2">
+	<CoSimulation modelIdentifier="Dynamic_BouncingBall" needsExecutionTool="false" canHandleVariableCommunicationStepSize="true" canInterpolateInputs="true" maxOutputDerivativeOrder="0" canRunAsynchronuously="false" canBeInstantiatedOnlyOncePerProcess="true" canNotUseMemoryManagementFunctions="false" canGetAndSetFMUstate="true" canSerializeFMUstate="true" providesDirectionalDerivative="false" />
+	<ModelVariables>
+		<!-- Variable with index #1 -->
+		<ScalarVariable name="_block_jacobian_check" valueReference="536870945" causality="parameter" variability="fixed" initial="exact">
+			<Boolean start="false" />
+		</ScalarVariable>
+		<!-- Variable with index #2 -->
+		<ScalarVariable name="_block_jacobian_check_tol" valueReference="4" causality="parameter" variability="fixed" initial="exact">
+			<Real relativeQuantity="false" start="1.0E-6" />
+		</ScalarVariable>
+	</ModelVariables>
+</fmiModelDescription>
+"""
 
 def get_test_get_fmu():
     return {
