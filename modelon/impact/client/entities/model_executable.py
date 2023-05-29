@@ -40,6 +40,40 @@ def _assert_compilation_is_complete(
         raise exceptions.OperationFailureError.for_operation(operation_name)
 
 
+class ModelDescription(str):
+    """ModelDescription class inheriting from string object."""
+
+    def show(self) -> str:
+        """Prints the formatted xml."""
+        return self
+
+    def download(self, path: Optional[str] = None) -> str:
+        """Downloads the formatted xml.
+
+        Args:
+            path: The local path to store the downloaded model description.
+                Default: None. If no path is given, model description will
+                be downloaded in a temporary directory.
+
+        Returns:
+            Local path to the model description file.
+
+        Example::
+
+            model_description = fmu.get_model_description()
+            model_description.show()
+            model_description.download()
+
+        """
+        if path is None:
+            path = os.path.join(tempfile.gettempdir(), "impact-downloads")
+        os.makedirs(path, exist_ok=True)
+        artifact_path = os.path.join(path, 'modelDescription.xml')
+        with open(artifact_path, mode="w", encoding="utf-8") as f:
+            f.write(self)
+        return artifact_path
+
+
 class ModelExecutableRunInfo:
     def __init__(self, status: ModelExecutableStatus, errors: List[str]):
         self._status = status
@@ -167,6 +201,36 @@ class ModelExecutable(ModelExecutableInterface):
         _assert_compilation_is_complete(self.run_info.status, "Compilation")
         return Log(
             self._sal.model_executable.compile_log(self._workspace_id, self._fmu_id)
+        )
+
+    def get_model_description(self) -> ModelDescription:
+        """Returns the model description object.
+
+        Returns:
+            The compilation log object.
+
+        Example::
+
+            model_description = fmu.get_model_description()
+
+            # Print the formatted xml
+            model_description.show()
+
+            # Download the formatted xml
+            model_description.download()
+
+            # Parse the xml
+            from xml.etree import ElementTree
+
+            tree = ElementTree.fromstring(model_description)
+            model_variables =tree.find('ModelVariables')
+            variable_names = [child.attrib.get('name') for child in model_variables]
+
+        """
+        return ModelDescription(
+            self._sal.model_executable.model_description_get(
+                self._workspace_id, self._fmu_id
+            )
         )
 
     def delete(self) -> None:

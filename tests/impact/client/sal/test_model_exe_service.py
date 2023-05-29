@@ -1,6 +1,6 @@
 import modelon.impact.client.sal.service
 from modelon.impact.client.sal.uri import URI
-from tests.impact.client.helpers import IDs
+from tests.impact.client.helpers import IDs, MODEL_DESCRIPTION_XML
 
 
 class TestModelExecutbleService:
@@ -66,6 +66,16 @@ class TestModelExecutbleService:
             IDs.WORKSPACE_PRIMARY, IDs.FMU_PRIMARY
         )
         assert data == "Compiler arguments:..."
+
+    def test_get_model_description(self, get_model_description):
+        uri = URI(get_model_description.url)
+        service = modelon.impact.client.sal.service.Service(
+            uri=uri, context=get_model_description.context
+        )
+        data = service.model_executable.model_description_get(
+            IDs.WORKSPACE_PRIMARY, IDs.FMU_PRIMARY
+        )
+        assert data == MODEL_DESCRIPTION_XML
 
     def test_get_compile_status(self, get_compile_status):
         uri = URI(get_compile_status.url)

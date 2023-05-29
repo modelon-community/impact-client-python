@@ -35,6 +35,14 @@ class ModelExecutableService:
         ).resolve()
         return self._http_client.get_text(url)
 
+    def model_description_get(self, workspace_id: str, fmu_id: str) -> str:
+        url = (
+            self._base_uri
+            / f"api/workspaces/{workspace_id}/model-executables/{fmu_id}/"
+            "model-description"
+        ).resolve()
+        return self._http_client.get_xml(url)
+
     def fmu_delete(self, workspace_id: str, fmu_id: str) -> None:
         url = (
             self._base_uri / f"api/workspaces/{workspace_id}/model-executables/{fmu_id}"

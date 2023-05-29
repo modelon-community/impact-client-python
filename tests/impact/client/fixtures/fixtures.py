@@ -19,6 +19,7 @@ from tests.impact.client.helpers import (
     with_json_route_no_resp,
     with_octet_stream_route,
     with_text_route,
+    with_xml_route,
     with_zip_route,
     json_request_list_item,
     get_test_modelica_experiment_definition,
@@ -36,6 +37,7 @@ from tests.impact.client.helpers import (
     IDs,
     VERSIONED_PROJECT_BRANCH,
     VERSIONED_PROJECT_TRUNK,
+    MODEL_DESCRIPTION_XML,
 )
 
 
@@ -683,6 +685,11 @@ def get_compile_log(sem_ver_check, mock_server_base):
     fmu_url = get_model_exe_url(IDs.WORKSPACE_PRIMARY, IDs.FMU_PRIMARY)
     return with_text_route(mock_server_base, 'GET', f'{fmu_url}/compilation/log', text)
 
+@pytest.fixture
+def get_model_description(sem_ver_check, mock_server_base):
+
+    fmu_url = get_model_exe_url(IDs.WORKSPACE_PRIMARY, IDs.FMU_PRIMARY)
+    return with_xml_route(mock_server_base, 'GET', f'{fmu_url}/model-description', MODEL_DESCRIPTION_XML)
 
 @pytest.fixture
 def get_compile_status(sem_ver_check, mock_server_base):
@@ -1387,6 +1394,7 @@ def fmu():
     model_exe_service.compile_status.return_value = {"status": "done"}
     model_exe_service.settable_parameters_get.return_value = ['h0', 'v']
     model_exe_service.compile_log.return_value = "Successful Log"
+    model_exe_service.model_description_get.return_value = MODEL_DESCRIPTION_XML
     model_exe_service.fmu_setup.return_value = (IDs.FMU_PRIMARY, {})
     model_exe_service.ss_fmu_metadata_get.return_value = {
         "steady_state": {"residual_variable_count": 1, "iteration_variable_count": 2}

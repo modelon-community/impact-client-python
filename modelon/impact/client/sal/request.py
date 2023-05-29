@@ -10,6 +10,7 @@ from modelon.impact.client.sal.response import (
     CSVResponse,
     OctetStreamResponse,
     MatStreamResponse,
+    XMLResponse,
 )
 
 logger = logging.getLogger(__name__)
@@ -105,6 +106,19 @@ class RequestText(Request):
         headers: Optional[Dict[str, Any]] = None,
     ):
         super().__init__(context, method, url, TextResponse, body, files, headers)
+
+
+class RequestXML(Request):
+    def __init__(
+        self,
+        context: Any,
+        method: str,
+        url: str,
+        body: Optional[Dict[str, Any]] = None,
+        files: Optional[Dict[str, Any]] = None,
+        headers: Optional[Dict[str, Any]] = None,
+    ):
+        super().__init__(context, method, url, XMLResponse, body, files, headers)
 
 
 class RequestCSV(Request):

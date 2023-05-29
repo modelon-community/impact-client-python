@@ -86,6 +86,26 @@ class TextResponse(Response):
         return self._resp_obj.text
 
 
+class XMLResponse(Response):
+    def __init__(self, resp_obj: Any):
+        super().__init__(resp_obj)
+
+    def _is_xml(self) -> bool:
+        return "application/xml" in self._resp_obj.headers.get("content-type")
+
+    @property
+    def data(self) -> Text:
+        if not self._resp_obj.ok:
+            raise exceptions.HTTPError(self.error.message, self._resp_obj.status_code)
+
+        if not self._is_xml():
+            raise exceptions.InvalidContentTypeError(
+                "Incorrect content type on response, expected XML"
+            )
+
+        return self._resp_obj.text
+
+
 class ZIPResponse(Response):
     def __init__(self, resp_obj: Any):
         super().__init__(resp_obj)

@@ -1,10 +1,11 @@
 import pytest
 import os
 import tempfile
+from xml.etree import ElementTree
 from modelon.impact.client import exceptions
 
 from modelon.impact.client.entities.model_executable import ModelExecutableStatus
-from tests.impact.client.helpers import IDs
+from tests.impact.client.helpers import IDs, MODEL_DESCRIPTION_XML
 
 
 class TestModelExecutable:
@@ -21,6 +22,15 @@ class TestModelExecutable:
         }
         assert fmu.run_info.status == ModelExecutableStatus.SUCCESSFUL
         assert fmu.run_info.errors == []
+
+    def test_parse_model_description(self, fmu):
+        model_description = fmu.get_model_description()
+        assert model_description == MODEL_DESCRIPTION_XML
+        tree = ElementTree.fromstring(model_description)
+        model_variables =tree.find('ModelVariables')
+        variable_names = [child.attrib.get('name') for child in model_variables]  
+        assert variable_names == ['_block_jacobian_check', '_block_jacobian_check_tol']
+
 
     def test_compilation_running(self, fmu_compile_running):
         assert fmu_compile_running.run_info.status == ModelExecutableStatus.NOTSTARTED
