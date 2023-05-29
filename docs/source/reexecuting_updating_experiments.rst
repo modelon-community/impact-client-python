@@ -68,7 +68,7 @@ Of the default custom functions only the 'steady state' custom function supports
 This is useful in cases where a converged steady-state result could be used to initialize a failed
 steady-state simulation. The different possibilities to initialize are covered in the sections below.
 
-Consider the following steady-state batch execution scenario for a model. The parameterization for the `sweep` parameter
+Consider the following steady-state batch execution scenario for a model. The parametrization for the `sweep` parameter
 results in 3 cases, where let's say a single case(case_2) in the batch simulation fails::
 
    experiment_definition = experiment_definition.with_modifiers({'sweep': Range(10, 100, 3)})
