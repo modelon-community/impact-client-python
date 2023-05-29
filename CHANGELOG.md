@@ -1,3 +1,10 @@
+# [3.0.0-dev.45](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.44...v3.0.0-dev.45) (2023-05-29)
+
+
+### Bug Fixes
+
+* corrected the documentation example for with_result_filter ([e150eb0](https://github.com/modelon-community/impact-client-python/commit/e150eb0054aec147512176e646e477eab89b9b9a))
+
 # [3.0.0-dev.44](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.43...v3.0.0-dev.44) (2023-05-28)
 
 
