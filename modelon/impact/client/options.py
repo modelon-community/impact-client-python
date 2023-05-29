@@ -79,7 +79,7 @@ class SimulationOptions(BaseExecutionOptions):
         Example::
 
             sim_opts = custom_function.get_simulation_options().with_result_filter(
-                pattern = ["*.phi"])
+                filter = ["*.phi"])
 
         """
         if not isinstance(filter, list) or [
