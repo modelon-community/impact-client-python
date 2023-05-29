@@ -1,3 +1,10 @@
+# [3.0.0-dev.46](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.45...v3.0.0-dev.46) (2023-05-29)
+
+
+### Bug Fixes
+
+* spell fix - parameterization -> parametrization ([1f302cd](https://github.com/modelon-community/impact-client-python/commit/1f302cd5560b811a4b76aa1bfe933110cbfc43ea))
+
 # [3.0.0-dev.45](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.44...v3.0.0-dev.45) (2023-05-29)
 
 
