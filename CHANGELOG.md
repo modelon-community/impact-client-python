@@ -1,3 +1,15 @@
+# [3.0.0-dev.47](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.46...v3.0.0-dev.47) (2023-06-04)
+
+
+### Bug Fixes
+
+* corrected upload_model_library to import_modelica_library in docs ([256d813](https://github.com/modelon-community/impact-client-python/commit/256d8139acd35bd0c9cd408c4dae9fb84d87ce7c))
+
+
+### Features
+
+* added possibility to fetch model description xml ([4427a2f](https://github.com/modelon-community/impact-client-python/commit/4427a2f4ac39c85e77cd51fab952af04fc1b3a21))
+
 # [3.0.0-dev.46](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.45...v3.0.0-dev.46) (2023-05-29)
 
 
