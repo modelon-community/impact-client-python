@@ -1,3 +1,16 @@
+# [3.0.0-dev.48](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.47...v3.0.0-dev.48) (2023-06-04)
+
+
+### Bug Fixes
+
+* added tests ([334c129](https://github.com/modelon-community/impact-client-python/commit/334c129650946d3c94eb87128b2264e07671b67d))
+* docs updates and docformatter suggested fixes ([6cbd165](https://github.com/modelon-community/impact-client-python/commit/6cbd165c31d974b05425148fee5861397d249fb9))
+
+
+### Features
+
+* add method to fetch all running executions ([72f1089](https://github.com/modelon-community/impact-client-python/commit/72f10890a3934a8ede1361077f83b2e140975ab9))
+
 # [3.0.0-dev.47](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.46...v3.0.0-dev.47) (2023-06-04)
 
 
