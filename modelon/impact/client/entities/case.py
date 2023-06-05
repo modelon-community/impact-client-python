@@ -91,18 +91,29 @@ class CaseAnalysis:
 
     @property
     def analysis_function(self) -> str:
-        """The name of the custom function."""
+        """Custom function name.
+
+        Returns:
+            The name of the custom function.
+
+        Example::
+
+            analysis_function = case.input.analysis.analysis_function
+
+        """
         return self._analysis['analysis_function']
 
     @property
     def parameters(self) -> Dict[str, Any]:
         """Parameters to the custom function.
 
+        Returns:
+            A dictionary containing the custom
+            function parameters.
+
         Example::
-            {
-                "start_time": 0,
-                "final_time": 1
-            }
+
+            parameters = case.input.analysis.parameters
 
         """
         return self._analysis['parameters']
@@ -113,7 +124,16 @@ class CaseAnalysis:
 
     @property
     def simulation_options(self) -> Dict[str, Any]:
-        """Key-value pairs of simulation options."""
+        """Key-value pairs of simulation options.
+
+        Returns:
+            A dictionary containing the simulation options.
+
+        Example::
+
+            simulation_options = case.input.analysis.simulation_options
+
+        """
         return self._analysis['simulation_options']
 
     @simulation_options.setter
@@ -122,7 +142,16 @@ class CaseAnalysis:
 
     @property
     def solver_options(self) -> Dict[str, Any]:
-        """Key-value pairs of solver options."""
+        """Key-value pairs of solver options.
+
+        Returns:
+            A dictionary containing the solver options.
+
+        Example::
+
+            solver_options = case.input.analysis.solver_options
+
+        """
         return self._analysis['solver_options']
 
     @solver_options.setter
@@ -131,7 +160,16 @@ class CaseAnalysis:
 
     @property
     def simulation_log_level(self) -> str:
-        """The simulation log level."""
+        """The simulation log level.
+
+        Returns:
+            The simulation log level.
+
+        Example::
+
+            simulation_log_level = case.input.analysis.simulation_log_level
+
+        """
         return self._analysis['simulation_log_level']
 
     @simulation_log_level.setter
