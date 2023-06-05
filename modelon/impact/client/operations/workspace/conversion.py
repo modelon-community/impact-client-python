@@ -67,6 +67,7 @@ class WorkspaceConversionOperation(AsyncOperation[Entity]):
             self, workspace_id=resp["id"], workspace_definition=resp["definition"]
         )
 
+    @property
     def status(self) -> AsyncOperationStatus:
         """Returns the conversion status as an enumeration.
 
@@ -77,7 +78,7 @@ class WorkspaceConversionOperation(AsyncOperation[Entity]):
 
         Example::
 
-            client.convert_workspace(workspace_id).status()
+            client.convert_workspace(workspace_id).status
 
         """
         return AsyncOperationStatus(self._info()["status"])

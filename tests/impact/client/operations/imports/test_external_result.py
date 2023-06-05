@@ -50,8 +50,8 @@ class TestExternalResultImportOperation:
         # Then
         assert isinstance(upload_op, ExternalResultImportOperation)
         assert upload_op.id == IDs.IMPORT
-        assert upload_op.status() == AsyncOperationStatus.READY
-        assert upload_op.status().done()
+        assert upload_op.status == AsyncOperationStatus.READY
+        assert upload_op.status.done()
         assert result == create_external_result_entity(IDs.EXTERNAL_RESULT)
         meta = result.metadata
         assert meta.id == IDs.EXTERNAL_RESULT

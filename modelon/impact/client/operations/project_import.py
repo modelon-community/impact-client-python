@@ -65,6 +65,7 @@ class ProjectImportOperation(AsyncOperation[Entity]):
             project_type=resp["projectType"],
         )
 
+    @property
     def status(self) -> AsyncOperationStatus:
         """Returns the upload status as an enumeration.
 
@@ -75,8 +76,8 @@ class ProjectImportOperation(AsyncOperation[Entity]):
 
         Example::
 
-            status = client.import_project_from_zip(path_to_project).status()
-            status = workspace.import_project_from_zip(path_to_project).status()
+            status = client.import_project_from_zip(path_to_project).status
+            status = workspace.import_project_from_zip(path_to_project).status
 
         """
         return AsyncOperationStatus(self._info()["status"])

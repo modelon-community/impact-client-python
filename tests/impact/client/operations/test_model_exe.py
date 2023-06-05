@@ -14,7 +14,7 @@ class TestModelExecutableOperation:
         fmu = model_compiled.compile(compiler_options, force_compilation=True)
         assert fmu == create_model_exe_operation(IDs.WORKSPACE_PRIMARY, IDs.FMU_PRIMARY)
         assert fmu.id == IDs.FMU_PRIMARY
-        assert fmu.status() == Status.DONE
+        assert fmu.status == Status.DONE
         assert fmu.is_complete()
         assert fmu.wait() == create_model_exe_entity(
             IDs.WORKSPACE_PRIMARY, IDs.FMU_PRIMARY
@@ -24,7 +24,7 @@ class TestModelExecutableOperation:
         fmu = model_compiled.compile(compiler_options, force_compilation=True)
         assert fmu == create_model_exe_operation(IDs.WORKSPACE_PRIMARY, IDs.FMU_PRIMARY)
         assert fmu.id == IDs.FMU_PRIMARY
-        assert fmu.status() == Status.DONE
+        assert fmu.status == Status.DONE
         assert fmu.is_complete()
         pytest.raises(
             exceptions.OperationTimeOutError, fmu.wait, 1e-10, Status.CANCELLED
@@ -34,7 +34,7 @@ class TestModelExecutableOperation:
         fmu = model_compiling.compile(compiler_options, force_compilation=True)
         assert fmu == create_model_exe_operation(IDs.WORKSPACE_PRIMARY, IDs.FMU_PRIMARY)
         assert fmu.id == IDs.FMU_PRIMARY
-        assert fmu.status() == Status.RUNNING
+        assert fmu.status == Status.RUNNING
         assert not fmu.is_complete()
         assert fmu.wait(status=Status.RUNNING) == create_model_exe_entity(
             IDs.WORKSPACE_PRIMARY, IDs.FMU_PRIMARY
@@ -44,7 +44,7 @@ class TestModelExecutableOperation:
         fmu = model_compile_cancelled.compile(compiler_options, force_compilation=True)
         assert fmu == create_model_exe_operation(IDs.WORKSPACE_PRIMARY, IDs.FMU_PRIMARY)
         assert fmu.id == IDs.FMU_PRIMARY
-        assert fmu.status() == Status.CANCELLED
+        assert fmu.status == Status.CANCELLED
         assert fmu.wait(status=Status.CANCELLED) == create_model_exe_entity(
             IDs.WORKSPACE_PRIMARY, IDs.FMU_PRIMARY
         )
@@ -53,7 +53,7 @@ class TestModelExecutableOperation:
         fmu = model_compile_cancelled.compile(compiler_options, force_compilation=True)
         assert fmu == create_model_exe_operation(IDs.WORKSPACE_PRIMARY, IDs.FMU_PRIMARY)
         assert fmu.id == IDs.FMU_PRIMARY
-        assert fmu.status() == Status.CANCELLED
+        assert fmu.status == Status.CANCELLED
         pytest.raises(exceptions.OperationTimeOutError, fmu.wait, 1e-10, Status.DONE)
 
 
@@ -65,7 +65,7 @@ class TestCachedModelExecutableOperation:
         )
         assert fmu.id == IDs.FMU_PRIMARY
         assert fmu.name == "Looking for cached FMU"
-        assert fmu.status() == Status.DONE
+        assert fmu.status == Status.DONE
         assert fmu.is_complete()
         assert fmu.wait() == create_model_exe_entity(
             IDs.WORKSPACE_PRIMARY, IDs.FMU_PRIMARY
@@ -77,7 +77,7 @@ class TestCachedModelExecutableOperation:
             IDs.WORKSPACE_PRIMARY, IDs.FMU_PRIMARY
         )
         assert fmu.id == IDs.FMU_PRIMARY
-        assert fmu.status() == Status.DONE
+        assert fmu.status == Status.DONE
         pytest.raises(
             exceptions.OperationTimeOutError, fmu.wait, status=Status.CANCELLED
         )

@@ -133,7 +133,7 @@ class Model(ModelInterface):
 
             compile_ops=model.compile(compiler_options)
             compile_ops.cancel()
-            compile_ops.status()
+            compile_ops.status
             compiler_options=custom_function.get_compiler_options().with_values(c_compiler='gcc')
             runtime_options={'cs_solver':0}
             model.compile(compiler_options, runtime_options).wait()

@@ -66,6 +66,7 @@ class CachedModelExecutableOperation(ExecutionOperation[Entity]):
             modifiers=self._modifiers,
         )
 
+    @property
     def status(self) -> Status:
         """Returns the compilation status as an enumeration.
 
@@ -76,7 +77,7 @@ class CachedModelExecutableOperation(ExecutionOperation[Entity]):
 
         Example::
 
-            model.compile(options).status()
+            model.compile(options).status
 
         """
         return Status.DONE
@@ -116,9 +117,9 @@ class CachedModelExecutableOperation(ExecutionOperation[Entity]):
 
         """
 
-        if self.status() != status:
+        if self.status != status:
             raise exceptions.OperationTimeOutError(
-                f"The operation '{self.name}' has the status '{self.status().name}'"
+                f"The operation '{self.name}' has the status '{self.status.name}'"
                 f", it will never get the status '{status.name}'!"
             )
 
@@ -169,6 +170,7 @@ class ModelExecutableOperation(ExecutionOperation[Entity]):
             self, workspace_id=self._workspace_id, fmu_id=self._fmu_id
         )
 
+    @property
     def status(self) -> Status:
         """Returns the compilation status as an enumeration.
 
@@ -179,7 +181,7 @@ class ModelExecutableOperation(ExecutionOperation[Entity]):
 
         Example::
 
-            model.compile(options).status()
+            model.compile(options).status
 
         """
         return Status(

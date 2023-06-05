@@ -50,6 +50,7 @@ class BaseOperation(Generic[Entity]):
         """Returns the Entity class."""
         pass
 
+    @property
     @abstractmethod
     def status(self) -> Any:
         """Returns the operation status as an enumeration."""
@@ -98,16 +99,16 @@ class AsyncOperation(BaseOperation[Entity]):
         """
         start_t = time.time()
         while True:
-            logger.info(f"{self.name} in progress! Status : {self.status().name}")
-            if self.status().done():
-                logger.info(f"{self.name} completed! Status : {self.status().name}")
+            logger.info(f"{self.name} in progress! Status : {self.status.name}")
+            if self.status.done():
+                logger.info(f"{self.name} completed! Status : {self.status.name}")
                 return self.data()
 
             current_t = time.time()
             if timeout and current_t - start_t > timeout:
                 raise exceptions.OperationTimeOutError(
                     f"Time exceeded the set timeout - {timeout}s! "
-                    f"Present status of operation is {self.status().name}!"
+                    f"Present status of operation is {self.status.name}!"
                 )
 
             time.sleep(0.5)
@@ -132,7 +133,7 @@ class ExecutionOperation(BaseOperation[Entity]):
            workspace.execute(definition).is_complete()
 
         """
-        return self.status() == Status.DONE
+        return self.status == Status.DONE
 
     def wait(
         self, timeout: Optional[float] = None, status: Status = Status.DONE
@@ -167,16 +168,16 @@ class ExecutionOperation(BaseOperation[Entity]):
         """
         start_t = time.time()
         while True:
-            logger.info(f"{self.name} in progress! Status : {self.status().name}")
-            if self.status() == status:
-                logger.info(f"{self.name} completed! Status : {self.status().name}")
+            logger.info(f"{self.name} in progress! Status : {self.status.name}")
+            if self.status == status:
+                logger.info(f"{self.name} completed! Status : {self.status.name}")
                 return self.data()
 
             current_t = time.time()
             if timeout and current_t - start_t > timeout:
                 raise exceptions.OperationTimeOutError(
                     f"Time exceeded the set timeout - {timeout}s! "
-                    f"Present status of operation is {self.status().name}!"
+                    f"Present status of operation is {self.status.name}!"
                 )
 
             time.sleep(0.5)
