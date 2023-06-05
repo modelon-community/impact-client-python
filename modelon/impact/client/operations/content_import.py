@@ -62,6 +62,7 @@ class ContentImportOperation(AsyncOperation[Entity]):
         resp = self._sal.project.project_content_get(project_id, content_id)
         return self._create_entity(self, content=resp, project_id=project_id)
 
+    @property
     def status(self) -> AsyncOperationStatus:
         """Returns the upload status as an enumeration.
 
@@ -72,7 +73,7 @@ class ContentImportOperation(AsyncOperation[Entity]):
 
         Example::
 
-            project.import_content('path/to/model.mo').status()
+            project.import_content('path/to/model.mo').status
 
         """
         return AsyncOperationStatus(self._info()["status"])

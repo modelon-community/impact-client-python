@@ -9,7 +9,7 @@ class TestCaseOperation:
         case = experiment.entity.get_case(IDs.CASE_PRIMARY)
         case_ops = case.execute()
         assert case_ops.id == IDs.CASE_PRIMARY
-        assert case_ops.status() == Status.DONE
+        assert case_ops.status == Status.DONE
         assert case_ops.is_complete()
         assert case_ops.wait() == create_case_entity(
             IDs.CASE_PRIMARY, IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY
@@ -19,7 +19,7 @@ class TestCaseOperation:
         case = experiment.entity.get_case(IDs.CASE_PRIMARY)
         case_ops = case.execute()
         assert case_ops.id == IDs.CASE_PRIMARY
-        assert case_ops.status() == Status.DONE
+        assert case_ops.status == Status.DONE
         assert case_ops.is_complete()
         pytest.raises(
             exceptions.OperationTimeOutError, case_ops.wait, 1e-10, Status.CANCELLED
@@ -29,7 +29,7 @@ class TestCaseOperation:
         case = experiment_running.get_case(IDs.CASE_PRIMARY)
         case_ops = case.execute()
         assert case_ops.id == IDs.CASE_PRIMARY
-        assert case_ops.status() == Status.RUNNING
+        assert case_ops.status == Status.RUNNING
         assert not case_ops.is_complete()
         assert case_ops.wait(status=Status.RUNNING) == create_case_entity(
             IDs.CASE_PRIMARY,
@@ -41,7 +41,7 @@ class TestCaseOperation:
         case = experiment_cancelled.get_case(IDs.CASE_PRIMARY)
         case = case.execute()
         assert case.id == IDs.CASE_PRIMARY
-        assert case.status() == Status.CANCELLED
+        assert case.status == Status.CANCELLED
         assert case.wait(status=Status.CANCELLED) == create_case_entity(
             IDs.CASE_PRIMARY,
             IDs.WORKSPACE_PRIMARY,
@@ -52,5 +52,5 @@ class TestCaseOperation:
         case = experiment_cancelled.get_case(IDs.CASE_PRIMARY)
         case = case.execute()
         assert case.id == IDs.CASE_PRIMARY
-        assert case.status() == Status.CANCELLED
+        assert case.status == Status.CANCELLED
         pytest.raises(exceptions.OperationTimeOutError, case.wait, 1e-10, Status.DONE)

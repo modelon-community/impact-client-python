@@ -94,6 +94,7 @@ class WorkspaceExportOperation(AsyncOperation[Entity]):
             )
         return self._create_entity(self, download_uri=info["data"]["downloadUri"])
 
+    @property
     def status(self) -> AsyncOperationStatus:
         """Returns the upload status as an enumeration.
 
@@ -104,7 +105,7 @@ class WorkspaceExportOperation(AsyncOperation[Entity]):
 
         Example::
 
-            workspace.download().status()
+            workspace.download().status
 
         """
         return AsyncOperationStatus(self._info()["status"])

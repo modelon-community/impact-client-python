@@ -64,6 +64,7 @@ class WorkspaceImportOperation(AsyncOperation[Entity]):
             self, workspace_id=resp["id"], workspace_definition=resp["definition"]
         )
 
+    @property
     def status(self) -> AsyncOperationStatus:
         """Returns the upload status as an enumeration.
 
@@ -74,7 +75,7 @@ class WorkspaceImportOperation(AsyncOperation[Entity]):
 
         Example::
 
-            client.import_workspace_from_shared_definition(definition, False).status()
+            client.import_workspace_from_shared_definition(definition, False).status
 
         """
         return AsyncOperationStatus(self._info()["status"])

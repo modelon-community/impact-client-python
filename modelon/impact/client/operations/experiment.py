@@ -50,6 +50,7 @@ class ExperimentOperation(ExecutionOperation[Entity]):
             self, workspace_id=self._workspace_id, exp_id=self._exp_id
         )
 
+    @property
     def status(self) -> Status:
         """Returns the execution status as an enumeration.
 
@@ -60,7 +61,7 @@ class ExperimentOperation(ExecutionOperation[Entity]):
 
         Example::
 
-            workspace.execute(definition).status()
+            workspace.execute(definition).status
 
         """
         return Status(

@@ -60,6 +60,7 @@ class CaseOperation(ExecutionOperation[Entity]):
             info=case_data,
         )
 
+    @property
     def status(self) -> Status:
         """Returns the execution status as an enumeration.
 
@@ -70,7 +71,7 @@ class CaseOperation(ExecutionOperation[Entity]):
 
         Example::
 
-            case.execute().status()
+            case.execute().status
 
         """
         return Status(

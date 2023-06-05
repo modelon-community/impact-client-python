@@ -96,7 +96,7 @@ class TestProject:
         content_operation = project.entity.import_content(
             SINGLE_FILE_LIBRARY_PATH, content_type=ContentType.MODELICA
         )
-        assert content_operation.status() == AsyncOperationStatus.READY
+        assert content_operation.status == AsyncOperationStatus.READY
         content = content_operation.data()
 
         assert content.id == IDs.PROJECT_CONTENT_SECONDARY
@@ -109,7 +109,7 @@ class TestProject:
         content_operation = project.entity.import_modelica_library(
             SINGLE_FILE_LIBRARY_PATH
         )
-        assert content_operation.status() == AsyncOperationStatus.READY
+        assert content_operation.status == AsyncOperationStatus.READY
 
         content = content_operation.data()
         assert content.id == IDs.PROJECT_CONTENT_SECONDARY

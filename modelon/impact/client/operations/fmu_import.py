@@ -76,6 +76,7 @@ class FMUImportOperation(AsyncOperation[Entity]):
             project_id=self._project_id,
         )
 
+    @property
     def status(self) -> AsyncOperationStatus:
         """Returns the upload status as an enumeration.
 
@@ -86,7 +87,7 @@ class FMUImportOperation(AsyncOperation[Entity]):
 
         Example::
 
-            model.import_fmu('test.fmu').status()
+            model.import_fmu('test.fmu').status
 
         """
         return AsyncOperationStatus(self._info()["status"])

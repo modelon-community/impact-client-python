@@ -467,7 +467,7 @@ class Workspace(WorkspaceInterface):
 
             experiment_ops = workspace.execute(definition)
             experiment_ops.cancel()
-            experiment_ops.status()
+            experiment_ops.status
             experiment_ops.wait()
 
         """

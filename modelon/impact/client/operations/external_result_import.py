@@ -61,6 +61,7 @@ class ExternalResultImportOperation(AsyncOperation[Entity]):
         resp = self._sal.external_result.get_uploaded_result(self.id)
         return self._create_entity(self, result_id=resp['data']['id'])
 
+    @property
     def status(self) -> AsyncOperationStatus:
         """Returns the upload status as an enumeration.
 
@@ -71,7 +72,7 @@ class ExternalResultImportOperation(AsyncOperation[Entity]):
 
         Example::
 
-            workspace.upload_result('A.mat').status()
+            workspace.upload_result('A.mat').status
 
         """
         return AsyncOperationStatus(self._info()["status"])

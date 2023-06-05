@@ -631,7 +631,7 @@ class Case(CaseInterface):
             case.sync()
             case_ops = case.execute()
             case_ops.cancel()
-            case_ops.status()
+            case_ops.status
             case_ops.wait()
 
         """

@@ -212,7 +212,7 @@ class Experiment(ExperimentInterface):
             experiment = workspace.create_experiment(experiment_definition)
             experiment_ops = experiment.execute()
             experiment_ops.cancel()
-            experiment_ops.status()
+            experiment_ops.status
             experiment_ops.wait()
 
             generate_cases = experiment.execute(with_cases=[]).wait()
