@@ -349,6 +349,14 @@ class Case(CaseInterface):
     def __repr__(self) -> str:
         return f"Case with id '{self._case_id}'"
 
+    def _get_info(self, cached: bool = True) -> Dict[str, Any]:
+        if not cached or self._info is None:
+            self._info = self._sal.experiment.case_get(
+                self._workspace_id, self._exp_id, self.id
+            )
+
+        return self._info
+
     @property
     def id(self) -> str:
         """Case id."""
@@ -363,12 +371,12 @@ class Case(CaseInterface):
     def info(self) -> Dict[str, Any]:
         """Deprecated, use 'run_info' attribute."""
         logger.warning("This attribute is deprectated, use 'run_info' instead")
-        return self._info
+        return self._get_info(cached=False)
 
     @property
     def run_info(self) -> CaseRunInfo:
         """Case run information."""
-        run_info = self._info["run_info"]
+        run_info = self._get_info(cached=False)["run_info"]
         started = _datetime_from_unix_time(run_info.get("datetime_started"))
         finished = _datetime_from_unix_time(run_info.get("datetime_finished"))
         return CaseRunInfo(
