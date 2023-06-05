@@ -410,6 +410,13 @@ class Case(CaseInterface):
 
     @property
     def initialize_from_case(self) -> Optional[Case]:
+        """Return the case to initialize from, if any.
+
+        Example::
+
+         initialized_from_case = case.initialize_from_case
+
+        """
         init_from_dict = self._info['input'].get('initialize_from_case')
         if init_from_dict is None:
             return None
@@ -426,6 +433,23 @@ class Case(CaseInterface):
 
     @initialize_from_case.setter
     def initialize_from_case(self, case: Case) -> None:
+        """Sets the case to initialize from.
+
+        Example::
+
+            # Fetching the successful case
+            case_1 = experiment.get_case('case_1')
+
+            # Fetching the failed case
+            case_2 = experiment.get_case('case_2')
+
+            # Initializing from successful case
+            case_2.initialize_from_case = case_1
+
+            # Re-executing the case after initializing
+            case_init_successful = case_2.execute().wait()
+
+        """
         if not isinstance(case, Case):
             raise TypeError("The value must be an instance of Case")
         self._assert_unique_case_initialization('initialize_from_external_result')
@@ -436,6 +460,13 @@ class Case(CaseInterface):
 
     @property
     def initialize_from_external_result(self) -> Optional[ExternalResult]:
+        """Return the external result file to initialize from, if any.
+
+        Example::
+
+         initialize_from_external_result = case.initialize_from_external_result
+
+        """
         init_from_dict = self._info['input'].get('initialize_from_external_result')
 
         if init_from_dict is None:
@@ -447,6 +478,21 @@ class Case(CaseInterface):
 
     @initialize_from_external_result.setter
     def initialize_from_external_result(self, result: ExternalResult) -> None:
+        """Sets the external result file to initialize from.
+
+        Example::
+
+            result = workspace.upload_result(path_to_result="<path_to_result>/
+            result.mat", label = "result_to_init", description= "Converged
+            result file").wait()
+
+            # Initializing from external result
+            case_2.initialize_from_external_result = result
+
+            # Re-executing the case after initializing
+            case_init_successful = case_2.execute().wait()
+
+        """
         if not isinstance(result, ExternalResult):
             raise TypeError("The value must be an instance of ExternalResult")
         self._assert_unique_case_initialization('initialize_from_case')
