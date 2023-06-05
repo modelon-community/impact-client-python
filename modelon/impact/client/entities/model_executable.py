@@ -123,8 +123,8 @@ class ModelExecutable(ModelExecutableInterface):
     def _variable_modifiers(self) -> Dict[str, Any]:
         return {} if self._modifiers is None else self._modifiers
 
-    def _get_info(self) -> Dict[str, Any]:
-        if self._info is None:
+    def _get_info(self, cached: bool = True) -> Dict[str, Any]:
+        if not cached or self._info is None:
             self._info = self._sal.workspace.fmu_get(self._workspace_id, self._fmu_id)
 
         return self._info
@@ -138,12 +138,12 @@ class ModelExecutable(ModelExecutableInterface):
     def info(self) -> Dict[str, Any]:
         """Deprecated, use 'run_info' attribute."""
         logger.warning("This attribute is deprectated, use 'run_info' instead")
-        return self._get_info()
+        return self._get_info(cached=False)
 
     @property
     def run_info(self) -> ModelExecutableRunInfo:
         """Compilation run information."""
-        run_info = self._get_info()["run_info"]
+        run_info = self._get_info(cached=False)["run_info"]
         status = ModelExecutableStatus(run_info["status"])
         errors = run_info.get("errors", [])
         return ModelExecutableRunInfo(status, errors)
