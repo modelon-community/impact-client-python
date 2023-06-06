@@ -21,10 +21,19 @@ class Status(enum.Enum):
     """Class representing an enumeration for the possible operation states."""
 
     PENDING = "pending"
+    """Status for an operation that is pending."""
+
     RUNNING = "running"
+    """Status for an operation that is running."""
+
     STOPPING = "stopping"
+    """Status for an operation that has been cancelled and is stopping."""
+
     CANCELLED = "cancelled"
+    """Status for an operation that has been cancelled."""
+
     DONE = "done"
+    """Status for an operation that has been completed."""
 
 
 @enum.unique
@@ -32,8 +41,13 @@ class AsyncOperationStatus(enum.Enum):
     """Defines all states for import."""
 
     RUNNING = 'running'
+    """Status for an async operation that is running."""
+
     READY = 'ready'
+    """Status for an async operation that is ready."""
+
     ERROR = 'error'
+    """Status for an async operation that has errors."""
 
     def done(self) -> bool:
         return self in [AsyncOperationStatus.READY, AsyncOperationStatus.ERROR]
