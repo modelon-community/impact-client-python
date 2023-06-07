@@ -1,3 +1,10 @@
+# [3.0.0-dev.52](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.51...v3.0.0-dev.52) (2023-06-07)
+
+
+### Bug Fixes
+
+* added docs for expansion alorithms ([66ea11e](https://github.com/modelon-community/impact-client-python/commit/66ea11e110ea82720f7a6bbb82b92aa1822c7d36))
+
 # [3.0.0-dev.51](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.50...v3.0.0-dev.51) (2023-06-07)
 
 
