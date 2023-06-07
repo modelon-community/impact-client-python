@@ -1,3 +1,18 @@
+# [3.0.0-dev.51](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.50...v3.0.0-dev.51) (2023-06-07)
+
+
+### Bug Fixes
+
+* added docs for initialize_from in case entity ([fe42407](https://github.com/modelon-community/impact-client-python/commit/fe424072a10585047a92eb2fe98db4d806d9a6fe))
+* moved documentation for getter setter methods to the get methods as setter methods are not visible in docs ([050606c](https://github.com/modelon-community/impact-client-python/commit/050606c3cc5ed71b17ad5102d6989607ab251ded))
+
+
+### Features
+
+* added a cached boolean to experiment._get_info() to allow fetching latest run_info and meta_data for an experiment ([48747b0](https://github.com/modelon-community/impact-client-python/commit/48747b091cc1349c9da7024769fdab433e264980))
+* added a cached boolean to model_executable._get_info() to allow fetching latest run_info for an FMU ([a9b60fb](https://github.com/modelon-community/impact-client-python/commit/a9b60fbab18e99a499db026029aeaec104eec463))
+* added possibility to allow fetching latest run_info for a case ([ddca239](https://github.com/modelon-community/impact-client-python/commit/ddca239d14b17857ba3abf024bab617cc8787637))
+
 # [3.0.0-dev.50](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.49...v3.0.0-dev.50) (2023-06-07)
 
 
