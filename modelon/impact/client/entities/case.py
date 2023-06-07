@@ -53,7 +53,23 @@ class CaseRunInfo:
 
     @property
     def status(self) -> CaseStatus:
-        """Status info for a Case, its type is CaseStatus."""
+        """Status info for a Case.
+
+        .. Note:: For tracing status changes of a running case execution,
+            the CaseOperation status property must be used and not Case
+            entities run info(CaseRunInfo) status property. See example
+            for usage.
+
+        Example::
+
+            # To get the case entity run info status
+            status = case.run_info.status
+
+            # To get the status updates of a running case execution
+            case_ops = case.execute()
+            status = case_ops.status
+
+        """
         return self._status
 
     @property

@@ -61,7 +61,23 @@ class ExperimentRunInfo:
 
     @property
     def status(self) -> ExperimentStatus:
-        """Status info for an Experiment."""
+        """Status info for an Experiment.
+
+        .. Note:: For tracing status changes of a running experiment execution,
+            the ExperimentOperation status property must be used and not
+            Experiment entities run info(ExperimentRunInfo) status property. See
+            example for usage.
+
+        Example::
+
+            # To get the case entity run info status
+            status = experiment.run_info.status
+
+            # To get the status updates of a running experiment execution
+            experiment_ops = experiment.execute()
+            status = experiment_ops.status
+
+        """
         return self._status
 
     @property
