@@ -81,7 +81,24 @@ class ModelExecutableRunInfo:
 
     @property
     def status(self) -> ModelExecutableStatus:
-        """Status info for a Model-Executable."""
+        """Status info for a Model-Executable.
+
+        .. Note:: For tracing status changes of a running
+            compilation, the ModelExecutableOperation status
+            property must be used and not ModelExecutable
+            entities run info(ModelExecutableRunInfo) status
+            property. See example for usage.
+
+        Example::
+
+            # To get the case entity run info status
+            status = fmu.run_info.status
+
+            # To get the status updates of a running compilation
+            compile_ops = = model.compile()
+            status = compile_ops.status
+
+        """
         return self._status
 
     @property
