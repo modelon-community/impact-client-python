@@ -1,3 +1,10 @@
+# [3.0.0-dev.50](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.49...v3.0.0-dev.50) (2023-06-07)
+
+
+### Bug Fixes
+
+* docstring fixes to improve rendering ([f62e302](https://github.com/modelon-community/impact-client-python/commit/f62e302059dcd4f669337bf478b70807971d68ed))
+
 # [3.0.0-dev.49](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.48...v3.0.0-dev.49) (2023-06-07)
 
 
