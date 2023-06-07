@@ -14,7 +14,9 @@ class Operator:
 
 @dataclass
 class Range(Operator):
-    """Range operator class for parameterizing batch runs.
+    """Range operator class for parameterizing batch runs. Range(a, b, c)
+    represents c linearly spaced values in the (real) interval [a, b]; b >= a.
+    The functionality is analogous to numpy.linspace.
 
     Args:
         start_value: The start value for the sweep parameter.
@@ -42,7 +44,8 @@ class Range(Operator):
 
 
 class Choices(Operator):
-    """Choices operator class for parameterizing batch runs.
+    """Choices operator class for parameterizing batch runs. Choices defines a
+    list of specified values a Modifier expression can take.
 
     Args:
         values: Variable number of numerical arguments to sweep.
