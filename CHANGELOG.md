@@ -1,3 +1,15 @@
+# [3.0.0-dev.49](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.48...v3.0.0-dev.49) (2023-06-07)
+
+
+### Bug Fixes
+
+* the Status method in Operations class is now a property ([cc8bfb1](https://github.com/modelon-community/impact-client-python/commit/cc8bfb1bc2ed789b01eb267f329667d6b1c6cd3a))
+
+
+### BREAKING CHANGES
+
+* the status method in all operations class inheriting BaseOperation class is now a property
+
 # [3.0.0-dev.48](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.47...v3.0.0-dev.48) (2023-06-04)
 
 
