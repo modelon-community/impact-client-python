@@ -105,14 +105,16 @@ class CaseAnalysis:
 
     @property
     def parameters(self) -> Dict[str, Any]:
-        """Parameters to the custom function.
-
-        Returns:
-            A dictionary containing the custom
-            function parameters.
+        """Get or set parameters for the custom function. Parameters are a
+        dictionary containing the custom function parameters.
 
         Example::
 
+            # Set the custom function parameters
+            case.input.analysis.parameters = {'start_time': 0, 'final_time': 90}
+
+
+            # Get the custom function parameters
             parameters = case.input.analysis.parameters
 
         """
@@ -124,13 +126,15 @@ class CaseAnalysis:
 
     @property
     def simulation_options(self) -> Dict[str, Any]:
-        """Key-value pairs of simulation options.
-
-        Returns:
-            A dictionary containing the simulation options.
+        """Get or set the simulation options. Options are key-value pairs of
+        simulation options.
 
         Example::
 
+            # Set the custom function parameters
+            case.input.analysis.simulation_options = {'ncp': 600}
+
+            # Get the custom function parameters
             simulation_options = case.input.analysis.simulation_options
 
         """
@@ -142,13 +146,16 @@ class CaseAnalysis:
 
     @property
     def solver_options(self) -> Dict[str, Any]:
-        """Key-value pairs of solver options.
-
-        Returns:
-            A dictionary containing the solver options.
+        """Get or set the simulation options. Options are key-value pairs of
+        solver options.
 
         Example::
 
+            # Set the solver options
+            case.input.analysis.solver_options = {'atol': 1e-9}
+
+
+            # Get the solver options
             solver_options = case.input.analysis.solver_options
 
         """
@@ -160,13 +167,15 @@ class CaseAnalysis:
 
     @property
     def simulation_log_level(self) -> str:
-        """The simulation log level.
-
-        Returns:
-            The simulation log level.
+        """Get or set the simulation log level. Supported options are-
+        'WARNING', 'ERROR', 'DEBUG', 'INFO' and 'VERBOSE'.
 
         Example::
 
+            # Set the solver options
+            case.input.analysis.simulation_log_level = "WARNING"
+
+            # Get the solver options
             simulation_log_level = case.input.analysis.simulation_log_level
 
         """
@@ -266,7 +275,17 @@ class CaseMeta:
 
     @property
     def label(self) -> str:
-        """Label for the case."""
+        """Get or set the label for the case.
+
+        Example::
+
+            # Set the case label
+            case.meta.label = 'Cruise condition'
+
+            # Get the case label
+            label = case.meta.label
+
+        """
         return self._data['label']
 
     @label.setter
@@ -288,8 +307,20 @@ class CaseInput:
 
     @property
     def parametrization(self) -> Dict[str, Any]:
-        """Parametrization of the case, a list of key value pairs where key is
-        variable name and value is the value to use for that variable."""
+        """Get or set the parametrization of the case. Parameterization is
+        defined as a dict of key value pairs where key is variable name and
+        value is the value to use for that variable.
+
+        Example::
+
+            # Set the case parametrization
+            case.input.parametrization = {'PI.k': 120}
+
+
+            # Get the case parametrization
+            parametrization = case.input.parametrization
+
+        """
         return self._data['parametrization']
 
     @parametrization.setter
@@ -418,11 +449,26 @@ class Case(CaseInterface):
 
     @property
     def initialize_from_case(self) -> Optional[Case]:
-        """Return the case to initialize from, if any.
+        """Get(if any) or set the case to initialize from.
 
         Example::
 
-         initialized_from_case = case.initialize_from_case
+            # Set the case to  initialize from
+            # Fetching the successful case
+            case_1 = experiment.get_case('case_1')
+
+            # Fetching the failed case
+            case_2 = experiment.get_case('case_2')
+
+            # Initializing from successful case
+            case_2.initialize_from_case = case_1
+
+            # Re-executing the case after initializing
+            case_init_successful = case_2.execute().wait()
+
+
+            # Get the case set to initialize from
+            initialized_from_case = case.initialize_from_case
 
         """
         init_from_dict = self._info['input'].get('initialize_from_case')
@@ -441,23 +487,6 @@ class Case(CaseInterface):
 
     @initialize_from_case.setter
     def initialize_from_case(self, case: Case) -> None:
-        """Sets the case to initialize from.
-
-        Example::
-
-            # Fetching the successful case
-            case_1 = experiment.get_case('case_1')
-
-            # Fetching the failed case
-            case_2 = experiment.get_case('case_2')
-
-            # Initializing from successful case
-            case_2.initialize_from_case = case_1
-
-            # Re-executing the case after initializing
-            case_init_successful = case_2.execute().wait()
-
-        """
         if not isinstance(case, Case):
             raise TypeError("The value must be an instance of Case")
         self._assert_unique_case_initialization('initialize_from_external_result')
@@ -468,11 +497,24 @@ class Case(CaseInterface):
 
     @property
     def initialize_from_external_result(self) -> Optional[ExternalResult]:
-        """Return the external result file to initialize from, if any.
+        """Get(if any) or set the external result file to initialize from.
 
         Example::
 
-         initialize_from_external_result = case.initialize_from_external_result
+            # Set the external result file to  initialize from
+            result = workspace.upload_result(path_to_result="<path_to_result>/
+            result.mat", label = "result_to_init", description= "Converged
+            result file").wait()
+
+            # Initializing from external result
+            case_2.initialize_from_external_result = result
+
+            # Re-executing the case after initializing
+            case_init_successful = case_2.execute().wait()
+
+
+            # Get the external result file to initialize from
+            initialize_from_external_result = case.initialize_from_external_result
 
         """
         init_from_dict = self._info['input'].get('initialize_from_external_result')
@@ -486,21 +528,6 @@ class Case(CaseInterface):
 
     @initialize_from_external_result.setter
     def initialize_from_external_result(self, result: ExternalResult) -> None:
-        """Sets the external result file to initialize from.
-
-        Example::
-
-            result = workspace.upload_result(path_to_result="<path_to_result>/
-            result.mat", label = "result_to_init", description= "Converged
-            result file").wait()
-
-            # Initializing from external result
-            case_2.initialize_from_external_result = result
-
-            # Re-executing the case after initializing
-            case_init_successful = case_2.execute().wait()
-
-        """
         if not isinstance(result, ExternalResult):
             raise TypeError("The value must be an instance of ExternalResult")
         self._assert_unique_case_initialization('initialize_from_case')
