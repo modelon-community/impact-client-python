@@ -51,13 +51,18 @@ The simulation options can be set up as shown below::
        simulation_options=simulation_options
    )
 
-It is also possible to setup a series of experiments as shown below::
+It is also possible to setup a series of experiments. Here's an example with `Range` operator
+to setup a multi-execution experiment::
 
    from modelon.impact.client import Range
 
    experiment_definition = experiment_definition.with_modifiers({'PI.k': Range(10, 100, 3)})
 
-This would setup an experiment with 3 cases. Please refer the :doc:`multi-execution <multi_execution_experiments>` tutorial for more information on this.
+This would setup an experiment with 3 cases. There are multiple operator types as 
+well as expansion algorithms, an experiments could be setup with. Please refer the 
+:doc:`multi-execution <multi_execution_experiments>` tutorial for more information on this.
+An example with `Uniform` operator with `Sobol` expansion algorithm can be 
+found :ref:`here<Sobol space coverage>`.
 
 Executing the experiment
 ************************

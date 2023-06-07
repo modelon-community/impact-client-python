@@ -45,6 +45,13 @@ Python companion library for Modelon Impact that wraps its REST API framework an
 .. toctree::
    :maxdepth: 1
    :hidden:
+   :caption: Examples
+
+   sobol_space_coverage.rst
+
+.. toctree::
+   :maxdepth: 1
+   :hidden:
    :caption: API
 
    modules.rst

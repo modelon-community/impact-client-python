@@ -208,7 +208,7 @@ class SimpleModelicaExperimentDefinition(BaseExperimentDefinition):
         """Sets the expansion algorithm for an experiment.
 
         Args:
-            expansion: An expansion algorithm. Avaiable algorithms are LatinHypercube,
+            expansion: An expansion algorithm. Avaialable algorithms are LatinHypercube,
                 Sobol and FullFactorial.
                 Default: FullFactorial.
 
