@@ -51,7 +51,7 @@ def _assert_successful_compilation(fmu: ModelExecutable) -> None:
 
 
 class SimpleFMUExperimentDefinition(BaseExperimentDefinition):
-    """A simple experiment definition class for defining experiements.
+    """A simple experiment definition class for defining experiments.
 
     Args:
         fmu: The FMU to be excecuted for this experiment.
