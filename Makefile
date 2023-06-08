@@ -69,7 +69,7 @@ wheel: build
 	$(call _run_bare, poetry build -f wheel)
 
 publish: build
-	$(call _run_bare, npx semantic-release --ci false)
+	$(call _run_bare, npx semantic-release --debug --ci false)
 
 docformatter: build
 	$(call _run_bare, bash -c "poetry run -- docformatter -i modelon --config ./pyproject.toml ")
