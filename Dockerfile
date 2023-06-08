@@ -20,7 +20,7 @@ RUN npm -v
 ENV SHELL /bin/bash
 
 # RUN npm init
-RUN npm i -g semantic-release @semantic-release/commit-analyzer @semantic-release/git @semantic-release/exec \
+RUN npm i -g semantic-release@21.0.1 @semantic-release/commit-analyzer @semantic-release/git @semantic-release/exec \
   @semantic-release/changelog @semantic-release/release-notes-generator \
   @commitlint/config-conventional @commitlint/cli
 
