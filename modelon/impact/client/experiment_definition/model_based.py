@@ -52,7 +52,7 @@ logger = logging.getLogger(__name__)
 
 
 class SimpleModelicaExperimentDefinition(BaseExperimentDefinition):
-    """A simple experiment definition class for defining experiements.
+    """A simple experiment definition class for defining experiments.
 
     Args:
         model: The Model class object.
