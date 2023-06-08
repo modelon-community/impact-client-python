@@ -58,7 +58,7 @@ commitlint:
 	$(eval COMMITS_IN_REPO=$$(shell (expr $(REV_LIST_HEAD) - 1)))
 	$(eval COMMITS_TO_LINT=$$(shell (echo $(COMMITS_IN_REPO) && echo 10) | sort -g | head -n1))
 	@echo "Will lint the last '$(COMMITS_TO_LINT)' commits"
-	$(call _run_bare, npx commitlint --from=HEAD~$(COMMITS))
+	$(call _run_bare, npx commitlint --from=HEAD~$(COMMITS) --config commitlint.config.js)
 
 
 lint: commitlint
