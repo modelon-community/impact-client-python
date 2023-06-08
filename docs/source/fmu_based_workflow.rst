@@ -22,7 +22,7 @@ The model can be compiled to an FMU for further analysis by calling the ``compil
 The ``compile()`` method takes one mandatory argument (``compiler_options``) and seven optional ones (``runtime_options``, ``compiler_options``, ``compiler_log_level``,
 ``fmi_target``, ``fmi_version``, ``platform``, ``force_compilation``).
 
-We can fetch the default values for the mandotory ``compiler_options`` arument and the optional ``runtime_options`` from the
+We can fetch the default values for the mandatory ``compiler_options`` argument and the optional ``runtime_options`` from the
 ``dynamic`` custom functions.::
 
    compiler_options = dynamic.get_compiler_options()
@@ -32,7 +32,7 @@ To view the default compiler options, the ``dict()`` method can be called on it:
 
    dict(compiler_options)
 
-It is also possible to apend/modfiy the default options either by calling the ``with_values()`` method on the
+It is also possible to append/modify the default options either by calling the ``with_values()`` method on the
 ``compiler_options`` class object::
 
    compiler_options_modified = compiler_options.with_values(c_compiler='gcc')
@@ -59,14 +59,14 @@ compilation. Calling the ``wait()`` method returns a ``ModelExecutable`` object 
 With the ``model`` now compiled as an FMU, we could use it to set up an experiment by defining a ``SimpleFMUExperimentDefinition``
 class with our analysis specific parametrization.
 
-This could be done by either creating a ``SimpleFMUExperimentDefinition`` class by passing the fmu and the ``dynamic`` custom
+This could be done by either creating a ``SimpleFMUExperimentDefinition`` class by passing the FMU and the ``dynamic`` custom
 function object::
 
    from modelon.impact.client import SimpleFMUExperimentDefinition
 
    experiment_definition = SimpleFMUExperimentDefinition(fmu, dynamic)
 
-or in an even simpler way by calling the ``new_experiment_definition()`` method on the fmu with the ``dynamic`` custom function
+or in an even simpler way by calling the ``new_experiment_definition()`` method on the FMU with the ``dynamic`` custom function
 object as an argument::
 
    experiment_definition = fmu.new_experiment_definition(dynamic)

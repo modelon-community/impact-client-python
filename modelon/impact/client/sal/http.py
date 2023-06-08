@@ -1,5 +1,5 @@
-"""HTTP client class"""
-from typing import Optional, Dict, Any
+"""HTTP client class."""
+from typing import Optional, Dict, Any, Union
 from modelon.impact.client.sal.request import (
     RequestCSV,
     RequestJSON,
@@ -7,6 +7,7 @@ from modelon.impact.client.sal.request import (
     RequestOctetStream,
     RequestText,
     RequestZip,
+    RequestXML,
 )
 from modelon.impact.client.sal.response import (
     JSONResponse,
@@ -15,13 +16,14 @@ from modelon.impact.client.sal.response import (
     OctetStreamResponse,
 )
 from modelon.impact.client.sal.context import Context
+from modelon.impact.client.jupyterhub.sal import JupyterContext
 
 
 class HTTPClient:
-    def __init__(self, context: Optional[Context] = None):
+    def __init__(self, context: Optional[Union[Context, JupyterContext]] = None):
         self._context = context if context else Context()
 
-    def get_json(self, url: str, headers: Optional[Dict[str, Any]] = None):
+    def get_json(self, url: str, headers: Optional[Dict[str, Any]] = None) -> Any:
         return self.get_json_response(url, headers=headers).data
 
     def get_json_response(
@@ -30,7 +32,7 @@ class HTTPClient:
         request = RequestJSON(self._context, "GET", url, headers=headers)
         return request.execute()
 
-    def get_text(self, url: str) -> Dict[str, Any]:
+    def get_text(self, url: str) -> str:
         request = RequestText(self._context, "GET", url)
         return request.execute().data
 
@@ -39,6 +41,10 @@ class HTTPClient:
     ) -> CSVResponse:
         request = RequestCSV(self._context, "GET", url, headers=headers)
         return request.execute()
+
+    def get_xml(self, url: str, headers: Optional[Dict[str, Any]] = None) -> str:
+        request = RequestXML(self._context, "GET", url, headers=headers)
+        return request.execute().data
 
     def get_mat(
         self, url: str, headers: Optional[Dict[str, Any]] = None
@@ -55,26 +61,28 @@ class HTTPClient:
         return request.execute().data
 
     def post_json(
-        self, url: str, body: Optional[Dict[str, Any]] = None, files=None
-    ) -> Dict[str, Any]:
-        request = RequestJSON(self._context, "POST", url, body, files)
+        self,
+        url: str,
+        body: Optional[Dict[str, Any]] = None,
+        files: Optional[Dict[str, Any]] = None,
+        headers: Optional[Dict[str, Any]] = None,
+    ) -> Any:
+        request = RequestJSON(self._context, "POST", url, body, files, headers=headers)
         return request.execute().data
 
     def post_json_no_response_body(
         self, url: str, body: Optional[Dict[str, Any]] = None
-    ):
+    ) -> None:
         RequestJSON(self._context, "POST", url, body).execute()
 
-    def delete_json(self, url: str, body: Optional[Dict[str, Any]] = None):
+    def delete_json(self, url: str, body: Optional[Dict[str, Any]] = None) -> None:
         RequestJSON(self._context, "DELETE", url, body).execute()
 
     def put_json_no_response_body(
         self, url: str, body: Optional[Dict[str, Any]] = None
-    ):
+    ) -> None:
         RequestJSON(self._context, "PUT", url, body).execute()
 
-    def put_json(
-        self, url: str, body: Optional[Dict[str, Any]] = None
-    ) -> Dict[str, Any]:
+    def put_json(self, url: str, body: Optional[Dict[str, Any]] = None) -> Any:
         request = RequestJSON(self._context, "PUT", url, body)
         return request.execute().data

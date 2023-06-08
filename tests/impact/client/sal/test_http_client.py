@@ -1,7 +1,6 @@
 import pytest
 import modelon.impact.client.sal.service
 import modelon.impact.client.sal.exceptions
-from tests.impact.client.fixtures import *
 
 
 class TestHTTPClient:

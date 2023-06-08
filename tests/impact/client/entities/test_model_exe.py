@@ -1,16 +1,16 @@
 import pytest
 import os
 import tempfile
+from xml.etree import ElementTree
 from modelon.impact.client import exceptions
 
 from modelon.impact.client.entities.model_executable import ModelExecutableStatus
-
-from tests.impact.client.fixtures import *
+from tests.impact.client.helpers import IDs, MODEL_DESCRIPTION_XML
 
 
 class TestModelExecutable:
     def test_compile_successful(self, fmu):
-        assert fmu.id == 'Test'
+        assert fmu.id == IDs.FMU_PRIMARY
         assert fmu.is_successful()
         assert fmu.get_settable_parameters() == ['h0', 'v']
         assert fmu.get_log() == "Successful Log"
@@ -22,6 +22,15 @@ class TestModelExecutable:
         }
         assert fmu.run_info.status == ModelExecutableStatus.SUCCESSFUL
         assert fmu.run_info.errors == []
+
+    def test_parse_model_description(self, fmu):
+        model_description = fmu.get_model_description()
+        assert model_description == MODEL_DESCRIPTION_XML
+        tree = ElementTree.fromstring(model_description)
+        model_variables =tree.find('ModelVariables')
+        variable_names = [child.attrib.get('name') for child in model_variables]  
+        assert variable_names == ['_block_jacobian_check', '_block_jacobian_check_tol']
+
 
     def test_compilation_running(self, fmu_compile_running):
         assert fmu_compile_running.run_info.status == ModelExecutableStatus.NOTSTARTED
@@ -69,6 +78,12 @@ class TestModelExecutable:
         resp = fmu.download(tempfile.gettempdir())
         assert resp == t
 
+    def test_download_fmu_failed_compilation(self, fmu_compile_failed):
+        pytest.raises(
+            exceptions.OperationFailureError,
+            fmu_compile_failed.download,
+        )
+
     def test_download_fmu_no_path(self, fmu):
         t = os.path.join(tempfile.gettempdir(), 'impact-downloads', fmu.id + '.fmu')
         resp = fmu.download()
@@ -77,4 +92,3 @@ class TestModelExecutable:
     def test_can_be_put_uniquely_in_set(self, fmu):
         fmu_set = set([fmu, fmu])
         assert len(fmu_set) == 1
-

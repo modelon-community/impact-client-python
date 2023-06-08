@@ -1,4 +1,6 @@
-"""URI class"""
+"""URI class."""
+from __future__ import annotations
+from typing import Any
 import sys
 import urllib.parse
 
@@ -11,17 +13,17 @@ class URI:
 
         self.content = content
 
-    def resolve(self, **kwargs):
+    def resolve(self, **kwargs: Any) -> str:
         return self.content.format(**kwargs)
 
-    def _with_path(self, path):
-        return URI(urllib.parse.urljoin(self.content + "/", path))
+    def _with_path(self, path: str) -> URI:
+        return URI(urllib.parse.urljoin(self.content + "/", path.lstrip('/')))
 
-    def __floordiv__(self, other):
+    def __floordiv__(self, other: str) -> URI:
         return self._with_path(other)
 
-    def __truediv__(self, other):
+    def __truediv__(self, other: str) -> URI:
         return self._with_path(other)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return self.content

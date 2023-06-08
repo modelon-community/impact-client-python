@@ -1,5 +1,5 @@
-"""Model executable service module"""
-from typing import Any, Dict, Tuple
+"""Model executable service module."""
+from typing import Any, Dict, Tuple, List
 from modelon.impact.client.sal.http import HTTPClient
 from modelon.impact.client.sal.uri import URI
 
@@ -19,7 +19,7 @@ class ModelExecutableService:
         resp = self._http_client.post_json(url, body=options)
         return resp["id"], resp["parameters"]
 
-    def compile_model(self, workspace_id, fmu_id: str) -> str:
+    def compile_model(self, workspace_id: str, fmu_id: str) -> str:
         url = (
             self._base_uri
             / f"api/workspaces/{workspace_id}/model-executables/{fmu_id}/compilation"
@@ -27,7 +27,7 @@ class ModelExecutableService:
         self._http_client.post_json_no_response_body(url)
         return fmu_id
 
-    def compile_log(self, workspace_id: str, fmu_id: str):
+    def compile_log(self, workspace_id: str, fmu_id: str) -> str:
         url = (
             self._base_uri
             / f"api/workspaces/{workspace_id}/model-executables/{fmu_id}/compilation/"
@@ -35,27 +35,35 @@ class ModelExecutableService:
         ).resolve()
         return self._http_client.get_text(url)
 
-    def fmu_delete(self, workspace_id: str, fmu_id: str):
+    def model_description_get(self, workspace_id: str, fmu_id: str) -> str:
+        url = (
+            self._base_uri
+            / f"api/workspaces/{workspace_id}/model-executables/{fmu_id}/"
+            "model-description"
+        ).resolve()
+        return self._http_client.get_xml(url)
+
+    def fmu_delete(self, workspace_id: str, fmu_id: str) -> None:
         url = (
             self._base_uri / f"api/workspaces/{workspace_id}/model-executables/{fmu_id}"
         ).resolve()
         self._http_client.delete_json(url)
 
-    def compile_status(self, workspace_id: str, fmu_id: str):
+    def compile_status(self, workspace_id: str, fmu_id: str) -> Dict[str, Any]:
         url = (
             self._base_uri
             / f"api/workspaces/{workspace_id}/model-executables/{fmu_id}/compilation"
         ).resolve()
         return self._http_client.get_json(url)
 
-    def compile_cancel(self, workspace_id: str, fmu_id: str):
+    def compile_cancel(self, workspace_id: str, fmu_id: str) -> None:
         url = (
             self._base_uri
             / f"api/workspaces/{workspace_id}/model-executables/{fmu_id}/compilation"
         ).resolve()
         return self._http_client.delete_json(url)
 
-    def settable_parameters_get(self, workspace_id: str, fmu_id: str):
+    def settable_parameters_get(self, workspace_id: str, fmu_id: str) -> List[str]:
         url = (
             self._base_uri
             / f"api/workspaces/{workspace_id}/model-executables/{fmu_id}/"
@@ -65,7 +73,7 @@ class ModelExecutableService:
 
     def ss_fmu_metadata_get(
         self, workspace_id: str, fmu_id: str, parameter_state: Dict[str, Any]
-    ):
+    ) -> Dict[str, Any]:
         url = (
             self._base_uri / f"api/workspaces/{workspace_id}/model-executables/{fmu_id}"
             "/steady-state-metadata"

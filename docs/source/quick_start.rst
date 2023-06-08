@@ -2,7 +2,7 @@ Quick Start
 ===========
 
 The python API enables the execution of workflows orchestrated on a client and executed on a Modelon Impact server, which
-may be running remotely.  With sufficient login credentials and an API Key (see :doc:`Setup <setup>`),
+may be running remotely.  With sufficient login credentials and an API Key (see :doc:`Authentication with Modelon Impact<authentication_with_modelon_impact>`),
 Modelica models may be uploaded, compiled, and executed on a server.  The results can be either processed on the server
 with a custom function or downloaded to the client for further analysis.
 
@@ -12,7 +12,7 @@ A simple example using the :ref:`FMU based workflow <FMU based workflow>` is sho
 
    from modelon.impact.client import Client
 
-   client = Client(url=<impact-domain>)
+   client = Client(url=<impact-domain>) # url is optional; defaults to on-prem OR "https://impact.modelon.cloud"
    workspace = client.create_workspace(<workspace-name>)
 
    # Choose analysis type
@@ -38,7 +38,7 @@ A simple example using the :ref:`Class name based workflow <Setup and run an exp
 
    from modelon.impact.client import Client
 
-   client = Client(url=<impact-domain>)
+   client = Client(url=<impact-domain>) # url is optional; defaults to on-prem OR "https://impact.modelon.cloud"
    workspace = client.create_workspace(<workspace-name>)
 
    # Choose analysis type
@@ -66,7 +66,7 @@ An example of setting up and executing a series of simulations on a server and r
 
    from modelon.impact.client import Client, Range
 
-   client = Client(url=<impact-domain>)
+   client = Client(url=<impact-domain>) # url is optional; defaults to on-prem OR "https://impact.modelon.cloud"
    workspace = client.create_workspace(<workspace-name>)
 
    # Choose analysis type
@@ -102,7 +102,7 @@ A more flexible and customized way to define a series of simulations::
 
    from modelon.impact.client import Client, SimpleExperimentExtension
 
-   client = Client(url=<impact-domain>)
+   client = Client(url=<impact-domain>) # url is optional; defaults to on-prem OR "https://impact.modelon.cloud"
    workspace = client.create_workspace(<workspace-name>)
 
    # Choose analysis type
@@ -128,11 +128,27 @@ A more flexible and customized way to define a series of simulations::
 
    experiment_definition = experiment_definition.with_cases([{'PI.k': 20}, {'PI.k': 30}])
 
+A workflow to upload/add a non-encrypted Modelica library or a Modelica model to a project.::
+
+   from modelon.impact.client import Client
+
+   client = Client(url=<impact-domain>) # url is optional; defaults to on-prem OR "https://impact.modelon.cloud"
+   workspace = client.create_workspace(<workspace-name>)
+
+   # Get the default project
+   project = workspace.get_default_project()
+
+   # Upload a single Modelica model file
+   mo_modelica_content = project.import_model_library('A.mo').wait()
+
+   # Upload a zipped modelica library
+   zip_modelica_content = project.import_model_library('B.zip').wait()
+
 A workflow to fetch artifacts to do some analysis locally could be accomplished like below::
 
    from modelon.impact.client import Client
 
-   client = Client(url=<impact-domain>)
+   client = Client(url=<impact-domain>) # url is optional; defaults to on-prem OR "https://impact.modelon.cloud"
    workspace = client.create_workspace(<workspace-name>)
 
    # Compile and download model

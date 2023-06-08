@@ -2,39 +2,48 @@ import pytest
 import unittest.mock as mock
 from modelon.impact.client import exceptions
 
-from modelon.impact.client.entities.experiment import ExperimentStatus
+from modelon.impact.client.entities.experiment import (
+    ExperimentStatus,
+    ExperimentResultPoint,
+)
 from tests.impact.client.helpers import (
     create_case_entity,
-    create_experiment_entity,
     create_experiment_operation,
+    IDs,
 )
-from tests.impact.client.fixtures import *
 
 
 class TestExperiment:
     def test_execute(self, experiment):
         exp = experiment.entity.execute()
-        assert exp == create_experiment_operation('AwesomeWorkspace', 'pid_2009')
+        assert exp == create_experiment_operation(
+            IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY
+        )
 
     def test_execute_with_case_filter(self, batch_experiment_with_case_filter):
         experiment = batch_experiment_with_case_filter.entity
-        exp_sal = batch_experiment_with_case_filter.service
+        service = batch_experiment_with_case_filter.service
+        exp_sal = service.experiment
         case_generated = experiment.execute(with_cases=[]).wait()
         exp_sal.experiment_execute.assert_has_calls(
-            [mock.call('Workspace', 'Experiment', [])]
+            [mock.call(IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY, [])]
         )
         exp_sal.case_put.assert_not_called()
 
         case_to_execute = case_generated.get_cases()[2]
         result = experiment.execute(with_cases=[case_to_execute]).wait()
         exp_sal.experiment_execute.assert_has_calls(
-            [mock.call('Workspace', 'Experiment', ["case_3"])]
+            [mock.call(IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY, ["case_3"])]
         )
         exp_sal.case_put.assert_has_calls(
-            [mock.call('Workspace', 'Experiment', "case_3", mock.ANY)]
+            [
+                mock.call(
+                    IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY, "case_3", mock.ANY
+                )
+            ]
         )
 
-        assert result == create_experiment_entity('AwesomeWorkspace', 'Experiment')
+        assert result.id == IDs.EXPERIMENT_PRIMARY
         assert result.run_info.successful == 1
         assert result.run_info.not_started == 3
         assert experiment.get_case('case_3').is_successful()
@@ -43,24 +52,43 @@ class TestExperiment:
         experiment = batch_experiment_with_case_filter.entity
         cases = experiment.get_cases_with_label('Cruise operating point')
         assert cases == [
-            create_case_entity("case_2", "Workspace", "Test"),
-            create_case_entity("case_4", "Workspace", "Test"),
+            create_case_entity("case_2", IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY),
+            create_case_entity("case_4", IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY),
         ]
 
     def test_execute_with_case_filter_no_sync(self, batch_experiment_with_case_filter):
         experiment = batch_experiment_with_case_filter.entity
-        exp_sal = batch_experiment_with_case_filter.service
+        service = batch_experiment_with_case_filter.service
+        exp_sal = service.experiment
         case_generated = experiment.execute(with_cases=[]).wait()
         case_to_execute = case_generated.get_cases()[2]
         experiment.execute(with_cases=[case_to_execute], sync_case_changes=False).wait()
         exp_sal.experiment_execute.assert_has_calls(
-            [mock.call('Workspace', 'Experiment', ["case_3"])]
+            [mock.call(IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY, ["case_3"])]
         )
         exp_sal.case_put.assert_not_called()
 
+    def test_experiment_get_last_time_point(self, experiment_last_time_point):
+        experiment = experiment_last_time_point.entity
+        exp = experiment.get_last_point(['inertia.I', 'time'])
+        assert isinstance(exp, ExperimentResultPoint)
+        assert exp.cases == ['case_1', 'case_2', 'case_3']
+        assert exp.variables == ['inertia.I', 'time']
+        assert exp.as_lists() == [[1.0, 1.0], [1.0, 2.0], [1.0, None]]
+
+    def test_experiment_get_last_time_point_all_variables(
+        self, experiment_last_time_point
+    ):
+        experiment = experiment_last_time_point.entity
+        exp = experiment.get_last_point()
+        assert isinstance(exp, ExperimentResultPoint)
+        assert exp.cases == ['case_1', 'case_2', 'case_3']
+        assert exp.variables == ['inertia.I', 'time']
+        assert exp.as_lists() == [[1.0, 1.0], [1.0, 2.0], [1.0, None]]
+
     def test_execute_successful(self, experiment):
         experiment = experiment.entity
-        assert experiment.id == "Test"
+        assert experiment.id == IDs.EXPERIMENT_PRIMARY
         assert experiment.is_successful()
         assert experiment.run_info.status == ExperimentStatus.DONE
         assert experiment.run_info.errors == []
@@ -70,15 +98,41 @@ class TestExperiment:
         assert experiment.run_info.not_started == 0
         assert experiment.get_variables() == ["inertia.I", "time"]
         assert experiment.get_cases() == [
-            create_case_entity("case_1", "Workspace", "Test")
+            create_case_entity(
+                IDs.CASE_PRIMARY, IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY
+            )
         ]
-        assert experiment.get_case("case_1") == create_case_entity(
-            "case_1", "Workspace", "Test"
+        assert experiment.get_case(IDs.CASE_PRIMARY) == create_case_entity(
+            IDs.CASE_PRIMARY, IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY
         )
 
         exp = experiment.get_trajectories(['inertia.I', 'time'])
-        assert exp['case_1']['inertia.I'] == [1, 2, 3, 4]
-        assert exp['case_1']['time'] == [5, 2, 9, 4]
+        assert exp[IDs.CASE_PRIMARY]['inertia.I'] == [1, 2, 3, 4]
+        assert exp[IDs.CASE_PRIMARY]['time'] == [5, 2, 9, 4]
+
+    def test_successful_fmu_based_experiment(self, fmu_based_experiment):
+        experiment = fmu_based_experiment.entity
+        assert experiment.get_class_name() == IDs.MODELICA_CLASS_PATH
+        assert experiment.custom_function == IDs.DYNAMIC_CF
+        assert dict(experiment.get_compiler_options()) == {'c_compiler': 'gcc'}
+        assert dict(experiment.get_runtime_options()) == {'a': 1}
+        assert dict(experiment.get_solver_options()) == {'solver': 'Cvode'}
+        assert dict(experiment.get_simulation_options()) == {
+            'dynamic_diagnostics': False,
+            'ncp': 500,
+        }
+
+    def test_successful_model_based_experiment(self, experiment):
+        experiment = experiment.entity
+        assert experiment.get_class_name() == IDs.MODELICA_CLASS_PATH
+        assert experiment.custom_function == IDs.DYNAMIC_CF
+        assert dict(experiment.get_compiler_options()) == {'c_compiler': 'gcc'}
+        assert dict(experiment.get_runtime_options()) == {'a': 1}
+        assert dict(experiment.get_solver_options()) == {'solver': 'Cvode'}
+        assert dict(experiment.get_simulation_options()) == {
+            'dynamic_diagnostics': False,
+            'ncp': 500,
+        }
 
     def test_successful_batch_execute(self, batch_experiment):
         assert batch_experiment.is_successful()
@@ -89,11 +143,13 @@ class TestExperiment:
         assert batch_experiment.run_info.not_started == 0
         assert batch_experiment.get_variables() == ["inertia.I", "time"]
         assert batch_experiment.get_cases() == [
-            create_case_entity("case_1", "Workspace", "Experiment"),
-            create_case_entity("case_2", "Workspace", "Experiment"),
+            create_case_entity(
+                IDs.CASE_PRIMARY, IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY
+            ),
+            create_case_entity("case_2", IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY),
         ]
         exp = batch_experiment.get_trajectories(['inertia.I'])
-        assert exp['case_1']['inertia.I'] == [1, 2, 3, 4]
+        assert exp[IDs.CASE_PRIMARY]['inertia.I'] == [1, 2, 3, 4]
         assert exp['case_2']['inertia.I'] == [14, 4, 4, 74]
 
     def test_some_successful_batch_execute(self, batch_experiment_some_successful):
@@ -104,10 +160,12 @@ class TestExperiment:
         assert batch_experiment_some_successful.run_info.cancelled == 0
         assert batch_experiment_some_successful.run_info.not_started == 1
         assert batch_experiment_some_successful.get_cases() == [
-            create_case_entity("case_1", "Workspace", "Experiment"),
-            create_case_entity("case_2", "Workspace", "Experiment"),
-            create_case_entity("case_3", "Workspace", "Experiment"),
-            create_case_entity("case_4", "Workspace", "Experiment"),
+            create_case_entity(
+                IDs.CASE_PRIMARY, IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY
+            ),
+            create_case_entity("case_2", IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY),
+            create_case_entity("case_3", IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY),
+            create_case_entity("case_4", IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY),
         ]
 
     def test_running_execution(self, running_experiment):
@@ -133,23 +191,29 @@ class TestExperiment:
     def test_execution_with_failed_cases(self, experiment_with_failed_case):
         assert experiment_with_failed_case.run_info.status == ExperimentStatus.DONE
         assert experiment_with_failed_case.get_cases() == [
-            create_case_entity("case_1", "Workspace", "Experiment")
+            create_case_entity(
+                IDs.CASE_PRIMARY, IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY
+            )
         ]
-        assert experiment_with_failed_case.get_case("case_1") == create_case_entity(
-            "case_1", "Workspace", "Experiment"
+        assert experiment_with_failed_case.get_case(
+            IDs.CASE_PRIMARY
+        ) == create_case_entity(
+            IDs.CASE_PRIMARY, IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY
         )
         assert not experiment_with_failed_case.is_successful()
         assert experiment_with_failed_case.get_trajectories(['inertia.I']) == {
-            'case_1': {'inertia.I': [1, 2, 3, 4]}
+            IDs.CASE_PRIMARY: {'inertia.I': [1, 2, 3, 4]}
         }
 
     def test_cancelled_execution(self, cancelled_experiment):
         assert cancelled_experiment.run_info.status == ExperimentStatus.CANCELLED
         assert cancelled_experiment.get_cases() == [
-            create_case_entity("case_1", "Workspace", "Test")
+            create_case_entity(
+                IDs.CASE_PRIMARY, IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY
+            )
         ]
-        assert cancelled_experiment.get_case("case_1") == create_case_entity(
-            "case_1", "Workspace", "Experiment"
+        assert cancelled_experiment.get_case(IDs.CASE_PRIMARY) == create_case_entity(
+            IDs.CASE_PRIMARY, IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY
         )
 
         assert not cancelled_experiment.is_successful()
@@ -169,10 +233,30 @@ class TestExperiment:
         pytest.raises(ValueError, experiment.entity.get_trajectories, ['s'])
 
     def test_execute_with_user_data(self, workspace):
+        workspace_entity = workspace.entity
+        service = workspace.service
+        workspace_service = service.workspace
         user_data = {"workspaceExecuteKey": "workspaceExecuteValue"}
-        workspace.entity.execute({}, user_data).wait()
+        workspace_entity.execute({}, user_data).wait()
 
-        workspace.service.experiment_create.assert_has_calls(
-            [mock.call('AwesomeWorkspace', {}, user_data)]
+        workspace_service.experiment_create.assert_has_calls(
+            [mock.call(IDs.WORKSPACE_PRIMARY, {}, user_data)]
         )
 
+    def test_set_experiment_label(self, experiment):
+        exp = experiment.entity
+        service = experiment.service
+        exp_sal = service.experiment
+        exp.set_label(IDs.EXPERIMENT_LABEL)
+        exp_sal.experiment_set_label.assert_has_calls(
+            [
+                mock.call(
+                    IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY, IDs.EXPERIMENT_LABEL
+                )
+            ]
+        )
+
+    def test_get_experiment_label(self, experiment):
+        exp = experiment.entity
+        label = exp.metadata.label
+        assert label == IDs.EXPERIMENT_LABEL

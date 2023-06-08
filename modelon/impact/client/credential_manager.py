@@ -1,5 +1,6 @@
 import os
 import logging
+from typing import List, Optional
 
 from getpass import getpass
 
@@ -9,22 +10,26 @@ logger = logging.getLogger(__name__)
 class CredentialManager:
     def __init__(
         self,
-        file_id="api.key",
-        env_name="MODELON_IMPACT_CLIENT_API_KEY",
-        interactive_help_text="Enter Modelon Impact API key:",
+        file_id: str = "api.key",
+        env_names: List[str] = ["MODELON_IMPACT_CLIENT_API_KEY"],
+        interactive_help_text: str = "Enter Modelon Impact API key:",
     ):
         self._file_id = file_id
-        self._env_name = env_name
+        self._env_names = env_names
         self._interactive_help_text = interactive_help_text
 
-    def get_key_from_env(self):
-        return os.environ.get(self._env_name)
+    def get_key_from_env(self) -> Optional[str]:
+        for env_name in self._env_names:
+            env_value = os.environ.get(env_name)
+            if env_value:
+                return env_value
+        return None
 
-    def _cred_file(self):
+    def _cred_file(self) -> str:
         home_dir = os.path.expanduser("~")
         return os.path.join(home_dir, ".impact", self._file_id)
 
-    def get_key_from_file(self):
+    def get_key_from_file(self) -> Optional[str]:
         credentials_file = self._cred_file()
         if not os.path.isfile(credentials_file):
             return None
@@ -32,7 +37,7 @@ class CredentialManager:
         with open(credentials_file, "r") as credentials:
             return credentials.read().strip()
 
-    def get_key_from_prompt(self):
+    def get_key_from_prompt(self) -> str:
         key = getpass(self._interactive_help_text)
         if key == '\x16':
             # This is a getpass Windows bug...
@@ -41,13 +46,13 @@ class CredentialManager:
 
         return key
 
-    def write_key_to_file(self, api_key):
+    def write_key_to_file(self, api_key: str) -> None:
         credentials_file = self._cred_file()
         os.makedirs(os.path.dirname(credentials_file), exist_ok=True)
         with open(credentials_file, "w") as credentials:
             credentials.write(str(api_key))
 
-    def get_key(self, interactive=False):
+    def get_key(self, interactive: bool = False) -> Optional[str]:
         api_key = self.get_key_from_env() or self.get_key_from_file()
         if api_key or not interactive:
             return api_key

@@ -1,4 +1,4 @@
-"""Service access layer exceptions"""
+"""Service access layer exceptions."""
 
 
 class ServiceAccessError(Exception):
@@ -22,7 +22,7 @@ class UnauthorizedError(ServiceAccessError):
 
 
 class HTTPError(ServiceAccessError):
-    def __init__(self, message, status_code):
+    def __init__(self, message: str, status_code: int):
         self.status_code = status_code
         super().__init__(message)
 
@@ -36,8 +36,4 @@ class ErrorJSONInvalidFormatError(ServiceAccessError):
 
 
 class NoResponseFetchVersionError(ServiceAccessError):
-    pass
-
-
-class AccessingJupyterHubError(ServiceAccessError):
     pass

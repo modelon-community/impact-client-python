@@ -1,4 +1,5 @@
-"""Users service module"""
+"""Users service module."""
+from typing import Dict, Any
 from modelon.impact.client.sal.http import HTTPClient
 from modelon.impact.client.sal.uri import URI
 
@@ -8,6 +9,6 @@ class UsersService:
         self._base_uri = uri
         self._http_client = http_client
 
-    def get_me(self):
+    def get_me(self) -> Dict[str, Any]:
         url = (self._base_uri / "api/users/me").resolve()
         return self._http_client.get_json(url)

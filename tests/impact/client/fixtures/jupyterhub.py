@@ -1,7 +1,12 @@
 import pytest
 import requests.exceptions
 
-from tests.impact.client.fixtures import *
+
+from tests.impact.client.helpers import (
+    with_json_route,
+    with_text_route,
+    with_exception,
+)
 
 
 @pytest.fixture
@@ -52,7 +57,10 @@ def get_user_unknown_error(mock_server_base):
 @pytest.fixture
 def get_user_response_missing_fields(mock_server_base):
     return with_json_route(
-        mock_server_base, 'GET', 'hub/api/authorizations/token/secret-token', {},
+        mock_server_base,
+        'GET',
+        'hub/api/authorizations/token/secret-token',
+        {},
     )
 
 

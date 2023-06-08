@@ -13,9 +13,9 @@ We can fetch a list of available analysis methods and print them by executing::
    ]
    print(custom_functions)
 
-By default, there are three available custom functions shipped with Impact: ``steady state``, ``dynamic`` and ``linearize``.
+By default, there are two available custom functions shipped with Impact: ``steady state`` and ``dynamic``.
 It is also possible to create an analysis function for a specific need by following the documentation available in the
-Help Center in Modelon Impact (located at <impact url>/help). For this tutorial, we will use the ``dynamic`` custom function::
+Help Center in Modelon Impact (located at <impact URL>/help). For this tutorial, we will use the ``dynamic`` custom function::
 
    dynamic = workspace.get_custom_function('dynamic')
 

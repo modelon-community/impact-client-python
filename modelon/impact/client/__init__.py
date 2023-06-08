@@ -1,6 +1,8 @@
 from modelon.impact.client.client import Client
-from modelon.impact.client.experiment_definition.base import (
+from modelon.impact.client.experiment_definition.fmu_based import (
     SimpleFMUExperimentDefinition,
+)
+from modelon.impact.client.experiment_definition.model_based import (
     SimpleModelicaExperimentDefinition,
 )
 from modelon.impact.client.experiment_definition.extension import (
@@ -18,5 +20,7 @@ from modelon.impact.client.experiment_definition.expansion import (
     FullFactorial,
     LatinHypercube,
 )
+from modelon.impact.client.entities.project import ContentType
+from modelon.impact.client.entities.workspace import WorkspaceDefinition
 
 SimpleExperimentDefinition = SimpleFMUExperimentDefinition  # For compability

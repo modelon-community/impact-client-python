@@ -16,14 +16,6 @@ Subpackages
 Submodules
 ----------
 
-modelon.impact.client.asserts module
-------------------------------------
-
-.. automodule:: modelon.impact.client.asserts
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 modelon.impact.client.client module
 -----------------------------------
 

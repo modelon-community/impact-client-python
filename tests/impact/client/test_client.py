@@ -1,35 +1,48 @@
 import pytest
 from unittest.mock import MagicMock
 from modelon.impact.client import Client
+from modelon.impact.client.operations.model_executable import ModelExecutableOperation
+from modelon.impact.client.operations.experiment import ExperimentOperation
+from modelon.impact.client.entities.workspace import Workspace, WorkspaceDefinition
+from modelon.impact.client.entities.project import Project
 import modelon.impact.client.exceptions as exceptions
 import modelon.impact.client.sal.exceptions as sal_exceptions
-from tests.impact.client.fixtures import *
-from tests.impact.client.helpers import create_workspace_entity
+from tests.files.paths import TEST_WORKSPACE_PATH
+
+from tests.impact.client.helpers import (
+    create_workspace_conversion_operation,
+    create_workspace_entity,
+    IDs,
+    get_test_workspace_definition,
+)
 
 
 def test_create_workspace(create_workspace):
     client = Client(url=create_workspace.url, context=create_workspace.context)
-    workspace = client.create_workspace('AwesomeWorkspace')
-    assert workspace == create_workspace_entity('newWorkspace')
-    assert workspace.id == 'newWorkspace'
+    workspace = client.create_workspace(IDs.WORKSPACE_PRIMARY)
+    assert workspace == create_workspace_entity(IDs.WORKSPACE_PRIMARY)
+    assert workspace.id == IDs.WORKSPACE_PRIMARY
 
 
 def test_get_workspace(single_workspace):
     client = Client(url=single_workspace.url, context=single_workspace.context)
-    workspace = client.get_workspace('AwesomeWorkspace')
-    assert workspace == create_workspace_entity('AwesomeWorkspace')
-    assert workspace.id == 'AwesomeWorkspace'
+    workspace = client.get_workspace(IDs.WORKSPACE_PRIMARY)
+    assert workspace.id == IDs.WORKSPACE_PRIMARY
+
+
+def test_get_workspace_by_name(multiple_workspace):
+    client = Client(url=multiple_workspace.url, context=multiple_workspace.context)
+    workspaces = client.get_workspace_by_name(IDs.WORKSPACE_PRIMARY)
+    assert len(workspaces) == 1
+    assert workspaces[0].id == IDs.WORKSPACE_PRIMARY
 
 
 def test_get_workspaces(multiple_workspace):
     client = Client(url=multiple_workspace.url, context=multiple_workspace.context)
     workspaces = client.get_workspaces()
-    assert workspaces == [
-        create_workspace_entity('AwesomeWorkspace'),
-        create_workspace_entity('BoringWorkspace'),
-    ]
-    workspace_id = ['AwesomeWorkspace', 'BoringWorkspace']
-    assert [workspace.id for workspace in workspaces] == workspace_id
+    assert len(workspaces) == 2
+    assert workspaces[0].id == IDs.WORKSPACE_PRIMARY
+    assert workspaces[1].id == IDs.WORKSPACE_SECONDARY
 
 
 def test_get_workspaces_error(workspaces_error):
@@ -48,14 +61,15 @@ def test_semantic_version_error(semantic_version_error):
     with pytest.raises(exceptions.UnsupportedSemanticVersionError) as excinfo:
         Client(url=semantic_version_error.url, context=semantic_version_error.context)
     assert (
-        "Version '4.1.0' of the HTTP REST API is not supported, must be in the "
-        "range '>=1.21.3,<4.0.0'! Updgrade or downgrade this package to a version"
-        " that supports version '4.1.0' of the HTTP REST API." in str(excinfo.value)
+        "Version '1.0.0' of the HTTP REST API is not supported, must be in the "
+        "range '>=4.0.0,<5.0.0'! Updgrade or downgrade this package to a "
+        "version that supports version '1.0.0' of the HTTP REST API."
+        in str(excinfo.value)
     )
 
 
 def assert_login_called(*, adapter, body):
-    login_call = adapter.request_history[1]
+    login_call = adapter.request_history[2]
     assert 'http://mock-impact.com/api/login' == login_call.url
     assert 'POST' == login_call.method
     assert body == login_call.json()
@@ -86,7 +100,8 @@ def test_client_login_api_key_missing(user_with_license):
     )
 
     assert_login_called(
-        adapter=user_with_license.adapter, body={},
+        adapter=user_with_license.adapter,
+        body={},
     )
 
 
@@ -160,7 +175,7 @@ def test_client_connect_against_jupyterhub_can_authorize(jupyterhub_api):
     jupyterhub_cred_manager = MagicMock()
     jupyterhub_cred_manager.get_key.return_value = 'secret-token'
 
-    client = Client(
+    Client(
         url=jupyterhub_api.url,
         context=jupyterhub_api.context,
         credential_manager=cred_manager,
@@ -173,3 +188,109 @@ def test_client_connect_against_jupyterhub_can_authorize(jupyterhub_api):
 def test_no_assigned_license_error(user_with_no_license):
     with pytest.raises(exceptions.NoAssignedLicenseError):
         Client(url=user_with_no_license.url, context=user_with_no_license.context)
+
+
+def test_get_project_matchings(
+    get_project_matchings,
+    get_versioned_projects,
+    get_versioned_new_project_trunk,
+    get_versioned_new_project_branch,
+):
+    client = Client(
+        url=get_project_matchings.url, context=get_project_matchings.context
+    )
+    definition = WorkspaceDefinition(get_test_workspace_definition())
+    project_matching_entries = client.get_project_matchings(definition).entries
+
+    assert len(project_matching_entries) == 1
+    assert project_matching_entries[0].entry_id == IDs.VERSIONED_PROJECT_REFERENCE
+    url = "https://github.com/project/test"
+    expected_vcs_uri = f"git+{url}.git@main:da6abb188a089527df1b54b27ace84274b819e4a"
+    assert project_matching_entries[0].vcs_uri == expected_vcs_uri
+    assert len(project_matching_entries[0].projects) == 2
+    assert project_matching_entries[0].projects[0].id == IDs.VERSIONED_PROJECT_PRIMARY
+    assert project_matching_entries[0].projects[1].id == IDs.VERSIONED_PROJECT_SECONDARY
+
+
+def test_import_workspace_from_zip(
+    import_workspace,
+    get_successful_workspace_upload_status,
+    single_workspace,
+):
+    client = Client(
+        url=import_workspace.url,
+        context=import_workspace.context,
+    )
+    imported_workspace = client.import_workspace_from_zip(TEST_WORKSPACE_PATH).wait()
+    assert isinstance(imported_workspace, Workspace)
+
+
+def test_import_workspace_from_shared_definition(
+    import_workspace,
+    get_successful_workspace_upload_status,
+    single_workspace,
+):
+    client = Client(
+        url=import_workspace.url,
+        context=import_workspace.context,
+    )
+    definition = WorkspaceDefinition(get_test_workspace_definition())
+    imported_workspace = client.import_workspace_from_shared_definition(
+        definition
+    ).wait()
+    assert isinstance(imported_workspace, Workspace)
+
+
+def test_failed_import_from_shared_definition(
+    import_workspace, get_failed_workspace_upload_status
+):
+    client = Client(
+        url=import_workspace.url,
+        context=import_workspace.context,
+    )
+    definition = WorkspaceDefinition(get_test_workspace_definition())
+    with pytest.raises(exceptions.IllegalWorkspaceImport):
+        client.import_workspace_from_shared_definition(definition).wait()
+
+
+def test_workspace_conversion(setup_workspace_conversion):
+    client = Client(
+        url=setup_workspace_conversion.url, context=setup_workspace_conversion.context
+    )
+
+    conversioin_op = client.convert_workspace(IDs.CONVERSION, 'backup')
+    assert conversioin_op == create_workspace_conversion_operation(IDs.CONVERSION)
+
+
+def test_import_project_from_zip(
+    import_project,
+    get_project_upload_status,
+    single_project,
+):
+    client = Client(
+        url=import_project.url,
+        context=import_project.context,
+    )
+    imported_project = client.import_project_from_zip(TEST_WORKSPACE_PATH).wait()
+    assert isinstance(imported_project, Project)
+
+
+def test_get_executions(executions, model_compile, experiment_execute):
+    client = Client(
+        url=executions.url,
+        context=executions.context,
+    )
+    opeartions = list(client.get_executions())
+    assert len(opeartions) == 2
+    assert isinstance(opeartions[0], ModelExecutableOperation)
+    assert isinstance(opeartions[1], ExperimentOperation)
+
+
+def test_get_executions_for_workspace(executions, model_compile, experiment_execute):
+    client = Client(
+        url=executions.url,
+        context=executions.context,
+    )
+    opeartions = list(client.get_executions(IDs.WORKSPACE_SECONDARY))
+    assert len(opeartions) == 1
+    assert isinstance(opeartions[0], ExperimentOperation)

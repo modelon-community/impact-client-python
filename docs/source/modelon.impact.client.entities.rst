@@ -1,6 +1,14 @@
 modelon.impact.client.entities package
 ======================================
 
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 5
+
+   modelon.impact.client.entities.interfaces
+
 Submodules
 ----------
 
@@ -16,6 +24,14 @@ modelon.impact.client.entities.case module
 ------------------------------------------
 
 .. automodule:: modelon.impact.client.entities.case
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+modelon.impact.client.entities.content module
+---------------------------------------------
+
+.. automodule:: modelon.impact.client.entities.content
    :members:
    :undoc-members:
    :show-inheritance:
@@ -64,6 +80,14 @@ modelon.impact.client.entities.model\_executable module
 -------------------------------------------------------
 
 .. automodule:: modelon.impact.client.entities.model_executable
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+modelon.impact.client.entities.project module
+---------------------------------------------
+
+.. automodule:: modelon.impact.client.entities.project
    :members:
    :undoc-members:
    :show-inheritance:

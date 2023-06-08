@@ -1,4 +1,4 @@
-"""Request class"""
+"""Request class."""
 import logging
 from typing import Callable, Dict, Optional, Any
 import requests
@@ -10,8 +10,8 @@ from modelon.impact.client.sal.response import (
     CSVResponse,
     OctetStreamResponse,
     MatStreamResponse,
+    XMLResponse,
 )
-from modelon.impact.client.sal.context import Context
 
 logger = logging.getLogger(__name__)
 
@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 class Request:
     def __init__(
         self,
-        context: Context,
+        context: Any,
         method: str,
         url: str,
         request_type: Callable,
@@ -35,12 +35,12 @@ class Request:
         self.request_type = request_type
         self.headers = headers
 
-    def execute(self, check_return: bool = True):
+    def execute(self, check_return: bool = True) -> Any:
         try:
             if self.method == "POST":
                 logger.debug("POST with JSON body: {}".format(self.body))
                 resp = self.context.session.post(
-                    self.url, json=self.body, files=self.files
+                    self.url, json=self.body, files=self.files, headers=self.headers
                 )
             elif self.method == "GET":
                 resp = self.context.session.get(self.url, headers=self.headers)
@@ -70,32 +70,93 @@ class Request:
 
 
 class RequestJSON(Request):
-    def __init__(self, context, method, url, body=None, files=None, headers=None):
+    def __init__(
+        self,
+        context: Any,
+        method: str,
+        url: str,
+        body: Optional[Dict[str, Any]] = None,
+        files: Optional[Dict[str, Any]] = None,
+        headers: Optional[Dict[str, Any]] = None,
+    ):
         super().__init__(context, method, url, JSONResponse, body, files, headers)
 
 
 class RequestZip(Request):
-    def __init__(self, context, method, url, body=None, files=None, headers=None):
+    def __init__(
+        self,
+        context: Any,
+        method: str,
+        url: str,
+        body: Optional[Dict[str, Any]] = None,
+        files: Optional[Dict[str, Any]] = None,
+        headers: Optional[Dict[str, Any]] = None,
+    ):
         super().__init__(context, method, url, ZIPResponse, body, files, headers)
 
 
 class RequestText(Request):
-    def __init__(self, context, method, url, body=None, files=None, headers=None):
+    def __init__(
+        self,
+        context: Any,
+        method: str,
+        url: str,
+        body: Optional[Dict[str, Any]] = None,
+        files: Optional[Dict[str, Any]] = None,
+        headers: Optional[Dict[str, Any]] = None,
+    ):
         super().__init__(context, method, url, TextResponse, body, files, headers)
 
 
+class RequestXML(Request):
+    def __init__(
+        self,
+        context: Any,
+        method: str,
+        url: str,
+        body: Optional[Dict[str, Any]] = None,
+        files: Optional[Dict[str, Any]] = None,
+        headers: Optional[Dict[str, Any]] = None,
+    ):
+        super().__init__(context, method, url, XMLResponse, body, files, headers)
+
+
 class RequestCSV(Request):
-    def __init__(self, context, method, url, body=None, files=None, headers=None):
+    def __init__(
+        self,
+        context: Any,
+        method: str,
+        url: str,
+        body: Optional[Dict[str, Any]] = None,
+        files: Optional[Dict[str, Any]] = None,
+        headers: Optional[Dict[str, Any]] = None,
+    ):
         super().__init__(context, method, url, CSVResponse, body, files, headers)
 
 
 class RequestOctetStream(Request):
-    def __init__(self, context, method, url, body=None, files=None, headers=None):
+    def __init__(
+        self,
+        context: Any,
+        method: str,
+        url: str,
+        body: Optional[Dict[str, Any]] = None,
+        files: Optional[Dict[str, Any]] = None,
+        headers: Optional[Dict[str, Any]] = None,
+    ):
         super().__init__(
             context, method, url, OctetStreamResponse, body, files, headers
         )
 
 
 class RequestMatStream(Request):
-    def __init__(self, context, method, url, body=None, files=None, headers=None):
+    def __init__(
+        self,
+        context: Any,
+        method: str,
+        url: str,
+        body: Optional[Dict[str, Any]] = None,
+        files: Optional[Dict[str, Any]] = None,
+        headers: Optional[Dict[str, Any]] = None,
+    ):
         super().__init__(context, method, url, MatStreamResponse, body, files, headers)

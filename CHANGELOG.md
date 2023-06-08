@@ -1,9 +1,487 @@
+# [3.0.0-dev.53](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.52...v3.0.0-dev.53) (2023-06-08)
+
+
+### Bug Fixes
+
+* added docs for run info status property for Case, ModelExecutable and Experiment entites ([08a12f8](https://github.com/modelon-community/impact-client-python/commit/08a12f855167fed4083bd61e61f4abbe59409b1f))
+* added docstrings for status ([41c51d0](https://github.com/modelon-community/impact-client-python/commit/41c51d04f26c1bdf42470c9fe9d3948b4034d0ca))
+
+
+### Features
+
+* added support to fetch only last point for a result trajectory ([ad144be](https://github.com/modelon-community/impact-client-python/commit/ad144be46f16d0241703875385b0075dc1621ff6))
+
+# [3.0.0-dev.52](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.51...v3.0.0-dev.52) (2023-06-07)
+
+
+### Bug Fixes
+
+* added docs for expansion alorithms ([66ea11e](https://github.com/modelon-community/impact-client-python/commit/66ea11e110ea82720f7a6bbb82b92aa1822c7d36))
+
+# [3.0.0-dev.51](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.50...v3.0.0-dev.51) (2023-06-07)
+
+
+### Bug Fixes
+
+* added docs for initialize_from in case entity ([fe42407](https://github.com/modelon-community/impact-client-python/commit/fe424072a10585047a92eb2fe98db4d806d9a6fe))
+* moved documentation for getter setter methods to the get methods as setter methods are not visible in docs ([050606c](https://github.com/modelon-community/impact-client-python/commit/050606c3cc5ed71b17ad5102d6989607ab251ded))
+
+
+### Features
+
+* added a cached boolean to experiment._get_info() to allow fetching latest run_info and meta_data for an experiment ([48747b0](https://github.com/modelon-community/impact-client-python/commit/48747b091cc1349c9da7024769fdab433e264980))
+* added a cached boolean to model_executable._get_info() to allow fetching latest run_info for an FMU ([a9b60fb](https://github.com/modelon-community/impact-client-python/commit/a9b60fbab18e99a499db026029aeaec104eec463))
+* added possibility to allow fetching latest run_info for a case ([ddca239](https://github.com/modelon-community/impact-client-python/commit/ddca239d14b17857ba3abf024bab617cc8787637))
+
+# [3.0.0-dev.50](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.49...v3.0.0-dev.50) (2023-06-07)
+
+
+### Bug Fixes
+
+* docstring fixes to improve rendering ([f62e302](https://github.com/modelon-community/impact-client-python/commit/f62e302059dcd4f669337bf478b70807971d68ed))
+
+# [3.0.0-dev.49](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.48...v3.0.0-dev.49) (2023-06-07)
+
+
+### Bug Fixes
+
+* the Status method in Operations class is now a property ([cc8bfb1](https://github.com/modelon-community/impact-client-python/commit/cc8bfb1bc2ed789b01eb267f329667d6b1c6cd3a))
+
+
+### BREAKING CHANGES
+
+* the status method in all operations class inheriting BaseOperation class is now a property
+
+# [3.0.0-dev.48](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.47...v3.0.0-dev.48) (2023-06-04)
+
+
+### Bug Fixes
+
+* added tests ([334c129](https://github.com/modelon-community/impact-client-python/commit/334c129650946d3c94eb87128b2264e07671b67d))
+* docs updates and docformatter suggested fixes ([6cbd165](https://github.com/modelon-community/impact-client-python/commit/6cbd165c31d974b05425148fee5861397d249fb9))
+
+
+### Features
+
+* add method to fetch all running executions ([72f1089](https://github.com/modelon-community/impact-client-python/commit/72f10890a3934a8ede1361077f83b2e140975ab9))
+
+# [3.0.0-dev.47](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.46...v3.0.0-dev.47) (2023-06-04)
+
+
+### Bug Fixes
+
+* corrected upload_model_library to import_modelica_library in docs ([256d813](https://github.com/modelon-community/impact-client-python/commit/256d8139acd35bd0c9cd408c4dae9fb84d87ce7c))
+
+
+### Features
+
+* added possibility to fetch model description xml ([4427a2f](https://github.com/modelon-community/impact-client-python/commit/4427a2f4ac39c85e77cd51fab952af04fc1b3a21))
+
+# [3.0.0-dev.46](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.45...v3.0.0-dev.46) (2023-05-29)
+
+
+### Bug Fixes
+
+* spell fix - parameterization -> parametrization ([1f302cd](https://github.com/modelon-community/impact-client-python/commit/1f302cd5560b811a4b76aa1bfe933110cbfc43ea))
+
+# [3.0.0-dev.45](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.44...v3.0.0-dev.45) (2023-05-29)
+
+
+### Bug Fixes
+
+* corrected the documentation example for with_result_filter ([e150eb0](https://github.com/modelon-community/impact-client-python/commit/e150eb0054aec147512176e646e477eab89b9b9a))
+
+# [3.0.0-dev.44](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.43...v3.0.0-dev.44) (2023-05-28)
+
+
+### Bug Fixes
+
+* added mapping for python client-MI version compatibility ([9bc476b](https://github.com/modelon-community/impact-client-python/commit/9bc476b623e8d3e6e0f8e9c6cad69ce90fcf7877))
+
+# [3.0.0-dev.43](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.42...v3.0.0-dev.43) (2023-05-25)
+
+
+### Bug Fixes
+
+* added additional checks and improved error message ([e7a9b25](https://github.com/modelon-community/impact-client-python/commit/e7a9b25d001ab48459abca0a0e5f2a22a8065e5d))
+* the filter option only accepts list of patterns ([9aa27d4](https://github.com/modelon-community/impact-client-python/commit/9aa27d445244a67257d759b71ae1aa47baf7e061))
+
+# [3.0.0-dev.42](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.41...v3.0.0-dev.42) (2023-05-25)
+
+
+### Bug Fixes
+
+* bump supported version range ([e789a35](https://github.com/modelon-community/impact-client-python/commit/e789a35f316077890ee1446d1a67a0c9999907b5))
+
+# [3.0.0-dev.41](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.40...v3.0.0-dev.41) (2023-05-24)
+
+
+### Bug Fixes
+
+* documentation improvements ([8edacaa](https://github.com/modelon-community/impact-client-python/commit/8edacaa7476f80ca07b20176bb415230da42a45d))
+
+# [3.0.0-dev.40](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.39...v3.0.0-dev.40) (2023-05-15)
+
+
+### Bug Fixes
+
+* made _CaseRunInfo,_CaseAnalysis, _CaseMeta, _CaseInput and _ModelExecutableRunInfo classes public ([745a371](https://github.com/modelon-community/impact-client-python/commit/745a371a97859aa6c3aa1610cbf88f50cc8281dc))
+
+# [3.0.0-dev.39](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.38...v3.0.0-dev.39) (2023-05-09)
+
+
+### Bug Fixes
+
+* added docs on preference order for token and api key ([c01a8d0](https://github.com/modelon-community/impact-client-python/commit/c01a8d057315b24935d754f06225c39b9091553a))
+* corrected '.impact' to ~/.impact ([50a438e](https://github.com/modelon-community/impact-client-python/commit/50a438e137edf6bc64393e4319d6b86428a4669e))
+* corrected the docs to upload modelica content to a project ([d4484ea](https://github.com/modelon-community/impact-client-python/commit/d4484ea1656b34f178022586f5648d4a67511397))
+* feedback fixes ([3cd167a](https://github.com/modelon-community/impact-client-python/commit/3cd167a9860ae51f3199d4ebbf45d6a8fd15bb7c))
+* remove linearize reference from choosing analysis type docs ([1fc62fc](https://github.com/modelon-community/impact-client-python/commit/1fc62fc15fbcfbbbb1e5b7e5fe9c87d314949286))
+* typo fix ([1bcd33f](https://github.com/modelon-community/impact-client-python/commit/1bcd33fc627523c2648f6798f37c99c7cc92ef11))
+
+# [3.0.0-dev.38](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.37...v3.0.0-dev.38) (2023-05-08)
+
+
+### Bug Fixes
+
+* minor docstring fixes for operations ([2caa979](https://github.com/modelon-community/impact-client-python/commit/2caa979d8ff8d2a59c5fb5a640eaf4679cc35769))
+* moved fmu_import to model entity ([0bb9f27](https://github.com/modelon-community/impact-client-python/commit/0bb9f27eac97c060f9a7aaa0f76e3e1eca8ac60c))
+
+# [3.0.0-dev.37](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.36...v3.0.0-dev.37) (2023-05-04)
+
+
+### Bug Fixes
+
+* renamed upload_content to import_content ([91e710a](https://github.com/modelon-community/impact-client-python/commit/91e710ac32c25eb69f11e2fa94354abd4386bb10))
+* renamed upload_modelica_library to import_modelica_library ([19637cb](https://github.com/modelon-community/impact-client-python/commit/19637cb98cb6268574e92efcad9e90d749985dfa))
+
+# [3.0.0-dev.36](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.35...v3.0.0-dev.36) (2023-05-02)
+
+
+### Bug Fixes
+
+* added an abstract interface class for entities ([1885d4b](https://github.com/modelon-community/impact-client-python/commit/1885d4b2998466362e9cf66e9a8d74f493fd14d2))
+* updated docs ([e948f95](https://github.com/modelon-community/impact-client-python/commit/e948f9567481d771bc0de89344eeb120b21ad742))
+
+# [3.0.0-dev.35](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.34...v3.0.0-dev.35) (2023-04-28)
+
+
+### Bug Fixes
+
+* default to https://impact.modelon.cloud/ if no url is provided by user or no environmental variable is set ([0e6593f](https://github.com/modelon-community/impact-client-python/commit/0e6593f878f79172ae5191dcc34b80844d3e5f4c))
+
+# [3.0.0-dev.34](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.33...v3.0.0-dev.34) (2023-04-28)
+
+
+### Bug Fixes
+
+* check if the user given URL is as substring of the IMPACT_URL value to validate if we connect to the same server as current notebook is running or not ([553f817](https://github.com/modelon-community/impact-client-python/commit/553f81795674af172820d5a8c0740a1d60918380))
+
+# [3.0.0-dev.33](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.32...v3.0.0-dev.33) (2023-04-27)
+
+
+### Bug Fixes
+
+* added docs for ExperimentRunInfo class ([9a79f3f](https://github.com/modelon-community/impact-client-python/commit/9a79f3f902ec5542c0fa8dde55a8eb08cc2cfdfc))
+* make ExternalResultMetaData, ExperimentMetaData and ExperimentRunInfo classes public ([b3aa10e](https://github.com/modelon-community/impact-client-python/commit/b3aa10eeb9866e98edb4eca2609c54a77c5c377a))
+* updated the metadata property in Experiment entity such that it always return an ExperimentMetaData ([aefe32c](https://github.com/modelon-community/impact-client-python/commit/aefe32c05aeb54dcf0d6d632840833f6d25c659d))
+
+
+### Features
+
+* added a label property to experiment metadata class ([c45ca1a](https://github.com/modelon-community/impact-client-python/commit/c45ca1a4efcfed8d788baaaff7f053acd93cc15c))
+
+# [3.0.0-dev.32](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.31...v3.0.0-dev.32) (2023-04-27)
+
+
+### Features
+
+* add support for fetching project content by id ([b4bbd9a](https://github.com/modelon-community/impact-client-python/commit/b4bbd9ac8fa6cc180fe989723c2aa7307b7bbc32))
+* added possibility to fetch project size ([d793892](https://github.com/modelon-community/impact-client-python/commit/d7938922659822a36fbfe38fc45c2fe7f40bd3fd))
+* added possibility to fetch workspace size ([66a8ed2](https://github.com/modelon-community/impact-client-python/commit/66a8ed24c1dfb8ae9950c39019658ac3e67196dd))
+* added projectType filter for get projects ([0a4de76](https://github.com/modelon-community/impact-client-python/commit/0a4de76ff68777e1929212d67d284e29d6073394))
+
+# [3.0.0-dev.31](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.30...v3.0.0-dev.31) (2023-04-27)
+
+
+### Features
+
+* added possibility to get custom_function, class name and options from experiment ([94274b5](https://github.com/modelon-community/impact-client-python/commit/94274b5ab4d74590a40e633eda6cceb0fd71412a))
+
+# [3.0.0-dev.30](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.29...v3.0.0-dev.30) (2023-04-25)
+
+
+### Features
+
+* added possibility to get experiments for model ([351d860](https://github.com/modelon-community/impact-client-python/commit/351d8606539d2ad18618bbec5cbd1c35f05bd0cc))
+
+# [3.0.0-dev.29](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.28...v3.0.0-dev.29) (2023-04-18)
+
+
+### Bug Fixes
+
+* renamed intitialize_from to with_initialize_from in SimpleFMUExperimentDefinition, SimpleModelicaExperimentDefinition and SimpleExperimentExtension ([cf6b908](https://github.com/modelon-community/impact-client-python/commit/cf6b90887fe78e02db533d032657e7b7d4f249aa))
+
+
+### Features
+
+* allow passing initialize_from in new_experiment_definition method in model entity ([8bb697c](https://github.com/modelon-community/impact-client-python/commit/8bb697c8a6092c02a10e9b26149d3732f77e9a54))
+
+
+### BREAKING CHANGES
+
+* initialize_from method in SimpleExperimentExtension, SimpleFMUExperimentDefinition and SimpleModelicaExperimentDefinition are now renamed to with_initialize_from
+
+# [3.0.0-dev.28](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.27...v3.0.0-dev.28) (2023-04-17)
+
+
+### Bug Fixes
+
+* get project id from location for content import ([cf47fdc](https://github.com/modelon-community/impact-client-python/commit/cf47fdc2cf18c2287362c6791edd346e692c28ed))
+* removed project ID from mock content import fixtures ([339e0d7](https://github.com/modelon-community/impact-client-python/commit/339e0d7ae54236f68897a38099ebab8804d917af))
+
+# [3.0.0-dev.27](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.26...v3.0.0-dev.27) (2023-04-13)
+
+
+### Bug Fixes
+
+* removed clone() method from Worksace entity ([3041b5c](https://github.com/modelon-community/impact-client-python/commit/3041b5cc0829f5568b719fca3ba1abcb8025eed1))
+
+
+### BREAKING CHANGES
+
+* clone method in Workpace entity has been removed
+
+# [3.0.0-dev.26](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.25...v3.0.0-dev.26) (2023-04-11)
+
+
+### Bug Fixes
+
+* add py.typed marker ([8761cc1](https://github.com/modelon-community/impact-client-python/commit/8761cc1699c490d488707e0f27202693bc35778f))
+
+# [3.0.0-dev.25](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.24...v3.0.0-dev.25) (2023-04-06)
+
+
+### Bug Fixes
+
+* added an extension to auto-generate type hints ([1d7b8d6](https://github.com/modelon-community/impact-client-python/commit/1d7b8d60d135e5a629b647a462882eb44c229991))
+* convert full import name to just class name ([3d7766d](https://github.com/modelon-community/impact-client-python/commit/3d7766df49f50e85cf4be2d89bf7f09bfdc064c5))
+* fixed docs for creating and fetching workspaces ([58a0d12](https://github.com/modelon-community/impact-client-python/commit/58a0d12a3cf91b4458ffab819829c9a86c93b86e))
+* lint fixes ([1bbff57](https://github.com/modelon-community/impact-client-python/commit/1bbff575f180f43105965e8416886d279c2850a6))
+* made code compliant with google doc style. Remove return value as sphinx automatically generated from type hints ([5049f2f](https://github.com/modelon-community/impact-client-python/commit/5049f2f87767f773f965fa4b1cbb6508f4a1f5f1))
+* rename Examples-> Example, adding return after Example to make code examples render correctly ([6b1155a](https://github.com/modelon-community/impact-client-python/commit/6b1155a71845f57f4687e047e277e013cb08913a))
+* spelling and formatting fixes ([aa97edd](https://github.com/modelon-community/impact-client-python/commit/aa97eddff8beb0b099a4ed19c0006ce1e985765a))
+
+# [3.0.0-dev.24](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.23...v3.0.0-dev.24) (2023-04-06)
+
+
+### Bug Fixes
+
+* catching general exception while checking for jupyter hub url ([9a9ae39](https://github.com/modelon-community/impact-client-python/commit/9a9ae39a58a9e09e10b6027bd230586aaea1da27))
+
+# [3.0.0-dev.23](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.22...v3.0.0-dev.23) (2023-04-06)
+
+
+### Bug Fixes
+
+* remove options argument from export api ([9417ca6](https://github.com/modelon-community/impact-client-python/commit/9417ca6ceea1813efe7721e9e7253243f15818e9))
+
+
+### BREAKING CHANGES
+
+* the options argument is removed from the download method in workspace entity
+
+# [3.0.0-dev.22](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.21...v3.0.0-dev.22) (2023-04-05)
+
+
+### Bug Fixes
+
+* docformatter fixes ([9711ee7](https://github.com/modelon-community/impact-client-python/commit/9711ee7115f7d0f757a00d5e19924cbff20dc100))
+* partial resolution of circular imports ([81cbdd4](https://github.com/modelon-community/impact-client-python/commit/81cbdd410f669132fee5a53850186edbb5a7b805))
+* use dict instead of converting to ProjectDefintion while creating Project instance ([57826de](https://github.com/modelon-community/impact-client-python/commit/57826de6990780cf9f1b1a223dfd379f4cc7d868))
+* using callback protocol for creating entity from operation ([3e51aec](https://github.com/modelon-community/impact-client-python/commit/3e51aec71c235d7cc047d86de00993c4307cf9c8))
+
+# [3.0.0-dev.21](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.20...v3.0.0-dev.21) (2023-04-04)
+
+
+### Bug Fixes
+
+* refactored login workflow to distinguish if python client is run within or outside JH environment ([ed79bf2](https://github.com/modelon-community/impact-client-python/commit/ed79bf29ef8fc6c1c24c3f5cb848909988164e52))
+
+# [3.0.0-dev.20](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.19...v3.0.0-dev.20) (2023-03-29)
+
+
+### Bug Fixes
+
+* corrected the path in .releasesrc ([cebcc19](https://github.com/modelon-community/impact-client-python/commit/cebcc19d54fc936ee273faa58878f8ccc38bd468))
+
+# [3.0.0-dev.19](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.18...v3.0.0-dev.19) (2023-03-29)
+
+
+### Bug Fixes
+
+* use poetry for rtd build ([d233295](https://github.com/modelon-community/impact-client-python/commit/d23329547984e380fcc5d12dbd8e968c139e1daf))
+
+
+### Features
+
+* add readthedocs-sphinx-search extension to allow users to search as they type ([b0f36b8](https://github.com/modelon-community/impact-client-python/commit/b0f36b86a2618e8136f015bcc3037f104f03af74))
+
+# [3.0.0-dev.18](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.17...v3.0.0-dev.18) (2023-03-28)
+
+
+### Bug Fixes
+
+* add missing type hints ([03dc33b](https://github.com/modelon-community/impact-client-python/commit/03dc33b5a187439210b73ebe3bd813ae17dd0ef3))
+* added keys() method to mypy ignore as maping expects KeysView object ([40de4a5](https://github.com/modelon-community/impact-client-python/commit/40de4a56397e89a18a5dc0aa45421c9e3cb8becc))
+* adding iterable as return type for get_contents to avoid mypy error in get_content_by_name ([dd03c9f](https://github.com/modelon-community/impact-client-python/commit/dd03c9ff22a124cb8403dd09faf5135fa3ea8362))
+* pyright fixes ([c0b727f](https://github.com/modelon-community/impact-client-python/commit/c0b727f04b2c01f107d0bc3b558513edb7f169b3))
+
+# [3.0.0-dev.17](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.16...v3.0.0-dev.17) (2023-03-28)
+
+
+### Bug Fixes
+
+* the env_name parameter in CredentialManager class now takes a list instead of a string ([783e861](https://github.com/modelon-community/impact-client-python/commit/783e861932fc2d625bf0621cea4fe6940585b759))
+* updated install.rst ([33d877d](https://github.com/modelon-community/impact-client-python/commit/33d877d3f0933f8f7e2e1bd3f46f555bc3a31d62))
+
+
+### BREAKING CHANGES
+
+* env_names parameter of CredentialManager class now takes a list
+
+# [3.0.0-dev.16](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.15...v3.0.0-dev.16) (2023-03-27)
+
+
+### Features
+
+* added hint with URL for where to generate key/token for authentication ([7dfdb98](https://github.com/modelon-community/impact-client-python/commit/7dfdb982a7d056caaf867388f940ddad243820fe))
+
+# [3.0.0-dev.15](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.14...v3.0.0-dev.15) (2023-03-27)
+
+
+### Bug Fixes
+
+* corrected spellings ([9de1f0d](https://github.com/modelon-community/impact-client-python/commit/9de1f0d98ca913eab19e02296ac285cfc2fd15b1))
+* fix sphinx warnings ([ebed6f3](https://github.com/modelon-community/impact-client-python/commit/ebed6f3ef6dd02e8b314534c47bde01f8712cb49))
+* move docformatter and napolean to dev dependencies ([7248204](https://github.com/modelon-community/impact-client-python/commit/7248204c386be86fbf4ceab7c0e6e981a6360723))
+* replace '--' with ':' for arguments docstrings ([a7bb933](https://github.com/modelon-community/impact-client-python/commit/a7bb933b9c2cde863163493e8054ea57479b5844))
+* using args instead of parameters to folow google style docs ([aab983a](https://github.com/modelon-community/impact-client-python/commit/aab983a1d99417ddb0de65c88b17f5f8c7d39397))
+
+
+### Features
+
+* added spell check for docs ([0a5e4a6](https://github.com/modelon-community/impact-client-python/commit/0a5e4a6d56a6b24f9a0da5b331f85375e6824fc4))
+
+# [3.0.0-dev.14](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.13...v3.0.0-dev.14) (2023-03-23)
+
+
+### Bug Fixes
+
+* regenerated docs ([ce1ddd0](https://github.com/modelon-community/impact-client-python/commit/ce1ddd07338bf0950ad5b2add21aa0553d019c3c))
+
+# [3.0.0-dev.13](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.12...v3.0.0-dev.13) (2023-03-14)
+
+
+### Bug Fixes
+
+* consistent spelling use for parameterization --> parametrization ([bae4176](https://github.com/modelon-community/impact-client-python/commit/bae41769fe1f9880f9a30028d879595e3195bcdb))
+* specified slots for classes with setter methods ([3faf823](https://github.com/modelon-community/impact-client-python/commit/3faf823cb39719213982e8054d4f7c8321c7bfd7))
+
+# [3.0.0-dev.12](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.11...v3.0.0-dev.12) (2023-03-14)
+
+
+### Bug Fixes
+
+* updated the get_artifact method to return CustomArtifact class ([b406550](https://github.com/modelon-community/impact-client-python/commit/b4065507292db4787f3a41f5a8354e4eabe847e1))
+
+
+### Features
+
+* add support to fetch artifact ids ([27b255c](https://github.com/modelon-community/impact-client-python/commit/27b255c0ea4c00e04e0ce61e915bcf6aa9da8470))
+
+
+### BREAKING CHANGES
+
+* the case.get_artifact method now returns a CustomArtifact class
+
+# [3.0.0-dev.11](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.10...v3.0.0-dev.11) (2023-03-01)
+
+
+### Bug Fixes
+
+* feedback fix ([95d04c0](https://github.com/modelon-community/impact-client-python/commit/95d04c025c4cb9407722ab51061b5783a5852068))
+* rename 'import_from_*' methods to import_workspace_from_* ([12afca2](https://github.com/modelon-community/impact-client-python/commit/12afca2ea9b7f4cc5527782a92f2775a9ba9c00d))
+* unified fetching import/export status for all entities ([f20773c](https://github.com/modelon-community/impact-client-python/commit/f20773c7fa831cd05c7eca2839e5ae15f12d0f8d))
+* updated workspace import api to use new routes ([7b34f5d](https://github.com/modelon-community/impact-client-python/commit/7b34f5d2c0256260c895960a9fdacbca062a8357))
+
+
+### Features
+
+* added support for project import ([1f8828b](https://github.com/modelon-community/impact-client-python/commit/1f8828bc6281adcdcfc3e5e5f61b08929eef74f3))
+* added support for workspace project and dependency import ([50e7214](https://github.com/modelon-community/impact-client-python/commit/50e7214707856c4f90fbc92a8d8b9323b4081ffc))
+
+# [3.0.0-dev.10](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.9...v3.0.0-dev.10) (2023-03-01)
+
+
+### Bug Fixes
+
+* updated the route for project options endpoint ([75f9a76](https://github.com/modelon-community/impact-client-python/commit/75f9a763d4f49fa6ee64e71f57eb8a3361dddded))
+* use helper class for dynamic cf ([92ce0e3](https://github.com/modelon-community/impact-client-python/commit/92ce0e3d026e6aa4dd7fe468155c1c86b3d5c156))
+
+# [3.0.0-dev.9](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.8...v3.0.0-dev.9) (2023-01-24)
+
+
+### Bug Fixes
+
+* assert compilation is successful before calling download FMU api ([cee8892](https://github.com/modelon-community/impact-client-python/commit/cee88921236bcba594075ef6a47f0210898d7c8c))
+
 # [2.4.0](https://github.com/modelon-community/impact-client-python/compare/v2.3.0...v2.4.0) (2023-01-11)
 
 
 ### Features
 
 * added hint with URL for where to generate key/token for authentication ([7dfdb98](https://github.com/modelon-community/impact-client-python/commit/7dfdb982a7d056caaf867388f940ddad243820fe))
+
+# [3.0.0-dev.8](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.7...v3.0.0-dev.8) (2022-12-21)
+
+
+### Bug Fixes
+
+* ensure we capture all errors for external result upload ([6bf94ec](https://github.com/modelon-community/impact-client-python/commit/6bf94ec91ae833c4816284e8fbf123bff6ebc964))
+
+# [3.0.0-dev.7](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.6...v3.0.0-dev.7) (2022-12-21)
+
+
+### Features
+
+* method for converting a workspace to latest version ([3615f0c](https://github.com/modelon-community/impact-client-python/commit/3615f0cfe063c41f12856be1a68eaea02404498d))
+
+# [3.0.0-dev.6](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.5...v3.0.0-dev.6) (2022-12-19)
+
+
+### Bug Fixes
+
+* bump sphinx version ([fd239dc](https://github.com/modelon-community/impact-client-python/commit/fd239dce877b62d4bd936f7968496b639e8efc19))
+* bump version of dependencies, locked spinx to 4.0.0 to have a importlib-metadata version lower than 5.1.0(https://stackoverflow.com/questions/73929564/entrypoints-object-has-no-attribute-get-digital-ocean) ([0b9c949](https://github.com/modelon-community/impact-client-python/commit/0b9c949b29efce4c63fdfa54069eed01a532c977))
+* corrected minor typo fix in the docs ([8031e97](https://github.com/modelon-community/impact-client-python/commit/8031e977652bd42790b317c61bbeb7b5ac6f8c32))
+* formatting fixes ([8180c19](https://github.com/modelon-community/impact-client-python/commit/8180c19dea356493ba319020094ee34b91f3f95d))
+* generated docs for mixing modules ([55b8f4b](https://github.com/modelon-community/impact-client-python/commit/55b8f4be7115b20d4f3437dc6f3ac2e60560ada1))
+
+
+### Features
+
+* added make command to generate docs ([aae8efd](https://github.com/modelon-community/impact-client-python/commit/aae8efda046e08d05047e68955236a426d075156))
+
+# [3.0.0-dev.5](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.4...v3.0.0-dev.5) (2022-12-18)
+
+
+### Bug Fixes
+
+* bump supported api version range ([be2dced](https://github.com/modelon-community/impact-client-python/commit/be2dced5c2c4bdbcfe38db86f8111eb06212e0c3))
+* feedback fixes ([7975ce0](https://github.com/modelon-community/impact-client-python/commit/7975ce02e63e188a6947e279d2407a216f075abc))
+* ops cannot be None ([88c65a4](https://github.com/modelon-community/impact-client-python/commit/88c65a470bc63a591ae5056442563dc73b8ce12e))
+* updated the codebase to use new endpoint for workspace export ([b378fc0](https://github.com/modelon-community/impact-client-python/commit/b378fc0c37192b332f1d452732fadc703a7d9d49))
 
 # [2.3.0](https://github.com/modelon-community/impact-client-python/compare/v2.2.3...v2.3.0) (2022-12-14)
 
@@ -26,6 +504,82 @@
 ### Bug Fixes
 
 * corrected minor typo fix in the docs ([8031e97](https://github.com/modelon-community/impact-client-python/commit/8031e977652bd42790b317c61bbeb7b5ac6f8c32))
+
+# [3.0.0-dev.4](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.3...v3.0.0-dev.4) (2022-10-18)
+
+
+### Bug Fixes
+
+* concatination of URLs handles starting slash on relative part ([464b162](https://github.com/modelon-community/impact-client-python/commit/464b1620cd98d3af4bac8bf7bdeb8c4a05ec8f29))
+
+# [3.0.0-dev.3](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.2...v3.0.0-dev.3) (2022-09-26)
+
+
+### Bug Fixes
+
+* refactored fixtures ([a08e154](https://github.com/modelon-community/impact-client-python/commit/a08e1546d04852205cadb4773f040653a2e5e7a0))
+
+# [3.0.0-dev.2](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.1...v3.0.0-dev.2) (2022-09-26)
+
+
+### Bug Fixes
+
+* added convinience methods and arguments for fetching projects ([110035d](https://github.com/modelon-community/impact-client-python/commit/110035dbce62e00297b58986cbf675b7681f4e8d))
+
+# [3.0.0-dev.1](https://github.com/modelon-community/impact-client-python/compare/v2.3.0-dev.5...v3.0.0-dev.1) (2022-09-16)
+
+
+### Bug Fixes
+
+* set correct supported version range ([e7e2939](https://github.com/modelon-community/impact-client-python/commit/e7e2939297e44d81e4863f230ff6ce9d179e7fcd))
+* upload content with using latest API ([6531cf3](https://github.com/modelon-community/impact-client-python/commit/6531cf31be558512e4b12eee766e11c639b93469))
+
+
+### BREAKING CHANGES
+
+* any API version less than 4.0.0 is not supported
+* the upload_fmu method has been replaced
+* the upload_model_library method has been replaced
+
+# [2.3.0-dev.5](https://github.com/modelon-community/impact-client-python/compare/v2.3.0-dev.4...v2.3.0-dev.5) (2022-09-16)
+
+
+### Features
+
+* added test coverage ([5e989a4](https://github.com/modelon-community/impact-client-python/commit/5e989a4bb4fbec8f1bdf2ae4dba8b6d94d83d3f6))
+
+# [2.3.0-dev.4](https://github.com/modelon-community/impact-client-python/compare/v2.3.0-dev.3...v2.3.0-dev.4) (2022-09-14)
+
+
+### Bug Fixes
+
+* added method for FMU import from ProjectContent ([d058dfb](https://github.com/modelon-community/impact-client-python/commit/d058dfb348b00e40e7f9d2a6053c58d9e3add774))
+* added support to fetch project options and refactored model entity to have project_id ([740c9fb](https://github.com/modelon-community/impact-client-python/commit/740c9fb906bc2f3e8d7973698cf0ef00f853e388))
+* adding datetimestamps to run_info ([7084e27](https://github.com/modelon-community/impact-client-python/commit/7084e27729525aca67a0468ab2f48f87e15ca6e0))
+* import fixes ([13c1dc2](https://github.com/modelon-community/impact-client-python/commit/13c1dc247a8a2dd042299cb6f5182450f89c0982))
+* minor fixes ([e3ca047](https://github.com/modelon-community/impact-client-python/commit/e3ca04786e8f65bee94f7de08123cafa2bece9f1))
+* refactored entities to use a single service class ([0719729](https://github.com/modelon-community/impact-client-python/commit/07197292db0c2aa023d21639fbd96039fac73ab5))
+
+# [2.3.0-dev.3](https://github.com/modelon-community/impact-client-python/compare/v2.3.0-dev.2...v2.3.0-dev.3) (2022-09-06)
+
+
+### Features
+
+* added support to import shared workspaces ([6223512](https://github.com/modelon-community/impact-client-python/commit/6223512e5ef76a753808e7beba90db67a643aebc))
+
+# [2.3.0-dev.2](https://github.com/modelon-community/impact-client-python/compare/v2.3.0-dev.1...v2.3.0-dev.2) (2022-09-01)
+
+
+### Bug Fixes
+
+* added support for new endpoints ([36a64f0](https://github.com/modelon-community/impact-client-python/commit/36a64f07e2c0cebec2a79473a70781b0024915f4))
+
+# [2.3.0-dev.1](https://github.com/modelon-community/impact-client-python/compare/v2.2.2...v2.3.0-dev.1) (2022-08-29)
+
+
+### Features
+
+* added possibility to set defaults for custom functions and specify variable filter as a list of strings ([493325a](https://github.com/modelon-community/impact-client-python/commit/493325a492ba98bddbc6b751e5f82a1cf0b742b7))
 
 ## [2.2.2](https://github.com/modelon-community/impact-client-python/compare/v2.2.1...v2.2.2) (2022-06-13)
 

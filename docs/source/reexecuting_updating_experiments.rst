@@ -39,7 +39,7 @@ The code snippet below shows examples of values that can be updated in a case::
 
    case_2 = experiment.get_case('case_2')
 
-   case_2.input.analysis.parameter = {'start_time': 0, 'final_time':10}
+   case_2.input.analysis.parameters = {'start_time': 0, 'final_time':10}
    case_2.input.analysis.simulation_options = {'ncp': 600}
    case_2.input.analysis.solver_options = {'atol': 1e-8}
    case_2.input.parametrization = {'PI.k': 120}
@@ -68,11 +68,14 @@ Of the default custom functions only the 'steady state' custom function supports
 This is useful in cases where a converged steady-state result could be used to initialize a failed
 steady-state simulation. The different possibilities to initialize are covered in the sections below.
 
-Consider the following scenario where a single case(case_2) in a steady-state batch simulation fails:: 
+Consider the following steady-state batch execution scenario for a model. The parametrization for the `sweep` parameter
+results in 3 cases, where let's say a single case(case_2) in the batch simulation fails::
 
    experiment_definition = experiment_definition.with_modifiers({'sweep': Range(10, 100, 3)})
    experiment = workspace.create_experiment(experiment_definition)
    experiment = experiment.execute().wait() # Case 2 fails
+
+We could try to resolve this by initializing the failed case with an appropriate case or result as covered in the sections below.
 
 Initialize from case
 ####################
@@ -122,7 +125,7 @@ It is possible to upload external result files to initialize a case from. This c
 for initializing from in a case and be used as an alternative to :ref:`initializing from another case <Initialize from case>`.
 Currently, '.mat' files are supported for result import.
 
-Here is a code snippet, where an external result is imported and used to initialzie a case::
+Here is a code snippet, where an external result is imported and used to initialize a case::
 
    result = workspace.upload_result(path_to_result="<path_to_result>/result.mat", label = 
             "result_to_init", description= "Converged result file").wait()

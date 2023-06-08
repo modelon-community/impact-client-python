@@ -1,8 +1,10 @@
-import modelon.impact.client.sal.service
 import pytest
-import modelon.impact.client.options
-
-from tests.impact.client.fixtures import *
+from modelon.impact.client.options import (
+    CompilerOptions,
+    SimulationOptions,
+    SolverOptions,
+    RuntimeOptions,
+)
 
 
 class TestCustomFunction:
@@ -49,19 +51,27 @@ class TestCustomFunction:
     def test_compiler_options(self, custom_function):
         new = custom_function.get_compiler_options().with_values(c_compiler='gcc')
         assert dict(new) == {"c_compiler": "gcc"}
-        assert isinstance(new, modelon.impact.client.options.ExecutionOptions)
+        assert isinstance(new, CompilerOptions)
+        defaults = custom_function.get_compiler_options(use_defaults=True)
+        assert dict(defaults) == {'c_compiler': 'msvs'}
 
     def test_runtime_options(self, custom_function):
         new = custom_function.get_runtime_options().with_values(cs_solver=0)
         assert dict(new) == {"cs_solver": 0}
-        assert isinstance(new, modelon.impact.client.options.ExecutionOptions)
+        assert isinstance(new, RuntimeOptions)
+        defaults = custom_function.get_runtime_options(use_defaults=True)
+        assert dict(defaults) == {'log_level': 2}
 
     def test_simulation_options(self, custom_function):
         new = custom_function.get_simulation_options().with_values(ncp=500)
         assert dict(new) == {"ncp": 500}
-        assert isinstance(new, modelon.impact.client.options.ExecutionOptions)
+        assert isinstance(new, SimulationOptions)
+        defaults = custom_function.get_simulation_options(use_defaults=True)
+        assert dict(defaults) == {'ncp': 500}
 
     def test_solver_options(self, custom_function):
         new = custom_function.get_solver_options().with_values(atol=1e-7, rtol=1e-9)
         assert dict(new) == {'atol': 1e-7, 'rtol': 1e-9}
-        assert isinstance(new, modelon.impact.client.options.ExecutionOptions)
+        assert isinstance(new, SolverOptions)
+        defaults = custom_function.get_solver_options(use_defaults=True)
+        assert dict(defaults) == {'rtol': 1e-05}
