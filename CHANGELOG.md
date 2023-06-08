@@ -1,3 +1,16 @@
+# [3.0.0-dev.53](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.52...v3.0.0-dev.53) (2023-06-08)
+
+
+### Bug Fixes
+
+* added docs for run info status property for Case, ModelExecutable and Experiment entites ([08a12f8](https://github.com/modelon-community/impact-client-python/commit/08a12f855167fed4083bd61e61f4abbe59409b1f))
+* added docstrings for status ([41c51d0](https://github.com/modelon-community/impact-client-python/commit/41c51d04f26c1bdf42470c9fe9d3948b4034d0ca))
+
+
+### Features
+
+* added support to fetch only last point for a result trajectory ([ad144be](https://github.com/modelon-community/impact-client-python/commit/ad144be46f16d0241703875385b0075dc1621ff6))
+
 # [3.0.0-dev.52](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.51...v3.0.0-dev.52) (2023-06-07)
 
 
