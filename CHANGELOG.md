@@ -1,3 +1,10 @@
+# [3.0.0-dev.54](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.53...v3.0.0-dev.54) (2023-06-08)
+
+
+### Bug Fixes
+
+* type fix experiements -> experiments ([614c9f8](https://github.com/modelon-community/impact-client-python/commit/614c9f8189e20e772db571ede17772e098ff0f68))
+
 # [3.0.0-dev.53](https://github.com/modelon-community/impact-client-python/compare/v3.0.0-dev.52...v3.0.0-dev.53) (2023-06-08)
 
 
