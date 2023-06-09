@@ -1,3 +1,10 @@
+## [3.0.2](https://github.com/modelon-community/impact-client-python/compare/v3.0.1...v3.0.2) (2023-06-09)
+
+
+### Bug Fixes
+
+* fixed the show method in ModelDescription class to print formatted xml ([12d9d3d](https://github.com/modelon-community/impact-client-python/commit/12d9d3d1cad658dfe2e0d245a492c176a7dd59f0))
+
 ## [3.0.1](https://github.com/modelon-community/impact-client-python/compare/v3.0.0...v3.0.1) (2023-06-09)
 
 
