@@ -28,7 +28,7 @@ ScalarValue = Union[float, int, str]
 @enum.unique
 class _TrajectoryResponseFormat(enum.Enum):
     V1 = "application/vnd.impact.trajectories.v1+json"
-    v2 = "application/vnd.impact.trajectories.v2+json"
+    V2 = "application/vnd.impact.trajectories.v2+json"
 
 
 class ExperimentResultPoint:
@@ -472,7 +472,7 @@ class Experiment(ExperimentInterface):
             df.index.name = "Cases"
 
         """
-        format = _TrajectoryResponseFormat.V1
+        format = _TrajectoryResponseFormat.V2
         if variables is None:
             variables = self.get_variables()
             trajectories = self._sal.experiment.trajectories_get(
