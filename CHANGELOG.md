@@ -1,3 +1,10 @@
+## [3.0.1](https://github.com/modelon-community/impact-client-python/compare/v3.0.0...v3.0.1) (2023-06-09)
+
+
+### Bug Fixes
+
+* corrected the trajectory response format in get_last_point method ([bdd143a](https://github.com/modelon-community/impact-client-python/commit/bdd143a7f9b3150f07287d2d580945134f40bc62))
+
 # [3.0.0](https://github.com/modelon-community/impact-client-python/compare/v2.4.0...v3.0.0) (2023-06-08)
 
 
