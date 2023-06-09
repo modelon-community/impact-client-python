@@ -43,9 +43,9 @@ def _assert_compilation_is_complete(
 class ModelDescription(str):
     """ModelDescription class inheriting from string object."""
 
-    def show(self) -> str:
+    def show(self) -> None:
         """Prints the formatted xml."""
-        return self
+        print(self)
 
     def download(self, path: Optional[str] = None) -> str:
         """Downloads the formatted xml.
