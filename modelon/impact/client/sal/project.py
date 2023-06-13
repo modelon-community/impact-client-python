@@ -17,7 +17,7 @@ class ProjectService:
     def projects_get(
         self, vcs_info: bool, project_type: Optional[ProjectType] = None
     ) -> Dict[str, Any]:
-        prj_type = '&type=' + str(project_type) if project_type else ""
+        prj_type = '&type=' + project_type.value if project_type else ""
         url = (self._base_uri / f"api/projects?vcsInfo={vcs_info}{prj_type}").resolve()
         return self._http_client.get_json(url)
 

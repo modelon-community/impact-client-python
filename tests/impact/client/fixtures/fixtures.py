@@ -37,6 +37,7 @@ from tests.impact.client.helpers import (
     VERSIONED_PROJECT_TRUNK,
     MODEL_DESCRIPTION_XML,
     LAST_POINT_TRAJECTORY,
+    UNVERSIONED_PROJECT,
 )
 
 
@@ -1073,31 +1074,7 @@ def workspace():
         "id": IDs.WORKSPACE_PRIMARY,
         "sizeInfo": {"total": 7014},
     }
-    ws_service.projects_get.return_value = {
-        "data": {
-            "items": [
-                {
-                    "id": IDs.PROJECT_PRIMARY,
-                    "definition": {
-                        "name": "NewProject",
-                        "format": "1.0",
-                        "dependencies": [{"name": "MSL", "versionSpecifier": "4.0.0"}],
-                        "content": [
-                            {
-                                "id": IDs.PROJECT_CONTENT_PRIMARY,
-                                "relpath": "MyPackage",
-                                "contentType": "MODELICA",
-                                "name": "MyPackage",
-                                "defaultDisabled": False,
-                            },
-                        ],
-                        "executionOptions": [],
-                    },
-                    "projectType": "LOCAL",
-                }
-            ]
-        }
-    }
+    ws_service.projects_get.return_value = {"data": {"items": [UNVERSIONED_PROJECT]}}
     ws_service.dependencies_get.return_value = {
         "data": {
             "items": [
@@ -1170,25 +1147,7 @@ def workspace():
         }
     }
     exp_service.experiment_execute.return_value = IDs.EXPERIMENT_PRIMARY
-    project_service.project_get.return_value = {
-        "id": IDs.PROJECT_PRIMARY,
-        "definition": {
-            "name": "NewProject",
-            "format": "1.0",
-            "dependencies": [{"name": "MSL", "versionSpecifier": "4.0.0"}],
-            "content": [
-                {
-                    "id": IDs.PROJECT_CONTENT_PRIMARY,
-                    "relpath": "MyPackage",
-                    "contentType": "MODELICA",
-                    "name": "MyPackage",
-                    "defaultDisabled": False,
-                }
-            ],
-            "executionOptions": [],
-        },
-        "projectType": "LOCAL",
-    }
+    project_service.project_get.return_value = UNVERSIONED_PROJECT
     ws_service.import_project_from_zip.return_value = {
         "data": {
             "location": f"api/workspaces/{IDs.WORKSPACE_PRIMARY}/project-imports/{IDs.IMPORT}"
@@ -1450,37 +1409,6 @@ def model():
         }
     }
     project_service = service.project
-    project_service.project_get.return_value = {
-        "id": IDs.PROJECT_PRIMARY,
-        "definition": {
-            "name": "NewProject",
-            "format": "1.0",
-            "dependencies": [{"name": "MSL", "versionSpecifier": "4.0.0"}],
-            "content": [
-                {
-                    "id": IDs.PROJECT_CONTENT_PRIMARY,
-                    "relpath": "MyPackage",
-                    "contentType": "MODELICA",
-                    "name": "MyPackage",
-                    "defaultDisabled": False,
-                }
-            ],
-            "executionOptions": [
-                {
-                    "customFunction": "dynamic",
-                    "compiler": {
-                        "c_compiler": "gcc",
-                        "generate_html_diagnostics": False,
-                        "include_protected_variables": False,
-                    },
-                    "runtime": {"log_level": 2},
-                    "simulation": {"ncp": 500, "dynamic_diagnostics": False},
-                    "solver": {"rtol": 1e-5},
-                }
-            ],
-        },
-        "projectType": "LOCAL",
-    }
     project_service.project_options_get.return_value = {
         "compiler": {
             "c_compiler": "gcc",
@@ -1491,26 +1419,7 @@ def model():
         "simulation": {'dynamic_diagnostics': False, 'ncp': 500},
         "solver": {"rtol": 1e-5},
     }
-    project_service.project_get.return_value = {
-        "id": IDs.PROJECT_PRIMARY,
-        "definition": {
-            "name": "NewProject",
-            "format": "1.0",
-            "dependencies": [{"name": "MSL", "versionSpecifier": "4.0.0"}],
-            "content": [
-                {
-                    "id": IDs.PROJECT_CONTENT_PRIMARY,
-                    "relpath": IDs.LOCAL_MODELICA_CLASS_PATH,
-                    "contentType": "MODELICA",
-                    "name": IDs.LOCAL_MODELICA_CLASS_PATH,
-                    "defaultDisabled": False,
-                }
-            ],
-            "executionOptions": [],
-        },
-        "projectType": "LOCAL",
-        "size": 1008,
-    }
+    project_service.project_get.return_value = UNVERSIONED_PROJECT
     project_service.fmu_import.return_value = {
         "data": {
             "location": f"api/projects/{IDs.PROJECT_PRIMARY}/content/"
@@ -1872,25 +1781,7 @@ def cancelled_experiment():
 
 @pytest.fixture
 def single_project(user_with_license):
-    json = {
-        "id": IDs.PROJECT_PRIMARY,
-        "definition": {
-            "name": "NewProject",
-            "format": "1.0",
-            "dependencies": [{"name": "MSL", "versionSpecifier": "4.0.0"}],
-            "content": [
-                {
-                    "id": IDs.PROJECT_CONTENT_PRIMARY,
-                    "relpath": "MyPackage",
-                    "contentType": "MODELICA",
-                    "name": "MyPackage",
-                    "defaultDisabled": False,
-                }
-            ],
-            "executionOptions": [],
-        },
-        "projectType": "LOCAL",
-    }
+    json = UNVERSIONED_PROJECT
     return with_json_route(
         user_with_license, 'GET', f'api/projects/{IDs.PROJECT_PRIMARY}', json
     )
@@ -1898,32 +1789,16 @@ def single_project(user_with_license):
 
 @pytest.fixture
 def multiple_projects(user_with_license):
-    json = {
-        "data": {
-            "items": [
-                {
-                    "id": IDs.PROJECT_PRIMARY,
-                    "definition": {
-                        "name": "NewProject",
-                        "format": "1.0",
-                        "dependencies": [{"name": "MSL", "versionSpecifier": "4.0.0"}],
-                        "content": [
-                            {
-                                "id": IDs.PROJECT_CONTENT_PRIMARY,
-                                "relpath": "MyPackage",
-                                "contentType": "MODELICA",
-                                "name": "MyPackage",
-                                "defaultDisabled": False,
-                            }
-                        ],
-                        "executionOptions": [],
-                    },
-                    "projectType": "LOCAL",
-                }
-            ]
-        }
-    }
+    json = {"data": {"items": [UNVERSIONED_PROJECT]}}
     return with_json_route(user_with_license, 'GET', 'api/projects', json)
+
+
+@pytest.fixture
+def filtered_projects(user_with_license):
+    json = {"data": {"items": [UNVERSIONED_PROJECT]}}
+    return with_json_route(
+        user_with_license, 'GET', 'api/projects?vcsInfo=False&type=LOCAL', json
+    )
 
 
 @pytest.fixture
@@ -1948,50 +1823,9 @@ def project():
     project_service = service.project
     import_service = service.imports
     project_service.projects_get.return_value = {
-        "data": {
-            "items": [
-                {
-                    "id": IDs.PROJECT_PRIMARY,
-                    "definition": {
-                        "name": "NewProject",
-                        "format": "1.0",
-                        "dependencies": [{"name": "MSL", "versionSpecifier": "4.0.0"}],
-                        "content": [
-                            {
-                                "id": IDs.PROJECT_CONTENT_PRIMARY,
-                                "relpath": "MyPackage",
-                                "contentType": "MODELICA",
-                                "name": "MyPackage",
-                                "defaultDisabled": False,
-                            }
-                        ],
-                        "executionOptions": [],
-                    },
-                    "projectType": "LOCAL",
-                }
-            ]
-        }
+        "data": {"items": [UNVERSIONED_PROJECT]}
     }
-    project_service.project_get.return_value = {
-        "id": IDs.PROJECT_PRIMARY,
-        "definition": {
-            "name": "NewProject",
-            "format": "1.0",
-            "dependencies": [{"name": "MSL", "versionSpecifier": "4.0.0"}],
-            "content": [
-                {
-                    "id": IDs.PROJECT_CONTENT_PRIMARY,
-                    "relpath": "MyPackage",
-                    "contentType": "MODELICA",
-                    "name": "MyPackage",
-                    "defaultDisabled": False,
-                }
-            ],
-            "executionOptions": [],
-        },
-        "projectType": "LOCAL",
-        "size": 1008,
-    }
+    project_service.project_get.return_value = UNVERSIONED_PROJECT
     project_service.project_content_get.return_value = {
         "id": IDs.PROJECT_CONTENT_SECONDARY,
         "relpath": "test.mo",
