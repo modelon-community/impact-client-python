@@ -214,7 +214,7 @@ class SimpleModelicaExperimentDefinition(BaseExperimentDefinition):
 
         Example::
 
-            from modelon.impact.client import Sobol, Beta
+            from modelon.impact.client import Sobol, Beta, Normal
 
             model = workspace.get_model("Modelica.Blocks.Examples.PID_Controller")
             experiment_definition = model.new_experiment_definition(
