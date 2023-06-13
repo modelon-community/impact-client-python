@@ -1,3 +1,10 @@
+## [3.0.3](https://github.com/modelon-community/impact-client-python/compare/v3.0.2...v3.0.3) (2023-06-13)
+
+
+### Bug Fixes
+
+* corrected query string for get_projects api ([02f1d19](https://github.com/modelon-community/impact-client-python/commit/02f1d198c757891d7a7d567ab16a8a4ae9a4605a))
+
 ## [3.0.2](https://github.com/modelon-community/impact-client-python/compare/v3.0.1...v3.0.2) (2023-06-09)
 
 
