@@ -186,6 +186,27 @@ class IDs:
     EXPERIMENT_LABEL = 'EXPERIMENT_LABEL'
 
 
+UNVERSIONED_PROJECT = {
+    "id": IDs.PROJECT_PRIMARY,
+    "definition": {
+        "name": "NewProject",
+        "format": "1.0",
+        "dependencies": [{"name": "MSL", "versionSpecifier": "4.0.0"}],
+        "content": [
+            {
+                "id": IDs.PROJECT_CONTENT_PRIMARY,
+                "relpath": IDs.LOCAL_MODELICA_CLASS_PATH,
+                "contentType": "MODELICA",
+                "name": IDs.LOCAL_MODELICA_CLASS_PATH,
+                "defaultDisabled": False,
+            }
+        ],
+        "executionOptions": [],
+    },
+    "projectType": "LOCAL",
+    "size": 1008,
+}
+
 VERSIONED_PROJECT_TRUNK = {
     "id": IDs.VERSIONED_PROJECT_PRIMARY,
     "definition": {

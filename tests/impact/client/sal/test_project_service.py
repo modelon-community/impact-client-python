@@ -1,7 +1,8 @@
 import unittest.mock as mock
 from modelon.impact.client.sal.uri import URI
+from modelon.impact.client.entities.project import ProjectType
 import modelon.impact.client.sal.service
-from tests.impact.client.helpers import IDs
+from tests.impact.client.helpers import IDs, UNVERSIONED_PROJECT
 from tests.files.paths import SINGLE_FILE_LIBRARY_PATH, TEST_WORKSPACE_PATH
 
 
@@ -28,25 +29,21 @@ class TestProjectService:
         data = service.project.project_get(
             IDs.PROJECT_PRIMARY, vcs_info=False, size_info=False
         )
-        assert data == {
-            "id": IDs.PROJECT_PRIMARY,
-            "definition": {
-                "name": "NewProject",
-                "format": "1.0",
-                "dependencies": [{"name": "MSL", "versionSpecifier": "4.0.0"}],
-                "content": [
-                    {
-                        "id": IDs.PROJECT_CONTENT_PRIMARY,
-                        "relpath": "MyPackage",
-                        "contentType": "MODELICA",
-                        "name": "MyPackage",
-                        "defaultDisabled": False,
-                    }
-                ],
-                "executionOptions": [],
-            },
-            "projectType": "LOCAL",
-        }
+        assert data == UNVERSIONED_PROJECT
+
+    def test_get_projects_with_filter(self, filtered_projects):
+        uri = URI(filtered_projects.url)
+        service = modelon.impact.client.sal.service.Service(
+            uri=uri, context=filtered_projects.context
+        )
+        service.project.projects_get(vcs_info=False, project_type=ProjectType.LOCAL)
+        assert filtered_projects.adapter.called
+        fetch_call = filtered_projects.adapter.request_history[0]
+        assert (
+            f'http://mock-impact.com/api/projects?vcsInfo=False&type=LOCAL'
+            == fetch_call.url
+        )
+        assert 'GET' == fetch_call.method
 
     def test_get_projects(self, multiple_projects):
         uri = URI(multiple_projects.url)
@@ -54,33 +51,7 @@ class TestProjectService:
             uri=uri, context=multiple_projects.context
         )
         data = service.project.projects_get(vcs_info=False)
-        assert data == {
-            "data": {
-                "items": [
-                    {
-                        "id": IDs.PROJECT_PRIMARY,
-                        "definition": {
-                            "name": "NewProject",
-                            "format": "1.0",
-                            "dependencies": [
-                                {"name": "MSL", "versionSpecifier": "4.0.0"}
-                            ],
-                            "content": [
-                                {
-                                    "id": IDs.PROJECT_CONTENT_PRIMARY,
-                                    "relpath": "MyPackage",
-                                    "contentType": "MODELICA",
-                                    "name": "MyPackage",
-                                    "defaultDisabled": False,
-                                }
-                            ],
-                            "executionOptions": [],
-                        },
-                        "projectType": "LOCAL",
-                    }
-                ]
-            }
-        }
+        assert data == {"data": {"items": [UNVERSIONED_PROJECT]}}
 
     def test_delete_project_content(self, delete_project_content):
         uri = URI(delete_project_content.url)
