@@ -31,7 +31,9 @@ from tests.impact.client.helpers import (
     create_experiment_entity,
     create_custom_function_entity,
     create_model_entity,
+    create_case_entity,
     get_test_workspace_definition,
+    get_test_get_case,
     IDs,
     VERSIONED_PROJECT_BRANCH,
     VERSIONED_PROJECT_TRUNK,
@@ -41,6 +43,7 @@ from tests.impact.client.helpers import (
 )
 
 
+CaseMock = collections.namedtuple('CaseMock', ['entity', 'service'])
 ExperimentMock = collections.namedtuple('ExperimentMock', ['entity', 'service'])
 WorkspaceMock = collections.namedtuple('WorkspaceMock', ['entity', 'service'])
 ProjectMock = collections.namedtuple('ProjectMock', ['entity', 'service'])
@@ -1494,36 +1497,8 @@ def experiment():
     exp_service.execute_status.return_value = {"status": "done"}
     exp_service.result_variables_get.return_value = ["inertia.I", "time"]
     exp_service.cases_get.return_value = {"data": {"items": [{"id": IDs.CASE_PRIMARY}]}}
-    case_get_data = {
-        "id": IDs.CASE_PRIMARY,
-        "run_info": {
-            "status": "successful",
-            "consistent": True,
-            "datetime_started": 1662964956945,
-            "datetime_finished": 1662964957990,
-        },
-        "input": {
-            "fmu_id": IDs.FMU_PRIMARY,
-            "analysis": {
-                "analysis_function": "dynamic",
-                "parameters": {"start_time": 0, "final_time": 1},
-                "simulation_options": {},
-                "solver_options": {},
-                "simulation_log_level": "NOTHING",
-            },
-            "parametrization": {},
-            "structural_parametrization": {},
-            "fmu_base_parametrization": {},
-            "initialize_from_case": None,
-            "initialize_from_external_result": None,
-        },
-        "meta": {"label": "Cruise operating point"},
-    }
-    case_put_return = copy.deepcopy(case_get_data)
-    case_put_return['run_info']['consistent'] = False
-
+    case_get_data = get_test_get_case()
     exp_service.case_get.return_value = case_get_data
-    exp_service.case_put.return_value = case_put_return
     exp_service.case_get_log.return_value = "Successful Log"
     exp_service.case_result_get.return_value = (bytes(4), IDs.RESULT_MAT)
     exp_service.case_artifacts_meta_get.return_value = {
@@ -1537,6 +1512,27 @@ def experiment():
     return ExperimentMock(
         create_experiment_entity(
             IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY, service=service
+        ),
+        service,
+    )
+
+
+@pytest.fixture
+def case():
+    service = MagicMock()
+    exp_service = service.experiment
+    exp_service.experiment_execute.return_value = IDs.EXPERIMENT_PRIMARY
+    exp_service.execute_status.return_value = {"status": "done"}
+    exp_service.result_variables_get.return_value = ["inertia.I", "time"]
+    case_get_data = get_test_get_case()
+    exp_service.case_get.return_value = case_get_data
+    return CaseMock(
+        create_case_entity(
+            IDs.CASE_PRIMARY,
+            IDs.WORKSPACE_PRIMARY,
+            IDs.EXPERIMENT_PRIMARY,
+            service=service,
+            info=copy.deepcopy(case_get_data),
         ),
         service,
     )

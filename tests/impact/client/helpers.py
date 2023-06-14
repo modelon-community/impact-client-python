@@ -470,6 +470,34 @@ def get_test_workspace_definition(name=None):
     }
 
 
+def get_test_get_case():
+    return {
+        "id": IDs.CASE_PRIMARY,
+        "run_info": {
+            "status": "successful",
+            "consistent": True,
+            "datetime_started": 1662964956945,
+            "datetime_finished": 1662964957990,
+        },
+        "input": {
+            "fmu_id": IDs.FMU_PRIMARY,
+            "analysis": {
+                "analysis_function": "dynamic",
+                "parameters": {"start_time": 0, "final_time": 1},
+                "simulation_options": {},
+                "solver_options": {},
+                "simulation_log_level": "NOTHING",
+            },
+            "parametrization": {},
+            "structural_parametrization": {},
+            "fmu_base_parametrization": {},
+            "initialize_from_case": None,
+            "initialize_from_external_result": None,
+        },
+        "meta": {"label": "Cruise operating point"},
+    }
+
+
 def create_workspace_entity(name, definition=None, service=None):
     definition = definition or get_test_workspace_definition(name)
     return Workspace(name, definition, service or MagicMock())

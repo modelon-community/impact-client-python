@@ -65,12 +65,11 @@ class TestCase:
             experiment_with_failed_case.get_case("case_2").get_result,
         )
 
-    def test_case_sync(self, experiment, batch_experiment):
-        exp = experiment.entity
-        service = experiment.service
+    def test_case_sync(self, case, batch_experiment):
+        service = case.service
+        case = case.entity
         exp_sal = service.experiment
 
-        case = exp.get_case(IDs.CASE_PRIMARY)
         case.input.parametrization = {'PI.k': 120}
         case.input.analysis.simulation_options = {'ncp': 600}
         case.input.analysis.solver_options = {'atol': 1e-8}
@@ -129,7 +128,7 @@ class TestCase:
 
         case = exp.get_case(IDs.CASE_PRIMARY)
         result = case.execute(sync_case_changes=True).wait()
-        exp_sal.case_put.assert_called_once()
+        exp_sal.case_put.assert_not_called()
         assert result == create_case_entity(
             IDs.CASE_PRIMARY, IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY
         )
@@ -145,26 +144,24 @@ class TestCase:
             IDs.CASE_PRIMARY, IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY
         )
 
-    def test_case_sync_second_time_should_call_with_consistent_false(self, experiment):
-        exp = experiment.entity
-        service = experiment.service
+    def test_call_case_sync_second_time_should_not_call_put(self, case):
+        service = case.service
+        case = case.entity
 
-        case = exp.get_case(IDs.CASE_PRIMARY)
         case.input.parametrization = {'PI.k': 120}
         case.sync()
         case.sync()
         case_put_calls = service.experiment.case_put.call_args_list
-        assert len(case_put_calls) == 2
+        assert len(case_put_calls) == 1
         assert get_case_put_call_consistent_value(case_put_calls[0])
-        assert not get_case_put_call_consistent_value(case_put_calls[1])
 
-    def test_case_initialize_from_external_result(self, experiment):
+    def test_case_initialize_from_external_result(self, case):
+        service = case.service
+        case = case.entity
         result = create_external_result_entity('upload_id')
-        case = experiment.entity.get_case(IDs.CASE_PRIMARY)
         case.initialize_from_external_result = result
         assert case.initialize_from_external_result == result
         case.sync()
-        service = experiment.service
         exp_sal = service.experiment
         exp_sal.case_put.assert_has_calls(
             [
