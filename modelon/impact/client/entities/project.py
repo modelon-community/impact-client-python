@@ -29,12 +29,12 @@ class ProjectType(enum.Enum):
 
 @dataclass
 class GitRepoURL:
-    """GitRepoURL represents a project referenced in a git repo String
+    """GitRepoURL represents a project referenced in a git repository String
     representation is url[@[refname][:sha1]]"""
 
     url: str
     """URL without protocol part, e.g.,
-    gitlab.modelon.com/group/project/repo."""
+    gitlab.modelon.com/group/project/repository."""
 
     refname: str = ""
     """Reference name (branch, tag or similar)"""
@@ -61,8 +61,8 @@ class GitRepoURL:
 
 @dataclass
 class SvnRepoURL:
-    """SvnRepoURL represents a project referenced in a Subversion repo String
-    representation is url/trunk/subdir[@[rev]]"""
+    """SvnRepoURL represents a project referenced in a Subversion repository
+    String representation is url/trunk/subdir[@[rev]]"""
 
     root_url: str
     """URL without protocol part up to branch part, e.g.,

@@ -54,7 +54,7 @@ class SimpleFMUExperimentDefinition(BaseExperimentDefinition):
     """A simple experiment definition class for defining experiments.
 
     Args:
-        fmu: The FMU to be excecuted for this experiment.
+        fmu: The FMU to be executed for this experiment.
         custom_function: The custom function to use for this experiment.
 
         solver_options: The solver options to use for this experiment.

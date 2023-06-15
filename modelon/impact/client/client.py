@@ -178,7 +178,7 @@ class Client:
     Args:
         url:
             The URL for Modelon Impact client host. Defaults to the value specified
-            by env variable 'MODELON_IMPACT_CLIENT_URL' if set else uses the URL
+            by environment variable 'MODELON_IMPACT_CLIENT_URL' if set else uses the URL
             'https://impact.modelon.cloud/'.
         interactive:
             If True the client will prompt for an API key if no other login information
@@ -306,7 +306,7 @@ class Client:
         self._sal.api_login(api_key=api_key)
         if api_key and interactive:
             # Save the api_key for next time if
-            # running interactively and login was successfuly
+            # running interactively and login was successfully
             self._credential_manager.write_key_to_file(api_key)
 
         return api_key
@@ -671,7 +671,7 @@ class Client:
     def get_executions(
         self, workspace_id: Optional[str] = None
     ) -> Iterable[Optional[Union[ExperimentOperation, ModelExecutableOperation]]]:
-        """Yields running/acitve executions.
+        """Yields running/active executions.
 
         Args:
             workspace_id: The id of the workspace.

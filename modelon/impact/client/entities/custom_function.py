@@ -101,7 +101,7 @@ class CustomFunction(CustomFunctionInterface):
         """Sets/updates the custom_function parameters for an experiment.
 
         Args:
-            parameters: A keyworded, variable-length argument list of custom_function
+            parameters: A key-worded, variable-length argument list of custom_function
                 parameters.
 
         Example::

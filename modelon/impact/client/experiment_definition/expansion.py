@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 class LatinHypercube(ExpansionAlgorithm):
     """LatinHypercube expansion class. Produces <samples> cases, picks a random
     value from each modifier expression for each case. The resulting cases are
-    ortogonal, i.e., the values of a given modifier expression do not repeat.
+    orthogonal, i.e., the values of a given modifier expression do not repeat.
     The exception are singular modifiers, e.g.,
     experiment_definition.with_modifiers({'PI.k': 10}), these
     result in the same value for all cases. Singular modifiers do not affect
@@ -52,7 +52,7 @@ class FullFactorial(ExpansionAlgorithm):
     """Full-factorial expansion class. Creates experiment with all possible
     combinations of the input modifiers expressions. Supported Operator
     expressions are: Range and Choices. The size of an experiment with
-    FullFactorial expansion is the product of the modifier operator lenghts.
+    FullFactorial expansion is the product of the modifier operator length.
     This number can grow very rapidly if using a lot of modifiers.
 
     Example::

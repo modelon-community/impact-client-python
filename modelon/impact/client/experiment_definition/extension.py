@@ -38,7 +38,7 @@ def _validate_initialize_from(entity: Optional[CaseOrExperiment]) -> None:
 
 
 class SimpleExperimentExtension(BaseExperimentExtension):
-    """A simple experiment extension class for defining experiement extensions.
+    """A simple experiment extension class for defining experiment extensions.
 
     Args:
         parameter_modifiers: The custom function parameters passes as a dictionary.

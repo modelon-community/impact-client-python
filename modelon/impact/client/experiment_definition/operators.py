@@ -14,7 +14,7 @@ class Operator:
 
 @dataclass
 class Range(Operator):
-    """Range operator class for parameterizing batch runs. Range(a, b, c)
+    """Range operator class for parametrizing batch runs. Range(a, b, c)
     represents c linearly spaced values in the (real) interval [a, b]; b >= a.
     The functionality is analogous to numpy.linspace.
 
@@ -44,7 +44,7 @@ class Range(Operator):
 
 
 class Choices(Operator):
-    """Choices operator class for parameterizing batch runs. Choices defines a
+    """Choices operator class for parametrizing batch runs. Choices defines a
     list of specified values a Modifier expression can take.
 
     Args:
@@ -70,8 +70,8 @@ class Choices(Operator):
 
 @dataclass
 class Uniform(Operator):
-    """Uniform distribution class for parameterizing batch runs.For
-    mathematical background, see e.g.,
+    """Uniform distribution class for parametrizing batch runs.For mathematical
+    background, see e.g.,
     https://en.wikipedia.org/wiki/Continuous_uniform_distribution.
 
     Args:
@@ -98,7 +98,7 @@ class Uniform(Operator):
 
 @dataclass
 class Beta(Operator):
-    """Beta distribution class for parameterizing batch runs. For mathematical
+    """Beta distribution class for parametrizing batch runs. For mathematical
     background, see e.g., https://en.wikipedia.org/wiki/Beta_distribution.
 
     Args:
@@ -127,7 +127,7 @@ class Beta(Operator):
 
 @dataclass
 class Normal(Operator):
-    """Normal distribution class for parameterizing batch runs.For mathematical
+    """Normal distribution class for parametrizing batch runs.For mathematical
     background, see e.g., https://en.wikipedia.org/wiki/Normal_distribution
     https://en.wikipedia.org/wiki/Truncated_normal_distribution Supports both
     the standard and truncated Normal distribution. The standard Normal
