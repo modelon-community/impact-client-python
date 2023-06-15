@@ -488,7 +488,7 @@ class Workspace(WorkspaceInterface):
             vcs_info: If True, the versioning details are returned for the
             project(if under version control).
             include_disabled: If True, projects disabled in the workspace
-            are also lsited.
+            are also listed.
 
         Returns:
             A list of Project class objects.
@@ -522,7 +522,7 @@ class Workspace(WorkspaceInterface):
             vcs_info: If True, the versioning details are returned for the
             project(if under version control).
             include_disabled: If True, projects disabled in the workspace
-            are also lsited.
+            are also listed.
 
         Returns:
             A list of Project class object.

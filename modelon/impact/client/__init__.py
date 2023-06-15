@@ -23,4 +23,4 @@ from modelon.impact.client.experiment_definition.expansion import (
 from modelon.impact.client.entities.project import ContentType
 from modelon.impact.client.entities.workspace import WorkspaceDefinition
 
-SimpleExperimentDefinition = SimpleFMUExperimentDefinition  # For compability
+SimpleExperimentDefinition = SimpleFMUExperimentDefinition  # For compatibility

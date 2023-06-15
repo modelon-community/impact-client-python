@@ -327,7 +327,7 @@ class Model(ModelInterface):
             step_size:
                 Specify what value to set for the parameter for step size in the
                 generated model. By default the parameter is set to zero, which
-                inturn means that the step size will be set during simulation based
+                means that the step size will be set during simulation based
                 on simulation properties such as the time interval.
                 This can also be manually set to any real non-negative number.
                 The value of the step size parameter can also be set via the function

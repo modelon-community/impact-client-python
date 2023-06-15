@@ -36,7 +36,7 @@ class BaseExecutionOptions(Mapping, ABC):
         """Sets/updates the options.
 
         Args:
-            parameters: A keyworded, variable-length argument list of options.
+            parameters: A key-worded, variable-length argument list of options.
 
         Example::
 

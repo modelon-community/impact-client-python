@@ -409,7 +409,7 @@ class Experiment(ExperimentInterface):
         of result variables for all the cases.
 
         Args:
-            variables: A list of result variables to fecth trajectories for.
+            variables: A list of result variables to fetch trajectories for.
 
         Returns:
             A dictionary object containing the result trajectories for all cases.
