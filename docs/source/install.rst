@@ -48,5 +48,5 @@ Modelon Impact Vs Python client version compatibility map
 +-------------------------+--------------------------------------------------+
 |  1.8.x, 1.9.x, 1.10.x   | 2.4.x (pip install modelon-impact-client~=2.4.0) |
 +-------------------------+--------------------------------------------------+
-|         2.7.x           |   3.x (pip install modelon-impact-client~=3.0)   |
+|         2.8.x           | 3.0.x (pip install modelon-impact-client~=3.0.0) |
 +-------------------------+--------------------------------------------------+
