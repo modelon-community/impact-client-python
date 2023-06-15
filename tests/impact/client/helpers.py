@@ -174,6 +174,7 @@ class IDs:
     EXPERIMENT_PRIMARY = 'pid_20090615_134'
     EXPERIMENT_SECONDARY = 'filter_20090615_135'
     CASE_PRIMARY = 'case_1'
+    CASE_SECONDARY = 'case_2'
     IMPORT = '9a8fg798a7g'
     EXPORT = '79sd8-3n2a4-e3t24'
     CONVERSION = 't24e3-a43n2-d879s'
@@ -470,11 +471,22 @@ def get_test_workspace_definition(name=None):
     }
 
 
-def get_test_get_case():
+def get_test_get_case(
+    case_id=IDs.CASE_PRIMARY,
+    status="successful",
+    initialize_from_external_result=None,
+    initialize_from_case=None,
+    parameters=None,
+    meta=None,
+    simulation_options=None,
+    solver_options=None,
+    parametrization=None,
+    simulation_log_level="NOTHING",
+):
     return {
-        "id": IDs.CASE_PRIMARY,
+        "id": case_id,
         "run_info": {
-            "status": "successful",
+            "status": status,
             "consistent": True,
             "datetime_started": 1662964956945,
             "datetime_finished": 1662964957990,
@@ -483,18 +495,18 @@ def get_test_get_case():
             "fmu_id": IDs.FMU_PRIMARY,
             "analysis": {
                 "analysis_function": "dynamic",
-                "parameters": {"start_time": 0, "final_time": 1},
-                "simulation_options": {},
-                "solver_options": {},
-                "simulation_log_level": "NOTHING",
+                "parameters": parameters or {},
+                "simulation_options": simulation_options or {},
+                "solver_options": solver_options or {},
+                "simulation_log_level": simulation_log_level,
             },
-            "parametrization": {},
+            "parametrization": parametrization or {},
             "structural_parametrization": {},
             "fmu_base_parametrization": {},
-            "initialize_from_case": None,
-            "initialize_from_external_result": None,
+            "initialize_from_case": initialize_from_case,
+            "initialize_from_external_result": initialize_from_external_result,
         },
-        "meta": {"label": "Cruise operating point"},
+        "meta": meta or {},
     }
 
 

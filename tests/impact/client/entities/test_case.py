@@ -8,6 +8,7 @@ from modelon.impact.client.entities.case import CaseStatus
 from tests.impact.client.helpers import (
     create_case_entity,
     create_external_result_entity,
+    get_test_get_case,
     IDs,
 )
 
@@ -24,8 +25,8 @@ def get_case_put_call_consistent_value(mock_method_call):
 
 
 class TestCase:
-    def test_case(self, experiment):
-        case = experiment.entity.get_case(IDs.CASE_PRIMARY)
+    def test_case(self, case):
+        case = case.entity
         assert case.id == IDs.CASE_PRIMARY
         assert case.run_info.status == CaseStatus.SUCCESSFUL
         assert case.run_info.consistent
@@ -40,8 +41,8 @@ class TestCase:
         assert fmu.id == IDs.FMU_PRIMARY
 
     def test_multiple_cases(self, batch_experiment):
-        case = batch_experiment.get_case("case_2")
-        assert case.id == "case_2"
+        case = batch_experiment.get_case(IDs.CASE_SECONDARY)
+        assert case.id == IDs.CASE_SECONDARY
         assert case.run_info.status == CaseStatus.SUCCESSFUL
         assert case.get_log() == "Successful Log"
         result, name = case.get_result()
@@ -52,7 +53,7 @@ class TestCase:
         assert result['inertia.I'] == [14, 4, 4, 74]
 
     def test_failed_case(self, experiment_with_failed_case):
-        failed_case = experiment_with_failed_case.get_case("case_2")
+        failed_case = experiment_with_failed_case.get_case(IDs.CASE_SECONDARY)
         assert failed_case.id == IDs.CASE_PRIMARY
         assert failed_case.run_info.status == CaseStatus.FAILED
         assert not failed_case.is_successful()
@@ -85,34 +86,18 @@ class TestCase:
                     IDs.WORKSPACE_PRIMARY,
                     IDs.EXPERIMENT_PRIMARY,
                     IDs.CASE_PRIMARY,
-                    {
-                        'id': IDs.CASE_PRIMARY,
-                        'run_info': {
-                            'status': 'successful',
-                            'consistent': True,
-                            "datetime_started": 1662964956945,
-                            "datetime_finished": 1662964957990,
+                    get_test_get_case(
+                        parameters={'start_time': 1, 'final_time': 200000.0},
+                        solver_options={'atol': 1e-08},
+                        simulation_options={'ncp': 600},
+                        simulation_log_level="DEBUG",
+                        parametrization={'PI.k': 120},
+                        initialize_from_case={
+                            'experimentId': IDs.EXPERIMENT_PRIMARY,
+                            'caseId': IDs.CASE_SECONDARY,
                         },
-                        'input': {
-                            'fmu_id': IDs.FMU_PRIMARY,
-                            'analysis': {
-                                'analysis_function': IDs.DYNAMIC_CF,
-                                'parameters': {'start_time': 1, 'final_time': 200000.0},
-                                'simulation_options': {'ncp': 600},
-                                'solver_options': {'atol': 1e-08},
-                                'simulation_log_level': 'DEBUG',
-                            },
-                            'parametrization': {'PI.k': 120},
-                            'structural_parametrization': {},
-                            'fmu_base_parametrization': {},
-                            'initialize_from_case': {
-                                'experimentId': IDs.EXPERIMENT_PRIMARY,
-                                'caseId': 'case_2',
-                            },
-                            "initialize_from_external_result": None,
-                        },
-                        "meta": {'label': 'Cruise operating condition'},
-                    },
+                        meta={'label': 'Cruise operating condition'},
+                    ),
                 )
             ]
         )
@@ -121,25 +106,22 @@ class TestCase:
             IDs.CASE_PRIMARY, IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY
         )
 
-    def test_case_execute_with_no_sync(self, experiment):
-        exp = experiment.entity
-        service = experiment.service
+    def test_case_execute_with_no_sync(self, case):
+        service = case.service
+        case = case.entity
         exp_sal = service.experiment
 
-        case = exp.get_case(IDs.CASE_PRIMARY)
         result = case.execute(sync_case_changes=True).wait()
         exp_sal.case_put.assert_not_called()
         assert result == create_case_entity(
             IDs.CASE_PRIMARY, IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY
         )
 
-    def test_case_execute_with_auto_sync(self, experiment):
-        exp = experiment.entity
-        exp_sal = experiment.service
-
-        case = exp.get_case(IDs.CASE_PRIMARY)
+    def test_case_execute_with_auto_sync(self, case):
+        service = case.service
+        case = case.entity
         result = case.execute(sync_case_changes=False).wait()
-        exp_sal.case_put.assert_not_called()
+        service.experiment.case_put.assert_not_called()
         assert result == create_case_entity(
             IDs.CASE_PRIMARY, IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY
         )
@@ -169,43 +151,19 @@ class TestCase:
                     IDs.WORKSPACE_PRIMARY,
                     IDs.EXPERIMENT_PRIMARY,
                     IDs.CASE_PRIMARY,
-                    {
-                        'id': IDs.CASE_PRIMARY,
-                        'run_info': {
-                            'status': 'successful',
-                            'consistent': True,
-                            "datetime_started": 1662964956945,
-                            "datetime_finished": 1662964957990,
-                        },
-                        'input': {
-                            'fmu_id': IDs.FMU_PRIMARY,
-                            'analysis': {
-                                'analysis_function': IDs.DYNAMIC_CF,
-                                'parameters': {'start_time': 0, 'final_time': 1},
-                                'simulation_options': {},
-                                'solver_options': {},
-                                'simulation_log_level': 'NOTHING',
-                            },
-                            'parametrization': {},
-                            'structural_parametrization': {},
-                            'fmu_base_parametrization': {},
-                            'initialize_from_case': None,
-                            'initialize_from_external_result': {
-                                'uploadId': 'upload_id'
-                            },
-                        },
-                        "meta": {"label": "Cruise operating point"},
-                    },
+                    get_test_get_case(
+                        initialize_from_external_result={'uploadId': 'upload_id'}
+                    ),
                 )
             ]
         )
 
-    def test_reinitiazlizing_result_initialized_case_from_case(self, experiment):
+    def test_reinitiazlizing_result_initialized_case_from_case(self, case):
         result = create_external_result_entity('upload_id')
         case_to_init = create_case_entity(
             'Case_2', IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY
         )
-        case = experiment.entity.get_case(IDs.CASE_PRIMARY)
+        case = case.entity
         case.initialize_from_external_result = result
         with pytest.raises(Exception) as err:
             case.initialize_from_case = case_to_init
@@ -216,12 +174,12 @@ class TestCase:
             "to None and re-try."
         )
 
-    def test_reinitiazlizing_case_initialized_case_from_result(self, experiment):
+    def test_reinitiazlizing_case_initialized_case_from_result(self, case):
         result = create_external_result_entity('upload_id')
         case_to_init = create_case_entity(
             'Case_2', IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY
         )
-        case = experiment.entity.get_case(IDs.CASE_PRIMARY)
+        case = case.entity
         case.initialize_from_case = case_to_init
         with pytest.raises(Exception) as err:
             case.initialize_from_external_result = result
@@ -232,10 +190,8 @@ class TestCase:
             "to None and re-try."
         )
 
-    def test_case_input(self, experiment):
-        exp = experiment.entity
-
-        case = exp.get_case(IDs.CASE_PRIMARY)
+    def test_case_input(self, case):
+        case = case.entity
         case.input.analysis.parameters = {"start_time": 0, "final_time": 90}
         case.input.analysis.simulation_options = {'ncp': 600}
         case.input.analysis.solver_options = {'atol': 1e-8}
@@ -247,12 +203,12 @@ class TestCase:
         assert case.input.analysis.solver_options == {'atol': 1e-8}
         assert case.input.parametrization == {'PI.k': 120}
 
-    def test_get_result_invalid_format(self, experiment):
-        case = experiment.entity.get_case(IDs.CASE_PRIMARY)
+    def test_get_result_invalid_format(self, case):
+        case = case.entity
         pytest.raises(ValueError, case.get_result, 'ma')
 
-    def test_get_custom_artifacts(self, experiment):
-        case = experiment.entity.get_case(IDs.CASE_PRIMARY)
+    def test_get_custom_artifacts(self, case):
+        case = case.entity
         artifacts = case.get_artifacts()
         assert len(artifacts) == 1
         assert artifacts[0].id == IDs.CUSTOM_ARTIFACT_ID
@@ -263,8 +219,8 @@ class TestCase:
         artifact_stream = artifacts[0].get_data()
         assert artifact_stream == b'\x00\x00\x00\x00'
 
-    def test_get_custom_artifact(self, experiment):
-        case = experiment.entity.get_case(IDs.CASE_PRIMARY)
+    def test_get_custom_artifact(self, case):
+        case = case.entity
         artifact = case.get_artifact(IDs.CUSTOM_ARTIFACT_ID)
         assert artifact.id == IDs.CUSTOM_ARTIFACT_ID
         assert artifact.download_as == IDs.RESULT_MAT
@@ -274,8 +230,8 @@ class TestCase:
         artifact_stream = artifact.get_data()
         assert artifact_stream == b'\x00\x00\x00\x00'
 
-    def test_get_custom_artifact_with_download_as(self, experiment):
-        case = experiment.entity.get_case(IDs.CASE_PRIMARY)
+    def test_get_custom_artifact_with_download_as(self, case):
+        case = case.entity
         artifact = case.get_artifact(IDs.CUSTOM_ARTIFACT_ID, 'something.mat')
         assert artifact.id == IDs.CUSTOM_ARTIFACT_ID
         assert artifact.download_as == 'something.mat'

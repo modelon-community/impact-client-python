@@ -1497,18 +1497,8 @@ def experiment():
     exp_service.execute_status.return_value = {"status": "done"}
     exp_service.result_variables_get.return_value = ["inertia.I", "time"]
     exp_service.cases_get.return_value = {"data": {"items": [{"id": IDs.CASE_PRIMARY}]}}
-    case_get_data = get_test_get_case()
-    exp_service.case_get.return_value = case_get_data
-    exp_service.case_get_log.return_value = "Successful Log"
-    exp_service.case_result_get.return_value = (bytes(4), IDs.RESULT_MAT)
-    exp_service.case_artifacts_meta_get.return_value = {
-        "data": {
-            "items": [{"id": IDs.CUSTOM_ARTIFACT_ID, "downloadAs": IDs.RESULT_MAT}]
-        }
-    }
-    exp_service.case_artifact_get.return_value = (bytes(4), IDs.RESULT_MAT)
+    exp_service.case_get.return_value = get_test_get_case()
     exp_service.trajectories_get.return_value = [[[1, 2, 3, 4]], [[5, 2, 9, 4]]]
-    exp_service.case_trajectories_get.return_value = [[1, 2, 3, 4], [5, 2, 9, 4]]
     return ExperimentMock(
         create_experiment_entity(
             IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY, service=service
@@ -1526,6 +1516,15 @@ def case():
     exp_service.result_variables_get.return_value = ["inertia.I", "time"]
     case_get_data = get_test_get_case()
     exp_service.case_get.return_value = case_get_data
+    exp_service.case_get_log.return_value = "Successful Log"
+    exp_service.case_result_get.return_value = (bytes(4), IDs.RESULT_MAT)
+    exp_service.case_artifacts_meta_get.return_value = {
+        "data": {
+            "items": [{"id": IDs.CUSTOM_ARTIFACT_ID, "downloadAs": IDs.RESULT_MAT}]
+        }
+    }
+    exp_service.case_artifact_get.return_value = (bytes(4), IDs.RESULT_MAT)
+    exp_service.case_trajectories_get.return_value = [[1, 2, 3, 4], [5, 2, 9, 4]]
     return CaseMock(
         create_case_entity(
             IDs.CASE_PRIMARY,
@@ -1561,7 +1560,7 @@ def experiment_running():
     service = MagicMock()
     exp_service = service.experiment
     exp_service.experiment_execute.return_value = IDs.EXPERIMENT_PRIMARY
-    exp_service.case_get.return_value = {"id": IDs.CASE_PRIMARY}
+    exp_service.case_get.return_value = get_test_get_case()
     exp_service.execute_status.return_value = {"status": "running"}
     return create_experiment_entity(
         IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY, service
@@ -1573,7 +1572,7 @@ def experiment_cancelled():
     service = MagicMock()
     exp_service = service.experiment
     exp_service.experiment_execute.return_value = IDs.EXPERIMENT_PRIMARY
-    exp_service.case_get.return_value = {"id": IDs.CASE_PRIMARY}
+    exp_service.case_get.return_value = get_test_get_case()
     exp_service.execute_status.return_value = {"status": "cancelled"}
     return create_experiment_entity(
         IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY, service=service
@@ -1606,16 +1605,7 @@ def batch_experiment_with_case_filter():
             ]
         }
     }
-    exp_service.case_get.return_value = {
-        "id": "case_3",
-        "run_info": {
-            "status": "successful",
-            "consistent": True,
-            "datetime_started": 1662964956945,
-            "datetime_finished": 1662964957990,
-        },
-        "input": {"fmu_id": IDs.FMU_PRIMARY},
-    }
+    exp_service.case_get.return_value = get_test_get_case("case_3")
     return ExperimentMock(
         create_experiment_entity(
             IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY, service
@@ -1635,17 +1625,9 @@ def batch_experiment():
     exp_service.execute_status.return_value = {"status": "done"}
     exp_service.result_variables_get.return_value = ["inertia.I", "time"]
     exp_service.cases_get.return_value = {
-        "data": {"items": [{"id": IDs.CASE_PRIMARY}, {"id": "case_2"}]}
+        "data": {"items": [{"id": IDs.CASE_PRIMARY}, {"id": IDs.CASE_SECONDARY}]}
     }
-    exp_service.case_get.return_value = {
-        "id": "case_2",
-        "run_info": {
-            "status": "successful",
-            "consistent": True,
-            "datetime_started": 1662964956945,
-            "datetime_finished": 1662964957990,
-        },
-    }
+    exp_service.case_get.return_value = get_test_get_case(case_id=IDs.CASE_SECONDARY)
     exp_service.case_get_log.return_value = "Successful Log"
     exp_service.case_result_get.return_value = (bytes(4), IDs.RESULT_MAT)
     exp_service.case_artifact_get.return_value = (bytes(4), IDs.RESULT_MAT)
@@ -1712,15 +1694,7 @@ def experiment_with_failed_case():
     }
     exp_service.execute_status.return_value = {"status": "done"}
     exp_service.cases_get.return_value = {"data": {"items": [{"id": IDs.CASE_PRIMARY}]}}
-    exp_service.case_get.return_value = {
-        "id": IDs.CASE_PRIMARY,
-        "run_info": {
-            "status": "failed",
-            "consistent": True,
-            "datetime_started": 1662964956945,
-            "datetime_finished": 1662964957990,
-        },
-    }
+    exp_service.case_get.return_value = get_test_get_case(status="failed")
     exp_service.result_variables_get.return_value = ["inertia.I", "time"]
     exp_service.trajectories_get.return_value = [[[1, 2, 3, 4]], [[5, 2, 9, 4]]]
     exp_service.case_trajectories_get.return_value = [[1, 2, 3, 4], [5, 2, 9, 4]]
@@ -1745,7 +1719,6 @@ def failed_experiment():
     }
     exp_service.execute_status.return_value = {"status": "done"}
     exp_service.cases_get.return_value = {"data": {"items": []}}
-    exp_service.case_get.return_value = {}
     return create_experiment_entity(
         IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY, service=service
     )
@@ -1764,8 +1737,8 @@ def cancelled_experiment():
             "cancelled": 1,
         }
     }
-    exp_service.cases_get.return_value = {"data": {"items": [{"id": IDs.CASE_PRIMARY}]}}
-    exp_service.case_get.return_value = {"id": IDs.CASE_PRIMARY}
+    exp_service.cases_get.return_value = {"data": {"items": [get_test_get_case()]}}
+    exp_service.case_get.return_value = get_test_get_case()
     exp_service.execute_status.return_value = {
         "status": "cancelled",
         "consistent": True,
