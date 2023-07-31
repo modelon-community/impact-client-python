@@ -2,6 +2,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 import logging
 import os
+import enum
 import json
 from typing import Any, List, Dict, Optional, Union, Type, TYPE_CHECKING
 
@@ -95,6 +96,126 @@ class ProjectEntry:
     @property
     def disabled_content(self) -> bool:
         return self._data.get('disabledContent')
+
+
+@enum.unique
+class PublishedWorkspaceType(enum.Enum):
+    APP_MODE = 'APP_MODE'
+    ARCHIVE = 'ARCHIVE'
+
+
+@enum.unique
+class PublishedWorkspaceUploadStatus(enum.Enum):
+    INITIALIZING = 'initializing'
+    CREATED = 'created'
+    DELETING = 'deleting'
+
+
+@dataclass
+class PublishedWorkspaceDefinition:
+    name: str
+    tenant: str
+    size: int
+    status: PublishedWorkspaceUploadStatus
+    owner_username: str
+
+    @classmethod
+    def from_dict(cls, data: Dict[str, Any]) -> PublishedWorkspaceDefinition:
+        return cls(
+            name=data['workspaceName'],
+            tenant=data['tenant'],
+            size=data['size'],
+            status=PublishedWorkspaceUploadStatus(data['status']),
+            owner_username=data['ownerUsername'],
+        )
+
+
+class PublishedWorkspace:
+    """Class containing published workspace functionalities."""
+
+    def __init__(
+        self,
+        id: str,
+        definition: PublishedWorkspaceDefinition,
+        service: Service,
+    ):
+        self._id = id
+        self._definition = definition
+        self._sal = service
+
+    def __eq__(self, obj: object) -> bool:
+        return isinstance(obj, PublishedWorkspace) and obj._id == self._id
+
+    def __repr__(self) -> str:
+        return f"Published Workspace with id '{self._id}'"
+
+    @property
+    def definition(self):
+        """Published workspace definition"""
+        return self._definition
+
+    @property
+    def name(self):
+        """Get or set the name for the published workspace.
+
+        Example::
+
+            # Get the published workspace name
+            name = published_workspace.name
+
+            # Set the published workspace name
+            published_workspace.name = 'My workspace'
+
+        """
+        return self._definition.name
+
+    @name.setter
+    def name(self, workspace_name: str) -> None:
+        self._sal.workspace.rename_published_workspace(self._id, workspace_name)
+        data = self._sal.workspace.get_published_workspace(self._id)
+        self._definition = PublishedWorkspaceDefinition.from_dict(data)
+
+    @property
+    def id(self) -> str:
+        """Published Workspace id."""
+        return self._id
+
+    def delete(self) -> None:
+        """Deletes the published workspace.
+
+        Example::
+
+            published_workspace.delete()
+
+        """
+        self._sal.workspace.delete_published_workspace(self._id)
+
+    def request_access(self) -> None:
+        """Send access request for the published workspace to
+        the creator.
+
+        Example::
+
+            published_workspace.request_access()
+
+        """
+        self._sal.workspace.request_published_workspace_access(self._id)
+
+    def import_to_userspace(self) -> WorkspaceImportOperation:
+        """Imports a published workspace.
+
+        Returns:
+            A WorkspaceImportOperation class object.
+
+        Example::
+
+            published_workspace.import_to_userspace().wait()
+
+        """
+        resp = self._sal.workspace.import_from_cloud(self._id)
+        return WorkspaceImportOperation[Workspace](
+            resp["data"]["location"], self._sal, Workspace.from_import_operation
+        )
 
 
 class WorkspaceDefinition:
@@ -272,12 +393,16 @@ class Workspace(WorkspaceInterface):
             resp["data"]["location"], self._sal, ExternalResult.from_operation
         )
 
-    def export(self) -> WorkspaceExportOperation:
+    def export(self, publish: bool = False) -> WorkspaceExportOperation:
         """Exports the workspace as a binary compressed archive. Similar to
         :obj:`~modelon.impact.client.entities.workspace.Workspace.download`,
         but gives more control for getting the workspace async.
         Returns an modelon.impact.client.operations.workspace.exports
-        .WorkspaceExportOperation class object.
+        .WorkspaceExportOperation class object. The binary archive is stored
+        to cloud storage if the publish argument is set to True.
+
+        Args:
+            publish: To export the workspace and save it to cloud storage.
 
         Returns:
             An WorkspaceExportOperation class object.
@@ -285,8 +410,9 @@ class Workspace(WorkspaceInterface):
         Example::
 
             path = workspace.export().wait().download_as('/home/workspace.zip')
+            path = workspace.export(publish=True)
         """
-        resp = self._sal.workspace.workspace_export_setup(self._workspace_id)
+        resp = self._sal.workspace.workspace_export_setup(self._workspace_id, publish)
         return WorkspaceExportOperation[Workspace](
             resp["data"]["location"], self._sal, Export.from_operation
         )

@@ -20,6 +20,11 @@ class Export:
         self._export_sal = export_service
         self._download_uri = download_uri
 
+    @property
+    def id(self) -> str:
+        """ID of the export."""
+        return self._download_uri.split('/')[-1]
+
     def download_as(self, path_to_download: str) -> str:
         """Writes the binary archive to a file. Returns the path to downloaded
         archive.
