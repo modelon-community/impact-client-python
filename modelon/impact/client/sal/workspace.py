@@ -51,9 +51,11 @@ class WorkspaceService:
         ).resolve()
         return self._http_client.get_json(url)
 
-    def workspace_export_setup(self, workspace_id: str) -> Dict[str, Any]:
+    def workspace_export_setup(
+        self, workspace_id: str, publish: bool
+    ) -> Dict[str, Any]:
         url = (self._base_uri / "api/workspace-exports").resolve()
-        body = {"workspaceId": workspace_id}
+        body = {"workspaceId": workspace_id, 'publish': publish}
         return self._http_client.post_json(url, body=body)
 
     def workspace_conversion_setup(
@@ -148,6 +150,16 @@ class WorkspaceService:
         url = (self._base_uri / "api/workspace-imports").resolve()
         return self._http_client.post_json(url, body=shared_definition)
 
+    def import_from_cloud(self, sharing_id: str) -> Dict[str, Any]:
+        url = (self._base_uri / "api/workspace-imports").resolve()
+        return self._http_client.post_json(
+            url,
+            headers={
+                "Content-type": "application/vnd.impact.published-workspace.v1+json"
+            },
+            body={"id": sharing_id},
+        )
+
     def get_project_matchings(
         self, shared_definition: Dict[str, Any]
     ) -> Dict[str, Any]:
@@ -171,3 +183,51 @@ class WorkspaceService:
         ).resolve()
         with open(path_to_project, "rb") as f:
             return self._http_client.post_json(url, files={"file": f})
+
+    def get_published_workspaces(
+        self,
+        name: str = "",
+        first: int = 0,
+        maximum: int = 20,
+        has_data: bool = False,
+        owner_username: str = "",
+        type: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        query = {}
+        if name:
+            query["workspaceName"] = name
+        if has_data:
+            query["hasData"] = str(has_data)
+        if first > 0:
+            query["first"] = str(first)
+        if maximum >= 0:
+            query["max"] = str(maximum)
+        if owner_username:
+            query["ownerUsername"] = owner_username
+        if type:
+            query["type"] = type
+        query_args = '&'.join(f'{key}={value}' for key, value in query.items())
+        url = (self._base_uri / f"api/published-workspaces?{query_args}").resolve()
+        resp = self._http_client.get_json_response(url)
+        return resp.data
+
+    def get_published_workspace(self, sharing_id: str) -> Dict[str, Any]:
+        url = (self._base_uri / f"api/published-workspaces/{sharing_id}").resolve()
+        resp = self._http_client.get_json_response(url)
+        return resp.data
+
+    def rename_published_workspace(self, sharing_id: str, workspace_name: str) -> None:
+        url = (self._base_uri / f"api/published-workspaces/{sharing_id}").resolve()
+        self._http_client.patch_json_no_response_body(
+            url, body={'workspaceName': workspace_name}
+        )
+
+    def request_published_workspace_access(self, sharing_id: str) -> None:
+        url = (
+            self._base_uri / f"api/published-workspaces/{sharing_id}/access"
+        ).resolve()
+        self._http_client.post_json_no_response_body(url, body={})
+
+    def delete_published_workspace(self, sharing_id: str) -> None:
+        url = (self._base_uri / f"api/published-workspaces/{sharing_id}").resolve()
+        self._http_client.delete_json(url)

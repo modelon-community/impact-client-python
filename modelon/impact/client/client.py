@@ -17,7 +17,13 @@ from modelon.impact.client.operations.model_executable import ModelExecutableOpe
 from modelon.impact.client.entities.experiment import Experiment
 from modelon.impact.client.entities.model_executable import ModelExecutable
 from modelon.impact.client.entities.project import Project, VcsUri, ProjectType
-from modelon.impact.client.entities.workspace import WorkspaceDefinition, Workspace
+from modelon.impact.client.entities.workspace import (
+    WorkspaceDefinition,
+    Workspace,
+    PublishedWorkspace,
+    PublishedWorkspaceDefinition,
+    PublishedWorkspaceType,
+)
 from modelon.impact.client.operations.workspace.conversion import (
     WorkspaceConversionOperation,
 )
@@ -690,3 +696,67 @@ class Client:
             if workspace_id and execution.workspace_id != workspace_id:
                 continue
             yield self._operation_from_execution(execution)
+
+    def get_published_workspaces(
+        self,
+        *,
+        name: str = "",
+        first: int = 0,
+        maximum: int = 20,
+        has_data: bool = False,
+        owner_username: str = "",
+        type: Optional[PublishedWorkspaceType] = None,
+    ) -> List[PublishedWorkspace]:
+        """Returns a list of published workspaces. The snapshots could be
+        filtered based on the key-worded arguments.
+
+        Args:
+            name: Name of the workspace.
+            first: Index of first matching resource to return.
+            maximum: Maximum number of resources to return.
+            has_data: If true, filters with
+            status==PublishedWorkspaceUploadStatus.CREATED. If false
+            returns everything.
+            owner_username: If true, only workspaces published by the specified
+            user are listed.
+            type: Filter so only published workspace of a specified type are
+                returned. If not given all published workspace types are
+                returned.
+
+        Returns:
+            A list of published workspace class objects.
+
+        Example::
+
+            client.get_published_workspaces()
+
+        """
+        data = self._sal.workspace.get_published_workspaces(
+            name, first, maximum, has_data, owner_username, type.value if type else None
+        )["data"]["items"]
+        return [
+            PublishedWorkspace(
+                item['id'],
+                definition=PublishedWorkspaceDefinition.from_dict(item),
+                service=self._sal,
+            )
+            for item in data
+        ]
+
+    def get_published_workspace(self, sharing_id: str) -> PublishedWorkspace:
+        """Returns the published workspace class object with the given ID.
+
+        Args:
+            sharing_id: ID of the published workspace.
+
+        Returns:
+            The published workspace class object.
+
+        Example::
+
+            client.get_published_workspace("2h98hciwsniucwincj")
+
+        """
+        data = self._sal.workspace.get_published_workspace(sharing_id)
+        definition = PublishedWorkspaceDefinition.from_dict(data)
+        return PublishedWorkspace(data['id'], definition=definition, service=self._sal)

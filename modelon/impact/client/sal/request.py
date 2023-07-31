@@ -48,6 +48,12 @@ class Request:
                 resp = self.context.session.put(
                     self.url, json=self.body, headers=self.headers
                 )
+            elif self.method == "PATCH":
+                resp = self.context.session.patch(
+                    self.url,
+                    json=self.body,
+                    headers=self.headers,
+                )
             elif self.method == "DELETE":
                 resp = self.context.session.delete(self.url, json=self.body)
             else:

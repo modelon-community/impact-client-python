@@ -75,6 +75,11 @@ class HTTPClient:
     ) -> None:
         RequestJSON(self._context, "POST", url, body).execute()
 
+    def patch_json_no_response_body(
+        self, url: str, body: Optional[Dict[str, Any]] = None
+    ) -> None:
+        RequestJSON(self._context, "PATCH", url, body).execute()
+
     def delete_json(self, url: str, body: Optional[Dict[str, Any]] = None) -> None:
         RequestJSON(self._context, "DELETE", url, body).execute()
 
