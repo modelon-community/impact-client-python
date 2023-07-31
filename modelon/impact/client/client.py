@@ -605,6 +605,7 @@ class Client:
         Example::
 
             client.import_workspace_from_blob("ncjdnjdnjcnjd").wait()
+
         """
         resp = self._sal.workspace.import_from_blob(sharing_id)
         return WorkspaceImportOperation[Workspace](
@@ -750,8 +751,8 @@ class Client:
         maximum: int = 20,
         has_data: bool = False,
     ) -> List[SharedWorkspaceSnapshot]:
-        """Returns a list of snapshots owned by the logged in user. The snapshots
-        could be filtered based on the keyworded arguments.
+        """Returns a list of snapshots owned by the logged in user. The
+        snapshots could be filtered based on the key-worded arguments.
 
         Args:
             workspace_id: ID of the workspace.
@@ -763,7 +764,7 @@ class Client:
              If false returns everything.
 
         Returns:
-            A list of workpace snapshot class objects.
+            A list of workspace snapshot class objects.
 
         Example::
 
