@@ -21,7 +21,7 @@ class Export:
         self._download_uri = download_uri
 
     @property
-    def id(self):
+    def id(self) -> str:
         """
         ID of the export.
         """

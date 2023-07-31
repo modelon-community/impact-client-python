@@ -52,7 +52,7 @@ class SharedWorkspaceSnapshot:
     status: SharedWorkspaceUploadStatus
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]):
+    def from_dict(cls, data: Dict[str, Any]) -> SharedWorkspaceSnapshot:
         return cls(
             id=data['id'],
             workspace_id=data['workspaceId'],
@@ -199,7 +199,7 @@ class ProjectMatchings:
         return [e.make_selection_interactive() for e in self.entries]
 
 
-def _bool_to_str(boolean: bool):
+def _bool_to_str(boolean: bool) -> str:
     return "true" if boolean else "false"
 
 
@@ -785,7 +785,7 @@ class Client:
         data = self._sal.get_shared_workspaces(query_args)["data"]["items"]
         return [SharedWorkspaceSnapshot.from_dict(item) for item in data]
 
-    def get_snapshot(self, sharing_id: str):
+    def get_snapshot(self, sharing_id: str) -> SharedWorkspaceSnapshot:
         """Returns the workspace snapshot class object with the given ID.
 
         Args:
@@ -802,7 +802,7 @@ class Client:
         data = self._sal.get_shared_workspace(sharing_id)
         return SharedWorkspaceSnapshot.from_dict(data)
 
-    def delete_snapshot(self, sharing_id: str):
+    def delete_snapshot(self, sharing_id: str) -> None:
         """Deletes the workspace snapshot with the given ID.
 
         Example::
