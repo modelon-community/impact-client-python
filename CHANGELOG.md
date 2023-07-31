@@ -1,3 +1,17 @@
+# [3.1.0-beta.1](https://github.com/modelon-community/impact-client-python/compare/v3.0.3...v3.1.0-beta.1) (2023-07-31)
+
+
+### Bug Fixes
+
+* docformatting ([60ee5e4](https://github.com/modelon-community/impact-client-python/commit/60ee5e4525301093a13c9a244914b6074ea0350a))
+* lint fixes ([9a0aee1](https://github.com/modelon-community/impact-client-python/commit/9a0aee136cc35a1d66fa2be9620a5e9f5cb73989))
+* test fixes ([99e1bdf](https://github.com/modelon-community/impact-client-python/commit/99e1bdfd8c7977c509d7e24b3f492e81dec1e873))
+
+
+### Features
+
+* added support for export and import from blob ([7c8d08d](https://github.com/modelon-community/impact-client-python/commit/7c8d08db09734b623651127412e9a4f01b69cae3))
+
 ## [3.0.3](https://github.com/modelon-community/impact-client-python/compare/v3.0.2...v3.0.3) (2023-06-13)
 
 
