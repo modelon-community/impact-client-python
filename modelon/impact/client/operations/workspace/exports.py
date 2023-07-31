@@ -22,9 +22,7 @@ class Export:
 
     @property
     def id(self) -> str:
-        """
-        ID of the export.
-        """
+        """ID of the export."""
         return self._download_uri.split('/')[-1]
 
     def download_as(self, path_to_download: str) -> str:
