@@ -118,3 +118,17 @@ class Service:
         url = (self._base_uri / "api/executions").resolve()
         resp = self._http_client.get_json_response(url)
         return resp.data
+
+    def get_shared_workspaces(self, query_args) -> Dict[str, Any]:
+        url = (self._base_uri / f"api/shared-workspaces?{query_args}").resolve()
+        resp = self._http_client.get_json_response(url)
+        return resp.data
+
+    def get_shared_workspace(self, sharing_id: str) -> Dict[str, Any]:
+        url = (self._base_uri / f"api/shared-workspaces/{sharing_id}").resolve()
+        resp = self._http_client.get_json_response(url)
+        return resp.data
+
+    def delete_shared_workspace(self, sharing_id: str):
+        url = (self._base_uri / f"api/shared-workspaces/{sharing_id}").resolve()
+        self._http_client.delete_json(url)

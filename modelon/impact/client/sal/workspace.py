@@ -51,9 +51,11 @@ class WorkspaceService:
         ).resolve()
         return self._http_client.get_json(url)
 
-    def workspace_export_setup(self, workspace_id: str) -> Dict[str, Any]:
+    def workspace_export_setup(
+        self, workspace_id: str, blob_storage: bool
+    ) -> Dict[str, Any]:
         url = (self._base_uri / "api/workspace-exports").resolve()
-        body = {"workspaceId": workspace_id}
+        body = {"workspaceId": workspace_id, 'blobStorage': blob_storage}
         return self._http_client.post_json(url, body=body)
 
     def workspace_conversion_setup(
@@ -147,6 +149,14 @@ class WorkspaceService:
             }
         url = (self._base_uri / "api/workspace-imports").resolve()
         return self._http_client.post_json(url, body=shared_definition)
+
+    def import_from_blob(self, sharing_id: str) -> Dict[str, Any]:
+        url = (self._base_uri / "api/workspace-imports").resolve()
+        return self._http_client.post_json(
+            url,
+            headers={"Accept": "application/vnd.impact.shared-snapshot.v1+json"},
+            body={"id": sharing_id},
+        )
 
     def get_project_matchings(
         self, shared_definition: Dict[str, Any]

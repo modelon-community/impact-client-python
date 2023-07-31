@@ -272,12 +272,15 @@ class Workspace(WorkspaceInterface):
             resp["data"]["location"], self._sal, ExternalResult.from_operation
         )
 
-    def export(self) -> WorkspaceExportOperation:
+    def export(self, blob_storage: bool = False) -> WorkspaceExportOperation:
         """Exports the workspace as a binary compressed archive. Similar to
         :obj:`~modelon.impact.client.entities.workspace.Workspace.download`,
         but gives more control for getting the workspace async.
         Returns an modelon.impact.client.operations.workspace.exports
         .WorkspaceExportOperation class object.
+
+        Args:
+            blob_storage: To export the workspace and save it to blob storage.
 
         Returns:
             An WorkspaceExportOperation class object.
@@ -286,7 +289,9 @@ class Workspace(WorkspaceInterface):
 
             path = workspace.export().wait().download_as('/home/workspace.zip')
         """
-        resp = self._sal.workspace.workspace_export_setup(self._workspace_id)
+        resp = self._sal.workspace.workspace_export_setup(
+            self._workspace_id, blob_storage
+        )
         return WorkspaceExportOperation[Workspace](
             resp["data"]["location"], self._sal, Export.from_operation
         )

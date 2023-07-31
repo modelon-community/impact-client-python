@@ -35,6 +35,34 @@ class ExecutionKind(enum.Enum):
     EXPERIMENT = 'EXPERIMENT'
 
 
+@enum.unique
+class SharedWorkspaceUploadStatus(enum.Enum):
+    INITIALIZING = 'initializing'
+    CREATED = 'created'
+    DELETING = 'deleting'
+
+
+@dataclass
+class SharedWorkspaceSnapshot:
+    id: str
+    workspace_id: str
+    workspace_name: str
+    group: str
+    size: int
+    status: SharedWorkspaceUploadStatus
+
+    @classmethod
+    def from_dict(cls, data: Dict[str, Any]):
+        return cls(
+            id=data['id'],
+            workspace_id=data['workspaceId'],
+            workspace_name=data['displayName'],
+            group=data['group'],
+            size=data['size'],
+            status=SharedWorkspaceUploadStatus(data['status']),
+        )
+
+
 @dataclass
 class Execution:
     kind: ExecutionKind
@@ -169,6 +197,10 @@ class ProjectMatchings:
 
         """
         return [e.make_selection_interactive() for e in self.entries]
+
+
+def _bool_to_str(boolean: bool):
+    return "true" if boolean else "false"
 
 
 class Client:
@@ -561,6 +593,24 @@ class Client:
             resp["data"]["location"], self._sal, Workspace.from_import_operation
         )
 
+    def import_workspace_from_blob(self, sharing_id: str) -> WorkspaceImportOperation:
+        """Imports a shared workspace snapshot via sharing ID.
+
+        Args:
+            sharing_id: The ID of the shared workspace.
+
+        Returns:
+            A WorkspaceImportOperation class object.
+
+        Example::
+
+            client.import_workspace_from_blob("ncjdnjdnjcnjd").wait()
+        """
+        resp = self._sal.workspace.import_from_blob(sharing_id)
+        return WorkspaceImportOperation[Workspace](
+            resp["data"]["location"], self._sal, Workspace.from_import_operation
+        )
+
     def get_project_matchings(
         self, shared_definition: WorkspaceDefinition
     ) -> ProjectMatchings:
@@ -690,3 +740,74 @@ class Client:
             if workspace_id and execution.workspace_id != workspace_id:
                 continue
             yield self._operation_from_execution(execution)
+
+    def get_my_snapshots(
+        self,
+        *,
+        workspace_id: str = "",
+        only_latest: bool = False,
+        first: int = 0,
+        maximum: int = 20,
+        has_data: bool = False,
+    ) -> List[SharedWorkspaceSnapshot]:
+        """Returns a list of snapshots owned by the logged in user. The snapshots
+        could be filtered based on the keyworded arguments.
+
+        Args:
+            workspace_id: ID of the workspace.
+            only_latest: If true, then only returns the latest version for
+            each "workspace_id".
+            first: Index of first matching resource to return.
+            maximum: Maximum number of resources to return.
+            has_data: If true, filters with status==SharedWorkspaceUploadStatus.CREATED.
+             If false returns everything.
+
+        Returns:
+            A list of workpace snapshot class objects.
+
+        Example::
+
+            client.get_my_snapshots()
+
+        """
+        query = {}
+        if workspace_id:
+            query["workspaceId"] = workspace_id
+        if only_latest:
+            query["onlyLatest"] = _bool_to_str(only_latest)
+        if has_data:
+            query["hasData"] = _bool_to_str(has_data)
+        if first > 0:
+            query["first"] = str(first)
+        if maximum >= 0:
+            query["max"] = str(maximum)
+        query_args = '&'.join(f'{key}={value}' for key, value in query.items())
+        data = self._sal.get_shared_workspaces(query_args)["data"]["items"]
+        return [SharedWorkspaceSnapshot.from_dict(item) for item in data]
+
+    def get_snapshot(self, sharing_id: str):
+        """Returns the workspace snapshot class object with the given ID.
+
+        Args:
+            sharing_id: ID of the workspace snapshot.
+
+        Returns:
+            The workspace snapshot class object.
+
+        Example::
+
+            client.get_snapshot("2h98hciwsniucwincj")
+
+        """
+        data = self._sal.get_shared_workspace(sharing_id)
+        return SharedWorkspaceSnapshot.from_dict(data)
+
+    def delete_snapshot(self, sharing_id: str):
+        """Deletes the workspace snapshot with the given ID.
+
+        Example::
+
+            client.delete_snapshot("2839283ur8ewjfuehfu")
+
+        """
+        self._sal.delete_shared_workspace(sharing_id)
