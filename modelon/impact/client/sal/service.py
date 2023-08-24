@@ -129,6 +129,10 @@ class Service:
         resp = self._http_client.get_json_response(url)
         return resp.data
 
+    def request_shared_workspace_access(self, sharing_id: str) -> None:
+        url = (self._base_uri / f"api/shared-workspaces/{sharing_id}/access").resolve()
+        self._http_client.post_json(url, body={})
+
     def delete_shared_workspace(self, sharing_id: str) -> None:
         url = (self._base_uri / f"api/shared-workspaces/{sharing_id}").resolve()
         self._http_client.delete_json(url)

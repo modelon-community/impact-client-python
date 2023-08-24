@@ -803,6 +803,20 @@ class Client:
         data = self._sal.get_shared_workspace(sharing_id)
         return SharedWorkspaceSnapshot.from_dict(data)
 
+    def request_snapshot_access(self, sharing_id: str) -> None:
+        """Request access to the workspace snapshot class object with the given
+        ID.
+
+        Args:
+            sharing_id: ID of the workspace snapshot.
+
+        Example::
+
+            client.request_snapshot_access("2h98hciwsniucwincj")
+
+        """
+        self._sal.request_shared_workspace_access(sharing_id)
+
     def delete_snapshot(self, sharing_id: str) -> None:
         """Deletes the workspace snapshot with the given ID.
 
