@@ -1,3 +1,10 @@
+# [3.1.0-beta.2](https://github.com/modelon-community/impact-client-python/compare/v3.1.0-beta.1...v3.1.0-beta.2) (2023-08-24)
+
+
+### Bug Fixes
+
+* corrected the docs for request_snapshot_access ([735d614](https://github.com/modelon-community/impact-client-python/commit/735d614190e2f88d628f4efe226f03414aab6961))
+
 # [3.1.0-beta.1](https://github.com/modelon-community/impact-client-python/compare/v3.0.3...v3.1.0-beta.1) (2023-07-31)
 
 
