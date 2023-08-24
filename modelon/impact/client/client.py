@@ -804,8 +804,8 @@ class Client:
         return SharedWorkspaceSnapshot.from_dict(data)
 
     def request_snapshot_access(self, sharing_id: str) -> None:
-        """Request access to the workspace snapshot class object with the given
-        ID.
+        """Send access request for the workspace snapshot with the given ID to
+        the snapshot owner.
 
         Args:
             sharing_id: ID of the workspace snapshot.
