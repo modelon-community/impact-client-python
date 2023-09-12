@@ -1,3 +1,12 @@
+## [3.0.4](https://github.com/modelon-community/impact-client-python/compare/v3.0.3...v3.0.4) (2023-09-12)
+
+
+### Bug Fixes
+
+* fixed typo in get_model_description return description ([d227876](https://github.com/modelon-community/impact-client-python/commit/d22787663ef9f0cc2551208d3d22a3acfe9ac6ab))
+* minor error message format fix ([b43d589](https://github.com/modelon-community/impact-client-python/commit/b43d58997fd0d86c3c204dada50e40f8bd6f688f))
+* remove unsupported platform win32 from compilation options ([6ca1abf](https://github.com/modelon-community/impact-client-python/commit/6ca1abff99efe7179dacc1ccf9a142e4a4d59ca9))
+
 ## [3.0.3](https://github.com/modelon-community/impact-client-python/compare/v3.0.2...v3.0.3) (2023-06-13)
 
 
