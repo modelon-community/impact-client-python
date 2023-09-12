@@ -121,7 +121,6 @@ class Model(ModelInterface):
 
                 - 'auto': platform is selected automatically
                 - "linux64": generate a 32 bit FMU
-                - "win32": generate a 32 bit FMU
                 - "win64": generate a 64 bit FMU
 
             force_compilation: Force a model compilation.
@@ -228,7 +227,6 @@ class Model(ModelInterface):
 
                 - 'auto': platform is selected automatically
                 - "linux64": generate a 32 bit FMU
-                - "win32": generate a 32 bit FMU
                 - "win64": generate a 64 bit FMU
             compiler_log_level: The logging for the compiler. Possible values are
                 "error", "warning", "info", "verbose" and "debug". Default: 'warning'.
