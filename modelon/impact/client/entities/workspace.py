@@ -435,8 +435,8 @@ class Workspace(WorkspaceInterface):
         else:
             raise TypeError(
                 "Definition object must either be a dictionary or an instance of either"
-                "SimpleModelicaExperimentDefinition or SimpleFMUExperimentDefinition"
-                "class!"
+                " SimpleModelicaExperimentDefinition or SimpleFMUExperimentDefinition"
+                " class!"
             )
         resp = self._sal.workspace.experiment_create(
             self._workspace_id, definition_as_dict, user_data
