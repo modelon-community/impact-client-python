@@ -224,7 +224,7 @@ class ModelExecutable(ModelExecutableInterface):
         """Returns the model description object.
 
         Returns:
-            The compilation log object.
+            The ModelDescription class object.
 
         Example::
 
