@@ -1,3 +1,10 @@
+# [3.1.0-beta.3](https://github.com/modelon-community/impact-client-python/compare/v3.1.0-beta.2...v3.1.0-beta.3) (2023-09-13)
+
+
+### Bug Fixes
+
+* changed Accept to Content-Type for import-from-blob ([330fa04](https://github.com/modelon-community/impact-client-python/commit/330fa042c983eeee9a31a1f21788e2a664a88a93))
+
 # [3.1.0-beta.2](https://github.com/modelon-community/impact-client-python/compare/v3.1.0-beta.1...v3.1.0-beta.2) (2023-08-24)
 
 
