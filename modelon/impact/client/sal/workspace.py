@@ -154,7 +154,7 @@ class WorkspaceService:
         url = (self._base_uri / "api/workspace-imports").resolve()
         return self._http_client.post_json(
             url,
-            headers={"Accept": "application/vnd.impact.shared-snapshot.v1+json"},
+            headers={"Content-Type": "application/vnd.impact.published-workspace.v1+json"},
             body={"id": sharing_id},
         )
 
