@@ -1,3 +1,11 @@
+# [3.1.0-beta.5](https://github.com/modelon-community/impact-client-python/compare/v3.1.0-beta.4...v3.1.0-beta.5) (2023-09-14)
+
+
+### Bug Fixes
+
+* rename request_snapshot_access to request_published_workspace_access ([95dca76](https://github.com/modelon-community/impact-client-python/commit/95dca7675a0504875415431f034b0241a9599dd0))
+* renamed classes to follow new terminology ([5e12a29](https://github.com/modelon-community/impact-client-python/commit/5e12a29606ab4932bf5ff3a163c2847a898b5440))
+
 # [3.1.0-beta.4](https://github.com/modelon-community/impact-client-python/compare/v3.1.0-beta.3...v3.1.0-beta.4) (2023-09-14)
 
 
