@@ -23,6 +23,29 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
+def _compare_nested_dicts(
+    dict1: Dict[str, Any], dict2: Dict[str, Any], skip_keys: List[str]
+) -> bool:
+    for key in dict1:
+        if key in skip_keys:
+            continue
+
+        if key not in dict2:
+            return False
+
+        val1 = dict1[key]
+        val2 = dict2[key]
+
+        if isinstance(val1, dict) and isinstance(val2, dict):
+            if not _compare_nested_dicts(val1, val2, skip_keys):
+                return False
+        else:
+            if val1 != val2:
+                return False
+
+    return True
+
+
 def _assert_case_is_complete(
     status: CaseStatus, operation_name: str = "Operation"
 ) -> None:
@@ -396,13 +419,8 @@ class Case(CaseInterface):
     def __repr__(self) -> str:
         return f"Case with id '{self._case_id}'"
 
-    def _get_info(self, cached: bool = True) -> Dict[str, Any]:
-        if not cached or self._info is None:
-            self._info = self._sal.experiment.case_get(
-                self._workspace_id, self._exp_id, self.id
-            )
-
-        return self._info
+    def _get_info(self) -> Dict[str, Any]:
+        return self._sal.experiment.case_get(self._workspace_id, self._exp_id, self.id)
 
     @property
     def id(self) -> str:
@@ -418,12 +436,12 @@ class Case(CaseInterface):
     def info(self) -> Dict[str, Any]:
         """Deprecated, use 'run_info' attribute."""
         logger.warning("This attribute is deprectated, use 'run_info' instead")
-        return self._get_info(cached=False)
+        return self._get_info()
 
     @property
     def run_info(self) -> CaseRunInfo:
         """Case run information."""
-        run_info = self._get_info(cached=False)["run_info"]
+        run_info = self._get_info()["run_info"]
         started = _datetime_from_unix_time(run_info.get("datetime_started"))
         finished = _datetime_from_unix_time(run_info.get("datetime_finished"))
         return CaseRunInfo(
@@ -744,9 +762,21 @@ class Case(CaseInterface):
             case.sync()
 
         """
-        self._info = self._sal.experiment.case_put(
-            self._workspace_id, self._exp_id, self._case_id, self._info
-        )
+        info = self._info
+        server_info = self._get_info()
+        skip_keys = [
+            "fmu_id",
+            "analysis_function",
+            "structural_parametrization",
+            "fmu_base_parametrization",
+            "run_info",
+            "id",
+        ]
+        info["run_info"] = server_info.get("run_info", {})
+        if not _compare_nested_dicts(info, server_info, skip_keys):
+            self._info = self._sal.experiment.case_put(
+                self._workspace_id, self._exp_id, self._case_id, info
+            )
 
     def execute(self, sync_case_changes: bool = True) -> CaseOperation:
         """Executes a case. Returns an CaseOperation class object.
