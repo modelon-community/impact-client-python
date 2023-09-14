@@ -119,20 +119,22 @@ class Service:
         resp = self._http_client.get_json_response(url)
         return resp.data
 
-    def get_shared_workspaces(self, query_args: str) -> Dict[str, Any]:
-        url = (self._base_uri / f"api/shared-workspaces?{query_args}").resolve()
+    def get_published_workspaces(self, query_args: str) -> Dict[str, Any]:
+        url = (self._base_uri / f"api/published-workspaces?{query_args}").resolve()
         resp = self._http_client.get_json_response(url)
         return resp.data
 
-    def get_shared_workspace(self, sharing_id: str) -> Dict[str, Any]:
-        url = (self._base_uri / f"api/shared-workspaces/{sharing_id}").resolve()
+    def get_published_workspace(self, sharing_id: str) -> Dict[str, Any]:
+        url = (self._base_uri / f"api/published-workspaces/{sharing_id}").resolve()
         resp = self._http_client.get_json_response(url)
         return resp.data
 
-    def request_shared_workspace_access(self, sharing_id: str) -> None:
-        url = (self._base_uri / f"api/shared-workspaces/{sharing_id}/access").resolve()
+    def request_published_workspace_access(self, sharing_id: str) -> None:
+        url = (
+            self._base_uri / f"api/published-workspaces/{sharing_id}/access"
+        ).resolve()
         self._http_client.post_json(url, body={})
 
-    def delete_shared_workspace(self, sharing_id: str) -> None:
-        url = (self._base_uri / f"api/shared-workspaces/{sharing_id}").resolve()
+    def delete_published_workspace(self, sharing_id: str) -> None:
+        url = (self._base_uri / f"api/published-workspaces/{sharing_id}").resolve()
         self._http_client.delete_json(url)
