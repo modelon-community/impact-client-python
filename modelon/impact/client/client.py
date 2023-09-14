@@ -804,9 +804,9 @@ class Client:
         data = self._sal.get_published_workspace(sharing_id)
         return PublishedWorkspace.from_dict(data)
 
-    def request_snapshot_access(self, sharing_id: str) -> None:
-        """Send access request for the workspace snapshot with the given ID to
-        the snapshot owner.
+    def request_published_workspace_access(self, sharing_id: str) -> None:
+        """Send access request for the published workspace with the given ID to
+        the creator.
 
         Args:
             sharing_id: ID of the workspace snapshot.
