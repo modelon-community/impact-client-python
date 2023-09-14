@@ -1,3 +1,10 @@
+# [3.1.0-beta.4](https://github.com/modelon-community/impact-client-python/compare/v3.1.0-beta.3...v3.1.0-beta.4) (2023-09-14)
+
+
+### Bug Fixes
+
+* typo fix - Content-Type to Content-type ([95c1bb5](https://github.com/modelon-community/impact-client-python/commit/95c1bb5cf375514639f8157ff8c1fcddfcbed4cc))
+
 # [3.1.0-beta.3](https://github.com/modelon-community/impact-client-python/compare/v3.1.0-beta.2...v3.1.0-beta.3) (2023-09-13)
 
 
