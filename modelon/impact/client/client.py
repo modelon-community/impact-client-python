@@ -750,9 +750,10 @@ class Client:
         first: int = 0,
         maximum: int = 20,
         has_data: bool = False,
+        only_mine: bool = True,
     ) -> List[PublishedWorkspace]:
-        """Returns a list of published workspaces owned by the logged in user.
-        The snapshots could be filtered based on the key-worded arguments.
+        """Returns a list of published workspaces. The snapshots could be
+        filtered based on the key-worded arguments.
 
         Args:
             workspace_id: ID of the workspace.
@@ -763,6 +764,8 @@ class Client:
             has_data: If true, filters with
             status==PublishedWorkspaceUploadStatus.CREATED. If false
             returns everything.
+            only_mine: If true, only workspaces published by the logged
+            in user are listed.
 
         Returns:
             A list of published workspace class objects.
@@ -783,6 +786,8 @@ class Client:
             query["first"] = str(first)
         if maximum >= 0:
             query["max"] = str(maximum)
+        if only_mine:
+            query["onlyMine"] = _bool_to_str(only_mine)
         query_args = '&'.join(f'{key}={value}' for key, value in query.items())
         data = self._sal.get_published_workspaces(query_args)["data"]["items"]
         return [PublishedWorkspace.from_dict(item) for item in data]
