@@ -1,3 +1,10 @@
+# [3.1.0-beta.6](https://github.com/modelon-community/impact-client-python/compare/v3.1.0-beta.5...v3.1.0-beta.6) (2023-09-15)
+
+
+### Features
+
+* added support for onlyMine filtering ([347bab4](https://github.com/modelon-community/impact-client-python/commit/347bab4c46c13171e6f994608eb168a95d8230b2))
+
 # [3.1.0-beta.5](https://github.com/modelon-community/impact-client-python/compare/v3.1.0-beta.4...v3.1.0-beta.5) (2023-09-14)
 
 
