@@ -1,3 +1,10 @@
+# [3.1.0-beta.7](https://github.com/modelon-community/impact-client-python/compare/v3.1.0-beta.6...v3.1.0-beta.7) (2023-09-18)
+
+
+### Features
+
+* add support for renaming published workspaces ([e70b12a](https://github.com/modelon-community/impact-client-python/commit/e70b12ab78de374acc02b3541de7c6024bb78611))
+
 # [3.1.0-beta.6](https://github.com/modelon-community/impact-client-python/compare/v3.1.0-beta.5...v3.1.0-beta.6) (2023-09-15)
 
 
