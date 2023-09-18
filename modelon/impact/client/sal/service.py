@@ -129,6 +129,14 @@ class Service:
         resp = self._http_client.get_json_response(url)
         return resp.data
 
+    def rename_published_workspace(
+        self, sharing_id: str, workspace_id: str, workspace_name: str
+    ) -> None:
+        url = (self._base_uri / f"api/published-workspaces/{sharing_id}").resolve()
+        self._http_client.patch_json_no_response_body(
+            url, body={'workspaceId': workspace_id, 'workspaceName': workspace_name}
+        )
+
     def request_published_workspace_access(self, sharing_id: str) -> None:
         url = (
             self._base_uri / f"api/published-workspaces/{sharing_id}/access"

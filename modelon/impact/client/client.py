@@ -809,6 +809,25 @@ class Client:
         data = self._sal.get_published_workspace(sharing_id)
         return PublishedWorkspace.from_dict(data)
 
+    def rename_published_workspace(
+        self, sharing_id: str, workspace_id: str, workspace_name: str
+    ) -> None:
+        """Rename the published workspace class object with the given name and
+        display name.
+
+        Args:
+            sharing_id: ID of the published workspace.
+            workspace_id:  Name of the published workspace.
+            workspace_name:  Display name of the published workspace
+
+        Example::
+
+            client.rename_published_workspace("2h98hciwsniucwincj", "my workspace",
+            "my_workspace")
+
+        """
+        self._sal.rename_published_workspace(sharing_id, workspace_id, workspace_name)
+
     def request_published_workspace_access(self, sharing_id: str) -> None:
         """Send access request for the published workspace with the given ID to
         the creator.
