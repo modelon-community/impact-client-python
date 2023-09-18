@@ -141,7 +141,7 @@ class Service:
         url = (
             self._base_uri / f"api/published-workspaces/{sharing_id}/access"
         ).resolve()
-        self._http_client.post_json(url, body={})
+        self._http_client.post_json_no_response_body(url, body={})
 
     def delete_published_workspace(self, sharing_id: str) -> None:
         url = (self._base_uri / f"api/published-workspaces/{sharing_id}").resolve()
