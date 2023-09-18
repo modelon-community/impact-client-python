@@ -1,3 +1,10 @@
+# [3.1.0-beta.8](https://github.com/modelon-community/impact-client-python/compare/v3.1.0-beta.7...v3.1.0-beta.8) (2023-09-18)
+
+
+### Bug Fixes
+
+* corrected to request_published_workspace_access to not expect response ([e33e850](https://github.com/modelon-community/impact-client-python/commit/e33e85060b4e10e6a421973ef427f327ad45b225))
+
 # [3.1.0-beta.7](https://github.com/modelon-community/impact-client-python/compare/v3.1.0-beta.6...v3.1.0-beta.7) (2023-09-18)
 
 
