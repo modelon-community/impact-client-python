@@ -32,22 +32,15 @@
 					}
 				},
 				"terminal.integrated.defaultProfile.linux": "poetry shell",
-				"python.formatting.provider": "black",
-				"python.formatting.blackArgs": [
-					"-S"
-				],
+				"python.formatting.provider": "none",
+				"black-formatter.args": ["-S"],
+				"black-formatter.importStrategy": "fromEnvironment",
 				"[python]": {
+					"editor.defaultFormatter": "ms-python.black-formatter",
 					"editor.formatOnSave": true,
 					"editor.formatOnSaveTimeout": 3000
 				},
-				"python.linting.enabled": true,
-				"python.linting.pylintEnabled": true,
 				"python.linting.mypyEnabled": true,
-				"python.linting.flake8Enabled": true,
-				"python.linting.flake8Args": [
-					"--config",
-					".flake8"
-				],
 				"python.testing.pytestEnabled": true,
 				"python.analysis.typeCheckingMode": "basic",
 				"flake8.args": [
@@ -61,6 +54,7 @@
 				"ms-python.vscode-pylance",
 				"ms-python.flake8",
 				"ms-python.pylint",
+				"ms-python.black-formatter",
 				"njpwerner.autodocstring"
 			]
 		}
