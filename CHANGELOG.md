@@ -1,3 +1,11 @@
+# [3.1.0-beta.9](https://github.com/modelon-community/impact-client-python/compare/v3.1.0-beta.8...v3.1.0-beta.9) (2023-09-21)
+
+
+### Bug Fixes
+
+* removed unsupported endpoints ([a6ffd3c](https://github.com/modelon-community/impact-client-python/commit/a6ffd3cf9c1a5480509a0cbc1838875d533f9ddf))
+* use recommended black formatter plugin instead ([08cf5f2](https://github.com/modelon-community/impact-client-python/commit/08cf5f2899422deb800246c96b76a879bd339311))
+
 # [3.1.0-beta.8](https://github.com/modelon-community/impact-client-python/compare/v3.1.0-beta.7...v3.1.0-beta.8) (2023-09-18)
 
 
