@@ -52,10 +52,10 @@ class WorkspaceService:
         return self._http_client.get_json(url)
 
     def workspace_export_setup(
-        self, workspace_id: str, blob_storage: bool
+        self, workspace_id: str, publish: bool
     ) -> Dict[str, Any]:
         url = (self._base_uri / "api/workspace-exports").resolve()
-        body = {"workspaceId": workspace_id, 'blobStorage': blob_storage}
+        body = {"workspaceId": workspace_id, 'publish': publish}
         return self._http_client.post_json(url, body=body)
 
     def workspace_conversion_setup(
