@@ -1,3 +1,10 @@
+# [3.1.0-beta.10](https://github.com/modelon-community/impact-client-python/compare/v3.1.0-beta.9...v3.1.0-beta.10) (2023-09-22)
+
+
+### Bug Fixes
+
+* correct body for POST /api/workspace-exports ([236089a](https://github.com/modelon-community/impact-client-python/commit/236089a34426fb72d98de1d32f63c9ae07a4361d))
+
 # [3.1.0-beta.9](https://github.com/modelon-community/impact-client-python/compare/v3.1.0-beta.8...v3.1.0-beta.9) (2023-09-21)
 
 
