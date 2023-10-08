@@ -1,3 +1,15 @@
+# [3.1.0-beta.11](https://github.com/modelon-community/impact-client-python/compare/v3.1.0-beta.10...v3.1.0-beta.11) (2023-10-08)
+
+
+### Bug Fixes
+
+* added owner name attribute to PublishedWorkspace ([eda5d9f](https://github.com/modelon-community/impact-client-python/commit/eda5d9facacaf4ccf8dd74269e3893ba13c0e6f0))
+
+
+### Reverts
+
+* Revert "fix: removed unsupported endpoints" ([6f366c5](https://github.com/modelon-community/impact-client-python/commit/6f366c5c25b1e4bcb4fecb787119be8f7fbebd36))
+
 # [3.1.0-beta.10](https://github.com/modelon-community/impact-client-python/compare/v3.1.0-beta.9...v3.1.0-beta.10) (2023-09-22)
 
 
