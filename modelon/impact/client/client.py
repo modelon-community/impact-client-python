@@ -825,6 +825,20 @@ class Client:
         """
         self._sal.rename_published_workspace(sharing_id, workspace_id, workspace_name)
 
+    def request_published_workspace_access(self, sharing_id: str) -> None:
+        """Send access request for the published workspace with the given ID to
+        the creator.
+
+        Args:
+            sharing_id: ID of the workspace snapshot.
+
+        Example::
+
+            client.request_snapshot_access("2h98hciwsniucwincj")
+
+        """
+        self._sal.request_published_workspace_access(sharing_id)
+
     def delete_published_workspace(
         self, published_workspace: PublishedWorkspace
     ) -> None:
