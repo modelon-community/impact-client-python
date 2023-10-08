@@ -50,6 +50,7 @@ class PublishedWorkspace:
     group: str
     size: int
     status: PublishedWorkspaceUploadStatus
+    owner_name: str
 
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> PublishedWorkspace:
@@ -60,6 +61,7 @@ class PublishedWorkspace:
             group=data['group'],
             size=data['size'],
             status=PublishedWorkspaceUploadStatus(data['status']),
+            owner_name=data['ownerName'],
         )
 
 
@@ -746,26 +748,23 @@ class Client:
         self,
         *,
         workspace_id: str = "",
-        only_latest: bool = False,
         first: int = 0,
         maximum: int = 20,
         has_data: bool = False,
-        only_mine: bool = True,
+        owner_name: str = "",
     ) -> List[PublishedWorkspace]:
         """Returns a list of published workspaces. The snapshots could be
         filtered based on the key-worded arguments.
 
         Args:
             workspace_id: ID of the workspace.
-            only_latest: If true, then only returns the latest version for
-            each "workspace_id".
             first: Index of first matching resource to return.
             maximum: Maximum number of resources to return.
             has_data: If true, filters with
             status==PublishedWorkspaceUploadStatus.CREATED. If false
             returns everything.
-            only_mine: If true, only workspaces published by the logged
-            in user are listed.
+            owner_name: If true, only workspaces published by the specified
+            user are listed.
 
         Returns:
             A list of published workspace class objects.
@@ -778,16 +777,14 @@ class Client:
         query = {}
         if workspace_id:
             query["workspaceId"] = workspace_id
-        if only_latest:
-            query["onlyLatest"] = _bool_to_str(only_latest)
         if has_data:
             query["hasData"] = _bool_to_str(has_data)
         if first > 0:
             query["first"] = str(first)
         if maximum >= 0:
             query["max"] = str(maximum)
-        if only_mine:
-            query["onlyMine"] = _bool_to_str(only_mine)
+        if owner_name:
+            query["ownerName"] = owner_name
         query_args = '&'.join(f'{key}={value}' for key, value in query.items())
         data = self._sal.get_published_workspaces(query_args)["data"]["items"]
         return [PublishedWorkspace.from_dict(item) for item in data]
