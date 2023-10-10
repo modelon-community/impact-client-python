@@ -134,7 +134,7 @@ class Service:
     ) -> None:
         url = (self._base_uri / f"api/published-workspaces/{sharing_id}").resolve()
         self._http_client.patch_json_no_response_body(
-            url, body={'workspaceId': workspace_id, 'workspaceName': workspace_name}
+            url, body={'workspaceLabel': workspace_id, 'workspaceName': workspace_name}
         )
 
     def request_published_workspace_access(self, sharing_id: str) -> None:

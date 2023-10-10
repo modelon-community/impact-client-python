@@ -45,7 +45,7 @@ class PublishedWorkspaceUploadStatus(enum.Enum):
 @dataclass
 class PublishedWorkspace:
     id: str
-    workspace_id: str
+    workspace_label: str
     workspace_name: str
     group: str
     size: int
@@ -56,7 +56,7 @@ class PublishedWorkspace:
     def from_dict(cls, data: Dict[str, Any]) -> PublishedWorkspace:
         return cls(
             id=data['id'],
-            workspace_id=data['workspaceId'],
+            workspace_label=data['workspaceLabel'],
             workspace_name=data['displayName'],
             group=data['group'],
             size=data['size'],
@@ -747,7 +747,7 @@ class Client:
     def get_published_workspaces(
         self,
         *,
-        workspace_id: str = "",
+        workspace_label: str = "",
         first: int = 0,
         maximum: int = 20,
         has_data: bool = False,
@@ -757,7 +757,7 @@ class Client:
         filtered based on the key-worded arguments.
 
         Args:
-            workspace_id: ID of the workspace.
+            workspace_label: Label of the workspace.
             first: Index of first matching resource to return.
             maximum: Maximum number of resources to return.
             has_data: If true, filters with
@@ -775,8 +775,8 @@ class Client:
 
         """
         query = {}
-        if workspace_id:
-            query["workspaceId"] = workspace_id
+        if workspace_label:
+            query["workspaceLabel"] = workspace_label
         if has_data:
             query["hasData"] = _bool_to_str(has_data)
         if first > 0:
