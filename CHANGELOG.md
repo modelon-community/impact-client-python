@@ -1,3 +1,10 @@
+# [3.1.0-beta.13](https://github.com/modelon-community/impact-client-python/compare/v3.1.0-beta.12...v3.1.0-beta.13) (2023-10-12)
+
+
+### Bug Fixes
+
+* rename group to tenant ([aacbd7d](https://github.com/modelon-community/impact-client-python/commit/aacbd7dc855351a894f74f95509d58c97ee57f80))
+
 # [3.1.0-beta.12](https://github.com/modelon-community/impact-client-python/compare/v3.1.0-beta.11...v3.1.0-beta.12) (2023-10-10)
 
 
