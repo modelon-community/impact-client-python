@@ -47,7 +47,7 @@ class PublishedWorkspace:
     id: str
     workspace_label: str
     workspace_name: str
-    group: str
+    tenant: str
     size: int
     status: PublishedWorkspaceUploadStatus
     owner_name: str
@@ -58,7 +58,7 @@ class PublishedWorkspace:
             id=data['id'],
             workspace_label=data['workspaceLabel'],
             workspace_name=data['displayName'],
-            group=data['group'],
+            tenant=data['tenant'],
             size=data['size'],
             status=PublishedWorkspaceUploadStatus(data['status']),
             owner_name=data['ownerName'],
