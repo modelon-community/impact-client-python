@@ -36,24 +36,41 @@ class Request:
         self.headers = headers
 
     def execute(self, check_return: bool = True) -> Any:
+        cookies = self.context.session.cookies
+        access_token = cookies.get('access_token')
+        session_cookies = {'access_token': access_token}
         try:
             if self.method == "POST":
                 logger.debug("POST with JSON body: {}".format(self.body))
                 resp = self.context.session.post(
-                    self.url, json=self.body, files=self.files, headers=self.headers
+                    self.url,
+                    json=self.body,
+                    files=self.files,
+                    headers=self.headers,
+                    cookies=session_cookies,
                 )
             elif self.method == "GET":
-                resp = self.context.session.get(self.url, headers=self.headers)
+                resp = self.context.session.get(
+                    self.url, headers=self.headers, cookies=session_cookies
+                )
             elif self.method == "PUT":
                 resp = self.context.session.put(
-                    self.url, json=self.body, headers=self.headers
+                    self.url,
+                    json=self.body,
+                    headers=self.headers,
+                    cookies=session_cookies,
                 )
             elif self.method == "PATCH":
                 resp = self.context.session.patch(
-                    self.url, json=self.body, headers=self.headers
+                    self.url,
+                    json=self.body,
+                    headers=self.headers,
+                    cookies=session_cookies,
                 )
             elif self.method == "DELETE":
-                resp = self.context.session.delete(self.url, json=self.body)
+                resp = self.context.session.delete(
+                    self.url, json=self.body, cookies=session_cookies
+                )
             else:
                 raise NotImplementedError()
         except requests.exceptions.SSLError as exce:

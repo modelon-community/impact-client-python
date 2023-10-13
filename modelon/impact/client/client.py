@@ -45,7 +45,6 @@ class PublishedWorkspaceUploadStatus(enum.Enum):
 @dataclass
 class PublishedWorkspace:
     id: str
-    workspace_label: str
     workspace_name: str
     tenant: str
     size: int
@@ -56,8 +55,7 @@ class PublishedWorkspace:
     def from_dict(cls, data: Dict[str, Any]) -> PublishedWorkspace:
         return cls(
             id=data['id'],
-            workspace_label=data['workspaceLabel'],
-            workspace_name=data['displayName'],
+            workspace_name=data['workspaceName'],
             tenant=data['tenant'],
             size=data['size'],
             status=PublishedWorkspaceUploadStatus(data['status']),
@@ -747,7 +745,7 @@ class Client:
     def get_published_workspaces(
         self,
         *,
-        workspace_label: str = "",
+        workspace_name: str = "",
         first: int = 0,
         maximum: int = 20,
         has_data: bool = False,
@@ -757,7 +755,7 @@ class Client:
         filtered based on the key-worded arguments.
 
         Args:
-            workspace_label: Label of the workspace.
+            workspace_name: Name of the workspace.
             first: Index of first matching resource to return.
             maximum: Maximum number of resources to return.
             has_data: If true, filters with
@@ -775,8 +773,8 @@ class Client:
 
         """
         query = {}
-        if workspace_label:
-            query["workspaceLabel"] = workspace_label
+        if workspace_name:
+            query["workspaceName"] = workspace_name
         if has_data:
             query["hasData"] = _bool_to_str(has_data)
         if first > 0:
@@ -806,24 +804,20 @@ class Client:
         data = self._sal.get_published_workspace(sharing_id)
         return PublishedWorkspace.from_dict(data)
 
-    def rename_published_workspace(
-        self, sharing_id: str, workspace_id: str, workspace_name: str
-    ) -> None:
+    def rename_published_workspace(self, sharing_id: str, workspace_name: str) -> None:
         """Rename the published workspace class object with the given name and
         display name.
 
         Args:
             sharing_id: ID of the published workspace.
-            workspace_id:  Name of the published workspace.
             workspace_name:  Display name of the published workspace
 
         Example::
 
-            client.rename_published_workspace("2h98hciwsniucwincj", "my workspace",
-            "my_workspace")
+            client.rename_published_workspace("2h98hciwsniucwincj", "my workspace")
 
         """
-        self._sal.rename_published_workspace(sharing_id, workspace_id, workspace_name)
+        self._sal.rename_published_workspace(sharing_id, workspace_name)
 
     def request_published_workspace_access(self, sharing_id: str) -> None:
         """Send access request for the published workspace with the given ID to
