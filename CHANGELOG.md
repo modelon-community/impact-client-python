@@ -1,3 +1,10 @@
+# [3.1.0-beta.14](https://github.com/modelon-community/impact-client-python/compare/v3.1.0-beta.13...v3.1.0-beta.14) (2023-10-13)
+
+
+### Bug Fixes
+
+* updates to protocol ([8cfc0bd](https://github.com/modelon-community/impact-client-python/commit/8cfc0bd9c3890b06334b0419b54d7788bf8ca968))
+
 # [3.1.0-beta.13](https://github.com/modelon-community/impact-client-python/compare/v3.1.0-beta.12...v3.1.0-beta.13) (2023-10-12)
 
 
