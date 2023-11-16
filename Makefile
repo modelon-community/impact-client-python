@@ -46,7 +46,9 @@ unit-test:
 test: build unit-test lint docformatter-check docs-spell-check
 
 test-with-coverage:
-	$(MAKE) WITH_COVERAGE=YES test
+	IMPACT_PYTHON_CLIENT_EXPERIMENTAL=0 $(MAKE) test 
+	IMPACT_PYTHON_CLIENT_EXPERIMENTAL=1 $(MAKE) WITH_COVERAGE=YES test 
+
 
 test-watch: build
 	$(call _run_interactive, poetry run -- pytest-watch -- -vv ${EXTRA_PYTEST_FLAGS})

@@ -1,10 +1,15 @@
+import os
 import pytest
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 from modelon.impact.client import Client
-from modelon.impact.client.operations.model_executable import ModelExecutableOperation
-from modelon.impact.client.operations.experiment import ExperimentOperation
-from modelon.impact.client.entities.workspace import Workspace, WorkspaceDefinition
 from modelon.impact.client.entities.project import Project
+from modelon.impact.client.entities.workspace import (
+    PublishedWorkspaceUploadStatus,
+    Workspace,
+    WorkspaceDefinition,
+)
+from modelon.impact.client.operations.experiment import ExperimentOperation
+from modelon.impact.client.operations.model_executable import ModelExecutableOperation
 import modelon.impact.client.exceptions as exceptions
 import modelon.impact.client.sal.exceptions as sal_exceptions
 from tests.files.paths import TEST_WORKSPACE_PATH
@@ -43,6 +48,37 @@ def test_get_workspaces(multiple_workspace):
     assert len(workspaces) == 2
     assert workspaces[0].id == IDs.WORKSPACE_PRIMARY
     assert workspaces[1].id == IDs.WORKSPACE_SECONDARY
+
+
+def test_get_publised_workspaces(multiple_published_workspaces):
+    client = Client(
+        url=multiple_published_workspaces.url,
+        context=multiple_published_workspaces.context,
+    )
+    workspaces = client.get_published_workspaces()
+    assert workspaces
+    assert len(workspaces) == 1
+    assert workspaces[0].id == IDs.PUBLISHED_WORKSPACE_ID
+    assert workspaces[0].name == IDs.WORKSPACE_PRIMARY
+    assert workspaces[0].definition.owner_username == IDs.USERNAME
+    assert workspaces[0].definition.tenant == IDs.TENANT
+    assert workspaces[0].definition.size == 10
+    assert workspaces[0].definition.status == PublishedWorkspaceUploadStatus.CREATED
+
+
+def test_get_publised_workspace(published_workspace):
+    client = Client(
+        url=published_workspace.url,
+        context=published_workspace.context,
+    )
+    workspace = client.get_published_workspace(IDs.PUBLISHED_WORKSPACE_ID)
+    assert workspace
+    assert workspace.id == IDs.PUBLISHED_WORKSPACE_ID
+    assert workspace.name == IDs.WORKSPACE_PRIMARY
+    assert workspace.definition.owner_username == IDs.USERNAME
+    assert workspace.definition.tenant == IDs.TENANT
+    assert workspace.definition.size == 10
+    assert workspace.definition.status == PublishedWorkspaceUploadStatus.CREATED
 
 
 def test_get_workspaces_error(workspaces_error):
