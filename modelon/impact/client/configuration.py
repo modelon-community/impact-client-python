@@ -51,3 +51,6 @@ class Experimental:
             setattr(owner, name, self.fn)
         else:
             delattr(owner, name)
+
+    def __call__(self, *args, **kwargs):
+        self.fn(*args, **kwargs)
