@@ -5,7 +5,11 @@ import enum
 from typing import List, Optional, Dict, Any, Union, Iterable
 from dataclasses import dataclass
 from semantic_version import SimpleSpec, Version  # type: ignore
-import modelon.impact.client.configuration
+from modelon.impact.client.configuration import (
+    get_client_url,
+    get_client_interactive,
+    Experimental,
+)
 import modelon.impact.client.sal.service
 import modelon.impact.client.sal.exceptions
 import modelon.impact.client.jupyterhub
@@ -227,10 +231,10 @@ class Client:
         jupyterhub_credential_manager: Optional[CredentialManager] = None,
     ):
         if url is None:
-            url = modelon.impact.client.configuration.get_client_url()
+            url = get_client_url()
 
         if interactive is None:
-            interactive = modelon.impact.client.configuration.get_client_interactive()
+            interactive = get_client_interactive()
 
         self._uri = URI(url)
         self._sal = modelon.impact.client.sal.service.Service(self._uri, context)
@@ -697,6 +701,7 @@ class Client:
                 continue
             yield self._operation_from_execution(execution)
 
+    @Experimental
     def get_published_workspaces(
         self,
         *,
@@ -743,6 +748,7 @@ class Client:
             for item in data
         ]
 
+    @Experimental
     def get_published_workspace(self, sharing_id: str) -> PublishedWorkspace:
         """Returns the published workspace class object with the given ID.
 

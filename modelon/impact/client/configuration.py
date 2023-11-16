@@ -29,3 +29,25 @@ def get_client_interactive() -> bool:
     """
     interactive_env = os.environ.get("MODELON_IMPACT_CLIENT_INTERACTIVE", "false")
     return interactive_env.lower() in ("1", "true")
+
+
+def get_client_experimental() -> bool:
+    """Returns the default for if experimental client methods should be enabled or not.
+
+    Can be overridden by the environment variable
+    IMPACT_PYTHON_CLIENT_EXPERIMENTAL.
+
+    """
+    experimental_env = os.environ.get("IMPACT_PYTHON_CLIENT_EXPERIMENTAL", "false")
+    return experimental_env.lower() in ("1", "true")
+
+
+class Experimental:
+    def __init__(self, fn):
+        self.fn = fn
+
+    def __set_name__(self, owner, name):
+        if get_client_experimental():
+            setattr(owner, name, self.fn)
+        else:
+            delattr(owner, name)
