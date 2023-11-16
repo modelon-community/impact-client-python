@@ -1,7 +1,8 @@
 import pytest
+
+import modelon.impact.client.sal.exceptions
 import modelon.impact.client.sal.service
 from modelon.impact.client.sal.uri import URI
-import modelon.impact.client.sal.exceptions
 from tests.impact.client.helpers import IDs, get_test_workspace_definition
 
 

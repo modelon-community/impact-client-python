@@ -1,35 +1,36 @@
 from __future__ import annotations
-from dataclasses import dataclass
-import logging
-import os
+
 import enum
 import json
-from typing import Any, List, Dict, Optional, Union, Type, TYPE_CHECKING
+import logging
+import os
+from dataclasses import dataclass
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Type, Union
 
+from modelon.impact.client.entities.custom_function import CustomFunction
+from modelon.impact.client.entities.experiment import Experiment
+from modelon.impact.client.entities.external_result import ExternalResult
 from modelon.impact.client.entities.interfaces.workspace import WorkspaceInterface
-from modelon.impact.client.sal.service import Service
+from modelon.impact.client.entities.model import Model
+from modelon.impact.client.entities.model_executable import ModelExecutable
+from modelon.impact.client.entities.project import Project, VcsUri
 from modelon.impact.client.experiment_definition.interfaces.definition import (
     BaseExperimentDefinition,
 )
-from modelon.impact.client.entities.custom_function import CustomFunction
-from modelon.impact.client.operations.workspace.exports import (
-    WorkspaceExportOperation,
-    Export,
-)
-from modelon.impact.client.operations.workspace.imports import WorkspaceImportOperation
-from modelon.impact.client.operations.workspace.conversion import (
-    WorkspaceConversionOperation,
-)
-from modelon.impact.client.operations.project_import import ProjectImportOperation
 from modelon.impact.client.operations.experiment import ExperimentOperation
 from modelon.impact.client.operations.external_result_import import (
     ExternalResultImportOperation,
 )
-from modelon.impact.client.entities.model import Model
-from modelon.impact.client.entities.external_result import ExternalResult
-from modelon.impact.client.entities.model_executable import ModelExecutable
-from modelon.impact.client.entities.experiment import Experiment
-from modelon.impact.client.entities.project import Project, VcsUri
+from modelon.impact.client.operations.project_import import ProjectImportOperation
+from modelon.impact.client.operations.workspace.conversion import (
+    WorkspaceConversionOperation,
+)
+from modelon.impact.client.operations.workspace.exports import (
+    Export,
+    WorkspaceExportOperation,
+)
+from modelon.impact.client.operations.workspace.imports import WorkspaceImportOperation
+from modelon.impact.client.sal.service import Service
 
 if TYPE_CHECKING:
     from modelon.impact.client.operations.base import BaseOperation
@@ -394,11 +395,11 @@ class Workspace(WorkspaceInterface):
 
     def export(self, publish: bool = False) -> WorkspaceExportOperation:
         """Exports the workspace as a binary compressed archive. Similar to
-        :obj:`~modelon.impact.client.entities.workspace.Workspace.download`,
-        but gives more control for getting the workspace async.
-        Returns an modelon.impact.client.operations.workspace.exports
-        .WorkspaceExportOperation class object. The binary archive is stored
-        to cloud storage if the publish argument is set to True.
+        :obj:`~modelon.impact.client.entities.workspace.Workspace.download`, but gives
+        more control for getting the workspace async. Returns an
+        modelon.impact.client.operations.workspace.exports .WorkspaceExportOperation
+        class object. The binary archive is stored to cloud storage if the publish
+        argument is set to True.
 
         Args:
             publish: To export the workspace and save it to cloud storage.
@@ -410,6 +411,7 @@ class Workspace(WorkspaceInterface):
 
             path = workspace.export().wait().download_as('/home/workspace.zip')
             path = workspace.export(publish=True)
+
         """
         resp = self._sal.workspace.workspace_export_setup(self._workspace_id, publish)
         return WorkspaceExportOperation[Workspace](
@@ -417,10 +419,10 @@ class Workspace(WorkspaceInterface):
         )
 
     def download(self, path: str) -> str:
-        """Downloads the workspace as a binary compressed archive. Returns the
-        local path to the downloaded workspace archive. Similar to
-        :obj:`~modelon.impact.client.entities.workspace.Workspace.export`, but
-        does the entire setup and download in one go.
+        """Downloads the workspace as a binary compressed archive. Returns the local
+        path to the downloaded workspace archive. Similar to
+        :obj:`~modelon.impact.client.entities.workspace.Workspace.export`, but does the
+        entire setup and download in one go.
 
         Args:
 
@@ -741,8 +743,8 @@ class Workspace(WorkspaceInterface):
         )
 
     def import_project_from_zip(self, path_to_project: str) -> ProjectImportOperation:
-        """Imports a Project from a compressed(.zip) project file and adds it
-        to the workspace. Returns the project class object.
+        """Imports a Project from a compressed(.zip) project file and adds it to the
+        workspace. Returns the project class object.
 
         Args:
             path_to_project: The path for the compressed project(.zip) to be uploaded.
@@ -765,8 +767,8 @@ class Workspace(WorkspaceInterface):
     def import_dependency_from_zip(
         self, path_to_dependency: str
     ) -> ProjectImportOperation:
-        """Imports a Project dependency from a compressed(.zip) project file
-        and adds it to the workspace. Returns the project class object.
+        """Imports a Project dependency from a compressed(.zip) project file and adds it
+        to the workspace. Returns the project class object.
 
         Args:
             path_to_dependency: The path for the compressed project(.zip) to be

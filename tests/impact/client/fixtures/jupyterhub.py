@@ -1,12 +1,7 @@
 import pytest
 import requests.exceptions
 
-
-from tests.impact.client.helpers import (
-    with_json_route,
-    with_text_route,
-    with_exception,
-)
+from tests.impact.client.helpers import with_exception, with_json_route, with_text_route
 
 
 @pytest.fixture

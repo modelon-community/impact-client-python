@@ -1,6 +1,5 @@
-import os
 import pytest
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 from modelon.impact.client import Client
 from modelon.impact.client.entities.project import Project
 from modelon.impact.client.entities.workspace import (
@@ -13,11 +12,10 @@ from modelon.impact.client.operations.model_executable import ModelExecutableOpe
 import modelon.impact.client.exceptions as exceptions
 import modelon.impact.client.sal.exceptions as sal_exceptions
 from tests.files.paths import TEST_WORKSPACE_PATH
-
 from tests.impact.client.helpers import (
+    IDs,
     create_workspace_conversion_operation,
     create_workspace_entity,
-    IDs,
     get_test_workspace_definition,
 )
 

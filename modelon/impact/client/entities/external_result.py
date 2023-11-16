@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 from typing import TYPE_CHECKING, Any
 
 from modelon.impact.client.entities.interfaces.external_result import (

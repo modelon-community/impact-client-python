@@ -1,7 +1,8 @@
 import pytest
-from modelon.impact.client.sal.uri import URI
-from modelon.impact.client.jupyterhub.sal import JupyterHubService, JupyterContext
+
 import modelon.impact.client.jupyterhub.exceptions as exceptions
+from modelon.impact.client.jupyterhub.sal import JupyterContext, JupyterHubService
+from modelon.impact.client.sal.uri import URI
 
 
 def test_given_no_jupyter_error_when_get_user(get_user_ok):

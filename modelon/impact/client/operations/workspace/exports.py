@@ -1,18 +1,20 @@
 from __future__ import annotations
+
 import os
-from typing import Dict, Any, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Dict
+
+from modelon.impact.client import exceptions
 from modelon.impact.client.operations.base import (
     AsyncOperation,
     AsyncOperationStatus,
-    Entity,
     BaseOperation,
+    Entity,
 )
-from modelon.impact.client import exceptions
 
 if TYPE_CHECKING:
+    from modelon.impact.client.operations.base import EntityFromOperation
     from modelon.impact.client.sal.exports import ExportService
     from modelon.impact.client.sal.service import Service
-    from modelon.impact.client.operations.base import EntityFromOperation
 
 
 class Export:
@@ -26,8 +28,7 @@ class Export:
         return self._download_uri.split('/')[-1]
 
     def download_as(self, path_to_download: str) -> str:
-        """Writes the binary archive to a file. Returns the path to downloaded
-        archive.
+        """Writes the binary archive to a file. Returns the path to downloaded archive.
 
         Args:
             path_to_download: The path to store the downloaded workspace.

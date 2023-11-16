@@ -1,5 +1,6 @@
 from __future__ import annotations
-from typing import Dict, Any, TYPE_CHECKING
+
+from typing import TYPE_CHECKING, Any, Dict
 
 from modelon.impact.client import exceptions
 from modelon.impact.client.operations.base import (
@@ -9,8 +10,8 @@ from modelon.impact.client.operations.base import (
 )
 
 if TYPE_CHECKING:
-    from modelon.impact.client.sal.service import Service
     from modelon.impact.client.operations.base import EntityFromOperation
+    from modelon.impact.client.sal.service import Service
 
 
 class ExternalResultImportOperation(AsyncOperation[Entity]):

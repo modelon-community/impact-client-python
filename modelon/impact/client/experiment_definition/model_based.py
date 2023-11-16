@@ -1,26 +1,12 @@
 from __future__ import annotations
-import logging
-from typing import Dict, Optional, Any, List, TYPE_CHECKING, Union, Type
 
-from modelon.impact.client.experiment_definition.operators import Operator
-from modelon.impact.client.experiment_definition.interfaces.definition import (
-    BaseExperimentDefinition,
-)
-from modelon.impact.client.experiment_definition.extension import (
-    SimpleExperimentExtension,
-)
-from modelon.impact.client.experiment_definition.expansion import (
-    ExpansionAlgorithm,
-    FullFactorial,
-)
+import logging
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Type, Union
+
 from modelon.impact.client.entities.interfaces.case import CaseInterface
 from modelon.impact.client.entities.interfaces.experiment import ExperimentInterface
 from modelon.impact.client.entities.interfaces.external_result import (
     ExternalResultInterface,
-)
-from modelon.impact.client.experiment_definition.util import (
-    get_options,
-    case_to_identifier_dict,
 )
 from modelon.impact.client.experiment_definition.asserts import (
     assert_valid_args,
@@ -28,18 +14,33 @@ from modelon.impact.client.experiment_definition.asserts import (
     assert_valid_extensions,
     validate_initialize_from,
 )
+from modelon.impact.client.experiment_definition.expansion import (
+    ExpansionAlgorithm,
+    FullFactorial,
+)
+from modelon.impact.client.experiment_definition.extension import (
+    SimpleExperimentExtension,
+)
+from modelon.impact.client.experiment_definition.interfaces.definition import (
+    BaseExperimentDefinition,
+)
+from modelon.impact.client.experiment_definition.operators import Operator
+from modelon.impact.client.experiment_definition.util import (
+    case_to_identifier_dict,
+    get_options,
+)
 
 if TYPE_CHECKING:
     from modelon.impact.client.entities.case import Case
-    from modelon.impact.client.entities.experiment import Experiment
-    from modelon.impact.client.entities.model import Model
     from modelon.impact.client.entities.custom_function import CustomFunction
+    from modelon.impact.client.entities.experiment import Experiment
     from modelon.impact.client.entities.external_result import ExternalResult
+    from modelon.impact.client.entities.model import Model
     from modelon.impact.client.options import (
-        SolverOptions,
-        SimulationOptions,
         CompilerOptions,
         RuntimeOptions,
+        SimulationOptions,
+        SolverOptions,
     )
 
     CaseOrExperimentOrExternalResult = Union[Case, Experiment, ExternalResult]
@@ -354,8 +355,7 @@ class SimpleModelicaExperimentDefinition(BaseExperimentDefinition):
     def with_cases(
         self, cases_modifiers: List[Dict[str, Any]]
     ) -> SimpleModelicaExperimentDefinition:
-        """Sets up an experiment with multiple cases with different variable
-        modifiers.
+        """Sets up an experiment with multiple cases with different variable modifiers.
 
         Args:
             cases_modifiers: A list of variable modifier dictionaries.

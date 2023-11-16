@@ -1,13 +1,14 @@
 from __future__ import annotations
-import logging
-from typing import Dict, Optional, Any, TYPE_CHECKING
 
-from modelon.impact.client.operations.base import ExecutionOperation, Status, Entity
+import logging
+from typing import TYPE_CHECKING, Any, Dict, Optional
+
 from modelon.impact.client import exceptions
+from modelon.impact.client.operations.base import Entity, ExecutionOperation, Status
 
 if TYPE_CHECKING:
-    from modelon.impact.client.sal.service import Service
     from modelon.impact.client.operations.base import EntityFromOperation
+    from modelon.impact.client.sal.service import Service
 
 logger = logging.getLogger(__name__)
 
@@ -90,8 +91,8 @@ class CachedModelExecutableOperation(ExecutionOperation[Entity]):
     def wait(
         self, timeout: Optional[float] = None, status: Status = Status.DONE
     ) -> Entity:
-        """Waits until the operation achieves the set status. Returns the
-        operation class instance if the set status is achieved.
+        """Waits until the operation achieves the set status. Returns the operation
+        class instance if the set status is achieved.
 
         Args:
             timeout: Time to wait in seconds for achieving the status.This argument is

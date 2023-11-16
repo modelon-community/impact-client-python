@@ -1,29 +1,30 @@
 from __future__ import annotations
+
 import logging
 import os
 import tempfile
-from typing import Any, List, Dict, Optional, Union, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Union
 
+from modelon.impact.client import exceptions
+from modelon.impact.client.entities.asserts import assert_successful_operation
 from modelon.impact.client.entities.interfaces.model_executable import (
     ModelExecutableInterface,
 )
-from modelon.impact.client.entities.asserts import assert_successful_operation
 from modelon.impact.client.entities.log import Log
 from modelon.impact.client.entities.status import ModelExecutableStatus
 from modelon.impact.client.experiment_definition.fmu_based import (
     SimpleFMUExperimentDefinition,
 )
-from modelon.impact.client import exceptions
 from modelon.impact.client.operations.model_executable import (
-    ModelExecutableOperation,
     CachedModelExecutableOperation,
+    ModelExecutableOperation,
 )
 
 if TYPE_CHECKING:
-    from modelon.impact.client.sal.service import Service
     from modelon.impact.client.entities.custom_function import CustomFunction
-    from modelon.impact.client.options import SimulationOptions, SolverOptions
     from modelon.impact.client.operations.base import BaseOperation
+    from modelon.impact.client.options import SimulationOptions, SolverOptions
+    from modelon.impact.client.sal.service import Service
 
     SimulationOptionsOrDict = Union[SimulationOptions, Dict[str, Any]]
     SolverOptionsOrDict = Union[SolverOptions, Dict[str, Any]]
@@ -169,9 +170,8 @@ class ModelExecutable(ModelExecutableInterface):
     def metadata(self) -> Dict[str, Any]:
         """FMU metadata.
 
-        Returns the 'iteration_variable_count' and
-        'residual_variable_count' only for steady state model compiled
-        as an FMU
+        Returns the 'iteration_variable_count' and 'residual_variable_count' only for
+        steady state model compiled as an FMU
 
         """
         assert_successful_operation(self.is_successful(), "Compilation")
@@ -185,8 +185,8 @@ class ModelExecutable(ModelExecutableInterface):
         return self._get_info()["input"]["class_name"]
 
     def is_successful(self) -> bool:
-        """Returns True if the model has compiled successfully. Use the
-        'run_info' attribute to get more info.
+        """Returns True if the model has compiled successfully. Use the 'run_info'
+        attribute to get more info.
 
         Returns:
             True, if model has compiled successfully. False, if compilation
@@ -321,8 +321,8 @@ class ModelExecutable(ModelExecutableInterface):
         )
 
     def download(self, path: Optional[str] = None) -> str:
-        """Downloads an FMU binary that is compiled. Returns the local path to
-        the downloaded FMU archive.
+        """Downloads an FMU binary that is compiled. Returns the local path to the
+        downloaded FMU archive.
 
         Args:
             path: The local path to store the downloaded FMU. Default: None.

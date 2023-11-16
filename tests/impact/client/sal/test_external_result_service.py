@@ -1,6 +1,7 @@
 import unittest.mock as mock
-from modelon.impact.client.sal.uri import URI
+
 import modelon.impact.client.sal.service
+from modelon.impact.client.sal.uri import URI
 from tests.impact.client.helpers import IDs
 
 

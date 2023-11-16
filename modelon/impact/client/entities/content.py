@@ -1,10 +1,11 @@
 from __future__ import annotations
+
 import enum
 from pathlib import Path
-from typing import Dict, Optional, TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Dict, Optional
 
-from modelon.impact.client.sal.service import Service
 from modelon.impact.client.operations.content_import import ContentImportOperation
+from modelon.impact.client.sal.service import Service
 
 if TYPE_CHECKING:
     from modelon.impact.client.operations.base import BaseOperation

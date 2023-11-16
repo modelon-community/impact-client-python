@@ -1,9 +1,9 @@
 import logging
 import os
 from typing import Optional, Tuple
+
 from modelon.impact.client.credential_manager import CredentialManager
-from modelon.impact.client.jupyterhub import exceptions
-from modelon.impact.client.jupyterhub import sal
+from modelon.impact.client.jupyterhub import exceptions, sal
 from modelon.impact.client.sal.context import Context
 from modelon.impact.client.sal.uri import URI
 

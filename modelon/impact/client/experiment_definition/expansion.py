@@ -1,6 +1,6 @@
 import logging
-from dataclasses import dataclass, asdict
-from typing import Optional, Dict, Any
+from dataclasses import asdict, dataclass
+from typing import Any, Dict, Optional
 
 from modelon.impact.client.experiment_definition.interfaces.expansion import (
     ExpansionAlgorithm,
@@ -11,13 +11,12 @@ logger = logging.getLogger(__name__)
 
 @dataclass
 class LatinHypercube(ExpansionAlgorithm):
-    """LatinHypercube expansion class. Produces <samples> cases, picks a random
-    value from each modifier expression for each case. The resulting cases are
-    orthogonal, i.e., the values of a given modifier expression do not repeat.
-    The exception are singular modifiers, e.g.,
-    experiment_definition.with_modifiers({'PI.k': 10}), these
-    result in the same value for all cases. Singular modifiers do not affect
-    the result (with respect to the seed) in the resulting experiment.
+    """LatinHypercube expansion class. Produces <samples> cases, picks a random value
+    from each modifier expression for each case. The resulting cases are orthogonal,
+    i.e., the values of a given modifier expression do not repeat. The exception are
+    singular modifiers, e.g., experiment_definition.with_modifiers({'PI.k': 10}), these
+    result in the same value for all cases. Singular modifiers do not affect the result
+    (with respect to the seed) in the resulting experiment.
 
     Args:
         samples (int):
@@ -82,11 +81,11 @@ class FullFactorial(ExpansionAlgorithm):
 
 @dataclass
 class Sobol(ExpansionAlgorithm):
-    """Expansion method based on the Sobol sequence. The Sobol sequence is a
-    minimal discrepancy quasi-random sampling methods and suitable for
-    achieving a good coverage of the design space. Singular Modifiers, e.g.,
-    experiment_definition.with_modifiers({'PI.k': 10}), do not affect the
-    result in the resulting experiment.
+    """Expansion method based on the Sobol sequence. The Sobol sequence is a minimal
+    discrepancy quasi-random sampling methods and suitable for achieving a good coverage
+    of the design space. Singular Modifiers, e.g.,
+    experiment_definition.with_modifiers({'PI.k': 10}), do not affect the result in the
+    resulting experiment.
 
     Args:
         samples (int):

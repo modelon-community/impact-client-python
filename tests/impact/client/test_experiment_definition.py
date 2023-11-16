@@ -1,26 +1,27 @@
+import copy
 from unittest import mock
-from modelon.impact.client.entities.result import Result
+
+import pytest
+
 from modelon.impact.client import (
+    Beta,
+    Choices,
+    LatinHypercube,
+    Normal,
+    Range,
+    SimpleExperimentExtension,
     SimpleFMUExperimentDefinition,
     SimpleModelicaExperimentDefinition,
-    Range,
-    Choices,
-    Uniform,
-    Beta,
-    Normal,
-    SimpleExperimentExtension,
     Sobol,
-    LatinHypercube,
+    Uniform,
+    exceptions,
 )
-import pytest
-import copy
-from modelon.impact.client import exceptions
+from modelon.impact.client.entities.result import Result
 from tests.impact.client.helpers import (
-    create_external_result_entity,
-    create_case_entity,
     IDs,
+    create_case_entity,
+    create_external_result_entity,
 )
-
 
 _EXPECTED_FMU_EXP = {
     "experiment": {

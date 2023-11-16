@@ -1,11 +1,12 @@
-import pytest
 import os
 import tempfile
 from xml.etree import ElementTree
-from modelon.impact.client import exceptions
 
+import pytest
+
+from modelon.impact.client import exceptions
 from modelon.impact.client.entities.model_executable import ModelExecutableStatus
-from tests.impact.client.helpers import IDs, MODEL_DESCRIPTION_XML
+from tests.impact.client.helpers import MODEL_DESCRIPTION_XML, IDs
 
 
 class TestModelExecutable:

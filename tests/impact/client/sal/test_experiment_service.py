@@ -1,7 +1,7 @@
-from modelon.impact.client.sal.uri import URI
 import modelon.impact.client.sal.service
 from modelon.impact.client.sal.experiment import ResultFormat
-from tests.impact.client.helpers import IDs, LAST_POINT_TRAJECTORY
+from modelon.impact.client.sal.uri import URI
+from tests.impact.client.helpers import LAST_POINT_TRAJECTORY, IDs
 
 
 class TestExperimentService:

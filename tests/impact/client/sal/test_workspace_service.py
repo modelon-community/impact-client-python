@@ -1,13 +1,13 @@
-from modelon.impact.client.sal.uri import URI
 import modelon.impact.client.sal.service
+from modelon.impact.client.sal.uri import URI
+from tests.files.paths import TEST_WORKSPACE_PATH
 from tests.impact.client.helpers import (
+    VERSIONED_PROJECT_BRANCH,
+    VERSIONED_PROJECT_TRUNK,
     IDs,
     get_test_published_workspace_definition,
     get_test_workspace_definition,
-    VERSIONED_PROJECT_TRUNK,
-    VERSIONED_PROJECT_BRANCH,
 )
-from tests.files.paths import TEST_WORKSPACE_PATH
 
 
 class TestWorkspaceService:

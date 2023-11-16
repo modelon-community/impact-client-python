@@ -1,5 +1,6 @@
 """Model executable service module."""
-from typing import Any, Dict, Tuple, List
+from typing import Any, Dict, List, Tuple
+
 from modelon.impact.client.sal.http import HTTPClient
 from modelon.impact.client.sal.uri import URI
 

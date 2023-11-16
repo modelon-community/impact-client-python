@@ -1,6 +1,7 @@
 """Response class."""
 import re
-from typing import Text, Dict, Any
+from typing import Any, Dict, Text
+
 from modelon.impact.client.sal import exceptions
 
 

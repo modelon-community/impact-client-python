@@ -1,6 +1,7 @@
 """External result service module."""
 import json
-from typing import Any, Optional, Dict
+from typing import Any, Dict, Optional
+
 from modelon.impact.client.sal.http import HTTPClient
 from modelon.impact.client.sal.uri import URI
 

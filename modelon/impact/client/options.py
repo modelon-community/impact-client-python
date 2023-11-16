@@ -1,8 +1,9 @@
 from __future__ import annotations
-from copy import deepcopy
-from collections.abc import Mapping
-from typing import List, Dict, Any, Iterator
+
 from abc import ABC
+from collections.abc import Mapping
+from copy import deepcopy
+from typing import Any, Dict, Iterator, List
 
 
 def _set_options(options: Dict[str, Any], **modified: Any) -> Dict[str, Any]:
@@ -13,8 +14,7 @@ def _set_options(options: Dict[str, Any], **modified: Any) -> Dict[str, Any]:
 
 
 class BaseExecutionOptions(Mapping, ABC):
-    """Base class for the simulation, compiler, solver and runtime options
-    settings."""
+    """Base class for the simulation, compiler, solver and runtime options settings."""
 
     def __init__(self, values: Dict[str, Any], custom_function_name: str):
         self._values = values

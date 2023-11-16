@@ -1,22 +1,23 @@
 """HTTP client class."""
-from typing import Optional, Dict, Any, Union
+from typing import Any, Dict, Optional, Union
+
+from modelon.impact.client.jupyterhub.sal import JupyterContext
+from modelon.impact.client.sal.context import Context
 from modelon.impact.client.sal.request import (
     RequestCSV,
     RequestJSON,
     RequestMatStream,
     RequestOctetStream,
     RequestText,
-    RequestZip,
     RequestXML,
+    RequestZip,
 )
 from modelon.impact.client.sal.response import (
-    JSONResponse,
     CSVResponse,
+    JSONResponse,
     MatStreamResponse,
     OctetStreamResponse,
 )
-from modelon.impact.client.sal.context import Context
-from modelon.impact.client.jupyterhub.sal import JupyterContext
 
 
 class HTTPClient:

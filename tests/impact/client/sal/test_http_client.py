@@ -1,6 +1,7 @@
 import pytest
-import modelon.impact.client.sal.service
+
 import modelon.impact.client.sal.exceptions
+import modelon.impact.client.sal.service
 
 
 class TestHTTPClient:

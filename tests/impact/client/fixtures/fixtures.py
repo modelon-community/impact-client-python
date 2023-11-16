@@ -1,14 +1,16 @@
 import collections
 import copy
 from unittest.mock import MagicMock
+
 import pytest
 import requests
+
 from modelon.impact.client import Client
 from modelon.impact.client.options import (
     CompilerOptions,
+    RuntimeOptions,
     SimulationOptions,
     SolverOptions,
-    RuntimeOptions,
 )
 from modelon.impact.client.sal import exceptions
 from tests.impact.client.helpers import (
@@ -41,7 +43,6 @@ from tests.impact.client.helpers import (
     LAST_POINT_TRAJECTORY,
     UNVERSIONED_PROJECT,
 )
-
 
 ExperimentMock = collections.namedtuple('ExperimentMock', ['entity', 'service'])
 WorkspaceMock = collections.namedtuple('WorkspaceMock', ['entity', 'service'])

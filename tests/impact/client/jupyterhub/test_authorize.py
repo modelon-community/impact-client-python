@@ -2,11 +2,10 @@ import unittest.mock
 
 import pytest
 
+import modelon.impact.client.jupyterhub.exceptions as exceptions
 from modelon.impact.client.jupyterhub.authorize import authorize
 from modelon.impact.client.jupyterhub.sal import JupyterUser
 from modelon.impact.client.sal.uri import URI
-import modelon.impact.client.jupyterhub.exceptions as exceptions
-
 
 TEST_URI = URI('https//:impact-mock.com')
 

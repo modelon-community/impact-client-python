@@ -1,22 +1,22 @@
 """Service class."""
 import inspect
 import logging
-from typing import Optional, Union, Dict, Any, Callable
+from typing import Any, Callable, Dict, Optional, Union
 
-from modelon.impact.client.sal import exceptions
-from modelon.impact.client.sal.http import HTTPClient
-from modelon.impact.client.sal.workspace import WorkspaceService
-from modelon.impact.client.sal.project import ProjectService
-from modelon.impact.client.sal.custom_function import CustomFunctionService
-from modelon.impact.client.sal.model_executable import ModelExecutableService
-from modelon.impact.client.sal.experiment import ExperimentService
-from modelon.impact.client.sal.external_result import ExternalResultService
-from modelon.impact.client.sal.users import UsersService
-from modelon.impact.client.sal.exports import ExportService
-from modelon.impact.client.sal.imports import ImportService
-from modelon.impact.client.sal.context import Context
-from modelon.impact.client.sal.uri import URI
 from modelon.impact.client.jupyterhub.sal import JupyterContext
+from modelon.impact.client.sal import exceptions
+from modelon.impact.client.sal.context import Context
+from modelon.impact.client.sal.custom_function import CustomFunctionService
+from modelon.impact.client.sal.experiment import ExperimentService
+from modelon.impact.client.sal.exports import ExportService
+from modelon.impact.client.sal.external_result import ExternalResultService
+from modelon.impact.client.sal.http import HTTPClient
+from modelon.impact.client.sal.imports import ImportService
+from modelon.impact.client.sal.model_executable import ModelExecutableService
+from modelon.impact.client.sal.project import ProjectService
+from modelon.impact.client.sal.uri import URI
+from modelon.impact.client.sal.users import UsersService
+from modelon.impact.client.sal.workspace import WorkspaceService
 
 logger = logging.getLogger(__name__)
 

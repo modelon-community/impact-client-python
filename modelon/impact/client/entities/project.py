@@ -1,14 +1,16 @@
 from __future__ import annotations
+
 import enum
 import logging
-from pathlib import Path
 from dataclasses import dataclass
-from typing import Optional, Union, List, Dict, Any, Iterable, TYPE_CHECKING
-from modelon.impact.client.options import ProjectExecutionOptions
+from pathlib import Path
+from typing import TYPE_CHECKING, Any, Dict, Iterable, List, Optional, Union
+
 from modelon.impact.client.entities.content import ContentType, ProjectContent
+from modelon.impact.client.entities.custom_function import CustomFunction
 from modelon.impact.client.operations.content_import import ContentImportOperation
 from modelon.impact.client.operations.project_import import ProjectImportOperation
-from modelon.impact.client.entities.custom_function import CustomFunction
+from modelon.impact.client.options import ProjectExecutionOptions
 from modelon.impact.client.sal.service import Service
 
 if TYPE_CHECKING:
@@ -33,8 +35,7 @@ class GitRepoURL:
     representation is url[@[refname][:sha1]]"""
 
     url: str
-    """URL without protocol part, e.g.,
-    gitlab.modelon.com/group/project/repository."""
+    """URL without protocol part, e.g., gitlab.modelon.com/group/project/repository."""
 
     refname: str = ""
     """Reference name (branch, tag or similar)"""
@@ -61,16 +62,15 @@ class GitRepoURL:
 
 @dataclass
 class SvnRepoURL:
-    """SvnRepoURL represents a project referenced in a Subversion repository
-    String representation is url/trunk/subdir[@[rev]]"""
+    """SvnRepoURL represents a project referenced in a Subversion repository String
+    representation is url/trunk/subdir[@[rev]]"""
 
     root_url: str
-    """URL without protocol part up to branch part, e.g.,
-    svn.modelon.com/PNNN/"""
+    """URL without protocol part up to branch part, e.g., svn.modelon.com/PNNN/"""
 
     branch: str = ""
-    """Non-empty if it's standard layout and can be either trunk or
-    branches/name or tags/name."""
+    """Non-empty if it's standard layout and can be either trunk or branches/name or
+    tags/name."""
 
     url_from_root: str = ""
     """URL segment after branch (could be saved in subdir as well)"""
@@ -366,8 +366,8 @@ class Project:
         )
 
     def import_modelica_library(self, path_to_lib: str) -> ContentImportOperation:
-        """Uploads/adds a non-encrypted Modelica library or a Modelica model to
-        the project.
+        """Uploads/adds a non-encrypted Modelica library or a Modelica model to the
+        project.
 
         Args:
             path_to_lib:

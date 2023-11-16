@@ -1,5 +1,6 @@
 import json.decoder
 from typing import Optional
+
 import requests
 
 from modelon.impact.client.jupyterhub import exceptions

@@ -2,9 +2,9 @@ import pytest
 
 from modelon.impact.client.entities.model import Model
 from tests.impact.client.helpers import (
+    IDs,
     create_cached_model_exe_operation,
     create_model_exe_operation,
-    IDs,
 )
 
 

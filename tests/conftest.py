@@ -1,11 +1,13 @@
 """
 conftest.py
 """
-from glob import glob
-import requests_mock
-import requests
-import pytest
 import collections
+from glob import glob
+
+import pytest
+import requests
+import requests_mock
+
 from tests.impact.client.helpers import with_json_route
 
 MockedServer = collections.namedtuple('MockedServer', ['url', 'context', 'adapter'])

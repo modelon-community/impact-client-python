@@ -1,6 +1,6 @@
-import os
 import logging
-from typing import Callable, Any
+import os
+from typing import Any, Callable
 
 logger = logging.getLogger(__name__)
 
@@ -8,8 +8,7 @@ logger = logging.getLogger(__name__)
 def get_client_url() -> str:
     """Returns the default URL the client will use if unspecified.
 
-    Can be overridden by the environment variable
-    MODELON_IMPACT_CLIENT_URL.
+    Can be overridden by the environment variable MODELON_IMPACT_CLIENT_URL.
 
     """
     url = os.environ.get("MODELON_IMPACT_CLIENT_URL")
@@ -20,11 +19,9 @@ def get_client_url() -> str:
 
 
 def get_client_interactive() -> bool:
-    """Returns the default for if client will run interactive or not if
-    unspecified.
+    """Returns the default for if client will run interactive or not if unspecified.
 
-    Can be overridden by the environment variable
-    MODELON_IMPACT_CLIENT_INTERACTIVE.
+    Can be overridden by the environment variable MODELON_IMPACT_CLIENT_INTERACTIVE.
 
     """
     interactive_env = os.environ.get("MODELON_IMPACT_CLIENT_INTERACTIVE", "false")
@@ -32,11 +29,9 @@ def get_client_interactive() -> bool:
 
 
 def get_client_experimental() -> bool:
-    """Returns the default for if experimental client methods should be enabled
-    or not.
+    """Returns the default for if experimental client methods should be enabled or not.
 
-    Can be overridden by the environment variable
-    IMPACT_PYTHON_CLIENT_EXPERIMENTAL.
+    Can be overridden by the environment variable IMPACT_PYTHON_CLIENT_EXPERIMENTAL.
 
     """
     experimental_env = os.environ.get("IMPACT_PYTHON_CLIENT_EXPERIMENTAL", "false")
