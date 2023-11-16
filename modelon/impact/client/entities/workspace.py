@@ -151,7 +151,7 @@ class PublishedWorkspace:
 
     @property
     def definition(self) -> PublishedWorkspaceDefinition:
-        """Published workspace definition"""
+        """Published workspace definition."""
         return self._definition
 
     @property
@@ -191,8 +191,7 @@ class PublishedWorkspace:
         self._sal.workspace.delete_published_workspace(self._id)
 
     def request_access(self) -> None:
-        """Send access request for the published workspace to
-        the creator.
+        """Send access request for the published workspace to the creator.
 
         Example::
 
