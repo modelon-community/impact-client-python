@@ -2,64 +2,60 @@
 // https://github.com/microsoft/vscode-dev-containers/tree/v0.209.6/containers/docker-existing-dockerfile
 {
 	"name": "impact_python_client",
+
 	// Base on Dockerfile one level up:
 	"context": "..",
 	"dockerFile": "../Dockerfile",
+
 	"containerEnv": {
 		"IN_DEVCONTAINER": "1",
 		"IMPACT_PYTHON_CLIENT_EXPERIMENTAL": "1"
 	},
+
 	// Mount to WORKDIR as specified in Dockerfile:
 	"workspaceMount": "source=${localWorkspaceFolder},target=/src,type=bind",
 	"workspaceFolder": "/src",
+		
 	// Docker from inside the container. See https://aka.ms/vscode-remote/samples/docker-from-docker.
 	// "mounts": [ "source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind" ],
+
+	"onCreateCommand":["make", ".venv"],
+
 	// Python IDE settings:
-	"customizations": {
-		"vscode": {
-			"settings": {
-				"python.venvFolders": [
-					"/home/dev/.poetry-virtualenvs"
-				],
-				"python.venvPath": "/home/dev/.poetry-virtualenvs",
-				"python.defaultInterpreterPath": "/home/dev/.poetry-virtualenvs",
-				"python.poetryPath": "/home/dev/.local/bin/poetry",
-				"terminal.integrated.profiles.linux": {
-					"poetry shell": {
-						"path": "poetry",
-						"args": [
-							"shell"
-						]
-					}
-				},
-				"terminal.integrated.defaultProfile.linux": "poetry shell",
-				"python.formatting.provider": "none",
-				"black-formatter.args": ["-S"],
-				"black-formatter.importStrategy": "fromEnvironment",
-				"[python]": {
-					"editor.defaultFormatter": "ms-python.black-formatter",
-					"editor.formatOnSave": true,
-					"editor.formatOnSaveTimeout": 3000
-				},
-				"python.linting.mypyEnabled": true,
-				"python.testing.pytestEnabled": true,
-				"python.analysis.typeCheckingMode": "basic",
-				"flake8.args": [
-					"--config",
-					".flake8"
-				]
+	"customizations": {"vscode": {
+		"settings": {
+			"python.defaultInterpreterPath": "/src/.venv/bin/python",
+			"python.poetryPath": "/home/dev/.local/bin/poetry",
+			"python.formatting.provider": "none",
+			"black-formatter.args": ["-S"],
+			"black-formatter.importStrategy": "fromEnvironment",
+			"isort.importStrategy": "fromEnvironment",
+			"[python]": {
+				"editor.defaultFormatter": "ms-python.black-formatter",
+				"editor.formatOnSave": true,
+				"editor.formatOnSaveTimeout": 3000,
+				"editor.codeActionsOnSave": {
+					"source.organizeImports": true
+				}
 			},
-			// Python IDE extensions:
-			"extensions": [
-				"ms-python.python",
-				"ms-python.vscode-pylance",
-				"ms-python.flake8",
-				"ms-python.pylint",
-				"ms-python.black-formatter",
-				"njpwerner.autodocstring"
-			]
-		}
-	},
+			"python.linting.mypyEnabled": true,
+			"python.testing.pytestEnabled": true,
+			"python.analysis.typeCheckingMode": "basic",
+			"flake8.args": ["--config", ".flake8"]
+		},
+
+		// Python IDE extensions:
+		"extensions": [
+			"ms-python.python",
+			"ms-python.vscode-pylance",
+			"ms-python.flake8",
+			"ms-python.pylint",
+			"ms-python.black-formatter",
+			"ms-python.isort",
+			"njpwerner.autodocstring"
+		]
+	}},
+
 	// User from Dockerfile:
 	"remoteUser": "dev"
 }
