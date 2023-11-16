@@ -5,6 +5,7 @@ import unittest.mock as mock
 from tests.impact.client.helpers import (
     create_model_entity,
     create_model_exe_entity,
+    create_published_workspace_entity,
     create_workspace_entity,
     create_experiment_operation,
     create_project_entity,
@@ -12,6 +13,47 @@ from tests.impact.client.helpers import (
     IDs,
 )
 from tests.files.paths import TEST_WORKSPACE_PATH
+
+
+class TestPublishedWorkspace:
+    def test_delete_published_workspace(self):
+        service = mock.MagicMock()
+        workspace = create_published_workspace_entity(
+            IDs.PUBLISHED_WORKSPACE_ID, IDs.WORKSPACE_PRIMARY, service=service
+        )
+        workspace.delete()
+        service.workspace.delete_published_workspace.assert_called_with(
+            IDs.PUBLISHED_WORKSPACE_ID
+        )
+
+    def test_request_published_workspace_access(self):
+        service = mock.MagicMock()
+        workspace = create_published_workspace_entity(
+            IDs.PUBLISHED_WORKSPACE_ID, IDs.WORKSPACE_PRIMARY, service=service
+        )
+        workspace.request_access()
+        service.workspace.request_published_workspace_access.assert_called_with(
+            IDs.PUBLISHED_WORKSPACE_ID
+        )
+
+    def test_rename_published_workspace(self, publish_workspace):
+        workspace = publish_workspace.entity
+        service = publish_workspace.service
+
+        new_workspace_name = IDs.WORKSPACE_SECONDARY
+        assert workspace.name == IDs.WORKSPACE_PRIMARY
+        workspace.name = new_workspace_name
+
+        service.workspace.rename_published_workspace.assert_called_with(
+            IDs.PUBLISHED_WORKSPACE_ID, new_workspace_name
+        )
+        service.workspace.get_published_workspace.assert_called_with(
+            IDs.PUBLISHED_WORKSPACE_ID
+        )
+
+    def test_import_published_workspace(self, publish_workspace):
+        workspace = publish_workspace.entity.import_to_userspace().wait()
+        assert workspace.id == IDs.WORKSPACE_PRIMARY
 
 
 class TestWorkspace:

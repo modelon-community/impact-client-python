@@ -2,6 +2,7 @@ from modelon.impact.client.sal.uri import URI
 import modelon.impact.client.sal.service
 from tests.impact.client.helpers import (
     IDs,
+    get_test_published_workspace_definition,
     get_test_workspace_definition,
     VERSIONED_PROJECT_TRUNK,
     VERSIONED_PROJECT_BRANCH,
@@ -384,3 +385,84 @@ class TestWorkspaceService:
                 "location": f"api/workspaces/{IDs.WORKSPACE_PRIMARY}/dependency-imports/{IDs.IMPORT}"
             }
         }
+
+    def test_get_published_workspace(self, published_workspace):
+        uri = URI(published_workspace.url)
+        service = modelon.impact.client.sal.service.Service(
+            uri=uri, context=published_workspace.context
+        )
+        data = service.workspace.get_published_workspace(IDs.PUBLISHED_WORKSPACE_ID)
+        definition = get_test_published_workspace_definition()
+        assert data == {"id": IDs.PUBLISHED_WORKSPACE_ID, **definition}
+
+    def test_get_published_workspaces_with_filter(self, multiple_published_workspaces):
+        uri = URI(multiple_published_workspaces.url)
+        service = modelon.impact.client.sal.service.Service(
+            uri=uri, context=multiple_published_workspaces.context
+        )
+        data = service.workspace.get_published_workspaces(
+            name="new_name",
+            first=0,
+            maximum=10,
+            has_data=True,
+            owner_username="alice",
+            type="APP_MODE",
+        )['data']['items']
+        assert len(data) == 1
+        definition = get_test_published_workspace_definition()
+        assert data[0] == {"id": IDs.PUBLISHED_WORKSPACE_ID, **definition}
+        assert multiple_published_workspaces.adapter.called
+        get_published_workspaces_call = (
+            multiple_published_workspaces.adapter.request_history[0]
+        )
+        assert (
+            'http://mock-impact.com/api/published-workspaces?workspaceName=new_name'
+            '&hasData=True&max=10&ownerUsername=alice&type=APP_MODE'
+            == get_published_workspaces_call.url
+        )
+
+    def test_delete_published_workspace(self, delete_published_workspace):
+        uri = URI(delete_published_workspace.url)
+        service = modelon.impact.client.sal.service.Service(
+            uri=uri, context=delete_published_workspace.context
+        )
+        service.workspace.delete_published_workspace(IDs.PUBLISHED_WORKSPACE_ID)
+        assert delete_published_workspace.adapter.called
+        delete_call = delete_published_workspace.adapter.request_history[0]
+        assert (
+            f'http://mock-impact.com/api/published-workspaces/{IDs.PUBLISHED_WORKSPACE_ID}'
+            == delete_call.url
+        )
+        assert 'DELETE' == delete_call.method
+
+    def test_rename_published_workspace(self, rename_published_workspace):
+        uri = URI(rename_published_workspace.url)
+        service = modelon.impact.client.sal.service.Service(
+            uri=uri, context=rename_published_workspace.context
+        )
+        service.workspace.rename_published_workspace(
+            IDs.PUBLISHED_WORKSPACE_ID, IDs.WORKSPACE_SECONDARY
+        )
+        assert rename_published_workspace.adapter.called
+        rename_call = rename_published_workspace.adapter.request_history[0]
+        assert (
+            f'http://mock-impact.com/api/published-workspaces/{IDs.PUBLISHED_WORKSPACE_ID}'
+            == rename_call.url
+        )
+        assert 'PATCH' == rename_call.method
+
+    def test_request_published_workspace_access(
+        self, request_published_workspace_access
+    ):
+        uri = URI(request_published_workspace_access.url)
+        service = modelon.impact.client.sal.service.Service(
+            uri=uri, context=request_published_workspace_access.context
+        )
+        service.workspace.request_published_workspace_access(IDs.PUBLISHED_WORKSPACE_ID)
+        assert request_published_workspace_access.adapter.called
+        access_call = request_published_workspace_access.adapter.request_history[0]
+        assert (
+            f'http://mock-impact.com/api/published-workspaces/{IDs.PUBLISHED_WORKSPACE_ID}/access'
+            == access_call.url
+        )
+        assert 'POST' == access_call.method

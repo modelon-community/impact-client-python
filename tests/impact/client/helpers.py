@@ -1,5 +1,4 @@
 from modelon.impact.client.entities.custom_function import CustomFunction
-from modelon.impact.client.entities.workspace import Workspace
 from modelon.impact.client.entities.experiment import Experiment
 from modelon.impact.client.entities.model_executable import ModelExecutable
 from modelon.impact.client.entities.case import Case
@@ -11,6 +10,11 @@ from modelon.impact.client.entities.project import (
 )
 from modelon.impact.client.entities.external_result import ExternalResult
 from modelon.impact.client.entities.model import Model
+from modelon.impact.client.entities.workspace import (
+    PublishedWorkspace,
+    PublishedWorkspaceDefinition,
+    Workspace,
+)
 from modelon.impact.client.operations.experiment import ExperimentOperation
 from modelon.impact.client.operations.workspace.exports import (
     WorkspaceExportOperation,
@@ -158,6 +162,9 @@ def with_octet_stream_route(
 class IDs:
     WORKSPACE_PRIMARY = 'workspace_1'
     WORKSPACE_SECONDARY = 'workspace_2'
+    USERNAME = 'alice'
+    TENANT = 'impact-tenant-modelon'
+    PUBLISHED_WORKSPACE_ID = 'ekdncjndjcndejncjsncsndcijdsnc'
     PROJECT_PRIMARY = 'bf1e2f2a2fd55dcfd844bc1f252528f707254425'
     PROJECT_SECONDARY = 'xbhcdhcbdbchdbhcbdhbchdchdhcbhdbchdbch'
     PROJECT_CONTENT_PRIMARY = '81ac23172d7a479db85126691e090b34'
@@ -422,6 +429,17 @@ def get_test_modelica_experiment_definition():
     }
 
 
+def get_test_published_workspace_definition(name=None):
+    return {
+        "createdAt": 0,
+        "ownerUsername": IDs.USERNAME,
+        "size": 10,
+        "status": "created",
+        "tenant": IDs.TENANT,
+        "workspaceName": name if name else IDs.WORKSPACE_PRIMARY,
+    }
+
+
 def get_test_workspace_definition(name=None):
     git_url = "https://github.com/project/test"
     vcs_uri = f"git+{git_url}.git@main:da6abb188a089527df1b54b27ace84274b819e4a"
@@ -473,6 +491,12 @@ def get_test_workspace_definition(name=None):
 def create_workspace_entity(name, definition=None, service=None):
     definition = definition or get_test_workspace_definition(name)
     return Workspace(name, definition, service or MagicMock())
+
+
+def create_published_workspace_entity(id, name, definition=None, service=None):
+    definition = definition or get_test_published_workspace_definition(name)
+    definition = PublishedWorkspaceDefinition.from_dict(definition)
+    return PublishedWorkspace(id, definition, service or MagicMock())
 
 
 def create_model_entity(class_name, workspace_id, project_id, service=None):
