@@ -32,7 +32,8 @@ def get_client_interactive() -> bool:
 
 
 def get_client_experimental() -> bool:
-    """Returns the default for if experimental client methods should be enabled or not.
+    """Returns the default for if experimental client methods should be enabled
+    or not.
 
     Can be overridden by the environment variable
     IMPACT_PYTHON_CLIENT_EXPERIMENTAL.
