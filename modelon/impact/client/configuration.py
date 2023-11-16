@@ -1,6 +1,6 @@
 import os
 import logging
-
+from typing import Callable, Any
 
 logger = logging.getLogger(__name__)
 
@@ -43,14 +43,14 @@ def get_client_experimental() -> bool:
 
 
 class Experimental:
-    def __init__(self, fn):
+    def __init__(self, fn: Callable):
         self.fn = fn
 
-    def __set_name__(self, owner, name):
+    def __set_name__(self, owner: str, name: str) -> None:
         if get_client_experimental():
             setattr(owner, name, self.fn)
         else:
             delattr(owner, name)
 
-    def __call__(self, *args, **kwargs):
+    def __call__(self, *args: Any, **kwargs: Any) -> None:
         self.fn(*args, **kwargs)

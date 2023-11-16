@@ -150,12 +150,12 @@ class PublishedWorkspace:
         return f"Published Workspace with id '{self._id}'"
 
     @property
-    def definition(self):
+    def definition(self) -> PublishedWorkspaceDefinition:
         """Published workspace definition"""
         return self._definition
 
     @property
-    def name(self):
+    def name(self) -> str:
         """Get or set the name for the published workspace.
 
         Example::
