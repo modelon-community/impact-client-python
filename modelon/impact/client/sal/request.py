@@ -1,16 +1,18 @@
 """Request class."""
 import logging
-from typing import Callable, Dict, Optional, Any
+from typing import Any, Callable, Dict, Optional
+
 import requests
+
 from modelon.impact.client.sal import exceptions
 from modelon.impact.client.sal.response import (
-    JSONResponse,
-    ZIPResponse,
-    TextResponse,
     CSVResponse,
-    OctetStreamResponse,
+    JSONResponse,
     MatStreamResponse,
+    OctetStreamResponse,
+    TextResponse,
     XMLResponse,
+    ZIPResponse,
 )
 
 logger = logging.getLogger(__name__)

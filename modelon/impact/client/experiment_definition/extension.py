@@ -1,16 +1,17 @@
 from __future__ import annotations
-import logging
-from typing import Optional, Dict, Any, Union, TYPE_CHECKING
 
+import logging
+from typing import TYPE_CHECKING, Any, Dict, Optional, Union
+
+from modelon.impact.client.entities.interfaces.case import CaseInterface
+from modelon.impact.client.entities.interfaces.experiment import ExperimentInterface
 from modelon.impact.client.experiment_definition.interfaces.extension import (
     BaseExperimentExtension,
 )
 from modelon.impact.client.experiment_definition.operators import Operator
-from modelon.impact.client.entities.interfaces.experiment import ExperimentInterface
-from modelon.impact.client.entities.interfaces.case import CaseInterface
 from modelon.impact.client.experiment_definition.util import (
-    get_options,
     case_to_identifier_dict,
+    get_options,
 )
 
 if TYPE_CHECKING:
@@ -182,8 +183,7 @@ class SimpleExperimentExtension(BaseExperimentExtension):
     def with_initialize_from(
         self, entity: Optional[CaseOrExperiment] = None
     ) -> SimpleExperimentExtension:
-        """Sets the experiment or case to initialize from for an experiment
-        extension.
+        """Sets the experiment or case to initialize from for an experiment extension.
 
         Args:
             entity: An instance of Case or Experiment classes.

@@ -1,12 +1,13 @@
 from __future__ import annotations
+
 import logging
-from typing import Any, List, Dict, Optional, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Dict, List, Optional
 
 from modelon.impact.client.entities.interfaces.custom_function import (
     CustomFunctionInterface,
 )
-from modelon.impact.client.sal.service import Service
 from modelon.impact.client.options import ProjectExecutionOptions
+from modelon.impact.client.sal.service import Service
 
 if TYPE_CHECKING:
     from modelon.impact.client.options import (

@@ -1,6 +1,7 @@
 import os
-import pytest
 import unittest.mock
+
+import pytest
 
 from modelon.impact.client.credential_manager import CredentialManager
 

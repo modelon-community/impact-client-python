@@ -1,10 +1,11 @@
 from __future__ import annotations
-import enum
-import time
-import logging
 
+import enum
+import logging
+import time
 from abc import abstractmethod
-from typing import Any, Optional, TypeVar, Protocol, Generic
+from typing import Any, Generic, Optional, Protocol, TypeVar
+
 from modelon.impact.client import exceptions
 
 logger = logging.getLogger(__name__)
@@ -91,8 +92,8 @@ class AsyncOperation(BaseOperation[Entity]):
     """File operation class containing base functionality."""
 
     def wait(self, timeout: Optional[float] = None) -> Entity:
-        """Waits until the operation completes. Returns the operation class
-        instance if operation completes.
+        """Waits until the operation completes. Returns the operation class instance if
+        operation completes.
 
         Args:
             timeout: Time to wait in seconds for achieving the status. By default
@@ -152,8 +153,8 @@ class ExecutionOperation(BaseOperation[Entity]):
     def wait(
         self, timeout: Optional[float] = None, status: Status = Status.DONE
     ) -> Entity:
-        """Waits until the operation achieves the set status. Returns the
-        operation class instance if the set status is achieved.
+        """Waits until the operation achieves the set status. Returns the operation
+        class instance if the set status is achieved.
 
         Args:
             timeout: Time to wait in seconds for achieving the status. By default

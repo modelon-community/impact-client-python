@@ -1,11 +1,12 @@
 from __future__ import annotations
+
 from typing import TYPE_CHECKING
 
-from modelon.impact.client.operations.base import ExecutionOperation, Status, Entity
+from modelon.impact.client.operations.base import Entity, ExecutionOperation, Status
 
 if TYPE_CHECKING:
-    from modelon.impact.client.sal.service import Service
     from modelon.impact.client.operations.base import EntityFromOperation
+    from modelon.impact.client.sal.service import Service
 
 
 class CaseOperation(ExecutionOperation[Entity]):

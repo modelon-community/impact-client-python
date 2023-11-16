@@ -1,7 +1,7 @@
 """This module contains operators for parametrizing batch runs."""
-from typing import Any
 from abc import abstractmethod
 from dataclasses import dataclass
+from typing import Any
 
 
 class Operator:
@@ -14,9 +14,9 @@ class Operator:
 
 @dataclass
 class Range(Operator):
-    """Range operator class for parametrizing batch runs. Range(a, b, c)
-    represents c linearly spaced values in the (real) interval [a, b]; b >= a.
-    The functionality is analogous to numpy.linspace.
+    """Range operator class for parametrizing batch runs. Range(a, b, c) represents c
+    linearly spaced values in the (real) interval [a, b]; b >= a. The functionality is
+    analogous to numpy.linspace.
 
     Args:
         start_value: The start value for the sweep parameter.
@@ -44,8 +44,8 @@ class Range(Operator):
 
 
 class Choices(Operator):
-    """Choices operator class for parametrizing batch runs. Choices defines a
-    list of specified values a Modifier expression can take.
+    """Choices operator class for parametrizing batch runs. Choices defines a list of
+    specified values a Modifier expression can take.
 
     Args:
         values: Variable number of numerical arguments to sweep.

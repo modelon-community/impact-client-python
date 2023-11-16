@@ -1,11 +1,13 @@
 from __future__ import annotations
+
 from collections.abc import Mapping
-from typing import Dict, List, Any, Iterator, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Dict, Iterator, List
+
 from modelon.impact.client.entities.asserts import assert_variable_in_result
 
 if TYPE_CHECKING:
-    from modelon.impact.client.sal.service import Service
     from modelon.impact.client.sal.experiment import ExperimentService
+    from modelon.impact.client.sal.service import Service
 
 
 def _create_result_dict(

@@ -1,39 +1,39 @@
 from __future__ import annotations
-from typing import Optional, Dict, List, Union, Any, TYPE_CHECKING
+
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Union
 
 from modelon.impact.client.entities.interfaces.case import CaseInterface
+from modelon.impact.client.entities.interfaces.custom_function import (
+    CustomFunctionInterface,
+)
 from modelon.impact.client.entities.interfaces.experiment import ExperimentInterface
 from modelon.impact.client.entities.interfaces.external_result import (
     ExternalResultInterface,
-)
-from modelon.impact.client.experiment_definition.interfaces.extension import (
-    BaseExperimentExtension,
-)
-from modelon.impact.client.options import (
-    SolverOptions,
-    SimulationOptions,
-    RuntimeOptions,
-    CompilerOptions,
-)
-from modelon.impact.client.entities.interfaces.custom_function import (
-    CustomFunctionInterface,
 )
 from modelon.impact.client.entities.interfaces.model import ModelInterface
 from modelon.impact.client.entities.interfaces.model_executable import (
     ModelExecutableInterface,
 )
-
+from modelon.impact.client.experiment_definition.interfaces.extension import (
+    BaseExperimentExtension,
+)
+from modelon.impact.client.options import (
+    CompilerOptions,
+    RuntimeOptions,
+    SimulationOptions,
+    SolverOptions,
+)
 
 if TYPE_CHECKING:
     from modelon.impact.client.entities.case import Case
+    from modelon.impact.client.entities.custom_function import CustomFunction
     from modelon.impact.client.entities.experiment import Experiment
-    from modelon.impact.client.entities.model import Model
     from modelon.impact.client.entities.external_result import ExternalResult
+    from modelon.impact.client.entities.model import Model
     from modelon.impact.client.entities.model_executable import ModelExecutable
     from modelon.impact.client.experiment_definition.extension import (
         SimpleExperimentExtension,
     )
-    from modelon.impact.client.entities.custom_function import CustomFunction
 
     CaseOrExperimentOrExternalResult = Union[Case, Experiment, ExternalResult]
     RuntimeOptionsOrDict = Union[RuntimeOptions, Dict[str, Any]]

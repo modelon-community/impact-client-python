@@ -1,12 +1,12 @@
 import pytest
 
 from modelon.impact.client import exceptions
-from tests.impact.client.helpers import create_external_result_entity, IDs
+from modelon.impact.client.entities.external_result import ExternalResult
 from modelon.impact.client.operations.base import AsyncOperationStatus
 from modelon.impact.client.operations.external_result_import import (
     ExternalResultImportOperation,
 )
-from modelon.impact.client.entities.external_result import ExternalResult
+from tests.impact.client.helpers import IDs, create_external_result_entity
 
 
 class TestExternalResultImportOperation:

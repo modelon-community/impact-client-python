@@ -1,17 +1,18 @@
 from __future__ import annotations
-import logging
-from typing import Dict, Any, TYPE_CHECKING
 
+import logging
+from typing import TYPE_CHECKING, Any, Dict
+
+from modelon.impact.client import exceptions
 from modelon.impact.client.operations.base import (
     AsyncOperation,
     AsyncOperationStatus,
     Entity,
 )
-from modelon.impact.client import exceptions
 
 if TYPE_CHECKING:
-    from modelon.impact.client.sal.service import Service
     from modelon.impact.client.operations.base import EntityFromOperation
+    from modelon.impact.client.sal.service import Service
 
 logger = logging.getLogger(__name__)
 

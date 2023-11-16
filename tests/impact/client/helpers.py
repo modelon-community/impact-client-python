@@ -1,33 +1,34 @@
+from unittest.mock import MagicMock
+
+from modelon.impact.client.entities.case import Case
 from modelon.impact.client.entities.custom_function import CustomFunction
 from modelon.impact.client.entities.experiment import Experiment
+from modelon.impact.client.entities.external_result import ExternalResult
+from modelon.impact.client.entities.model import Model
 from modelon.impact.client.entities.model_executable import ModelExecutable
-from modelon.impact.client.entities.case import Case
 from modelon.impact.client.entities.project import (
     Project,
     ProjectContent,
     ProjectType,
     VcsUri,
 )
-from modelon.impact.client.entities.external_result import ExternalResult
-from modelon.impact.client.entities.model import Model
 from modelon.impact.client.entities.workspace import (
     PublishedWorkspace,
     PublishedWorkspaceDefinition,
     Workspace,
 )
 from modelon.impact.client.operations.experiment import ExperimentOperation
-from modelon.impact.client.operations.workspace.exports import (
-    WorkspaceExportOperation,
-    Export,
-)
-from modelon.impact.client.operations.workspace.conversion import (
-    WorkspaceConversionOperation,
-)
 from modelon.impact.client.operations.model_executable import (
     CachedModelExecutableOperation,
     ModelExecutableOperation,
 )
-from unittest.mock import MagicMock
+from modelon.impact.client.operations.workspace.conversion import (
+    WorkspaceConversionOperation,
+)
+from modelon.impact.client.operations.workspace.exports import (
+    Export,
+    WorkspaceExportOperation,
+)
 
 
 def json_request_list_item(json_response, status_code=200, extra_headers=None):

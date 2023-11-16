@@ -1,40 +1,42 @@
 """This module provides an entry-point to the client APIs."""
 from __future__ import annotations
-import logging
+
 import enum
-from typing import List, Optional, Dict, Any, Union, Iterable
+import logging
 from dataclasses import dataclass
+from typing import Any, Dict, Iterable, List, Optional, Union
+
 from semantic_version import SimpleSpec, Version  # type: ignore
-from modelon.impact.client.configuration import (
-    get_client_url,
-    get_client_interactive,
-    Experimental,
-)
-import modelon.impact.client.sal.service
-import modelon.impact.client.sal.exceptions
+
 import modelon.impact.client.jupyterhub
+import modelon.impact.client.sal.exceptions
+import modelon.impact.client.sal.service
+from modelon.impact.client import exceptions
+from modelon.impact.client.configuration import (
+    Experimental,
+    get_client_interactive,
+    get_client_url,
+)
 from modelon.impact.client.credential_manager import CredentialManager
-from modelon.impact.client.operations.project_import import ProjectImportOperation
-from modelon.impact.client.operations.workspace.imports import WorkspaceImportOperation
-from modelon.impact.client.operations.experiment import ExperimentOperation
-from modelon.impact.client.operations.model_executable import ModelExecutableOperation
 from modelon.impact.client.entities.experiment import Experiment
 from modelon.impact.client.entities.model_executable import ModelExecutable
-from modelon.impact.client.entities.project import Project, VcsUri, ProjectType
+from modelon.impact.client.entities.project import Project, ProjectType, VcsUri
 from modelon.impact.client.entities.workspace import (
-    WorkspaceDefinition,
-    Workspace,
     PublishedWorkspace,
     PublishedWorkspaceDefinition,
     PublishedWorkspaceType,
+    Workspace,
+    WorkspaceDefinition,
 )
+from modelon.impact.client.operations.experiment import ExperimentOperation
+from modelon.impact.client.operations.model_executable import ModelExecutableOperation
+from modelon.impact.client.operations.project_import import ProjectImportOperation
 from modelon.impact.client.operations.workspace.conversion import (
     WorkspaceConversionOperation,
 )
-from modelon.impact.client.sal.uri import URI
+from modelon.impact.client.operations.workspace.imports import WorkspaceImportOperation
 from modelon.impact.client.sal.context import Context
-from modelon.impact.client import exceptions
-
+from modelon.impact.client.sal.uri import URI
 
 logger = logging.getLogger(__name__)
 
@@ -160,8 +162,8 @@ class ProjectMatchings:
         """Returns a list of Selection class objects based on interactive input from
         users. As import will fail if there are multiple possible matchings of local
         projects for a project, this method is used to resolve to an unequivocal
-        'selection'. The list of preferred Selection objects could be specified
-        during workspace import in the
+        'selection'. The list of preferred Selection objects could be specified during
+        workspace import in the
         :obj:`~modelon.impact.client.Client.import_workspace_from_shared_definition`
         method.
 
@@ -182,8 +184,8 @@ class ProjectMatchings:
 
 
 class Client:
-    """This Class contains methods to authenticate logins, create new
-    workspaces and upload or fetch existing workspaces.
+    """This Class contains methods to authenticate logins, create new workspaces and
+    upload or fetch existing workspaces.
 
     Args:
         url:
@@ -379,8 +381,8 @@ class Client:
     def convert_workspace(
         self, workspace_id: str, backup_name: Optional[str] = None
     ) -> WorkspaceConversionOperation:
-        """Converts a workspace of an old version up to the new version the
-        server is using.
+        """Converts a workspace of an old version up to the new version the server is
+        using.
 
         Args:
             workspace_id: The ID of the workspace to convert to the latest
@@ -479,10 +481,10 @@ class Client:
         return Workspace(resp["id"], resp["definition"], self._sal)
 
     def upload_workspace(self, path_to_workspace: str) -> Workspace:
-        """Imports a Workspace from a compressed(.zip) workspace file. Returns
-        the workspace class object of the imported workspace. Similar to
-        :obj:`~modelon.impact.client.Client.import_workspace_from_zip`, but
-        does the import in one go.
+        """Imports a Workspace from a compressed(.zip) workspace file. Returns the
+        workspace class object of the imported workspace. Similar to
+        :obj:`~modelon.impact.client.Client.import_workspace_from_zip`, but does the
+        import in one go.
 
         Args:
             path_to_workspace: The path for the compressed workspace(.zip)
@@ -501,11 +503,10 @@ class Client:
     def import_workspace_from_zip(
         self, path_to_workspace: str
     ) -> WorkspaceImportOperation:
-        """Imports a Workspace from a compressed(.zip) workspace file.
-        Similar to
-        :obj:`~modelon.impact.client.Client.upload_workspace`,
-        but gives more control for getting the workspace async.
-        Returns an WorkspaceImportOperation class object.
+        """Imports a Workspace from a compressed(.zip) workspace file. Similar to
+        :obj:`~modelon.impact.client.Client.upload_workspace`, but gives more control
+        for getting the workspace async. Returns an WorkspaceImportOperation class
+        object.
 
         Args:
             path_to_workspace: The path for the compressed
@@ -517,6 +518,7 @@ class Client:
         Example::
 
             client.import_workspace_from_zip(path_to_workspace).wait()
+
         """
         resp = self._sal.workspace.import_from_zip(path_to_workspace)
         return WorkspaceImportOperation[Workspace](
@@ -576,9 +578,8 @@ class Client:
     ) -> ProjectMatchings:
         """Returns all projects matchings that would happen during a workspace import.
         As import will fail if there are multiple possible matchings of local projects
-        for a project, this method is used to get these matchings which can be
-        resolved to an unequivocal 'selection'. Selections are used as (optional) input
-        to the
+        for a project, this method is used to get these matchings which can be resolved
+        to an unequivocal 'selection'. Selections are used as (optional) input to the
         :obj:`~modelon.impact.client.Client.import_workspace_from_shared_definition`
         method.
 
@@ -631,8 +632,8 @@ class Client:
         return ProjectMatchings(project_matchings)
 
     def import_project_from_zip(self, path_to_project: str) -> ProjectImportOperation:
-        """Imports a Project from a compressed(.zip) project file. Returns the
-        project class object.
+        """Imports a Project from a compressed(.zip) project file. Returns the project
+        class object.
 
         Args:
             path_to_project: The path for the compressed project(.zip)
@@ -712,8 +713,8 @@ class Client:
         owner_username: str = "",
         type: Optional[PublishedWorkspaceType] = None,
     ) -> List[PublishedWorkspace]:
-        """Returns a list of published workspaces. The snapshots could be
-        filtered based on the key-worded arguments.
+        """Returns a list of published workspaces. The snapshots could be filtered based
+        on the key-worded arguments.
 
         Args:
             name: Name of the workspace.

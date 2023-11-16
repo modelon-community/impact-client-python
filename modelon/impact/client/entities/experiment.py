@@ -1,24 +1,25 @@
 from __future__ import annotations
-import logging
-import enum
-from typing import Any, List, Dict, Optional, Union, TYPE_CHECKING
 
-from modelon.impact.client.entities.interfaces.experiment import ExperimentInterface
-from modelon.impact.client.operations import experiment
-from modelon.impact.client.entities.case import Case
+import enum
+import logging
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Union
+
+from modelon.impact.client import exceptions
 from modelon.impact.client.entities.asserts import assert_variable_in_result
+from modelon.impact.client.entities.case import Case
+from modelon.impact.client.entities.interfaces.experiment import ExperimentInterface
 from modelon.impact.client.entities.status import ExperimentStatus
+from modelon.impact.client.operations import experiment
 from modelon.impact.client.options import (
     CompilerOptions,
-    SimulationOptions,
     RuntimeOptions,
+    SimulationOptions,
     SolverOptions,
 )
-from modelon.impact.client import exceptions
 
 if TYPE_CHECKING:
-    from modelon.impact.client.sal.service import Service
     from modelon.impact.client.operations.base import BaseOperation
+    from modelon.impact.client.sal.service import Service
 
 logger = logging.getLogger(__name__)
 
@@ -294,8 +295,8 @@ class Experiment(ExperimentInterface):
         )
 
     def is_successful(self) -> bool:
-        """Returns True if the Experiment is done and no cases has failed. Use
-        the 'run_info' attribute to get more info.
+        """Returns True if the Experiment is done and no cases has failed. Use the
+        'run_info' attribute to get more info.
 
         Returns:
             True, if execution process has completed successfully. False, if
@@ -405,8 +406,8 @@ class Experiment(ExperimentInterface):
         )
 
     def get_trajectories(self, variables: List[str]) -> Dict[str, Any]:
-        """Returns a dictionary containing the result trajectories for a list
-        of result variables for all the cases.
+        """Returns a dictionary containing the result trajectories for a list of result
+        variables for all the cases.
 
         Args:
             variables: A list of result variables to fetch trajectories for.
@@ -446,8 +447,8 @@ class Experiment(ExperimentInterface):
     def get_last_point(
         self, variables: Optional[List[str]] = None
     ) -> ExperimentResultPoint:
-        """Returns a ExperimentResultPoint class for a list of result variables
-        for all the cases.
+        """Returns a ExperimentResultPoint class for a list of result variables for all
+        the cases.
 
         Args:
             variables: An optional list of result variables to fetch

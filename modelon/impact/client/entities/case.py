@@ -1,21 +1,22 @@
 from __future__ import annotations
+
 import logging
 import os
 import tempfile
 from datetime import datetime
-from typing import Any, Dict, Tuple, Optional, List, Union, Text, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Text, Tuple, Union
 
+from modelon.impact.client import exceptions
+from modelon.impact.client.entities.asserts import assert_successful_operation
+from modelon.impact.client.entities.external_result import ExternalResult
 from modelon.impact.client.entities.interfaces.case import CaseInterface
-from modelon.impact.client.sal.experiment import ResultFormat
+from modelon.impact.client.entities.log import Log
+from modelon.impact.client.entities.model_executable import ModelExecutable
+from modelon.impact.client.entities.result import Result
+from modelon.impact.client.entities.status import CaseStatus
 from modelon.impact.client.operations.base import BaseOperation
 from modelon.impact.client.operations.case import CaseOperation
-from modelon.impact.client.entities.external_result import ExternalResult
-from modelon.impact.client.entities.log import Log
-from modelon.impact.client.entities.result import Result
-from modelon.impact.client.entities.model_executable import ModelExecutable
-from modelon.impact.client.entities.status import CaseStatus
-from modelon.impact.client.entities.asserts import assert_successful_operation
-from modelon.impact.client import exceptions
+from modelon.impact.client.sal.experiment import ResultFormat
 
 if TYPE_CHECKING:
     from modelon.impact.client.sal.experiment import ExperimentService
@@ -121,8 +122,8 @@ class CaseAnalysis:
 
     @property
     def parameters(self) -> Dict[str, Any]:
-        """Get or set parameters for the custom function. Parameters are a
-        dictionary containing the custom function parameters.
+        """Get or set parameters for the custom function. Parameters are a dictionary
+        containing the custom function parameters.
 
         Example::
 
@@ -142,8 +143,8 @@ class CaseAnalysis:
 
     @property
     def simulation_options(self) -> Dict[str, Any]:
-        """Get or set the simulation options. Options are key-value pairs of
-        simulation options.
+        """Get or set the simulation options. Options are key-value pairs of simulation
+        options.
 
         Example::
 
@@ -162,8 +163,8 @@ class CaseAnalysis:
 
     @property
     def solver_options(self) -> Dict[str, Any]:
-        """Get or set the simulation options. Options are key-value pairs of
-        solver options.
+        """Get or set the simulation options. Options are key-value pairs of solver
+        options.
 
         Example::
 
@@ -183,8 +184,8 @@ class CaseAnalysis:
 
     @property
     def simulation_log_level(self) -> str:
-        """Get or set the simulation log level. Supported options are-
-        'WARNING', 'ERROR', 'DEBUG', 'INFO' and 'VERBOSE'.
+        """Get or set the simulation log level. Supported options are- 'WARNING',
+        'ERROR', 'DEBUG', 'INFO' and 'VERBOSE'.
 
         Example::
 
@@ -232,8 +233,8 @@ class CustomArtifact:
         return self._download_as
 
     def download(self, path: Optional[str] = None) -> str:
-        """Downloads a custom artifact. Returns the local path to the
-        downloaded artifact.
+        """Downloads a custom artifact. Returns the local path to the downloaded
+        artifact.
 
         Args:
             path: The local path to the directory to store the downloaded custom
@@ -323,9 +324,9 @@ class CaseInput:
 
     @property
     def parametrization(self) -> Dict[str, Any]:
-        """Get or set the parametrization of the case. Parameterization is
-        defined as a dict of key value pairs where key is variable name and
-        value is the value to use for that variable.
+        """Get or set the parametrization of the case. Parameterization is defined as a
+        dict of key value pairs where key is variable name and value is the value to use
+        for that variable.
 
         Example::
 
@@ -350,20 +351,18 @@ class CaseInput:
 
     @property
     def structural_parametrization(self) -> Dict[str, Any]:
-        """Structural parametrization of the case, a list of key value pairs
-        where key is variable name and value is the value to use for that
-        variable.
+        """Structural parametrization of the case, a list of key value pairs where key
+        is variable name and value is the value to use for that variable.
 
-        These are values that cannot be applied to the FMU/Model after
-        compilation.
+        These are values that cannot be applied to the FMU/Model after compilation.
 
         """
         return self._data['structural_parametrization']
 
     @property
     def fmu_base_parametrization(self) -> Dict[str, Any]:
-        """This is some base parametrization that must be applied to the FMU
-        for it to be valid running this case.
+        """This is some base parametrization that must be applied to the FMU for it to
+        be valid running this case.
 
         It often comes as a result from of caching to reuse the FMU.
 
@@ -736,8 +735,8 @@ class Case(CaseInterface):
         return ModelExecutable(self._workspace_id, fmu_id, self._sal)
 
     def sync(self) -> None:
-        """Sync case state against server, pushing any changes that has been
-        done to the object client side.
+        """Sync case state against server, pushing any changes that has been done to the
+        object client side.
 
         Example::
             case.input.parametrization = {'PI.k': 120}

@@ -1,35 +1,35 @@
 from __future__ import annotations
+
 import logging
 import os
-from typing import List, Dict, Optional, Union, TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Union
 
 from modelon.impact.client.entities.interfaces.model import ModelInterface
-from modelon.impact.client.operations.fmu_import import FMUImportOperation
-
-from modelon.impact.client.operations.model_executable import (
-    ModelExecutableOperation,
-    CachedModelExecutableOperation,
-)
+from modelon.impact.client.entities.model_executable import ModelExecutable
+from modelon.impact.client.entities.project import Project
 from modelon.impact.client.experiment_definition.model_based import (
     SimpleModelicaExperimentDefinition,
 )
+from modelon.impact.client.operations.fmu_import import FMUImportOperation
+from modelon.impact.client.operations.model_executable import (
+    CachedModelExecutableOperation,
+    ModelExecutableOperation,
+)
 from modelon.impact.client.options import (
-    ProjectExecutionOptions,
     CompilerOptions,
+    ProjectExecutionOptions,
     RuntimeOptions,
     SimulationOptions,
     SolverOptions,
 )
-from modelon.impact.client.entities.model_executable import ModelExecutable
-from modelon.impact.client.entities.project import Project
 
 if TYPE_CHECKING:
-    from modelon.impact.client.entities.custom_function import CustomFunction
-    from modelon.impact.client.sal.service import Service
-    from modelon.impact.client.entities.external_result import ExternalResult
     from modelon.impact.client.entities.case import Case
+    from modelon.impact.client.entities.custom_function import CustomFunction
     from modelon.impact.client.entities.experiment import Experiment
+    from modelon.impact.client.entities.external_result import ExternalResult
     from modelon.impact.client.operations.base import BaseOperation
+    from modelon.impact.client.sal.service import Service
 
     CaseOrExperimentOrExternalResult = Union[Case, Experiment, ExternalResult]
 
@@ -95,8 +95,8 @@ class Model(ModelInterface):
         platform: str = "auto",
         force_compilation: bool = False,
     ) -> CompilationOperations:
-        """Compiles the model to an FMU. Returns an ModelExecutableOperation
-        class object.
+        """Compiles the model to an FMU. Returns an ModelExecutableOperation class
+        object.
 
         Args:
             compiler_options: An compilation options class instance of

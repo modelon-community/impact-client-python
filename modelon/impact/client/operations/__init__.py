@@ -1,1 +1,1 @@
-from modelon.impact.client.operations.base import Status, AsyncOperationStatus
+from modelon.impact.client.operations.base import AsyncOperationStatus, Status

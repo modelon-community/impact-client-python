@@ -1,6 +1,6 @@
 import modelon.impact.client.sal.service
 from modelon.impact.client.sal.uri import URI
-from tests.impact.client.helpers import IDs, MODEL_DESCRIPTION_XML
+from tests.impact.client.helpers import MODEL_DESCRIPTION_XML, IDs
 
 
 class TestModelExecutbleService:

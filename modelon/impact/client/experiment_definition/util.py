@@ -1,5 +1,7 @@
 from __future__ import annotations
-from typing import Dict, Any, TYPE_CHECKING, Optional
+
+from typing import TYPE_CHECKING, Any, Dict, Optional
+
 from modelon.impact.client.options import BaseExecutionOptions
 
 if TYPE_CHECKING:

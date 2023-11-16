@@ -1,7 +1,9 @@
 """Project service module."""
 from __future__ import annotations
+
 import json
-from typing import Dict, Any, Optional, Union, List, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Union
+
 from modelon.impact.client.sal.http import HTTPClient
 from modelon.impact.client.sal.uri import URI
 

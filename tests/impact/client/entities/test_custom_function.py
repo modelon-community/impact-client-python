@@ -1,9 +1,10 @@
 import pytest
+
 from modelon.impact.client.options import (
     CompilerOptions,
+    RuntimeOptions,
     SimulationOptions,
     SolverOptions,
-    RuntimeOptions,
 )
 
 

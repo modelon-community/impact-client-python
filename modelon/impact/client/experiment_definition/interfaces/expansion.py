@@ -1,5 +1,5 @@
-from typing import Optional, Dict, Any
-from abc import abstractmethod, ABC
+from abc import ABC, abstractmethod
+from typing import Any, Dict, Optional
 
 
 class ExpansionAlgorithm(ABC):

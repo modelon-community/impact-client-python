@@ -1,8 +1,9 @@
 """URI class."""
 from __future__ import annotations
-from typing import Any
+
 import sys
 import urllib.parse
+from typing import Any
 
 
 class URI:

@@ -1,5 +1,6 @@
 """Import service module."""
-from typing import Dict, Any
+from typing import Any, Dict
+
 from modelon.impact.client.sal.http import HTTPClient
 from modelon.impact.client.sal.uri import URI
 

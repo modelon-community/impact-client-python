@@ -1,7 +1,8 @@
 from __future__ import annotations
+
 import logging
 from abc import ABC, abstractmethod
-from typing import Dict, Any
+from typing import Any, Dict
 
 logger = logging.getLogger(__name__)
 
