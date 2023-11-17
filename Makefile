@@ -46,13 +46,17 @@ poetry:
 	$(call _run_interactive, poetry shell)
 
 unit-test:
+	$(call _run_bare, poetry run -- pytest -vv -m 'not (experimental)' ${EXTRA_PYTEST_FLAGS})
+
+experimental-test:
 	$(call _run_bare, poetry run -- pytest -vv ${EXTRA_PYTEST_FLAGS})
 
-test: build unit-test lint
-test-with-coverage:
-	IMPACT_PYTHON_CLIENT_EXPERIMENTAL=0 $(MAKE) test
-	IMPACT_PYTHON_CLIENT_EXPERIMENTAL=1 $(MAKE) WITH_COVERAGE=YES test 
+test: build lint
+	IMPACT_PYTHON_CLIENT_EXPERIMENTAL=0 $(MAKE) unit-test
+	IMPACT_PYTHON_CLIENT_EXPERIMENTAL=1 $(MAKE) experimental-test 
 
+test-with-coverage:
+	$(MAKE) WITH_COVERAGE=YES test
 
 test-watch: build
 	$(call _run_bare, poetry run -- pytest-watch -- -vv ${EXTRA_PYTEST_FLAGS})
