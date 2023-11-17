@@ -47,7 +47,7 @@ def test_get_workspaces(multiple_workspace):
     assert workspaces[0].id == IDs.WORKSPACE_PRIMARY
     assert workspaces[1].id == IDs.WORKSPACE_SECONDARY
 
-
+@pytest.mark.experimental
 def test_get_publised_workspaces(multiple_published_workspaces):
     client = Client(
         url=multiple_published_workspaces.url,
@@ -63,7 +63,7 @@ def test_get_publised_workspaces(multiple_published_workspaces):
     assert workspaces[0].definition.size == 10
     assert workspaces[0].definition.status == PublishedWorkspaceUploadStatus.CREATED
 
-
+@pytest.mark.experimental
 def test_get_publised_workspace(published_workspace):
     client = Client(
         url=published_workspace.url,
