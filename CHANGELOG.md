@@ -1,3 +1,20 @@
+# [3.1.0](https://github.com/modelon-community/impact-client-python/compare/v3.0.4...v3.1.0) (2023-11-20)
+
+
+### Bug Fixes
+
+* add experimental markers ([b6759e7](https://github.com/modelon-community/impact-client-python/commit/b6759e7640aab8691d6b2e36c53fdeffed79c0b4))
+* add type hints ([9289706](https://github.com/modelon-community/impact-client-python/commit/9289706baa6093242e0fc6775c6259aecaeb2661))
+* added tests ([1bee05f](https://github.com/modelon-community/impact-client-python/commit/1bee05f9f4c0d3269cf3fa5714ab4344fb01fa2b))
+* decorate workspace publish methods with experimental flag ([76977ff](https://github.com/modelon-community/impact-client-python/commit/76977ff540bf3903edd80b274a14bf51be97427e))
+* docformatter fixes ([e25cd85](https://github.com/modelon-community/impact-client-python/commit/e25cd85d11709de68ad2bfa82ed6a58814e92cfc))
+* make Experimental class callable ([c7e7304](https://github.com/modelon-community/impact-client-python/commit/c7e73043c3a5a109905c6bac54b7b363c9b22740))
+
+
+### Features
+
+* added support for publishing workspaces to cloud ([c09687a](https://github.com/modelon-community/impact-client-python/commit/c09687a53a338eef8f71e85db695ac9f2e565bf7))
+
 ## [3.0.4](https://github.com/modelon-community/impact-client-python/compare/v3.0.3...v3.0.4) (2023-09-12)
 
 
