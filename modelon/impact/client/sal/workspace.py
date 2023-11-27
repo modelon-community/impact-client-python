@@ -24,8 +24,21 @@ class WorkspaceService:
         ).resolve()
         return self._http_client.get_json(url)
 
-    def workspaces_get(self) -> Dict[str, Any]:
-        url = (self._base_uri / "api/workspaces").resolve()
+    def workspaces_get(
+        self,
+        only_app_mode: bool = False,
+        name: Optional[str] = None,
+        sharing_id: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        query = {}
+        if name:
+            query["name"] = name
+        if sharing_id:
+            query["sharingId"] = sharing_id
+        if only_app_mode:
+            query["onlyAppMode"] = only_app_mode
+        query_args = '&'.join(f'{key}={value}' for key, value in query.items())
+        url = (self._base_uri / f"api/workspaces?{query_args}").resolve()
         return self._http_client.get_json(url)
 
     def projects_get(

@@ -361,7 +361,12 @@ class Client:
             if item['definition']['name'] == workspace_name
         ]
 
-    def get_workspaces(self) -> List[Workspace]:
+    def get_workspaces(
+        self,
+        only_app_mode: bool = False,
+        name: Optional[str] = None,
+        sharing_id: Optional[str] = None,
+    ) -> List[Workspace]:
         """Returns a list of Workspace class object.
 
         Returns:
@@ -372,7 +377,7 @@ class Client:
             workspaces = client.get_workspaces()
 
         """
-        resp = self._sal.workspace.workspaces_get()
+        resp = self._sal.workspace.workspaces_get(only_app_mode, name, sharing_id)
         return [
             Workspace(item["id"], item["definition"], self._sal)
             for item in resp["data"]["items"]
