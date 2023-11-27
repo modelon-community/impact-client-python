@@ -119,6 +119,7 @@ class PublishedWorkspaceDefinition:
     size: int
     status: PublishedWorkspaceUploadStatus
     owner_username: str
+    created_at: int
 
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> PublishedWorkspaceDefinition:
@@ -128,6 +129,7 @@ class PublishedWorkspaceDefinition:
             size=data['size'],
             status=PublishedWorkspaceUploadStatus(data['status']),
             owner_username=data['ownerUsername'],
+            created_at=data['createdAt'],
         )
 
 
@@ -181,6 +183,11 @@ class PublishedWorkspace:
         """Published Workspace id."""
         return self._id
 
+    @property
+    def created_at(self) -> int:
+        """Published Workspace timestamp."""
+        return self._definition.created_at
+
     def delete(self) -> None:
         """Deletes the published workspace.
 
@@ -201,21 +208,102 @@ class PublishedWorkspace:
         """
         self._sal.workspace.request_published_workspace_access(self._id)
 
-    def import_to_userspace(self) -> WorkspaceImportOperation:
+    def _get_latest_local_workspace(self):
+        resp = self._sal.workspace.workspaces_get(sharing_id=self._id)
+        workspaces = [
+            Workspace(item["id"], item["definition"], self._sal)
+            for item in resp["data"]["items"]
+        ]
+        if not workspaces:
+            return None
+        if len(workspaces) > 1:
+            logger.warning(
+                'Multiple local copies of workspace with the same '
+                'sharing ID exist. Picking the latest.'
+            )
+            return sorted(
+                workspaces,
+                key=lambda x: x.definition.received_from.created_at,
+            )[-1]
+        return workspaces[0]
+
+    def import_to_userspace(self, update_if_available: bool = False) -> Workspace:
         """Imports a published workspace.
 
+        Args:
+            update_if_available: If true, the workspace is updated with the
+            latest copy from the cloud. Default is False.
+
         Returns:
-            A WorkspaceImportOperation class object.
+            The workspace class object.
 
         Example::
 
-            published_workspace.import_to_userspace().wait()
+            published_workspace.import_to_userspace()
 
         """
+        local_workspace = self._get_latest_local_workspace()
+        if local_workspace:
+            if self.created_at != local_workspace.definition.received_from.created_at:
+                if not update_if_available:
+                    logger.warning(
+                        'A new update is available for the workspace with ID '
+                        f'{local_workspace.id}. Set "update_if_available" to True '
+                        'if you wish to update the workspace!'
+                    )
+                    return local_workspace
+                logger.info('Updating the workspace to the latest published workspace.')
+                updated_workspace = self._import_to_userspace()
+                local_workspace.delete()
+                return updated_workspace
+            else:
+                return local_workspace
+
+        logger.info(
+            f'No local imports of workspace with sharing ID {self._id} exist.'
+            'Importing the published workspace to userspace.'
+        )
+        return self._import_to_userspace()
+
+    def _import_to_userspace(self):
         resp = self._sal.workspace.import_from_cloud(self._id)
         return WorkspaceImportOperation[Workspace](
             resp["data"]["location"], self._sal, Workspace.from_import_operation
-        )
+        ).wait()
+
+
+class OwnerData:
+    def __init__(self, data: Any) -> None:
+        self._data = data
+
+    @property
+    def username(self):
+        return self._data['username']
+
+    @property
+    def tenant(self):
+        return self._data['tenant']
+
+
+class ReceivedFrom:
+    def __init__(self, data: Any) -> None:
+        self._data = data
+
+    @property
+    def sharing_id(self):
+        return self._data['sharingId']
+
+    @property
+    def workspace_name(self):
+        return self._data['workspaceName']
+
+    @property
+    def owner(self):
+        return OwnerData(self._data['owner'])
+
+    @property
+    def created_at(self):
+        return self._data['createdAt']
 
 
 class WorkspaceDefinition:
@@ -241,6 +329,14 @@ class WorkspaceDefinition:
     @property
     def default_project_id(self) -> str:
         return self._data.get('defaultProjectId')
+
+    @property
+    def received_from(self) -> Optional[ReceivedFrom]:
+        return (
+            ReceivedFrom(self._data.get('receivedFrom'))
+            if self._data.get('receivedFrom')
+            else None
+        )
 
     @property
     def projects(self) -> List[ProjectEntry]:
