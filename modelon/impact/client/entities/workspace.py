@@ -238,8 +238,9 @@ class PublishedWorkspace:
             The workspace class object.
 
         Example::
-
-            published_workspace.import_to_userspace()
+            published_workspace = client.get_published_workspaces(owner="username",
+                name="A Workspace")[0]
+            workspace = published_workspace.import_to_userspace()
 
         """
         local_workspace = self._get_latest_local_workspace()
