@@ -5,11 +5,11 @@ import unittest.mock as mock
 from tests.files.paths import TEST_WORKSPACE_PATH
 from tests.impact.client.helpers import (
     IDs,
+    create_experiment_operation,
     create_model_entity,
     create_model_exe_entity,
-    create_published_workspace_entity,
-    create_experiment_operation,
     create_project_entity,
+    create_published_workspace_entity,
     create_workspace_entity,
     create_workspace_export_operation,
 )
@@ -52,7 +52,7 @@ class TestPublishedWorkspace:
         )
 
     def test_import_published_workspace(self, publish_workspace):
-        workspace = publish_workspace.entity.import_to_userspace().wait()
+        workspace = publish_workspace.entity.import_to_userspace()
         assert workspace.id == IDs.WORKSPACE_PRIMARY
 
 
