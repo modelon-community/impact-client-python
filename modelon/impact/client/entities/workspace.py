@@ -208,7 +208,7 @@ class PublishedWorkspace:
         """
         self._sal.workspace.request_published_workspace_access(self._id)
 
-    def _get_latest_local_workspace(self):
+    def _get_latest_local_workspace(self) -> Optional[Workspace]:
         resp = self._sal.workspace.workspaces_get(sharing_id=self._id)
         workspaces = [
             Workspace(item["id"], item["definition"], self._sal)
@@ -223,7 +223,7 @@ class PublishedWorkspace:
             )
             return sorted(
                 workspaces,
-                key=lambda x: x.definition.received_from.created_at,
+                key=lambda x: x.definition.received_from.created_at,  # type: ignore
             )[-1]
         return workspaces[0]
 
@@ -244,7 +244,9 @@ class PublishedWorkspace:
         """
         local_workspace = self._get_latest_local_workspace()
         if local_workspace:
-            if self.created_at != local_workspace.definition.received_from.created_at:
+            local_ws_recieved_from = local_workspace.definition.received_from
+            local_ws_created_at = local_ws_recieved_from.created_at  # type: ignore
+            if self.created_at != local_ws_created_at:
                 if not update_if_available:
                     logger.warning(
                         'A new update is available for the workspace with ID '
@@ -265,7 +267,7 @@ class PublishedWorkspace:
         )
         return self._import_to_userspace()
 
-    def _import_to_userspace(self):
+    def _import_to_userspace(self) -> Workspace:
         resp = self._sal.workspace.import_from_cloud(self._id)
         return WorkspaceImportOperation[Workspace](
             resp["data"]["location"], self._sal, Workspace.from_import_operation
@@ -277,11 +279,11 @@ class OwnerData:
         self._data = data
 
     @property
-    def username(self):
+    def username(self) -> str:
         return self._data['username']
 
     @property
-    def tenant(self):
+    def tenant(self) -> str:
         return self._data['tenant']
 
 
@@ -290,19 +292,19 @@ class ReceivedFrom:
         self._data = data
 
     @property
-    def sharing_id(self):
+    def sharing_id(self) -> str:
         return self._data['sharingId']
 
     @property
-    def workspace_name(self):
+    def workspace_name(self) -> str:
         return self._data['workspaceName']
 
     @property
-    def owner(self):
+    def owner(self) -> OwnerData:
         return OwnerData(self._data['owner'])
 
     @property
-    def created_at(self):
+    def created_at(self) -> int:
         return self._data['createdAt']
 
 
