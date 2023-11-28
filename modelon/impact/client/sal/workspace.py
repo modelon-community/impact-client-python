@@ -36,7 +36,7 @@ class WorkspaceService:
         if sharing_id:
             query["sharingId"] = sharing_id
         if only_app_mode:
-            query["onlyAppMode"] = only_app_mode
+            query["onlyAppMode"] = str(only_app_mode)
         query_args = '&'.join(f'{key}={value}' for key, value in query.items())
         url = (self._base_uri / f"api/workspaces?{query_args}").resolve()
         return self._http_client.get_json(url)
