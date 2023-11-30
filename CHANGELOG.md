@@ -1,3 +1,18 @@
+# [3.2.0](https://github.com/modelon-community/impact-client-python/compare/v3.1.0...v3.2.0) (2023-11-30)
+
+
+### Bug Fixes
+
+* fix import_to_userspace test ([8e0f764](https://github.com/modelon-community/impact-client-python/commit/8e0f764467fed30b6a48264a78861d50d70e9a5a))
+* improve import_to_userspace docstring ([2235670](https://github.com/modelon-community/impact-client-python/commit/22356700c869d36287f384b22296c7ab894d24a2))
+* lint fixes ([dd0b404](https://github.com/modelon-community/impact-client-python/commit/dd0b40422ad450336c46635da220ec3c4a5ed4d6))
+
+
+### Features
+
+* add possibility to fetch updates from a published workspace ([7fafcf7](https://github.com/modelon-community/impact-client-python/commit/7fafcf76f1f084ed2318f71d3736b7f560eb7e73))
+* add support for filtering workspace based on name, app_mode and sharing_id ([bf28a11](https://github.com/modelon-community/impact-client-python/commit/bf28a1103ac5429b751dc1f10f412b6e030558d0))
+
 # [3.1.0](https://github.com/modelon-community/impact-client-python/compare/v3.0.4...v3.1.0) (2023-11-20)
 
 
