@@ -228,7 +228,7 @@ class PublishedWorkspace:
         return workspaces[0]
 
     def import_to_userspace(self, update_if_available: bool = False) -> Workspace:
-        """Imports a published workspace.
+        """Imports a published workspace to userspace.
 
         Args:
             update_if_available: If true, the workspace is updated with the
