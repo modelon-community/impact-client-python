@@ -1,3 +1,11 @@
+## [3.2.1](https://github.com/modelon-community/impact-client-python/compare/v3.2.0...v3.2.1) (2023-12-01)
+
+
+### Bug Fixes
+
+* added userspace to known spellings ([7bcad1d](https://github.com/modelon-community/impact-client-python/commit/7bcad1d26c0f4381cf63127ffd15b5350d86e7bd))
+* minor docs fix ([ad06278](https://github.com/modelon-community/impact-client-python/commit/ad0627827052c36b90aad9fac0cd1d44b2e9ca3d))
+
 # [3.2.0](https://github.com/modelon-community/impact-client-python/compare/v3.1.0...v3.2.0) (2023-11-30)
 
 
