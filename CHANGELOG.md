@@ -1,3 +1,10 @@
+# [3.3.0](https://github.com/modelon-community/impact-client-python/compare/v3.2.1...v3.3.0) (2023-12-05)
+
+
+### Features
+
+* add support for exporting publishing app mode workspaces ([d318dba](https://github.com/modelon-community/impact-client-python/commit/d318dba8600ab60920b1285718770c20d6ebc5a5))
+
 ## [3.2.1](https://github.com/modelon-community/impact-client-python/compare/v3.2.0...v3.2.1) (2023-12-01)
 
 
