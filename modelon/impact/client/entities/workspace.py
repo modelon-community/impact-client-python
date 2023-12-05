@@ -417,15 +417,22 @@ class Workspace(WorkspaceInterface):
     def name(self) -> str:
         return self.definition.name
 
-    @name.setter
-    def name(self, name: str) -> None:
+    def rename(self, new_name: str) -> None:
+        """Renames a workspace.
+
+        Args:
+            name: The new name for the workspace.
+
+        Example::
+
+            workspace.rename('renamed workspace')
+
+        """
         workspace_data = self._sal.workspace.workspace_get(
             workspace_id=self.id, size_info=False
         )
-        updated_data = self._sal.workspace.update_workspace(
-            self.id, name, workspace_data
-        )
-        self._workspace_definition = WorkspaceDefinition(updated_data["definition"])
+        workspace_data['definition']["name"] = new_name
+        self._sal.workspace.update_workspace(self.id, workspace_data)
 
     def get_custom_function(self, name: str) -> CustomFunction:
         """Returns a CustomFunction class object.
