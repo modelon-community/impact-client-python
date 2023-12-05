@@ -320,26 +320,32 @@ class WorkspaceDefinition:
 
     @property
     def name(self) -> str:
+        """Workspace name."""
         return self._data.get('name')
 
     @property
     def format(self) -> str:
+        """Workspace definition format."""
         return self._data.get('format')
 
     @property
     def description(self) -> str:
+        """Workspace description."""
         return self._data.get('description')
 
     @property
     def created_by(self) -> str:
+        """User ID of the workspace creator."""
         return self._data.get('createdBy')
 
     @property
     def default_project_id(self) -> str:
+        """Project ID of the default workspace project."""
         return self._data.get('defaultProjectId')
 
     @property
     def received_from(self) -> Optional[ReceivedFrom]:
+        """Received from information for the workspace, if imported from cloud."""
         return (
             ReceivedFrom(self._data.get('receivedFrom'))
             if self._data.get('receivedFrom')
@@ -348,15 +354,30 @@ class WorkspaceDefinition:
 
     @property
     def projects(self) -> List[ProjectEntry]:
+        """List of workspace projects."""
         projects = self._data.get('projects', [])
         return [ProjectEntry(project) for project in projects]
 
     @property
     def dependencies(self) -> List[ProjectEntry]:
+        """List of workspace dependencies."""
         dependencies = self._data.get('dependencies', [])
         return [ProjectEntry(dependency) for dependency in dependencies]
 
     def to_file(self, path: str) -> str:
+        """Writes the workspace definition as a JSON file.
+
+        Args:
+            path: The path of the folder to store the file at.
+
+        Returns:
+            The file path of the created JSON file.
+
+        Example::
+
+            file = workspace.to_file('/home/workspace/definition')
+
+        """
         os.makedirs(path, exist_ok=True)
         definition_path = os.path.join(path, self.name + ".json")
         with open(definition_path, "w", encoding='utf-8') as f:
@@ -365,11 +386,25 @@ class WorkspaceDefinition:
 
     @classmethod
     def from_file(cls, path: str) -> WorkspaceDefinition:
+        """Constructs WorkspaceDefinition class from JSON file.
+
+        Args:
+            path: The path of the JSON file.
+
+        Returns:
+            The WorkspaceDefinition class object.
+
+        Example::
+
+            definition = workspace.from_file('/home/definition.json')
+
+        """
         with open(path) as json_file:
             data = json.load(json_file)
         return cls(data)
 
     def to_dict(self) -> Dict[str, Any]:
+        """Returns the workspace definition as a dict."""
         return self._data
 
 
@@ -404,6 +439,7 @@ class Workspace(WorkspaceInterface):
 
     @property
     def definition(self) -> WorkspaceDefinition:
+        """Workspace definition."""
         definition = self._sal.workspace.workspace_get(
             workspace_id=self.id, size_info=False
         )['definition']
@@ -411,6 +447,7 @@ class Workspace(WorkspaceInterface):
 
     @property
     def name(self) -> str:
+        """Workspace name."""
         return self.definition.name
 
     def rename(self, new_name: str) -> None:
