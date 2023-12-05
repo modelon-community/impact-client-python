@@ -245,6 +245,9 @@ class PublishedWorkspace:
         """
         local_workspace = self._get_latest_local_workspace()
         if local_workspace:
+            logger.info(
+                f'Local imports of workspace with sharing ID {self._id} exists.'
+            )
             local_ws_recieved_from = local_workspace.definition.received_from
             local_ws_created_at = local_ws_recieved_from.created_at  # type: ignore
             if self.created_at != local_ws_created_at:
@@ -260,6 +263,9 @@ class PublishedWorkspace:
                 local_workspace.delete()
                 return updated_workspace
             else:
+                logger.info(
+                    f'Returning the local workspace with ID {local_workspace.id}.'
+                )
                 return local_workspace
 
         logger.info(
