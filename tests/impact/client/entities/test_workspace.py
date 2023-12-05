@@ -12,6 +12,7 @@ from tests.impact.client.helpers import (
     create_published_workspace_entity,
     create_workspace_entity,
     create_workspace_export_operation,
+    get_test_workspace_definition,
 )
 
 
@@ -62,8 +63,15 @@ class TestWorkspace:
 
     def test_rename_workspace(self, workspace):
         assert workspace.entity.name == IDs.WORKSPACE_PRIMARY
-        workspace.entity.name = IDs.WORKSPACE_SECONDARY
-        assert workspace.entity.name == IDs.WORKSPACE_SECONDARY
+        workspace.entity.rename(IDs.WORKSPACE_SECONDARY)
+        data = {
+            "definition": get_test_workspace_definition(IDs.WORKSPACE_SECONDARY),
+            "id": IDs.WORKSPACE_PRIMARY,
+            "sizeInfo": {"total": 7014},
+        }
+        workspace.service.workspace.update_workspace.assert_called_with(
+            IDs.WORKSPACE_PRIMARY, data
+        )
 
     def test_get_custom_function(self, workspace):
         custom_function = workspace.entity.get_custom_function(IDs.DYNAMIC_CF)

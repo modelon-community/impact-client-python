@@ -249,8 +249,7 @@ class WorkspaceService:
         self._http_client.delete_json(url)
 
     def update_workspace(
-        self, workspace_id: str, workspace_name: str, data: Dict[str, Any]
+        self, workspace_id: str, data: Dict[str, Any]
     ) -> Dict[str, Any]:
         url = (self._base_uri / f"api/workspaces/{workspace_id}").resolve()
-        data['definition']["name"] = workspace_name
         return self._http_client.put_json(url, body=data)

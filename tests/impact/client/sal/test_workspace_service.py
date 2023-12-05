@@ -27,11 +27,14 @@ class TestWorkspaceService:
         service = modelon.impact.client.sal.service.Service(
             uri=uri, context=update_workspace.context
         )
+        workspace_update_data = {
+            'definition': get_test_workspace_definition(IDs.WORKSPACE_SECONDARY),
+            'id': IDs.WORKSPACE_PRIMARY,
+        }
         data = service.workspace.update_workspace(
             IDs.WORKSPACE_PRIMARY,
-            IDs.WORKSPACE_SECONDARY,
             {
-                'definition': get_test_workspace_definition(),
+                'definition': get_test_workspace_definition(IDs.WORKSPACE_SECONDARY),
                 'id': IDs.WORKSPACE_PRIMARY,
             },
         )
@@ -42,10 +45,7 @@ class TestWorkspaceService:
             == rename_call.url
         )
         assert 'PUT' == rename_call.method
-        assert data == {
-            'definition': get_test_workspace_definition(IDs.WORKSPACE_SECONDARY),
-            'id': IDs.WORKSPACE_PRIMARY,
-        }
+        assert data == workspace_update_data
 
     def test_delete_workspace(self, delete_workspace):
         uri = URI(delete_workspace.url)
