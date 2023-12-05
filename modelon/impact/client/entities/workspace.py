@@ -411,7 +411,10 @@ class Workspace(WorkspaceInterface):
 
     @property
     def definition(self) -> WorkspaceDefinition:
-        return self._workspace_definition
+        definition = self._sal.workspace.workspace_get(
+            workspace_id=self.id, size_info=False
+        )['definition']
+        return WorkspaceDefinition(definition)
 
     @property
     def name(self) -> str:
@@ -837,12 +840,13 @@ class Workspace(WorkspaceInterface):
             project = workspace.get_default_project()
 
         """
-        if not self._workspace_definition.default_project_id:
+        default_project_id = self.definition.default_project_id
+        if not default_project_id:
             raise ValueError(
                 f'No default project exists for the workspace {self._workspace_id}!'
             )
         resp = self._sal.project.project_get(
-            self._workspace_definition.default_project_id,
+            default_project_id,
             vcs_info=True,
             size_info=False,
         )
