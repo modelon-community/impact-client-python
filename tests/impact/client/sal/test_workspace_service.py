@@ -22,6 +22,31 @@ class TestWorkspaceService:
             'id': IDs.WORKSPACE_PRIMARY,
         }
 
+    def test_rename_workspace(self, update_workspace):
+        uri = URI(update_workspace.url)
+        service = modelon.impact.client.sal.service.Service(
+            uri=uri, context=update_workspace.context
+        )
+        data = service.workspace.update_workspace(
+            IDs.WORKSPACE_PRIMARY,
+            IDs.WORKSPACE_SECONDARY,
+            {
+                'definition': get_test_workspace_definition(),
+                'id': IDs.WORKSPACE_PRIMARY,
+            },
+        )
+        assert update_workspace.adapter.called
+        rename_call = update_workspace.adapter.request_history[0]
+        assert (
+            f'http://mock-impact.com/api/workspaces/{IDs.WORKSPACE_PRIMARY}'
+            == rename_call.url
+        )
+        assert 'PUT' == rename_call.method
+        assert data == {
+            'definition': get_test_workspace_definition(IDs.WORKSPACE_SECONDARY),
+            'id': IDs.WORKSPACE_PRIMARY,
+        }
+
     def test_delete_workspace(self, delete_workspace):
         uri = URI(delete_workspace.url)
         service = modelon.impact.client.sal.service.Service(

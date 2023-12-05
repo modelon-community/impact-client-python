@@ -60,6 +60,11 @@ class TestWorkspace:
     def test_get_workspace_size(self, workspace):
         assert workspace.entity.size == 7014
 
+    def test_rename_workspace(self, workspace):
+        assert workspace.entity.name == IDs.WORKSPACE_PRIMARY
+        workspace.entity.name = IDs.WORKSPACE_SECONDARY
+        assert workspace.entity.name == IDs.WORKSPACE_SECONDARY
+
     def test_get_custom_function(self, workspace):
         custom_function = workspace.entity.get_custom_function(IDs.DYNAMIC_CF)
         assert IDs.DYNAMIC_CF == custom_function.name
