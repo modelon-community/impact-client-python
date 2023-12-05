@@ -61,9 +61,7 @@ class WorkspaceImportOperation(AsyncOperation[Entity]):
             )
         workspace_id = info["data"]["workspaceId"]
         resp = self._sal.workspace.workspace_get(workspace_id, False)
-        return self._create_entity(
-            self, workspace_id=resp["id"], workspace_definition=resp["definition"]
-        )
+        return self._create_entity(self, workspace_id=resp["id"])
 
     @property
     def status(self) -> AsyncOperationStatus:
