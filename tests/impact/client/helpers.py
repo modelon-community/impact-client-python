@@ -489,9 +489,14 @@ def get_test_workspace_definition(name=None):
     }
 
 
-def create_workspace_entity(name, definition=None, service=None):
-    definition = definition or get_test_workspace_definition(name)
-    return Workspace(name, definition, service or MagicMock())
+def create_workspace_entity(workspace_id, definition=None, service=None):
+    service = service or MagicMock()
+    if definition:
+        service.workspace_get.return_value = {
+            "definition": definition,
+            "id": workspace_id,
+        }
+    return Workspace(workspace_id, service or MagicMock())
 
 
 def create_published_workspace_entity(id, name, definition=None, service=None):

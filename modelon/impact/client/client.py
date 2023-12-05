@@ -338,7 +338,7 @@ class Client:
 
         """
         resp = self._sal.workspace.workspace_get(workspace_id, size_info=False)
-        return Workspace(resp["id"], resp["definition"], self._sal)
+        return Workspace(resp["id"], self._sal)
 
     def get_workspace_by_name(self, workspace_name: str) -> List[Workspace]:
         """Returns a list of Workspace class objects with the given name.
@@ -356,7 +356,7 @@ class Client:
         """
         resp = self._sal.workspace.workspaces_get()
         return [
-            Workspace(item["id"], item["definition"], self._sal)
+            Workspace(item["id"], self._sal)
             for item in resp["data"]["items"]
             if item['definition']['name'] == workspace_name
         ]
@@ -378,10 +378,7 @@ class Client:
 
         """
         resp = self._sal.workspace.workspaces_get(only_app_mode, name, sharing_id)
-        return [
-            Workspace(item["id"], item["definition"], self._sal)
-            for item in resp["data"]["items"]
-        ]
+        return [Workspace(item["id"], self._sal) for item in resp["data"]["items"]]
 
     def convert_workspace(
         self, workspace_id: str, backup_name: Optional[str] = None
@@ -483,7 +480,7 @@ class Client:
 
         """
         resp = self._sal.workspace.workspace_create(workspace_name)
-        return Workspace(resp["id"], resp["definition"], self._sal)
+        return Workspace(resp["id"], self._sal)
 
     def upload_workspace(self, path_to_workspace: str) -> Workspace:
         """Imports a Workspace from a compressed(.zip) workspace file. Returns the

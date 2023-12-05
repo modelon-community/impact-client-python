@@ -211,8 +211,7 @@ class PublishedWorkspace:
     def _get_latest_local_workspace(self) -> Optional[Workspace]:
         resp = self._sal.workspace.workspaces_get(sharing_id=self._id)
         workspaces = [
-            Workspace(item["id"], item["definition"], self._sal)
-            for item in resp["data"]["items"]
+            Workspace(item["id"], self._sal) for item in resp["data"]["items"]
         ]
         if not workspaces:
             return None
@@ -380,15 +379,9 @@ class Workspace(WorkspaceInterface):
     def __init__(
         self,
         workspace_id: str,
-        workspace_definition: Union[WorkspaceDefinition, Dict[str, Any]],
         service: Service,
     ):
         self._workspace_id = workspace_id
-        self._workspace_definition = (
-            WorkspaceDefinition(workspace_definition)
-            if isinstance(workspace_definition, dict)
-            else workspace_definition
-        )
         self._sal = service
 
     def __eq__(self, obj: object) -> bool:
