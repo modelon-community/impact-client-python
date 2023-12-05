@@ -14,17 +14,25 @@ from modelon.impact.client.options import (
 )
 from modelon.impact.client.sal import exceptions
 from tests.impact.client.helpers import (
+    LAST_POINT_TRAJECTORY,
+    MODEL_DESCRIPTION_XML,
+    UNVERSIONED_PROJECT,
+    VERSIONED_PROJECT_BRANCH,
+    VERSIONED_PROJECT_TRUNK,
+    IDs,
     create_custom_function_entity,
     create_experiment_entity,
     create_model_entity,
     create_model_exe_entity,
     create_project_entity,
     create_published_workspace_entity,
+    create_workspace_entity,
     get_test_fmu_experiment_definition,
     get_test_get_fmu,
     get_test_modelica_experiment_definition,
     get_test_published_workspace_definition,
     get_test_workspace_definition,
+    json_request_list_item,
     with_csv_route,
     with_exception,
     with_json_request_list_route,
@@ -34,14 +42,6 @@ from tests.impact.client.helpers import (
     with_text_route,
     with_xml_route,
     with_zip_route,
-    json_request_list_item,
-    create_workspace_entity,
-    IDs,
-    VERSIONED_PROJECT_BRANCH,
-    VERSIONED_PROJECT_TRUNK,
-    MODEL_DESCRIPTION_XML,
-    LAST_POINT_TRAJECTORY,
-    UNVERSIONED_PROJECT,
 )
 
 ExperimentMock = collections.namedtuple('ExperimentMock', ['entity', 'service'])
@@ -415,6 +415,20 @@ def get_external_result_data():
             "workspaceId": IDs.WORKSPACE_PRIMARY,
         }
     }
+
+
+@pytest.fixture
+def update_workspace(user_with_license):
+    json = {
+        "definition": get_test_workspace_definition(IDs.WORKSPACE_SECONDARY),
+        "id": IDs.WORKSPACE_PRIMARY,
+    }
+    return with_json_route(
+        user_with_license,
+        'PUT',
+        f'api/workspaces/{IDs.WORKSPACE_PRIMARY}',
+        json,
+    )
 
 
 @pytest.fixture
@@ -1128,6 +1142,10 @@ def workspace():
         }
     }
     export_service.export_download.return_value = b"undjnvsjnvj"
+    ws_service.update_workspace.return_value = {
+        "definition": get_test_workspace_definition(IDs.WORKSPACE_SECONDARY),
+        "id": IDs.WORKSPACE_PRIMARY,
+    }
     ws_service.experiment_create.return_value = {
         "experiment_id": IDs.EXPERIMENT_PRIMARY
     }
