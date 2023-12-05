@@ -82,6 +82,24 @@ class TestWorkspaceService:
             uri=uri, context=setup_export_workspace.context
         )
         data = service.workspace.workspace_export_setup(IDs.WORKSPACE_PRIMARY, False)
+        request_data = setup_export_workspace.adapter.request_history[0].json()
+        assert request_data == {'publish': False, 'workspaceId': IDs.WORKSPACE_PRIMARY}
+        assert data == {"data": {"location": f"api/workspace-exports/{IDs.EXPORT}"}}
+
+    def test_app_mode_workspace_export_setup(self, setup_export_workspace):
+        uri = URI(setup_export_workspace.url)
+        service = modelon.impact.client.sal.service.Service(
+            uri=uri, context=setup_export_workspace.context
+        )
+        data = service.workspace.workspace_export_setup(
+            IDs.WORKSPACE_PRIMARY, False, IDs.MODELICA_CLASS_PATH
+        )
+        request_data = setup_export_workspace.adapter.request_history[0].json()
+        assert request_data == {
+            'publish': False,
+            'workspaceId': IDs.WORKSPACE_PRIMARY,
+            'appMode': {'model': IDs.MODELICA_CLASS_PATH},
+        }
         assert data == {"data": {"location": f"api/workspace-exports/{IDs.EXPORT}"}}
 
     def test_workspace_export_status(self, get_export_workspace_status):

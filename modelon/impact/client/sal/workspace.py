@@ -66,10 +66,12 @@ class WorkspaceService:
         return self._http_client.get_json(url)
 
     def workspace_export_setup(
-        self, workspace_id: str, publish: bool
+        self, workspace_id: str, publish: bool, class_path: Optional[str] = None
     ) -> Dict[str, Any]:
         url = (self._base_uri / "api/workspace-exports").resolve()
         body = {"workspaceId": workspace_id, 'publish': publish}
+        if class_path:
+            body['appMode'] = {'model': class_path}
         return self._http_client.post_json(url, body=body)
 
     def workspace_conversion_setup(

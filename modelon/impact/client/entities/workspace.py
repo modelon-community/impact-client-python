@@ -492,7 +492,9 @@ class Workspace(WorkspaceInterface):
             resp["data"]["location"], self._sal, ExternalResult.from_operation
         )
 
-    def export(self, publish: bool = False) -> WorkspaceExportOperation:
+    def export(
+        self, publish: bool = False, class_path: Optional[str] = None
+    ) -> WorkspaceExportOperation:
         """Exports the workspace as a binary compressed archive. Similar to
         :obj:`~modelon.impact.client.entities.workspace.Workspace.download`, but gives
         more control for getting the workspace async. Returns an
@@ -502,6 +504,8 @@ class Workspace(WorkspaceInterface):
 
         Args:
             publish: To export the workspace and save it to cloud storage.
+            class_path: The Modelica class path of the model. If specified,
+                the workspace is exported in app mode.
 
         Returns:
             An WorkspaceExportOperation class object.
@@ -509,10 +513,13 @@ class Workspace(WorkspaceInterface):
         Example::
 
             path = workspace.export().wait().download_as('/home/workspace.zip')
-            path = workspace.export(publish=True)
+            path = workspace.export(publish=True,
+                class_path='Modelica.Blocks.Examples.PID_Controller')
 
         """
-        resp = self._sal.workspace.workspace_export_setup(self._workspace_id, publish)
+        resp = self._sal.workspace.workspace_export_setup(
+            self._workspace_id, publish, class_path
+        )
         return WorkspaceExportOperation[Workspace](
             resp["data"]["location"], self._sal, Export.from_operation
         )
