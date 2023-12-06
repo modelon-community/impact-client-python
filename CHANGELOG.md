@@ -1,3 +1,19 @@
+# [3.4.0](https://github.com/modelon-community/impact-client-python/compare/v3.3.0...v3.4.0) (2023-12-06)
+
+
+### Bug Fixes
+
+* added docstrings for workspace and workspace definition properties ([e43d6a7](https://github.com/modelon-community/impact-client-python/commit/e43d6a75933f07a1730cb3b103c4d341b8a291a0))
+* added logging if an existing workspace is found during import of published workspaces ([671ed6e](https://github.com/modelon-community/impact-client-python/commit/671ed6ebf081515f080d689b67bc6fde17bff1a3))
+* always fetch latest workspace definition ([13bfcb6](https://github.com/modelon-community/impact-client-python/commit/13bfcb648d90630ae9e15f8a95926d0457ded4cf))
+* remove workspace definition from workspace entity constructor ([42a0c20](https://github.com/modelon-community/impact-client-python/commit/42a0c20282ed4942e4910f74660eb2856a29705c))
+* use seperate rename method to rename a workspace ([bf85a59](https://github.com/modelon-community/impact-client-python/commit/bf85a5934c7258faae71e9c6666b42b2db7ffeee))
+
+
+### Features
+
+* added possibility to rename a workspace ([99774e4](https://github.com/modelon-community/impact-client-python/commit/99774e434be7611889c7d8d4ad724834c3923de5))
+
 # [3.3.0](https://github.com/modelon-community/impact-client-python/compare/v3.2.1...v3.3.0) (2023-12-05)
 
 
