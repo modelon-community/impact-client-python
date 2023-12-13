@@ -240,9 +240,9 @@ class WorkspaceService:
 
     def request_published_workspace_access(self, sharing_id: str) -> None:
         url = (
-            self._base_uri / f"api/published-workspaces/{sharing_id}/access"
+            self._base_uri / f"api/published-workspaces/{sharing_id}/access/users"
         ).resolve()
-        self._http_client.post_json_no_response_body(url, body={})
+        self._http_client.post_json_no_response_body(url, body={"operation": 'request'})
 
     def delete_published_workspace(self, sharing_id: str) -> None:
         url = (self._base_uri / f"api/published-workspaces/{sharing_id}").resolve()
