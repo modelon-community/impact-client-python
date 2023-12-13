@@ -505,7 +505,7 @@ class TestWorkspaceService:
         assert request_published_workspace_access.adapter.called
         access_call = request_published_workspace_access.adapter.request_history[0]
         assert (
-            f'http://mock-impact.com/api/published-workspaces/{IDs.PUBLISHED_WORKSPACE_ID}/access'
+            f'http://mock-impact.com/api/published-workspaces/{IDs.PUBLISHED_WORKSPACE_ID}/access/users'
             == access_call.url
         )
         assert 'POST' == access_call.method
