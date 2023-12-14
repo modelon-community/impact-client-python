@@ -279,7 +279,7 @@ def rename_published_workspace(user_with_license):
 def request_published_workspace_access(user_with_license):
     return with_json_route_no_resp(
         user_with_license,
-        'POST',
+        'PATCH',
         f'api/published-workspaces/{IDs.PUBLISHED_WORKSPACE_ID}/access/users',
     )
 

@@ -508,4 +508,4 @@ class TestWorkspaceService:
             f'http://mock-impact.com/api/published-workspaces/{IDs.PUBLISHED_WORKSPACE_ID}/access/users'
             == access_call.url
         )
-        assert 'POST' == access_call.method
+        assert 'PATCH' == access_call.method
