@@ -1,3 +1,10 @@
+## [3.4.1](https://github.com/modelon-community/impact-client-python/compare/v3.4.0...v3.4.1) (2023-12-14)
+
+
+### Bug Fixes
+
+* corrected the api path for request access ([0697279](https://github.com/modelon-community/impact-client-python/commit/0697279b2c3a03ff9a1ae72820a3d202bee7c5ab))
+
 # [3.4.0](https://github.com/modelon-community/impact-client-python/compare/v3.3.0...v3.4.0) (2023-12-06)
 
 
