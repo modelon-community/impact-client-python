@@ -1,3 +1,10 @@
+## [3.4.2](https://github.com/modelon-community/impact-client-python/compare/v3.4.1...v3.4.2) (2023-12-14)
+
+
+### Bug Fixes
+
+* correct http method(POST->PATCH) for request access ([3a91758](https://github.com/modelon-community/impact-client-python/commit/3a9175827e6dc4e8ca462080ccd72c838937db59))
+
 ## [3.4.1](https://github.com/modelon-community/impact-client-python/compare/v3.4.0...v3.4.1) (2023-12-14)
 
 
