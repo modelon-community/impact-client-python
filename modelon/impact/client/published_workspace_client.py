@@ -66,11 +66,14 @@ class PublishedWorkspacesClient:
             for item in data
         ]
 
-    def get(self, sharing_id: str) -> PublishedWorkspace:
+    def get(
+        self, sharing_id: str, request_if_no_access: bool = False
+    ) -> Optional[PublishedWorkspace]:
         """Returns the published workspace class object with the given ID.
 
         Args:
             sharing_id: ID of the published workspace.
+            request_if_no_access: Request access if user doesnt have access.
 
         Returns:
             The published workspace class object.
@@ -81,6 +84,12 @@ class PublishedWorkspacesClient:
             pw_client.get("2h98hciwsniucwincj")
 
         """
+        if request_if_no_access:
+            self._sal.workspace.request_published_workspace_access(sharing_id)
+            logger.info(
+                "Access request sent for published workspaces with ID '%s'.", sharing_id
+            )
+            return
         data = self._sal.workspace.get_published_workspace(sharing_id)
         definition = PublishedWorkspaceDefinition.from_dict(data)
         return PublishedWorkspace(data['id'], definition=definition, service=self._sal)

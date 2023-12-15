@@ -27,16 +27,6 @@ class TestPublishedWorkspace:
             IDs.PUBLISHED_WORKSPACE_ID
         )
 
-    def test_request_published_workspace_access(self):
-        service = mock.MagicMock()
-        workspace = create_published_workspace_entity(
-            IDs.PUBLISHED_WORKSPACE_ID, IDs.WORKSPACE_PRIMARY, service=service
-        )
-        workspace.request_access()
-        service.workspace.request_published_workspace_access.assert_called_with(
-            IDs.PUBLISHED_WORKSPACE_ID
-        )
-
     def test_rename_published_workspace(self, publish_workspace):
         workspace = publish_workspace.entity
         service = publish_workspace.service
