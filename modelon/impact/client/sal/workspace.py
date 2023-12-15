@@ -238,13 +238,25 @@ class WorkspaceService:
             url, body={'workspaceName': workspace_name}
         )
 
-    def request_published_workspace_access(self, sharing_id: str) -> None:
+    def _access_request(
+        self, operation: str, sharing_id: str, username: Optional[str] = None
+    ) -> None:
         url = (
             self._base_uri / f"api/published-workspaces/{sharing_id}/access/users"
         ).resolve()
-        self._http_client.patch_json_no_response_body(
-            url, body={"operation": 'request'}
-        )
+        body = {"operation": operation}
+        if username:
+            body['requesterUsername'] = username
+        self._http_client.patch_json_no_response_body(url, body=body)
+
+    def request_published_workspace_access(self, sharing_id: str) -> None:
+        self._access_request('request', sharing_id)
+
+    def grant_published_workspace_access(self, sharing_id: str, username: str) -> None:
+        self._access_request('grant', sharing_id, username)
+
+    def revoke_published_workspace_access(self, sharing_id: str, username: str) -> None:
+        self._access_request('revoke', sharing_id, username)
 
     def delete_published_workspace(self, sharing_id: str) -> None:
         url = (self._base_uri / f"api/published-workspaces/{sharing_id}").resolve()

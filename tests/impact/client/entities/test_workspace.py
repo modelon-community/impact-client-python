@@ -27,6 +27,26 @@ class TestPublishedWorkspace:
             IDs.PUBLISHED_WORKSPACE_ID
         )
 
+    def test_revoke_published_workspace_access(self):
+        service = mock.MagicMock()
+        workspace = create_published_workspace_entity(
+            IDs.PUBLISHED_WORKSPACE_ID, IDs.WORKSPACE_PRIMARY, service=service
+        )
+        workspace.revoke_access(IDs.USERNAME)
+        service.workspace.revoke_published_workspace_access.assert_called_with(
+            IDs.PUBLISHED_WORKSPACE_ID, IDs.USERNAME
+        )
+
+    def test_grant_published_workspace_access(self):
+        service = mock.MagicMock()
+        workspace = create_published_workspace_entity(
+            IDs.PUBLISHED_WORKSPACE_ID, IDs.WORKSPACE_PRIMARY, service=service
+        )
+        workspace.grant_access(IDs.USERNAME)
+        service.workspace.grant_published_workspace_access.assert_called_with(
+            IDs.PUBLISHED_WORKSPACE_ID, IDs.USERNAME
+        )
+
     def test_rename_published_workspace(self, publish_workspace):
         workspace = publish_workspace.entity
         service = publish_workspace.service

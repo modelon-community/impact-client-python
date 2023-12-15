@@ -198,6 +198,32 @@ class PublishedWorkspace:
         """
         self._sal.workspace.delete_published_workspace(self._id)
 
+    def grant_access(self, username: str) -> None:
+        """Grant access for the published workspace to the requester.
+
+        Args:
+            username: Username of the user to grant access rights to.
+
+        Example::
+
+            published_workspace.grant_access('sasuke')
+
+        """
+        self._sal.workspace.grant_published_workspace_access(self._id, username)
+
+    def revoke_access(self, username: str) -> None:
+        """Revoke access for the published workspace.
+
+        Args:
+            username: Username of the user to revoke access rights from.
+
+        Example::
+
+            published_workspace.grant_access('naruto')
+
+        """
+        self._sal.workspace.revoke_published_workspace_access(self._id, username)
+
     def _get_latest_local_workspace(self) -> Optional[Workspace]:
         resp = self._sal.workspace.workspaces_get(sharing_id=self._id)
         workspaces = [
