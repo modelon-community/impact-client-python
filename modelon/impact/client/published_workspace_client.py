@@ -73,7 +73,7 @@ class PublishedWorkspacesClient:
 
         Args:
             sharing_id: ID of the published workspace.
-            request_if_no_access: Request access if user doesnt have access.
+            request_if_no_access: Request access if user doesn't have access.
 
         Returns:
             The published workspace class object.
