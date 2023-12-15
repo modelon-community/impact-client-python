@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+import enum
 import logging
+from dataclasses import dataclass
 from typing import TYPE_CHECKING, List, Optional
 
 from modelon.impact.client.entities.workspace import (
@@ -13,6 +15,22 @@ if TYPE_CHECKING:
     from modelon.impact.client.sal.service import Service
 
 logger = logging.getLogger(__name__)
+
+
+@enum.unique
+class PublishedWorkspaceAccessKind(enum.Enum):
+    SHARED_BY_ME = "sharedByMe"
+    SHARED_WITH_ME = "sharedWithMe"
+    REQUESTED_BY_ME = "requestedByMe"
+    REQUESTED_FROM_ME = "requestedFromMe"
+
+
+@dataclass
+class PublishedWorkspaceAccess:
+    sharing_id: str
+    requested_id: str
+    requested_username: str
+    published_workspace: Optional[PublishedWorkspace] = None
 
 
 class PublishedWorkspacesClient:
@@ -66,7 +84,7 @@ class PublishedWorkspacesClient:
             for item in data
         ]
 
-    def get(
+    def get_by_id(
         self, sharing_id: str, request_if_no_access: bool = False
     ) -> Optional[PublishedWorkspace]:
         """Returns the published workspace class object with the given ID.
@@ -93,3 +111,43 @@ class PublishedWorkspacesClient:
         data = self._sal.workspace.get_published_workspace(sharing_id)
         definition = PublishedWorkspaceDefinition.from_dict(data)
         return PublishedWorkspace(data['id'], definition=definition, service=self._sal)
+
+    def get_by_access_kind(
+        self,
+        access_kind: PublishedWorkspaceAccessKind = PublishedWorkspaceAccessKind.SHARED_BY_ME,  # noqa
+    ) -> List[PublishedWorkspaceAccess]:
+        """Returns a list of published workspaces. The snapshots could be filtered based
+        on the key-worded arguments.
+
+        Args:
+            access_kind: Access kind for the published workspace.
+
+        Returns:
+            A list of published workspace class objects.
+
+        Example::
+
+            pw_client = client.get_published_workspaces_client()
+            pw_client.get_by_kind(PublishedWorkspaceAccessKind.REQUESTED_BY_ME)
+
+        """
+        data = self._sal.workspace.get_published_workspaces_by_kind(access_kind.value)[
+            "data"
+        ]["items"]
+        return [
+            PublishedWorkspaceAccess(
+                item['sharingId'],
+                item['requesterId'],
+                item['requesterUsername'],
+                PublishedWorkspace(
+                    item['publishedWorkspace']['id'],
+                    definition=PublishedWorkspaceDefinition.from_dict(
+                        item['publishedWorkspace']
+                    ),
+                    service=self._sal,
+                )
+                if 'publishedWorkspace' in item
+                else None,
+            )
+            for item in data
+        ]

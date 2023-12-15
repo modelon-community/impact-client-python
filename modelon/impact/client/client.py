@@ -706,7 +706,7 @@ class Client:
         Example::
 
             pw_client = client.get_published_workspaces_client()
-            pw_client.get("2h98hciwsniucwincj")
+            pw_client.get_by_id("2h98hciwsniucwincj")
 
         """
         return PublishedWorkspacesClient(self._sal)
