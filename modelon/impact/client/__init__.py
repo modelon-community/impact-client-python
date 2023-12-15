@@ -22,5 +22,8 @@ from modelon.impact.client.experiment_definition.operators import (
     Range,
     Uniform,
 )
+from modelon.impact.client.published_workspace_client import (
+    PublishedWorkspaceAccessKind,
+)
 
 SimpleExperimentDefinition = SimpleFMUExperimentDefinition  # For compatibility

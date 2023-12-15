@@ -227,6 +227,26 @@ class WorkspaceService:
         resp = self._http_client.get_json_response(url)
         return resp.data
 
+    def get_published_workspaces_by_kind(
+        self,
+        kind: str = "",
+        first: int = 0,
+        maximum: int = 20,
+    ) -> Dict[str, Any]:
+        query = {}
+        if kind:
+            query["kind"] = kind
+        if first > 0:
+            query["first"] = str(first)
+        if maximum >= 0:
+            query["max"] = str(maximum)
+        query_args = '&'.join(f'{key}={value}' for key, value in query.items())
+        url = (
+            self._base_uri / f"/api/published-workspaces/access/users?{query_args}"
+        ).resolve()
+        resp = self._http_client.get_json_response(url)
+        return resp.data
+
     def get_published_workspace(self, sharing_id: str) -> Dict[str, Any]:
         url = (self._base_uri / f"api/published-workspaces/{sharing_id}").resolve()
         resp = self._http_client.get_json_response(url)
