@@ -198,16 +198,6 @@ class PublishedWorkspace:
         """
         self._sal.workspace.delete_published_workspace(self._id)
 
-    def request_access(self) -> None:
-        """Send access request for the published workspace to the creator.
-
-        Example::
-
-            published_workspace.request_access()
-
-        """
-        self._sal.workspace.request_published_workspace_access(self._id)
-
     def _get_latest_local_workspace(self) -> Optional[Workspace]:
         resp = self._sal.workspace.workspaces_get(sharing_id=self._id)
         workspaces = [

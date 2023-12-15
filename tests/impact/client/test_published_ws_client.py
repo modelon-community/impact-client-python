@@ -1,3 +1,5 @@
+import unittest.mock as mock
+
 import pytest
 
 from modelon.impact.client.entities.workspace import PublishedWorkspaceUploadStatus
@@ -36,3 +38,12 @@ def test_get_publised_workspace(published_workspace):
     assert workspace.definition.tenant == IDs.TENANT
     assert workspace.definition.size == 10
     assert workspace.definition.status == PublishedWorkspaceUploadStatus.CREATED
+
+
+def test_request_published_workspace_access():
+    service = mock.MagicMock()
+    client = PublishedWorkspacesClient(service)
+    client.get(IDs.PUBLISHED_WORKSPACE_ID, request_if_no_access=True)
+    service.workspace.request_published_workspace_access.assert_called_with(
+        IDs.PUBLISHED_WORKSPACE_ID
+    )
