@@ -89,7 +89,7 @@ class PublishedWorkspacesClient:
             logger.info(
                 "Access request sent for published workspaces with ID '%s'.", sharing_id
             )
-            return
+            return None
         data = self._sal.workspace.get_published_workspace(sharing_id)
         definition = PublishedWorkspaceDefinition.from_dict(data)
         return PublishedWorkspace(data['id'], definition=definition, service=self._sal)
