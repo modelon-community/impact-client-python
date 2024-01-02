@@ -1,3 +1,22 @@
+# [3.5.0](https://github.com/modelon-community/impact-client-python/compare/v3.4.2...v3.5.0) (2024-01-02)
+
+
+### Bug Fixes
+
+* add support for fetching workspaces by kind ([fc65b01](https://github.com/modelon-community/impact-client-python/commit/fc65b01dd95f4b2a588297feb695ab95bcff93bf))
+* added request as a special case for get when it fails with access error ([3fa7c2d](https://github.com/modelon-community/impact-client-python/commit/3fa7c2d987896c6c9857d6fa6abfe1a4089451e1))
+* added request as a special case for get when it fails with access error ([d16bd4b](https://github.com/modelon-community/impact-client-python/commit/d16bd4b2c0705dc67b2403d52be7548926476a2f))
+* added request as a special case for get when it fails with access error ([55a3f9d](https://github.com/modelon-community/impact-client-python/commit/55a3f9dc5b43ba50211894016aaad04a57d92d9c))
+* added tests for client.get_by_access_kind ([bad0c72](https://github.com/modelon-community/impact-client-python/commit/bad0c72e1233f76b7f3d32f4f9df9555c58b08b9))
+* propagated first and max filtering for get_by_access_kind ([d5bbe58](https://github.com/modelon-community/impact-client-python/commit/d5bbe58d07abcffdc037b44bc53c4ff414375cf8))
+* refactored publish workspace functions out of Client module ([4300019](https://github.com/modelon-community/impact-client-python/commit/4300019776696beda2b30786b57676b9373acafe))
+* rename grant_access to grant_user_access ([0d1cc36](https://github.com/modelon-community/impact-client-python/commit/0d1cc36fbdfc77cb7d6b9884e68491237816c5e7))
+
+
+### Features
+
+* added support for granting and revoking access to published workspace ([2143e89](https://github.com/modelon-community/impact-client-python/commit/2143e8931fa47bc61aa50c4d6ee57ec97be4045a))
+
 ## [3.4.2](https://github.com/modelon-community/impact-client-python/compare/v3.4.1...v3.4.2) (2023-12-14)
 
 
