@@ -42,7 +42,7 @@ class TestPublishedWorkspace:
         workspace = create_published_workspace_entity(
             IDs.PUBLISHED_WORKSPACE_ID, IDs.WORKSPACE_PRIMARY, service=service
         )
-        workspace.grant_access(IDs.USERNAME)
+        workspace.grant_user_access(IDs.USERNAME)
         service.workspace.grant_published_workspace_access.assert_called_with(
             IDs.PUBLISHED_WORKSPACE_ID, IDs.USERNAME
         )
