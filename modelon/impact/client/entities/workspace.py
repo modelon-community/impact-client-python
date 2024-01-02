@@ -198,7 +198,7 @@ class PublishedWorkspace:
         """
         self._sal.workspace.delete_published_workspace(self._id)
 
-    def grant_access(self, username: str) -> None:
+    def grant_user_access(self, username: str) -> None:
         """Grant access for the published workspace to the requester.
 
         Args:
@@ -206,7 +206,7 @@ class PublishedWorkspace:
 
         Example::
 
-            published_workspace.grant_access('sasuke')
+            published_workspace.grant_user_access('sasuke')
 
         """
         self._sal.workspace.grant_published_workspace_access(self._id, username)
