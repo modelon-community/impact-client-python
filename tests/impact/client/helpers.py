@@ -163,6 +163,7 @@ def with_octet_stream_route(
 class IDs:
     WORKSPACE_PRIMARY = 'workspace_1'
     WORKSPACE_SECONDARY = 'workspace_2'
+    USER_ID = "njcswjcjnscksnckjsnckndsk"
     USERNAME = 'alice'
     TENANT = 'impact-tenant-modelon'
     PUBLISHED_WORKSPACE_ID = 'ekdncjndjcndejncjsncsndcijdsnc'
