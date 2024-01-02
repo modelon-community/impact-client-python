@@ -258,6 +258,33 @@ def published_workspace(user_with_license):
 
 
 @pytest.fixture
+def published_workspace_shared_by_me(user_with_license):
+    definition = get_test_published_workspace_definition()
+    json = {
+        "data": {
+            "items": [
+                {
+                    "sharingId": IDs.PUBLISHED_WORKSPACE_ID,
+                    "requesterId": IDs.USER_ID,
+                    "requesterUsername": IDs.USERNAME,
+                    "publishedWorkspace": {
+                        "id": IDs.PUBLISHED_WORKSPACE_ID,
+                        **definition,
+                    },
+                }
+            ]
+        }
+    }
+
+    return with_json_route(
+        user_with_license,
+        'GET',
+        'api/published-workspaces/access/users?kind=sharedByMe',
+        json,
+    )
+
+
+@pytest.fixture
 def delete_published_workspace(user_with_license):
     return with_json_route_no_resp(
         user_with_license,

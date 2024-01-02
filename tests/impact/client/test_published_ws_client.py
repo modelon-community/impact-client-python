@@ -3,7 +3,10 @@ import unittest.mock as mock
 import pytest
 
 from modelon.impact.client.entities.workspace import PublishedWorkspaceUploadStatus
-from modelon.impact.client.published_workspace_client import PublishedWorkspacesClient
+from modelon.impact.client.published_workspace_client import (
+    PublishedWorkspaceAccessKind,
+    PublishedWorkspacesClient,
+)
 from modelon.impact.client.sal.service import Service
 from modelon.impact.client.sal.uri import URI
 from tests.impact.client.helpers import IDs
@@ -38,6 +41,29 @@ def test_get_publised_workspace(published_workspace):
     assert workspace.definition.tenant == IDs.TENANT
     assert workspace.definition.size == 10
     assert workspace.definition.status == PublishedWorkspaceUploadStatus.CREATED
+
+
+@pytest.mark.experimental
+def test_get_publised_workspace_by_kind_shared_by_me(published_workspace_shared_by_me):
+    uri = URI(published_workspace_shared_by_me.url)
+    service = Service(uri=uri, context=published_workspace_shared_by_me.context)
+    client = PublishedWorkspacesClient(service)
+    workspaces = client.get_by_access_kind(PublishedWorkspaceAccessKind.SHARED_BY_ME)
+    assert len(workspaces) == 1
+    workspace = workspaces[0]
+    assert workspace.sharing_id == IDs.PUBLISHED_WORKSPACE_ID
+    assert workspace.requested_id == IDs.USER_ID
+    assert workspace.requested_username == IDs.USERNAME
+    assert workspace.published_workspace
+    assert workspace.published_workspace.id == IDs.PUBLISHED_WORKSPACE_ID
+    assert workspace.published_workspace.name == IDs.WORKSPACE_PRIMARY
+    assert workspace.published_workspace.definition.owner_username == IDs.USERNAME
+    assert workspace.published_workspace.definition.tenant == IDs.TENANT
+    assert workspace.published_workspace.definition.size == 10
+    assert (
+        workspace.published_workspace.definition.status
+        == PublishedWorkspaceUploadStatus.CREATED
+    )
 
 
 def test_request_published_workspace_access():

@@ -464,6 +464,35 @@ class TestWorkspaceService:
             == get_published_workspaces_call.url
         )
 
+    def test_get_published_workspaces_with_kind_shared_by_me(
+        self, published_workspace_shared_by_me
+    ):
+        uri = URI(published_workspace_shared_by_me.url)
+        service = modelon.impact.client.sal.service.Service(
+            uri=uri, context=published_workspace_shared_by_me.context
+        )
+        data = service.workspace.get_published_workspaces_by_kind(
+            kind="sharedByMe",
+            first=0,
+            maximum=10,
+        )['data']['items']
+        assert len(data) == 1
+        definition = get_test_published_workspace_definition()
+        assert data[0] == {
+            "sharingId": IDs.PUBLISHED_WORKSPACE_ID,
+            "requesterId": IDs.USER_ID,
+            "requesterUsername": IDs.USERNAME,
+            "publishedWorkspace": {"id": IDs.PUBLISHED_WORKSPACE_ID, **definition},
+        }
+        assert published_workspace_shared_by_me.adapter.called
+        get_published_workspaces_call = (
+            published_workspace_shared_by_me.adapter.request_history[0]
+        )
+        assert (
+            'http://mock-impact.com/api/published-workspaces/access/users?kind='
+            'sharedByMe&max=10' == get_published_workspaces_call.url
+        )
+
     def test_delete_published_workspace(self, delete_published_workspace):
         uri = URI(delete_published_workspace.url)
         service = modelon.impact.client.sal.service.Service(
