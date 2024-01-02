@@ -115,15 +115,19 @@ class PublishedWorkspacesClient:
     def get_by_access_kind(
         self,
         access_kind: PublishedWorkspaceAccessKind = PublishedWorkspaceAccessKind.SHARED_BY_ME,  # noqa
+        first: int = 0,
+        maximum: int = 20,
     ) -> List[PublishedWorkspaceAccess]:
-        """Returns a list of published workspaces. The snapshots could be filtered based
-        on the key-worded arguments.
+        """Returns a list of PublishedWorkspaceAccess class objects. The snapshots could
+        be filtered based on the key-worded arguments.
 
         Args:
             access_kind: Access kind for the published workspace.
+            first: Index of first matching published workspace to return.
+            maximum: Maximum number of published workspaces to return.
 
         Returns:
-            A list of published workspace class objects.
+            A list of PublishedWorkspaceAccess class objects.
 
         Example::
 
@@ -131,9 +135,9 @@ class PublishedWorkspacesClient:
             pw_client.get_by_kind(PublishedWorkspaceAccessKind.REQUESTED_BY_ME)
 
         """
-        data = self._sal.workspace.get_published_workspaces_by_kind(access_kind.value)[
-            "data"
-        ]["items"]
+        data = self._sal.workspace.get_published_workspaces_by_kind(
+            access_kind.value, first, maximum
+        )["data"]["items"]
         return [
             PublishedWorkspaceAccess(
                 item['sharingId'],
