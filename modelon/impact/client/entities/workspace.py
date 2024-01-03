@@ -115,7 +115,7 @@ class PublishedWorkspaceUploadStatus(enum.Enum):
 @dataclass
 class PublishedWorkspaceDefinition:
     name: str
-    tenant: str
+    tenant_id: str
     size: int
     status: PublishedWorkspaceUploadStatus
     owner_username: str
@@ -125,7 +125,7 @@ class PublishedWorkspaceDefinition:
     def from_dict(cls, data: Dict[str, Any]) -> PublishedWorkspaceDefinition:
         return cls(
             name=data['workspaceName'],
-            tenant=data['tenant'],
+            tenant_id=data['tenantId'],
             size=data['size'],
             status=PublishedWorkspaceUploadStatus(data['status']),
             owner_username=data['ownerUsername'],
@@ -305,8 +305,8 @@ class OwnerData:
         return self._data['username']
 
     @property
-    def tenant(self) -> str:
-        return self._data['tenant']
+    def tenant_id(self) -> str:
+        return self._data['tenantId']
 
 
 class ReceivedFrom:
