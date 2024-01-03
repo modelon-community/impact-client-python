@@ -165,7 +165,7 @@ class IDs:
     WORKSPACE_SECONDARY = 'workspace_2'
     USER_ID = "njcswjcjnscksnckjsnckndsk"
     USERNAME = 'alice'
-    TENANT = 'impact-tenant-modelon'
+    TENANT_ID = 'modelon'
     PUBLISHED_WORKSPACE_ID = 'ekdncjndjcndejncjsncsndcijdsnc'
     PROJECT_PRIMARY = 'bf1e2f2a2fd55dcfd844bc1f252528f707254425'
     PROJECT_SECONDARY = 'xbhcdhcbdbchdbhcbdhbchdchdhcbhdbchdbch'
@@ -437,7 +437,7 @@ def get_test_published_workspace_definition(name=None):
         "ownerUsername": IDs.USERNAME,
         "size": 10,
         "status": "created",
-        "tenant": IDs.TENANT,
+        "tenantId": IDs.TENANT_ID,
         "workspaceName": name if name else IDs.WORKSPACE_PRIMARY,
     }
 
