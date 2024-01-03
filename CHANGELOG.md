@@ -1,3 +1,10 @@
+## [3.5.1](https://github.com/modelon-community/impact-client-python/compare/v3.5.0...v3.5.1) (2024-01-03)
+
+
+### Bug Fixes
+
+* renamed tenant -> tenant_id as per new schema/terminology ([a820127](https://github.com/modelon-community/impact-client-python/commit/a820127bfdab7ade2cb7c05ca761c865fe84c574))
+
 # [3.5.0](https://github.com/modelon-community/impact-client-python/compare/v3.4.2...v3.5.0) (2024-01-02)
 
 
