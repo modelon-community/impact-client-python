@@ -13,3 +13,7 @@ class UsersService:
     def get_me(self) -> Dict[str, Any]:
         url = (self._base_uri / "api/users/me").resolve()
         return self._http_client.get_json(url)
+
+    def get_my_tenant(self) -> Dict[str, Any]:
+        url = (self._base_uri / "api/tenant/me").resolve()
+        return self._http_client.get_json(url)

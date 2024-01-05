@@ -710,3 +710,53 @@ class Client:
 
         """
         return PublishedWorkspacesClient(self._sal)
+    
+    @Experimental
+    def get_users_in_tenant(self, tenant_name:str):
+        """Return the list of user belonging to the tenant.
+
+        Example::
+
+            users = client.get_users_in_tenant('modelon')
+        """
+        logger.info('Getting users for specific tenant is not implemented')
+        logger.info(f"Ignoring {tenant_name} specified and returning users belonging to
+                    logged in user's tenant.")
+        tenant_data = self._sal.users.get_my_tenant()["data"]
+        tenant_id = tenant_data["id"]
+        users = tenant_data["users"]
+        return [User(user, tenant_id, self._sal) for user in users]
+
+
+class User:
+    def __init__(self, data: Dict[str, Any], tenant_id: str) -> None:
+        self._data = data
+        self._tenant_id = tenant_id
+    
+    @property
+    def id(self) -> str:
+        return self._data['id']
+
+    @property
+    def username(self) -> str:
+        return self._data['username']
+
+    @property
+    def first_name(self) -> str:
+        return self._data['firstName']
+
+    @property
+    def last_name(self) -> str:
+        return self._data['lastName']
+
+    @property
+    def email(self) -> str:
+        return self._data['email']
+
+    @property
+    def license(self) -> str:
+        return self._data['license']
+
+    @property
+    def tenant_id(self) -> str:
+        return self._tenant_id
