@@ -1,3 +1,15 @@
+# [3.6.0](https://github.com/modelon-community/impact-client-python/compare/v3.5.1...v3.6.0) (2024-01-22)
+
+
+### Bug Fixes
+
+* added ProjectType to the client __init__.py  for easy import ([26c0c7d](https://github.com/modelon-community/impact-client-python/commit/26c0c7deebd50de56a6f63c5377eb05a3a852888))
+
+
+### Features
+
+* add support to filter projects for storage location ([6174675](https://github.com/modelon-community/impact-client-python/commit/6174675492ad28b3b1ab1f1048dd5ace85a1544f))
+
 ## [3.5.1](https://github.com/modelon-community/impact-client-python/compare/v3.5.0...v3.5.1) (2024-01-03)
 
 
