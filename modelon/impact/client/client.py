@@ -442,8 +442,10 @@ class Client:
             A list of Project class objects.
 
         Example::
+            from modelon.impact.client import ProjectType
 
             client.get_projects()
+            client.get_projects(project_type=ProjectType.LOCAL)
 
         """
         resp = self._sal.project.projects_get(
