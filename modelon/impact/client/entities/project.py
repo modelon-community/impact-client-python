@@ -29,6 +29,15 @@ class ProjectType(enum.Enum):
     SYSTEM = 'SYSTEM'
 
 
+@enum.unique
+class StorageLocation(enum.Enum):
+    """The storage location of the project."""
+
+    APPMODE = 'APPMODE'
+    USERSPACE = 'USERSPACE'
+    SYSTEM = 'SYSTEM'
+
+
 @dataclass
 class GitRepoURL:
     """GitRepoURL represents a project referenced in a git repository String
@@ -211,6 +220,7 @@ class Project:
         project_id: str,
         project_definition: Union[ProjectDefinition, Dict[str, Any]],
         project_type: Union[ProjectType, str],
+        storage_location: Union[StorageLocation, str],
         vcs_uri: Optional[VcsUri],
         service: Service,
     ):
@@ -223,6 +233,11 @@ class Project:
         self._vcs_uri = vcs_uri or None
         self._project_type = (
             ProjectType(project_type) if isinstance(project_type, str) else project_type
+        )
+        self._storage_location = (
+            StorageLocation(storage_location)
+            if isinstance(storage_location, str)
+            else storage_location
         )
         self._sal = service
 
@@ -261,6 +276,10 @@ class Project:
     @property
     def project_type(self) -> ProjectType:
         return self._project_type
+
+    @property
+    def storage_location(self) -> StorageLocation:
+        return self._storage_location
 
     def delete(self) -> None:
         """Deletes a project.

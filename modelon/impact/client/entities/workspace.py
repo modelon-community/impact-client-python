@@ -815,6 +815,7 @@ class Workspace(WorkspaceInterface):
                 item["id"],
                 item['definition'],
                 item["projectType"],
+                item["storageLocation"],
                 VcsUri.from_dict(item["vcsUri"]) if item.get("vcsUri") else None,
                 self._sal,
             )
@@ -849,6 +850,7 @@ class Workspace(WorkspaceInterface):
                 item["id"],
                 item['definition'],
                 item["projectType"],
+                item["storageLocation"],
                 VcsUri.from_dict(item["vcsUri"]) if item.get("vcsUri") else None,
                 self._sal,
             )
@@ -871,6 +873,7 @@ class Workspace(WorkspaceInterface):
             resp["id"],
             resp['definition'],
             resp["projectType"],
+            resp["storageLocation"],
             VcsUri.from_dict(resp["vcsUri"]) if resp.get("vcsUri") else None,
             self._sal,
         )
@@ -900,6 +903,7 @@ class Workspace(WorkspaceInterface):
             resp["id"],
             resp["definition"],
             resp["projectType"],
+            resp["storageLocation"],
             VcsUri.from_dict(resp["vcsUri"]) if resp.get("vcsUri") else None,
             self._sal,
         )

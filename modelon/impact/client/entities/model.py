@@ -349,6 +349,7 @@ class Model(ModelInterface):
             resp["id"],
             resp["definition"],
             resp["projectType"],
+            resp["storageLocation"],
             None,
             self._sal,
         )

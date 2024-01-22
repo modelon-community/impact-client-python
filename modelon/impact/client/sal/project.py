@@ -8,7 +8,7 @@ from modelon.impact.client.sal.http import HTTPClient
 from modelon.impact.client.sal.uri import URI
 
 if TYPE_CHECKING:
-    from modelon.impact.client.entities.project import ProjectType
+    from modelon.impact.client.entities.project import ProjectType, StorageLocation
 
 
 class ProjectService:
@@ -17,10 +17,18 @@ class ProjectService:
         self._http_client = http_client
 
     def projects_get(
-        self, vcs_info: bool, project_type: Optional[ProjectType] = None
+        self,
+        vcs_info: bool,
+        project_type: Optional[ProjectType] = None,
+        storage_location: Optional[StorageLocation] = None,
     ) -> Dict[str, Any]:
         prj_type = '&type=' + project_type.value if project_type else ""
-        url = (self._base_uri / f"api/projects?vcsInfo={vcs_info}{prj_type}").resolve()
+        stg_loc = (
+            '&storageLocation=' + storage_location.value if storage_location else ""
+        )
+        url = (
+            self._base_uri / f"api/projects?vcsInfo={vcs_info}{prj_type}{stg_loc}"
+        ).resolve()
         return self._http_client.get_json(url)
 
     def project_get(

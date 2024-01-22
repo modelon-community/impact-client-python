@@ -266,6 +266,7 @@ class TestWorkspaceService:
                         "id": IDs.PROJECT_PRIMARY,
                         "definition": {},
                         "projectType": "LOCAL",
+                        "storageLocation": "USERSPACE",
                     }
                 ]
             }
@@ -287,6 +288,7 @@ class TestWorkspaceService:
                 "executionOptions": [],
             },
             "projectType": "LOCAL",
+            "storageLocation": "USERSPACE",
         }
 
     def test_get_dependencies(self, get_dependencies):
@@ -304,6 +306,7 @@ class TestWorkspaceService:
                         "id": IDs.MSL_300_PROJECT_ID,
                         "definition": {},
                         "projectType": "SYSTEM",
+                        "storageLocation": "SYSTEM",
                     },
                 ]
             }
