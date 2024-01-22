@@ -65,6 +65,7 @@ class ProjectImportOperation(AsyncOperation[Entity]):
             project_id=resp["id"],
             project_definition=resp["definition"],
             project_type=resp["projectType"],
+            storage_location=resp["storageLocation"],
         )
 
     @property

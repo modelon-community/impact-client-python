@@ -10,6 +10,7 @@ from modelon.impact.client.entities.project import (
     Project,
     ProjectContent,
     ProjectType,
+    StorageLocation,
     VcsUri,
 )
 from modelon.impact.client.entities.workspace import (
@@ -213,6 +214,7 @@ UNVERSIONED_PROJECT = {
         "executionOptions": [],
     },
     "projectType": "LOCAL",
+    "storageLocation": "USERSPACE",
     "size": 1008,
 }
 
@@ -232,6 +234,7 @@ VERSIONED_PROJECT_TRUNK = {
         ],
     },
     "projectType": "LOCAL",
+    "storageLocation": "USERSPACE",
     "vcsUri": {
         "serviceKind": "git",
         "serviceUrl": "https://github.com",
@@ -260,6 +263,7 @@ VERSIONED_PROJECT_BRANCH = {
         ],
     },
     "projectType": "LOCAL",
+    "storageLocation": "USERSPACE",
     "vcsUri": {
         "serviceKind": "git",
         "serviceUrl": "https://github.com",
@@ -527,6 +531,7 @@ def create_project_entity(
     project_name="my_project",
     definition=None,
     project_type=ProjectType.LOCAL,
+    storage_location=StorageLocation.USERSPACE,
     vcs_uri=None,
     service=None,
 ):
@@ -550,6 +555,7 @@ def create_project_entity(
         project_id,
         definition,
         project_type,
+        storage_location,
         VcsUri.from_dict(vcs_uri) if vcs_uri else None,
         service or MagicMock(),
     )

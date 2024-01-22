@@ -20,7 +20,12 @@ from modelon.impact.client.configuration import (
 from modelon.impact.client.credential_manager import CredentialManager
 from modelon.impact.client.entities.experiment import Experiment
 from modelon.impact.client.entities.model_executable import ModelExecutable
-from modelon.impact.client.entities.project import Project, ProjectType, VcsUri
+from modelon.impact.client.entities.project import (
+    Project,
+    ProjectType,
+    StorageLocation,
+    VcsUri,
+)
 from modelon.impact.client.entities.workspace import Workspace, WorkspaceDefinition
 from modelon.impact.client.operations.experiment import ExperimentOperation
 from modelon.impact.client.operations.model_executable import ModelExecutableOperation
@@ -423,39 +428,50 @@ class Client:
             resp["id"],
             resp["definition"],
             resp["projectType"],
+            resp["storageLocation"],
             VcsUri.from_dict(resp["vcsUri"]) if resp.get("vcsUri") else None,
             self._sal,
         )
 
     def get_projects(
-        self, vcs_info: bool = True, project_type: Optional[ProjectType] = None
+        self,
+        vcs_info: bool = True,
+        project_type: Optional[ProjectType] = None,
+        storage_location: Optional[StorageLocation] = None,
     ) -> List[Project]:
         """Returns a list of project class object.
 
         Args:
             vcs_info: If True, the versioning details are returned for the
                 projects under version control.
-            type: Used to filter so only projects of a specified projectType
+            project_type: Used to filter so only projects of a specified ProjectType
                 are returned. If not given all project types are returned.
+            storage_location: Used to filter so only projects of a specified
+                StorageLocation are returned. If not given all project in all
+                storage locations are returned.
 
         Returns:
             A list of Project class objects.
 
         Example::
-            from modelon.impact.client import ProjectType
+            from modelon.impact.client import ProjectType, StorageLocation
 
             client.get_projects()
-            client.get_projects(project_type=ProjectType.LOCAL)
+            client.get_projects(project_type=ProjectType.LOCAL,
+                storage_location=StorageLocation.USERSPACE)
 
         """
         resp = self._sal.project.projects_get(
-            vcs_info=vcs_info, project_type=project_type
+            vcs_info=vcs_info,
+            project_type=project_type,
+            storage_location=storage_location,
         )
         return [
             Project(
                 item["id"],
                 item["definition"],
                 item["projectType"],
+                item["storageLocation"],
                 VcsUri.from_dict(item["vcsUri"]) if item.get("vcsUri") else None,
                 self._sal,
             )
@@ -617,6 +633,7 @@ class Client:
                     project["id"],
                     project["definition"],
                     project["projectType"],
+                    project["storageLocation"],
                     VcsUri.from_dict(project["vcsUri"]),
                     self._sal,
                 )

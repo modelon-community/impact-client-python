@@ -616,7 +616,12 @@ def get_projects(sem_ver_check, mock_server_base):
     json = {
         "data": {
             "items": [
-                {"id": IDs.PROJECT_PRIMARY, "definition": {}, "projectType": "LOCAL"}
+                {
+                    "id": IDs.PROJECT_PRIMARY,
+                    "definition": {},
+                    "projectType": "LOCAL",
+                    "storageLocation": "USERSPACE",
+                }
             ]
         }
     }
@@ -641,6 +646,7 @@ def create_project(sem_ver_check, mock_server_base):
             "executionOptions": [],
         },
         "projectType": "LOCAL",
+        "storageLocation": "USERSPACE",
     }
 
     return with_json_route(
@@ -660,6 +666,7 @@ def get_dependencies(sem_ver_check, mock_server_base):
                     "id": IDs.MSL_300_PROJECT_ID,
                     "definition": {},
                     "projectType": "SYSTEM",
+                    "storageLocation": "SYSTEM",
                 },
             ]
         }
@@ -1198,6 +1205,7 @@ def workspace():
             "executionOptions": [],
         },
         "projectType": "LOCAL",
+        "storageLocation": "USERSPACE",
     }
     ws_service.experiment_get.return_value = {'id': IDs.EXPERIMENT_PRIMARY}
     exp_service.execute_status.return_value = {"status": "done"}
@@ -1235,6 +1243,7 @@ def workspace():
                         "executionOptions": [],
                     },
                     "projectType": "SYSTEM",
+                    "storageLocation": "SYSTEM",
                 },
                 {
                     "id": IDs.MSL_400_PROJECT_ID,
@@ -1255,6 +1264,7 @@ def workspace():
                         "executionOptions": [],
                     },
                     "projectType": "SYSTEM",
+                    "storageLocation": "SYSTEM",
                 },
             ]
         }
