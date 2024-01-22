@@ -1,3 +1,10 @@
+## [3.6.1](https://github.com/modelon-community/impact-client-python/compare/v3.6.0...v3.6.1) (2024-01-22)
+
+
+### Bug Fixes
+
+* bumping the readthedocs-sphinx-search version ([456a6c5](https://github.com/modelon-community/impact-client-python/commit/456a6c523369fa3be3a549217fa2027c9ea63d0e))
+
 # [3.6.0](https://github.com/modelon-community/impact-client-python/compare/v3.5.1...v3.6.0) (2024-01-22)
 
 
