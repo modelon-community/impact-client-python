@@ -1,7 +1,7 @@
 import unittest.mock as mock
 
 import modelon.impact.client.sal.service
-from modelon.impact.client.entities.project import ProjectType
+from modelon.impact.client import ProjectType
 from modelon.impact.client.sal.uri import URI
 from tests.files.paths import SINGLE_FILE_LIBRARY_PATH, TEST_WORKSPACE_PATH
 from tests.impact.client.helpers import UNVERSIONED_PROJECT, IDs

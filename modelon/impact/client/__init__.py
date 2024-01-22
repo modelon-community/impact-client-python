@@ -1,5 +1,5 @@
 from modelon.impact.client.client import Client
-from modelon.impact.client.entities.project import ContentType
+from modelon.impact.client.entities.project import ContentType, ProjectType
 from modelon.impact.client.entities.workspace import WorkspaceDefinition
 from modelon.impact.client.experiment_definition.expansion import (
     FullFactorial,
