@@ -166,14 +166,19 @@ class WorkspaceService:
         url = (self._base_uri / "api/workspace-imports").resolve()
         return self._http_client.post_json(url, body=shared_definition)
 
-    def import_from_cloud(self, sharing_id: str) -> Dict[str, Any]:
+    def import_from_cloud(
+        self, sharing_id: str, overwrite_workspace_id: Optional[str] = None
+    ) -> Dict[str, Any]:
         url = (self._base_uri / "api/workspace-imports").resolve()
+        payload: Dict[str, Any] = {"id": sharing_id}
+        if overwrite_workspace_id:
+            payload["update"] = {"workspaceId": overwrite_workspace_id}
         return self._http_client.post_json(
             url,
             headers={
                 "Content-type": "application/vnd.impact.published-workspace.v1+json"
             },
-            body={"id": sharing_id},
+            body=payload,
         )
 
     def get_project_matchings(
