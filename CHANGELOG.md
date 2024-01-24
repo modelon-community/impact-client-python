@@ -1,3 +1,11 @@
+## [3.6.2](https://github.com/modelon-community/impact-client-python/compare/v3.6.1...v3.6.2) (2024-01-24)
+
+
+### Bug Fixes
+
+* add experimental flag for experimental apis ([c38c696](https://github.com/modelon-community/impact-client-python/commit/c38c696b617e92bf109176b406cb5d96b0ebaadb))
+* updating the import_to_userspace api to use the backend api when performing an update operation ([5bc932f](https://github.com/modelon-community/impact-client-python/commit/5bc932f3ab22ceffa4ddd3cc443dfd030c88bebf))
+
 ## [3.6.1](https://github.com/modelon-community/impact-client-python/compare/v3.6.0...v3.6.1) (2024-01-22)
 
 
