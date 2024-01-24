@@ -12,11 +12,7 @@ import modelon.impact.client.jupyterhub
 import modelon.impact.client.sal.exceptions
 import modelon.impact.client.sal.service
 from modelon.impact.client import exceptions
-from modelon.impact.client.configuration import (
-    Experimental,
-    get_client_interactive,
-    get_client_url,
-)
+from modelon.impact.client.configuration import get_client_interactive, get_client_url
 from modelon.impact.client.credential_manager import CredentialManager
 from modelon.impact.client.entities.experiment import Experiment
 from modelon.impact.client.entities.model_executable import ModelExecutable
@@ -718,7 +714,6 @@ class Client:
                 continue
             yield self._operation_from_execution(execution)
 
-    @Experimental
     def get_published_workspaces_client(self) -> PublishedWorkspacesClient:
         """Return the PublishedWorkspacesClient class object.
 
