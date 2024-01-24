@@ -274,8 +274,9 @@ class PublishedWorkspace:
                     )
                     return local_workspace
                 logger.info('Updating the workspace to the latest published workspace.')
-                updated_workspace = self._import_to_userspace()
-                local_workspace.delete()
+                updated_workspace = self._import_to_userspace(
+                    overwrite_workspace_id=local_workspace.id
+                )
                 return updated_workspace
             else:
                 logger.info(
@@ -289,8 +290,10 @@ class PublishedWorkspace:
         )
         return self._import_to_userspace()
 
-    def _import_to_userspace(self) -> Workspace:
-        resp = self._sal.workspace.import_from_cloud(self._id)
+    def _import_to_userspace(
+        self, overwrite_workspace_id: Optional[str] = None
+    ) -> Workspace:
+        resp = self._sal.workspace.import_from_cloud(self._id, overwrite_workspace_id)
         return WorkspaceImportOperation[Workspace](
             resp["data"]["location"], self._sal, Workspace.from_import_operation
         ).wait()
