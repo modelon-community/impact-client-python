@@ -7,6 +7,7 @@ import os
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Type, Union
 
+from modelon.impact.client.configuration import Experimental
 from modelon.impact.client.entities.custom_function import CustomFunction
 from modelon.impact.client.entities.experiment import Experiment
 from modelon.impact.client.entities.external_result import ExternalResult
@@ -198,6 +199,7 @@ class PublishedWorkspace:
         """
         self._sal.workspace.delete_published_workspace(self._id)
 
+    @Experimental
     def grant_user_access(self, username: str) -> None:
         """Grant access for the published workspace to the requester.
 
@@ -211,6 +213,7 @@ class PublishedWorkspace:
         """
         self._sal.workspace.grant_published_workspace_access(self._id, username)
 
+    @Experimental
     def revoke_access(self, username: str) -> None:
         """Revoke access for the published workspace.
 

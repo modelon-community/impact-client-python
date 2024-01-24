@@ -2,6 +2,8 @@ import os
 import tempfile
 import unittest.mock as mock
 
+import pytest
+
 from tests.files.paths import TEST_WORKSPACE_PATH
 from tests.impact.client.helpers import (
     IDs,
@@ -27,6 +29,7 @@ class TestPublishedWorkspace:
             IDs.PUBLISHED_WORKSPACE_ID
         )
 
+    @pytest.mark.experimental
     def test_revoke_published_workspace_access(self):
         service = mock.MagicMock()
         workspace = create_published_workspace_entity(
@@ -37,6 +40,7 @@ class TestPublishedWorkspace:
             IDs.PUBLISHED_WORKSPACE_ID, IDs.USERNAME
         )
 
+    @pytest.mark.experimental
     def test_grant_published_workspace_access(self):
         service = mock.MagicMock()
         workspace = create_published_workspace_entity(

@@ -5,6 +5,7 @@ import logging
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, List, Optional
 
+from modelon.impact.client.configuration import Experimental
 from modelon.impact.client.entities.workspace import (
     PublishedWorkspace,
     PublishedWorkspaceDefinition,
@@ -112,6 +113,7 @@ class PublishedWorkspacesClient:
         definition = PublishedWorkspaceDefinition.from_dict(data)
         return PublishedWorkspace(data['id'], definition=definition, service=self._sal)
 
+    @Experimental
     def get_by_access_kind(
         self,
         access_kind: PublishedWorkspaceAccessKind = PublishedWorkspaceAccessKind.SHARED_BY_ME,  # noqa
