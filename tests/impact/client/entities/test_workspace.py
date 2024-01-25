@@ -70,6 +70,23 @@ class TestPublishedWorkspace:
         workspace = publish_workspace.entity.import_to_userspace()
         assert workspace.id == IDs.WORKSPACE_PRIMARY
 
+    @pytest.mark.experimental
+    def test_get_published_workspace_acl(self, publish_workspace):
+        pub_ws_acl = publish_workspace.entity.get_access_control_list()
+        assert len(pub_ws_acl.shared_with) == 1
+        assert pub_ws_acl.shared_with[0].username == IDs.USERNAME
+        assert pub_ws_acl.shared_with[0].id == IDs.USER_ID
+        assert pub_ws_acl.requested_by == []
+        assert pub_ws_acl.role_permissions == []
+        assert len(pub_ws_acl.group_permissions) == 1
+        assert (
+            pub_ws_acl.group_permissions[0].id == IDs.PUBLISH_PERMISSIONS_PRIMARY_ID
+        )
+        assert (
+            pub_ws_acl.group_permissions[0].name
+            == IDs.PUBLISH_PERMISSIONS_PRIMARY_NAME
+        )
+
 
 class TestWorkspace:
     def test_get_workspace_size(self, workspace):

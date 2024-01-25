@@ -257,6 +257,13 @@ class WorkspaceService:
         resp = self._http_client.get_json_response(url)
         return resp.data
 
+    def get_published_workspace_acl(self, sharing_id: str) -> Dict[str, Any]:
+        url = (
+            self._base_uri / f"api/published-workspaces/{sharing_id}/access"
+        ).resolve()
+        resp = self._http_client.get_json_response(url)
+        return resp.data
+
     def rename_published_workspace(self, sharing_id: str, workspace_name: str) -> None:
         url = (self._base_uri / f"api/published-workspaces/{sharing_id}").resolve()
         self._http_client.patch_json_no_response_body(

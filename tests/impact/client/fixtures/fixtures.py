@@ -1145,6 +1145,22 @@ def publish_workspace():
         "id": IDs.PUBLISHED_WORKSPACE_ID,
         **definition,
     }
+    ws_service.get_published_workspace_acl.return_value = {
+        'rolePermissions': [],
+        'groupPermissions': [
+            {
+                'id': IDs.PUBLISH_PERMISSIONS_PRIMARY_ID,
+                'name': IDs.PUBLISH_PERMISSIONS_PRIMARY_NAME,
+            },
+        ],
+        'sharedWith': [
+            {
+                'id': IDs.USER_ID,
+                'username': IDs.USERNAME,
+            }
+        ],
+        'requestedBy': [],
+    }
     return PublishedWorkspaceMock(
         create_published_workspace_entity(
             IDs.PUBLISHED_WORKSPACE_ID,
