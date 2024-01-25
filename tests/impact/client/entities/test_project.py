@@ -1,15 +1,12 @@
 from pathlib import Path
-from xml.dom.minidom import ReadOnlySequentialNamedNodeMap
 
 from modelon.impact.client import ContentType
-from modelon.impact.client.entities.project import ProjectContent
 from modelon.impact.client.operations.base import AsyncOperationStatus
 from tests.files.paths import SINGLE_FILE_LIBRARY_PATH
 from tests.impact.client.helpers import (
     IDs,
     create_project_content_entity,
     create_project_entity,
-    create_workspace_entity,
 )
 
 
