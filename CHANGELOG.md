@@ -1,3 +1,10 @@
+# [3.7.0](https://github.com/modelon-community/impact-client-python/compare/v3.6.2...v3.7.0) (2024-01-25)
+
+
+### Features
+
+* added api to get acl for a published workspace ([8884a5c](https://github.com/modelon-community/impact-client-python/commit/8884a5c292de033dc715b3b8e928e4f6d6a376a4))
+
 ## [3.6.2](https://github.com/modelon-community/impact-client-python/compare/v3.6.1...v3.6.2) (2024-01-24)
 
 
