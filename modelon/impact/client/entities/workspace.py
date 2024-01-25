@@ -134,6 +134,55 @@ class PublishedWorkspaceDefinition:
         )
 
 
+@dataclass
+class PublishedWorkspaceRequester:
+    id: str
+    username: str
+
+    @classmethod
+    def from_dict(cls, userdata: Dict[str, Any]) -> PublishedWorkspaceRequester:
+        return cls(id=userdata["id"], username=userdata["username"])
+
+
+@dataclass
+class PublishedWorkspacePermission:
+    id: str
+    name: str
+
+    @classmethod
+    def from_dict(cls, permissions: Dict[str, Any]) -> PublishedWorkspacePermission:
+        return cls(id=permissions["id"], name=permissions["name"])
+
+
+@dataclass
+class PublishedWorkspaceACL:
+    role_permissions: List[PublishedWorkspacePermission]
+    group_permissions: List[PublishedWorkspacePermission]
+    shared_with: List[PublishedWorkspaceRequester]
+    requested_by: List[PublishedWorkspaceRequester]
+
+    @classmethod
+    def from_dict(cls, acl: Dict[str, Any]) -> PublishedWorkspaceACL:
+        return cls(
+            role_permissions=[
+                PublishedWorkspacePermission.from_dict(permission)
+                for permission in acl["rolePermissions"]
+            ],
+            group_permissions=[
+                PublishedWorkspacePermission.from_dict(permission)
+                for permission in acl["groupPermissions"]
+            ],
+            shared_with=[
+                PublishedWorkspaceRequester.from_dict(requester)
+                for requester in acl["sharedWith"]
+            ],
+            requested_by=[
+                PublishedWorkspaceRequester.from_dict(requester)
+                for requester in acl["requestedBy"]
+            ],
+        )
+
+
 class PublishedWorkspace:
     """Class containing published workspace functionalities."""
 
@@ -300,6 +349,25 @@ class PublishedWorkspace:
         return WorkspaceImportOperation[Workspace](
             resp["data"]["location"], self._sal, Workspace.from_import_operation
         ).wait()
+
+    @Experimental
+    def get_access_control_list(self) -> PublishedWorkspaceACL:
+        """Returns the access control list for the published workspace.
+
+        Returns:
+            The PublishedWorkspaceACL class object.
+
+        Example::
+            published_workspace = client.get_published_workspaces(owner="username",
+                name="A Workspace")[0]
+            published_workspace_acl = published_workspace.get_access_control_list()
+
+            published_workspace_shared_with = published_workspace_acl.shared_with
+            published_workspace_requested_by = published_workspace_acl.requested_by
+
+        """
+        data = self._sal.workspace.get_published_workspace_acl(self.id)
+        return PublishedWorkspaceACL.from_dict(data)
 
 
 class OwnerData:
