@@ -51,6 +51,28 @@ class TestPublishedWorkspace:
             IDs.PUBLISHED_WORKSPACE_ID, IDs.USERNAME
         )
 
+    @pytest.mark.experimental
+    def test_grant_community_access_for_published_workspace(self):
+        service = mock.MagicMock()
+        workspace = create_published_workspace_entity(
+            IDs.PUBLISHED_WORKSPACE_ID, IDs.WORKSPACE_PRIMARY, service=service
+        )
+        workspace.grant_community_access()
+        service.workspace.grant_community_access.assert_called_with(
+            IDs.PUBLISHED_WORKSPACE_ID
+        )
+
+    @pytest.mark.experimental
+    def test_revoke_community_access_for_published_workspace(self):
+        service = mock.MagicMock()
+        workspace = create_published_workspace_entity(
+            IDs.PUBLISHED_WORKSPACE_ID, IDs.WORKSPACE_PRIMARY, service=service
+        )
+        workspace.revoke_community_access()
+        service.workspace.revoke_community_access.assert_called_with(
+            IDs.PUBLISHED_WORKSPACE_ID
+        )
+
     def test_rename_published_workspace(self, publish_workspace):
         workspace = publish_workspace.entity
         service = publish_workspace.service
@@ -79,12 +101,9 @@ class TestPublishedWorkspace:
         assert pub_ws_acl.requested_by == []
         assert pub_ws_acl.role_permissions == []
         assert len(pub_ws_acl.group_permissions) == 1
+        assert pub_ws_acl.group_permissions[0].id == IDs.PUBLISH_PERMISSIONS_PRIMARY_ID
         assert (
-            pub_ws_acl.group_permissions[0].id == IDs.PUBLISH_PERMISSIONS_PRIMARY_ID
-        )
-        assert (
-            pub_ws_acl.group_permissions[0].name
-            == IDs.PUBLISH_PERMISSIONS_PRIMARY_NAME
+            pub_ws_acl.group_permissions[0].name == IDs.PUBLISH_PERMISSIONS_PRIMARY_NAME
         )
 
 
