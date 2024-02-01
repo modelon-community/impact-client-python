@@ -1,3 +1,10 @@
+# [3.8.0](https://github.com/modelon-community/impact-client-python/compare/v3.7.1...v3.8.0) (2024-02-01)
+
+
+### Features
+
+* added support to grant community access to published workspacce ([8634861](https://github.com/modelon-community/impact-client-python/commit/86348618f021c8256a7aef4fc27567484ed1a172))
+
 ## [3.7.1](https://github.com/modelon-community/impact-client-python/compare/v3.7.0...v3.7.1) (2024-02-01)
 
 
