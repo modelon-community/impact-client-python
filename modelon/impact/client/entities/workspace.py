@@ -263,6 +263,28 @@ class PublishedWorkspace:
         self._sal.workspace.grant_published_workspace_access(self._id, username)
 
     @Experimental
+    def grant_community_access(self) -> None:
+        """Grant community access for the published workspace.
+
+        Example::
+
+            published_workspace.grant_community_access()
+
+        """
+        self._sal.workspace.grant_community_access(self._id)
+
+    @Experimental
+    def revoke_community_access(self) -> None:
+        """Revoke community access for the published workspace.
+
+        Example::
+
+            published_workspace.revoke_community_access()
+
+        """
+        self._sal.workspace.revoke_community_access(self._id)
+
+    @Experimental
     def revoke_access(self, username: str) -> None:
         """Revoke access for the published workspace.
 

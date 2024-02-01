@@ -281,11 +281,26 @@ class WorkspaceService:
             body['requesterUsername'] = username
         self._http_client.patch_json_no_response_body(url, body=body)
 
+    def _community_access_request(
+        self, operation: str, sharing_id: str, username: Optional[str] = None
+    ) -> None:
+        url = (
+            self._base_uri / f"api/published-workspaces/{sharing_id}/access/community"
+        ).resolve()
+        body = {"operation": operation}
+        self._http_client.patch_json_no_response_body(url, body=body)
+
     def request_published_workspace_access(self, sharing_id: str) -> None:
         self._access_request('request', sharing_id)
 
     def grant_published_workspace_access(self, sharing_id: str, username: str) -> None:
         self._access_request('grant', sharing_id, username)
+
+    def grant_community_access(self, sharing_id: str) -> None:
+        self._community_access_request('grant', sharing_id)
+
+    def revoke_community_access(self, sharing_id: str) -> None:
+        self._community_access_request('revoke', sharing_id)
 
     def revoke_published_workspace_access(self, sharing_id: str, username: str) -> None:
         self._access_request('revoke', sharing_id, username)
