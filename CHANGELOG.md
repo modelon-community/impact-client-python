@@ -1,3 +1,10 @@
+## [3.7.1](https://github.com/modelon-community/impact-client-python/compare/v3.7.0...v3.7.1) (2024-02-01)
+
+
+### Bug Fixes
+
+* lower python version restrictions to 3.8 ([e687f45](https://github.com/modelon-community/impact-client-python/commit/e687f453befc6ac7757baadf4ace90189290168d))
+
 # [3.7.0](https://github.com/modelon-community/impact-client-python/compare/v3.6.2...v3.7.0) (2024-01-25)
 
 
