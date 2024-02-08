@@ -327,6 +327,7 @@ class PublishedWorkspace:
             The workspace class object.
 
         Example::
+        
             published_workspace = client.get_published_workspaces(owner="username",
                 name="A Workspace")[0]
             workspace = published_workspace.import_to_userspace()
@@ -380,6 +381,7 @@ class PublishedWorkspace:
             The PublishedWorkspaceACL class object.
 
         Example::
+
             published_workspace = client.get_published_workspaces(owner="username",
                 name="A Workspace")[0]
             published_workspace_acl = published_workspace.get_access_control_list()
