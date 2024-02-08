@@ -57,11 +57,55 @@ would result in multiple workspaces being created with same name.
 Workspace sharing
 *****************
 
-A workspace in Modelon Impact can be shared as a zipped artifact(snapshot) or as workspace definition referring to version controlled 
-projects and preinstalled libraries. 
+A workspace in Modelon Impact can be shared as a zipped artifact (snapshot) or as a workspace configuration.
+A snapshot can be either stored in a cloud storage or downloaded as a zip file to the client system. 
 
-Zipped(snapshot) export
-#######################
+A snapshot in cloud storage can be shared with the other users of the same Modelon Impact same website,
+e.g., https://impact.modelon.cloud. By default read access is granted to all users 
+within the same tenant group as setup by site administrators. On https://impact.modelon.cloud this 
+corresponds to same organization.
+
+Workspace configuration is a JSON-serializable structure containing links to version
+controlled projects and preinstalled libraries. 
+
+Published Workspaces
+####################
+
+Publishing a workspace to cloud storage bundles all Projects with Modelica packages including resources,
+results and FMUs. Publishing specifying a model will publish an app mode workspace::
+
+   # Create an example workspace containing experiment result
+   from modelon.impact.client import Client
+
+   client = Client()
+   workspace = client.create_workspace("PublishDemo")
+   model = workspace.get_model("Modelica.Blocks.Examples.PID_Controller")
+   dynamic_cf = workspace.get_custom_function("dynamic")
+   exp_def = model.new_experiment_definition(dynamic_cf)
+   experiment = workspace.create_experiment(exp_def).execute().wait()
+
+   # Publish the workspace to cloud storage in app mode
+   workspace.export(publish=True, class_path="Modelica.Blocks.Examples.PID_Controller").wait()
+
+A published workspace can be found and imported by a user who has appropriate access rights::
+
+   pwc = client.get_published_workspaces_client()
+   published_workspace = pwc.find(name="PublishDemo")[0]
+   imported_workspace = published_workspace.import_to_userspace()
+
+The imported workspace will contain results that were bundled and experiment IDs will be kept intact::
+
+   imported_experiment = imported_workspace.get_experiments()[0]
+   assert imported_experiment.id == experiment.id
+
+Repeated imports of the same workspace do not update the workspace in userspace. However,
+if an update was published the receiver can get his copy overwritten by the update::
+
+   updated_workspace = published_workspace.import_to_userspace(update_if_available=True)
+   assert imported_workspace.id == updated_workspace.id    
+
+Zipped (snapshot) export
+########################
 
 A zipped archive export of the workspace bundles all Projects (with Modelica packages including resources, and also results and FMUs). 
 This ZIP file can then be uploaded at another point. The below code snippet exports an existing workspace::

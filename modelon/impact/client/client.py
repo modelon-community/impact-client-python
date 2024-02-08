@@ -450,11 +450,18 @@ class Client:
             A list of Project class objects.
 
         Example::
-            from modelon.impact.client import ProjectType, StorageLocation
+
+            # Get all projects and then get projects with filtering.
+            from modelon.impact.client import (
+                ProjectType,
+                StorageLocation
+            )
 
             client.get_projects()
-            client.get_projects(project_type=ProjectType.LOCAL,
-                storage_location=StorageLocation.USERSPACE)
+            client.get_projects(
+                project_type=ProjectType.LOCAL,
+                storage_location=StorageLocation.USERSPACE
+            )
 
         """
         resp = self._sal.project.projects_get(

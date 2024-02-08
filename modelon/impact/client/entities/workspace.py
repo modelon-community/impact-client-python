@@ -68,15 +68,15 @@ def _get_project_entry_reference(
 ) -> Union[ReleasedProjectReference, VcsReference, Reference]:
     if "name" in reference:
         return ReleasedProjectReference(
-            id=reference.get('id'),
-            name=reference.get('name'),
-            version=reference.get('version'),
-            build=reference.get('build'),
+            id=reference.get("id"),
+            name=reference.get("name"),
+            version=reference.get("version"),
+            build=reference.get("build"),
         )
     elif "vcsUri" in reference:
-        return VcsReference(id=reference.get('id'), vcs_uri=reference.get('vcsUri'))
+        return VcsReference(id=reference.get("id"), vcs_uri=reference.get("vcsUri"))
     else:
-        return Reference(id=reference.get('id'))
+        return Reference(id=reference.get("id"))
 
 
 class ProjectEntry:
@@ -85,7 +85,7 @@ class ProjectEntry:
 
     @property
     def reference(self) -> Union[ReleasedProjectReference, VcsReference, Reference]:
-        return _get_project_entry_reference(self._data.get('reference'))
+        return _get_project_entry_reference(self._data.get("reference"))
 
     @property
     def id(self) -> str:
@@ -93,24 +93,24 @@ class ProjectEntry:
 
     @property
     def disabled(self) -> bool:
-        return self._data.get('disabled')
+        return self._data.get("disabled")
 
     @property
     def disabled_content(self) -> bool:
-        return self._data.get('disabledContent')
+        return self._data.get("disabledContent")
 
 
 @enum.unique
 class PublishedWorkspaceType(enum.Enum):
-    APP_MODE = 'APP_MODE'
-    ARCHIVE = 'ARCHIVE'
+    APP_MODE = "APP_MODE"
+    ARCHIVE = "ARCHIVE"
 
 
 @enum.unique
 class PublishedWorkspaceUploadStatus(enum.Enum):
-    INITIALIZING = 'initializing'
-    CREATED = 'created'
-    DELETING = 'deleting'
+    INITIALIZING = "initializing"
+    CREATED = "created"
+    DELETING = "deleting"
 
 
 @dataclass
@@ -125,12 +125,12 @@ class PublishedWorkspaceDefinition:
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> PublishedWorkspaceDefinition:
         return cls(
-            name=data['workspaceName'],
-            tenant_id=data['tenantId'],
-            size=data['size'],
-            status=PublishedWorkspaceUploadStatus(data['status']),
-            owner_username=data['ownerUsername'],
-            created_at=data['createdAt'],
+            name=data["workspaceName"],
+            tenant_id=data["tenantId"],
+            size=data["size"],
+            status=PublishedWorkspaceUploadStatus(data["status"]),
+            owner_username=data["ownerUsername"],
+            created_at=data["createdAt"],
         )
 
 
@@ -307,8 +307,8 @@ class PublishedWorkspace:
             return None
         if len(workspaces) > 1:
             logger.warning(
-                'Multiple local copies of workspace with the same '
-                'sharing ID exist. Picking the latest.'
+                "Multiple local copies of workspace with the same "
+                "sharing ID exist. Picking the latest."
             )
             return sorted(
                 workspaces,
@@ -327,6 +327,7 @@ class PublishedWorkspace:
             The workspace class object.
 
         Example::
+
             published_workspace = client.get_published_workspaces(owner="username",
                 name="A Workspace")[0]
             workspace = published_workspace.import_to_userspace()
@@ -335,32 +336,32 @@ class PublishedWorkspace:
         local_workspace = self._get_latest_local_workspace()
         if local_workspace:
             logger.info(
-                f'Local imports of workspace with sharing ID {self._id} exists.'
+                f"Local imports of workspace with sharing ID {self._id} exists."
             )
             local_ws_recieved_from = local_workspace.definition.received_from
             local_ws_created_at = local_ws_recieved_from.created_at  # type: ignore
             if self.created_at != local_ws_created_at:
                 if not update_if_available:
                     logger.warning(
-                        'A new update is available for the workspace with ID '
+                        "A new update is available for the workspace with ID "
                         f'{local_workspace.id}. Set "update_if_available" to True '
-                        'if you wish to update the workspace!'
+                        "if you wish to update the workspace!"
                     )
                     return local_workspace
-                logger.info('Updating the workspace to the latest published workspace.')
+                logger.info("Updating the workspace to the latest published workspace.")
                 updated_workspace = self._import_to_userspace(
                     overwrite_workspace_id=local_workspace.id
                 )
                 return updated_workspace
             else:
                 logger.info(
-                    f'Returning the local workspace with ID {local_workspace.id}.'
+                    f"Returning the local workspace with ID {local_workspace.id}."
                 )
                 return local_workspace
 
         logger.info(
-            f'No local imports of workspace with sharing ID {self._id} exist.'
-            'Importing the published workspace to userspace.'
+            f"No local imports of workspace with sharing ID {self._id} exist."
+            "Importing the published workspace to userspace."
         )
         return self._import_to_userspace()
 
@@ -380,6 +381,7 @@ class PublishedWorkspace:
             The PublishedWorkspaceACL class object.
 
         Example::
+
             published_workspace = client.get_published_workspaces(owner="username",
                 name="A Workspace")[0]
             published_workspace_acl = published_workspace.get_access_control_list()
@@ -398,11 +400,11 @@ class OwnerData:
 
     @property
     def username(self) -> str:
-        return self._data['username']
+        return self._data["username"]
 
     @property
     def tenant_id(self) -> str:
-        return self._data['tenantId']
+        return self._data["tenantId"]
 
 
 class ReceivedFrom:
@@ -411,19 +413,19 @@ class ReceivedFrom:
 
     @property
     def sharing_id(self) -> str:
-        return self._data['sharingId']
+        return self._data["sharingId"]
 
     @property
     def workspace_name(self) -> str:
-        return self._data['workspaceName']
+        return self._data["workspaceName"]
 
     @property
     def owner(self) -> OwnerData:
-        return OwnerData(self._data['owner'])
+        return OwnerData(self._data["owner"])
 
     @property
     def created_at(self) -> int:
-        return self._data['createdAt']
+        return self._data["createdAt"]
 
 
 class WorkspaceDefinition:
@@ -433,47 +435,47 @@ class WorkspaceDefinition:
     @property
     def name(self) -> str:
         """Workspace name."""
-        return self._data.get('name')
+        return self._data.get("name")
 
     @property
     def format(self) -> str:
         """Workspace definition format."""
-        return self._data.get('format')
+        return self._data.get("format")
 
     @property
     def description(self) -> str:
         """Workspace description."""
-        return self._data.get('description')
+        return self._data.get("description")
 
     @property
     def created_by(self) -> str:
         """User ID of the workspace creator."""
-        return self._data.get('createdBy')
+        return self._data.get("createdBy")
 
     @property
     def default_project_id(self) -> str:
         """Project ID of the default workspace project."""
-        return self._data.get('defaultProjectId')
+        return self._data.get("defaultProjectId")
 
     @property
     def received_from(self) -> Optional[ReceivedFrom]:
         """Received from information for the workspace, if imported from cloud."""
         return (
-            ReceivedFrom(self._data.get('receivedFrom'))
-            if self._data.get('receivedFrom')
+            ReceivedFrom(self._data.get("receivedFrom"))
+            if self._data.get("receivedFrom")
             else None
         )
 
     @property
     def projects(self) -> List[ProjectEntry]:
         """List of workspace projects."""
-        projects = self._data.get('projects', [])
+        projects = self._data.get("projects", [])
         return [ProjectEntry(project) for project in projects]
 
     @property
     def dependencies(self) -> List[ProjectEntry]:
         """List of workspace dependencies."""
-        dependencies = self._data.get('dependencies', [])
+        dependencies = self._data.get("dependencies", [])
         return [ProjectEntry(dependency) for dependency in dependencies]
 
     def to_file(self, path: str) -> str:
@@ -492,7 +494,7 @@ class WorkspaceDefinition:
         """
         os.makedirs(path, exist_ok=True)
         definition_path = os.path.join(path, self.name + ".json")
-        with open(definition_path, "w", encoding='utf-8') as f:
+        with open(definition_path, "w", encoding="utf-8") as f:
             json.dump(self._data, f, indent=4)
         return definition_path
 
@@ -554,7 +556,7 @@ class Workspace(WorkspaceInterface):
         """Workspace definition."""
         definition = self._sal.workspace.workspace_get(
             workspace_id=self.id, size_info=False
-        )['definition']
+        )["definition"]
         return WorkspaceDefinition(definition)
 
     @property
@@ -576,7 +578,7 @@ class Workspace(WorkspaceInterface):
         workspace_data = self._sal.workspace.workspace_get(
             workspace_id=self.id, size_info=False
         )
-        workspace_data['definition']["name"] = new_name
+        workspace_data["definition"]["name"] = new_name
         self._sal.workspace.update_workspace(self.id, workspace_data)
 
     def get_custom_function(self, name: str) -> CustomFunction:
@@ -909,7 +911,7 @@ class Workspace(WorkspaceInterface):
         projects = [
             Project(
                 item["id"],
-                item['definition'],
+                item["definition"],
                 item["projectType"],
                 item["storageLocation"],
                 VcsUri.from_dict(item["vcsUri"]) if item.get("vcsUri") else None,
@@ -944,7 +946,7 @@ class Workspace(WorkspaceInterface):
         return [
             Project(
                 item["id"],
-                item['definition'],
+                item["definition"],
                 item["projectType"],
                 item["storageLocation"],
                 VcsUri.from_dict(item["vcsUri"]) if item.get("vcsUri") else None,
@@ -967,7 +969,7 @@ class Workspace(WorkspaceInterface):
         resp = self._sal.workspace.project_create(self._workspace_id, name)
         return Project(
             resp["id"],
-            resp['definition'],
+            resp["definition"],
             resp["projectType"],
             resp["storageLocation"],
             VcsUri.from_dict(resp["vcsUri"]) if resp.get("vcsUri") else None,
@@ -988,7 +990,7 @@ class Workspace(WorkspaceInterface):
         default_project_id = self.definition.default_project_id
         if not default_project_id:
             raise ValueError(
-                f'No default project exists for the workspace {self._workspace_id}!'
+                f"No default project exists for the workspace {self._workspace_id}!"
             )
         resp = self._sal.project.project_get(
             default_project_id,
