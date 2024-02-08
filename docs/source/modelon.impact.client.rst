@@ -56,6 +56,14 @@ modelon.impact.client.options module
    :undoc-members:
    :show-inheritance:
 
+modelon.impact.client.published\_workspace\_client module
+---------------------------------------------------------
+
+.. automodule:: modelon.impact.client.published_workspace_client
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Module contents
 ---------------
 
