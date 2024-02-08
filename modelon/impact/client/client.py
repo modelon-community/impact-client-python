@@ -93,8 +93,6 @@ class ProjectMatching:
             matchings = client.get_project_matchings(imported_workspace_definition)
             selection = matchings.entries[0].get_selection(index=0)
 
-        Example::
-
             client.import_workspace_from_shared_definition(shared_definition).wait()
 
         """
@@ -451,11 +449,7 @@ class Client:
 
         Example::
 
-            # Get all projects and then get projects with filtering.
-            from modelon.impact.client import (
-                ProjectType,
-                StorageLocation
-            )
+            from modelon.impact.client import ProjectType, StorageLocation
 
             client.get_projects()
             client.get_projects(
