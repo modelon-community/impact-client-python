@@ -435,14 +435,14 @@ class Case(CaseInterface):
 
         Example::
 
-         case.input.analysis.parameters = {'start_time': 0, 'final_time': 90}
-         case.input.analysis.simulation_options = {'ncp': 600}
-         case.input.analysis.solver_options = {'atol': 1e-8}
-         case.input.parametrization = {'PI.k': 120}
-         case.sync()
+            case.input.analysis.parameters = {'start_time': 0, 'final_time': 90}
+            case.input.analysis.simulation_options = {'ncp': 600}
+            case.input.analysis.solver_options = {'atol': 1e-8}
+            case.input.parametrization = {'PI.k': 120}
+            case.sync()
 
-         help(case.input.analysis) # See help for attribute
-         dir(case.input) # See nested attributes
+            help(case.input.analysis) # See help for attribute
+            dir(case.input) # See nested attributes
 
         """
         return CaseInput(self._info['input'])
@@ -453,11 +453,11 @@ class Case(CaseInterface):
 
         Example::
 
-         case.meta.label = 'Cruise condition'
-         case.sync()
+            case.meta.label = 'Cruise condition'
+            case.sync()
 
-         help(case.meta) # See help for attribute
-         dir(case.input) # See nested attributes
+            help(case.meta) # See help for attribute
+            dir(case.input) # See nested attributes
 
         """
         return CaseMeta(self._info['meta'])
