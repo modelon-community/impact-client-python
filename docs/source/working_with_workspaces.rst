@@ -88,9 +88,12 @@ results and FMUs. Publishing specifying a model will publish an app mode workspa
    workspace.export(publish=True, class_path="Modelica.Blocks.Examples.PID_Controller").wait()
 
 A published workspace can be found and imported by a user who has appropriate access rights::
+   
+   from modelon.impact.client import PublishedWorkspaceType
 
    pwc = client.get_published_workspaces_client()
-   published_workspace = pwc.find(name="PublishDemo")[0]
+   published_workspace = pwc.find(name="PublishDemo", type=PublishedWorkspaceType.APP_MODE, 
+      owner_username='sasuke@gmail.com')[0]
    imported_workspace = published_workspace.import_to_userspace()
 
 The imported workspace will contain results that were bundled and experiment IDs will be kept intact::
