@@ -4,7 +4,10 @@ from modelon.impact.client.entities.project import (
     ProjectType,
     StorageLocation,
 )
-from modelon.impact.client.entities.workspace import WorkspaceDefinition
+from modelon.impact.client.entities.workspace import (
+    PublishedWorkspaceType,
+    WorkspaceDefinition,
+)
 from modelon.impact.client.experiment_definition.expansion import (
     FullFactorial,
     LatinHypercube,
