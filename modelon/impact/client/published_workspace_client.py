@@ -133,8 +133,11 @@ class PublishedWorkspacesClient:
 
         Example::
 
+            from modelon.impact.client.published_workspace_client import
+                PublishedWorkspaceAccessKind
+
             pw_client = client.get_published_workspaces_client()
-            pw_client.get_by_kind(PublishedWorkspaceAccessKind.REQUESTED_BY_ME)
+            pw_client.get_by_access_kind(PublishedWorkspaceAccessKind.REQUESTED_BY_ME)
 
         """
         data = self._sal.workspace.get_published_workspaces_by_kind(
