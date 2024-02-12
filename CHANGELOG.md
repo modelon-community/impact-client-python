@@ -1,3 +1,10 @@
+## [3.8.1](https://github.com/modelon-community/impact-client-python/compare/v3.8.0...v3.8.1) (2024-02-12)
+
+
+### Bug Fixes
+
+* minor formatting doc fixes ([6f3beef](https://github.com/modelon-community/impact-client-python/commit/6f3beef9a38256f4d4a5c66e313da18abd2a0a12))
+
 # [3.8.0](https://github.com/modelon-community/impact-client-python/compare/v3.7.1...v3.8.0) (2024-02-01)
 
 
