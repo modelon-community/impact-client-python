@@ -45,6 +45,11 @@ ExperimentDefinition = Union[
 
 
 @dataclass
+class AccessSettings:
+    group_names: Optional[List[str]] = None
+
+
+@dataclass
 class Reference:
     id: str
 
@@ -667,7 +672,10 @@ class Workspace(WorkspaceInterface):
         )
 
     def export(
-        self, publish: bool = False, class_path: Optional[str] = None
+        self,
+        publish: bool = False,
+        class_path: Optional[str] = None,
+        access: Optional[AccessSettings] = None,
     ) -> WorkspaceExportOperation:
         """Exports the workspace as a binary compressed archive. Similar to
         :obj:`~modelon.impact.client.entities.workspace.Workspace.download`, but gives
@@ -680,6 +688,7 @@ class Workspace(WorkspaceInterface):
             publish: To export the workspace and save it to cloud storage.
             class_path: The Modelica class path of the model. If specified,
                 the workspace is exported in app mode.
+            access: The access control settings for the workspace.
 
         Returns:
             An WorkspaceExportOperation class object.
@@ -687,12 +696,29 @@ class Workspace(WorkspaceInterface):
         Example::
 
             path = workspace.export().wait().download_as('/home/workspace.zip')
+
+            # Publish a workspace
             path = workspace.export(publish=True,
                 class_path='Modelica.Blocks.Examples.PID_Controller')
 
+            # Publish a workspace without sharing with group
+            from modelon.impact.client import AccessSettings
+
+            path = workspace.export(publish=True,
+                class_path='Modelica.Blocks.Examples.PID_Controller',
+                access=AccessSettings(group_names=[])
+            )
+
         """
+        if access:
+            access_settings = {"groupNames": access.group_names}
+        else:
+            access_settings = None
         resp = self._sal.workspace.workspace_export_setup(
-            self._workspace_id, publish, class_path
+            self._workspace_id,
+            publish,
+            class_path,
+            access_settings,
         )
         return WorkspaceExportOperation[Workspace](
             resp["data"]["location"], self._sal, Export.from_operation

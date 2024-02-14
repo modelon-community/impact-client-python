@@ -1,4 +1,5 @@
 import modelon.impact.client.sal.service
+from modelon.impact.client import AccessSettings
 from modelon.impact.client.sal.uri import URI
 from tests.files.paths import TEST_WORKSPACE_PATH
 from tests.impact.client.helpers import (
@@ -106,9 +107,16 @@ class TestWorkspaceService:
         service = modelon.impact.client.sal.service.Service(
             uri=uri, context=setup_export_workspace.context
         )
-        data = service.workspace.workspace_export_setup(IDs.WORKSPACE_PRIMARY, False)
+        access_settings = {'groupNames': None}
+        data = service.workspace.workspace_export_setup(
+            IDs.WORKSPACE_PRIMARY, False, access_settings=access_settings
+        )
         request_data = setup_export_workspace.adapter.request_history[0].json()
-        assert request_data == {'publish': False, 'workspaceId': IDs.WORKSPACE_PRIMARY}
+        assert request_data == {
+            'publish': False,
+            'workspaceId': IDs.WORKSPACE_PRIMARY,
+            "access": access_settings,
+        }
         assert data == {"data": {"location": f"api/workspace-exports/{IDs.EXPORT}"}}
 
     def test_app_mode_workspace_export_setup(self, setup_export_workspace):
@@ -124,6 +132,25 @@ class TestWorkspaceService:
             'publish': False,
             'workspaceId': IDs.WORKSPACE_PRIMARY,
             'appMode': {'model': IDs.MODELICA_CLASS_PATH},
+        }
+        assert data == {"data": {"location": f"api/workspace-exports/{IDs.EXPORT}"}}
+
+    def test_workspace_publish_without_group_share(self, setup_export_workspace):
+        uri = URI(setup_export_workspace.url)
+        service = modelon.impact.client.sal.service.Service(
+            uri=uri, context=setup_export_workspace.context
+        )
+        access_settings = {'groupNames': []}
+        data = service.workspace.workspace_export_setup(
+            IDs.WORKSPACE_PRIMARY,
+            publish=True,
+            access_settings=access_settings,
+        )
+        request_data = setup_export_workspace.adapter.request_history[0].json()
+        assert request_data == {
+            'publish': True,
+            'workspaceId': IDs.WORKSPACE_PRIMARY,
+            'access': access_settings,
         }
         assert data == {"data": {"location": f"api/workspace-exports/{IDs.EXPORT}"}}
 
