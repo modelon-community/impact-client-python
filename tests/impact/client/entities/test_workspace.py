@@ -4,6 +4,7 @@ import unittest.mock as mock
 
 import pytest
 
+from modelon.impact.client import AccessSettings
 from tests.files.paths import TEST_WORKSPACE_PATH
 from tests.impact.client.helpers import (
     IDs,
@@ -159,6 +160,25 @@ class TestWorkspace:
     def test_export_workspace(self, workspace):
         resp = workspace.entity.export()
         assert resp == create_workspace_export_operation(IDs.EXPORT)
+
+    def test_publish_workspace_without_group_share(self, workspace):
+        workspace_entity = workspace.entity
+        service = workspace.service
+        workspace_service = service.workspace
+        workspace_entity.export(publish=True, access=AccessSettings(group_names=[]))
+        access_settings = {'groupNames': []}
+        workspace_service.workspace_export_setup.assert_has_calls(
+            [mock.call(IDs.WORKSPACE_PRIMARY, True, None, access_settings)]
+        )
+
+    def test_publish_workspace(self, workspace):
+        workspace_entity = workspace.entity
+        service = workspace.service
+        workspace_service = service.workspace
+        workspace_entity.export(publish=True)
+        workspace_service.workspace_export_setup.assert_has_calls(
+            [mock.call(IDs.WORKSPACE_PRIMARY, True, None, None)]
+        )
 
     def test_get_model(self, workspace):
         model = workspace.entity.get_model("Modelica.Blocks.PID")

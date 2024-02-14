@@ -5,6 +5,7 @@ from modelon.impact.client.entities.project import (
     StorageLocation,
 )
 from modelon.impact.client.entities.workspace import (
+    AccessSettings,
     PublishedWorkspaceType,
     WorkspaceDefinition,
 )
