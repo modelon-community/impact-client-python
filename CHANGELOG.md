@@ -1,3 +1,16 @@
+# [3.9.0](https://github.com/modelon-community/impact-client-python/compare/v3.8.1...v3.9.0) (2024-02-15)
+
+
+### Bug Fixes
+
+* added PublishedWorkspaceType enum to __init__.py for easy import and update docs ([c7021d3](https://github.com/modelon-community/impact-client-python/commit/c7021d367ecd9820bc766e3db15a5b62441c006d))
+* fix method typo in doc string ([5b1a835](https://github.com/modelon-community/impact-client-python/commit/5b1a8355885b0932afe454643ef86c4d10e22e44))
+
+
+### Features
+
+* added possibility to export a workspace without group share ([b025b09](https://github.com/modelon-community/impact-client-python/commit/b025b09a2d8f05953e677c70ac0b7651a7a5a659))
+
 ## [3.8.1](https://github.com/modelon-community/impact-client-python/compare/v3.8.0...v3.8.1) (2024-02-12)
 
 
