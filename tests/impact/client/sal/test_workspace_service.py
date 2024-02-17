@@ -560,7 +560,7 @@ class TestWorkspaceService:
         service = modelon.impact.client.sal.service.Service(
             uri=uri, context=request_published_workspace_access.context
         )
-        service.workspace.request_published_workspace_access(IDs.PUBLISHED_WORKSPACE_ID)
+        service.workspace.request_user_access(IDs.PUBLISHED_WORKSPACE_ID)
         assert request_published_workspace_access.adapter.called
         access_call = request_published_workspace_access.adapter.request_history[0]
         assert (
