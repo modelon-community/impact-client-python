@@ -70,6 +70,4 @@ def test_request_published_workspace_access():
     service = mock.MagicMock()
     client = PublishedWorkspacesClient(service)
     client.get_by_id(IDs.PUBLISHED_WORKSPACE_ID, request_if_no_access=True)
-    service.workspace.request_published_workspace_access.assert_called_with(
-        IDs.PUBLISHED_WORKSPACE_ID
-    )
+    service.workspace.request_user_access.assert_called_with(IDs.PUBLISHED_WORKSPACE_ID)

@@ -114,7 +114,7 @@ class PublishedWorkspacesClient:
 
         """
         if request_if_no_access:
-            self._sal.workspace.request_published_workspace_access(sharing_id)
+            self._sal.workspace.request_user_access(sharing_id)
             logger.info(
                 "Access request sent for published workspaces with ID '%s'.", sharing_id
             )
