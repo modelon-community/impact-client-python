@@ -1,3 +1,10 @@
+# [3.10.0](https://github.com/modelon-community/impact-client-python/compare/v3.9.0...v3.10.0) (2024-02-19)
+
+
+### Features
+
+* added possibility to find published workspaces filtered by groupName ([c6f14fa](https://github.com/modelon-community/impact-client-python/commit/c6f14fa0070a83dcbe3c8d6795db102e4fa6e973))
+
 # [3.9.0](https://github.com/modelon-community/impact-client-python/compare/v3.8.1...v3.9.0) (2024-02-15)
 
 
