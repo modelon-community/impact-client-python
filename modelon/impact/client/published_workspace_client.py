@@ -47,6 +47,7 @@ class PublishedWorkspacesClient:
         has_data: bool = False,
         owner_username: str = "",
         type: Optional[PublishedWorkspaceType] = None,
+        group_name: Optional[str] = None,
     ) -> List[PublishedWorkspace]:
         """Returns a list of published workspaces. The snapshots could be filtered based
         on the key-worded arguments.
@@ -63,6 +64,9 @@ class PublishedWorkspacesClient:
             type: Filter so only published workspace of a specified type are
                 returned. If not given all published workspace types are
                 returned.
+            group_name: Group name to query published workspaces for. Only
+                a user with impact-sys-admin role can query published workspaces
+                shared with a group other than his own.
 
         Returns:
             A list of published workspace class objects.
@@ -74,7 +78,13 @@ class PublishedWorkspacesClient:
 
         """
         data = self._sal.workspace.get_published_workspaces(
-            name, first, maximum, has_data, owner_username, type.value if type else None
+            name,
+            first,
+            maximum,
+            has_data,
+            owner_username,
+            type.value if type else None,
+            group_name,
         )["data"]["items"]
         return [
             PublishedWorkspace(

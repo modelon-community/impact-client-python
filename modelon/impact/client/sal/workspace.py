@@ -219,6 +219,7 @@ class WorkspaceService:
         has_data: bool = False,
         owner_username: str = "",
         type: Optional[str] = None,
+        group_name: Optional[str] = None,
     ) -> Dict[str, Any]:
         query = {}
         if name:
@@ -233,6 +234,8 @@ class WorkspaceService:
             query["ownerUsername"] = owner_username
         if type:
             query["type"] = type
+        if group_name:
+            query["groupName"] = group_name
         query_args = '&'.join(f'{key}={value}' for key, value in query.items())
         url = (self._base_uri / f"api/published-workspaces?{query_args}").resolve()
         resp = self._http_client.get_json_response(url)
