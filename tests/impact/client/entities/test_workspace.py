@@ -74,6 +74,32 @@ class TestPublishedWorkspace:
             IDs.PUBLISHED_WORKSPACE_ID
         )
 
+    @pytest.mark.experimental
+    def test_grant_group_acess_for_published_workspace(self):
+        service = mock.MagicMock()
+        workspace = create_published_workspace_entity(
+            IDs.PUBLISHED_WORKSPACE_ID, IDs.WORKSPACE_PRIMARY, service=service
+        )
+        workspace.grant_group_access()
+        service.workspace.grant_group_access.assert_called_with(
+            IDs.PUBLISHED_WORKSPACE_ID, None
+        )
+        workspace.grant_group_access(IDs.GROUP_NAME)
+        service.workspace.grant_group_access.assert_called_with(
+            IDs.PUBLISHED_WORKSPACE_ID, IDs.GROUP_NAME
+        )
+
+    @pytest.mark.experimental
+    def test_revoke_group_access_for_published_workspace(self):
+        service = mock.MagicMock()
+        workspace = create_published_workspace_entity(
+            IDs.PUBLISHED_WORKSPACE_ID, IDs.WORKSPACE_PRIMARY, service=service
+        )
+        workspace.revoke_group_access(IDs.GROUP_NAME)
+        service.workspace.revoke_group_access.assert_called_with(
+            IDs.PUBLISHED_WORKSPACE_ID, IDs.GROUP_NAME
+        )
+
     def test_rename_published_workspace(self, publish_workspace):
         workspace = publish_workspace.entity
         service = publish_workspace.service

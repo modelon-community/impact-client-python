@@ -167,6 +167,7 @@ class IDs:
     USER_ID = "njcswjcjnscksnckjsnckndsk"
     USERNAME = 'alice'
     TENANT_ID = 'modelon'
+    GROUP_NAME = 'impact-tenant-org1'
     PUBLISHED_WORKSPACE_ID = 'ekdncjndjcndejncjsncsndcijdsnc'
     PROJECT_PRIMARY = 'bf1e2f2a2fd55dcfd844bc1f252528f707254425'
     PROJECT_SECONDARY = 'xbhcdhcbdbchdbhcbdhbchdchdhcbhdbchdbch'
