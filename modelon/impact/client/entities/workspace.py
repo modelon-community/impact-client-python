@@ -282,6 +282,36 @@ class PublishedWorkspace:
         self._sal.workspace.revoke_user_access(self._id, username)
 
     @Experimental
+    def grant_group_access(self, group_name: Optional[str] = None) -> None:
+        """Grant group access for the published workspace.
+
+        Args:
+            group_name: Name of the group to grant access rights to. If not
+            specified, the workspace is shared with the group the published workspace
+            owner belongs to.
+
+        Example::
+
+            published_workspace.grant_group_access('impact-tenant-org1')
+
+        """
+        self._sal.workspace.grant_group_access(self._id, group_name)
+
+    @Experimental
+    def revoke_group_access(self, group_name: str) -> None:
+        """Revoke group access for the published workspace.
+
+        Args:
+            group_name: Name of the group to revoke access rights from.
+
+        Example::
+
+            published_workspace.revoke_group_access('impact-tenant-org1')
+
+        """
+        self._sal.workspace.revoke_group_access(self._id, group_name)
+
+    @Experimental
     def grant_community_access(self) -> None:
         """Grant community access for the published workspace.
 

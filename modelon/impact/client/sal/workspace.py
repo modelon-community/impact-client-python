@@ -290,12 +290,31 @@ class WorkspaceService:
             body['requesterUsername'] = username
         self._http_client.patch_json_no_response_body(url, body=body)
 
+    def _group_access_request(
+        self, operation: str, sharing_id: str, group_name: Optional[str] = None
+    ) -> None:
+        url = (
+            self._base_uri / f"api/published-workspaces/{sharing_id}/access/group"
+        ).resolve()
+        body = {"operation": operation}
+        if group_name:
+            body['groupName'] = group_name
+        self._http_client.patch_json_no_response_body(url, body=body)
+
     def _community_access_request(self, operation: str, sharing_id: str) -> None:
         url = (
             self._base_uri / f"api/published-workspaces/{sharing_id}/access/community"
         ).resolve()
         body = {"operation": operation}
         self._http_client.patch_json_no_response_body(url, body=body)
+
+    def grant_group_access(
+        self, sharing_id: str, group_name: Optional[str] = None
+    ) -> None:
+        self._group_access_request('grant', sharing_id, group_name)
+
+    def revoke_group_access(self, sharing_id: str, group_name: str) -> None:
+        self._group_access_request('revoke', sharing_id, group_name)
 
     def request_user_access(self, sharing_id: str) -> None:
         self._user_access_request('request', sharing_id)
