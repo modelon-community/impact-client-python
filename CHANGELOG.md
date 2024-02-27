@@ -1,3 +1,15 @@
+# [3.11.0](https://github.com/modelon-community/impact-client-python/compare/v3.10.0...v3.11.0) (2024-02-27)
+
+
+### Bug Fixes
+
+* rename experimental user access methods for uniformity with other access related methods ([18549f2](https://github.com/modelon-community/impact-client-python/commit/18549f29e5cad177f83cc269ffe742a7a36ea993))
+
+
+### Features
+
+* add support to grant/revoke group access ([300d05a](https://github.com/modelon-community/impact-client-python/commit/300d05a88a074e1ca07575ea8892bc677178cc58))
+
 # [3.10.0](https://github.com/modelon-community/impact-client-python/compare/v3.9.0...v3.10.0) (2024-02-19)
 
 
