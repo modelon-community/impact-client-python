@@ -1,3 +1,10 @@
+## [3.11.1](https://github.com/modelon-community/impact-client-python/compare/v3.11.0...v3.11.1) (2024-02-29)
+
+
+### Bug Fixes
+
+* updated experimental get_access_control_list method as per new protocol on MI ([455b279](https://github.com/modelon-community/impact-client-python/commit/455b2795cac57f59295805052b497e3a00941e17))
+
 # [3.11.0](https://github.com/modelon-community/impact-client-python/compare/v3.10.0...v3.11.0) (2024-02-27)
 
 
