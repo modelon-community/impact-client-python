@@ -150,33 +150,17 @@ class PublishedWorkspaceRequester:
 
 
 @dataclass
-class PublishedWorkspacePermission:
-    id: str
-    name: str
-
-    @classmethod
-    def from_dict(cls, permissions: Dict[str, Any]) -> PublishedWorkspacePermission:
-        return cls(id=permissions["id"], name=permissions["name"])
-
-
-@dataclass
 class PublishedWorkspaceACL:
-    role_permissions: List[PublishedWorkspacePermission]
-    group_permissions: List[PublishedWorkspacePermission]
+    role_names: List[str]
+    group_names: List[str]
     shared_with: List[PublishedWorkspaceRequester]
     requested_by: List[PublishedWorkspaceRequester]
 
     @classmethod
     def from_dict(cls, acl: Dict[str, Any]) -> PublishedWorkspaceACL:
         return cls(
-            role_permissions=[
-                PublishedWorkspacePermission.from_dict(permission)
-                for permission in acl["rolePermissions"]
-            ],
-            group_permissions=[
-                PublishedWorkspacePermission.from_dict(permission)
-                for permission in acl["groupPermissions"]
-            ],
+            role_names=acl["roleNames"],
+            group_names=acl["groupNames"],
             shared_with=[
                 PublishedWorkspaceRequester.from_dict(requester)
                 for requester in acl["sharedWith"]

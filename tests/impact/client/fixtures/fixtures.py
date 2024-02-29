@@ -1146,13 +1146,8 @@ def publish_workspace():
         **definition,
     }
     ws_service.get_published_workspace_acl.return_value = {
-        'rolePermissions': [],
-        'groupPermissions': [
-            {
-                'id': IDs.PUBLISH_PERMISSIONS_PRIMARY_ID,
-                'name': IDs.PUBLISH_PERMISSIONS_PRIMARY_NAME,
-            },
-        ],
+        'roleNames': [],
+        'groupNames': [IDs.GROUP_NAME],
         'sharedWith': [
             {
                 'id': IDs.USER_ID,
