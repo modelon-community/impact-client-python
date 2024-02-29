@@ -126,13 +126,9 @@ class TestPublishedWorkspace:
         assert pub_ws_acl.shared_with[0].username == IDs.USERNAME
         assert pub_ws_acl.shared_with[0].id == IDs.USER_ID
         assert pub_ws_acl.requested_by == []
-        assert pub_ws_acl.role_permissions == []
-        assert len(pub_ws_acl.group_permissions) == 1
-        assert pub_ws_acl.group_permissions[0].id == IDs.PUBLISH_PERMISSIONS_PRIMARY_ID
-        assert (
-            pub_ws_acl.group_permissions[0].name == IDs.PUBLISH_PERMISSIONS_PRIMARY_NAME
-        )
-
+        assert pub_ws_acl.role_names == []
+        assert len(pub_ws_acl.group_names) == 1
+        assert pub_ws_acl.group_names[0] == IDs.GROUP_NAME
 
 class TestWorkspace:
     def test_get_workspace_size(self, workspace):
