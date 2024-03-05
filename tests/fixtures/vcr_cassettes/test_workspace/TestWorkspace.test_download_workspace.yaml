@@ -1,0 +1,691 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+    method: GET
+    uri: /hub/api/
+  response:
+    body:
+      string: '{"version": "4.0.2"}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json
+      access-control-allow-headers:
+      - accept, content-type, authorization
+      x-jupyterhub-version:
+      - 4.0.2
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+    method: GET
+    uri: /hub/api/authorizations/token/dummy
+  response:
+    body:
+      string: '{"name": "test@dummy.com", "server": "/user/test@dummy.com/"}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json
+      access-control-allow-headers:
+      - accept, content-type, authorization
+      x-jupyterhub-version:
+      - 4.0.2
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+    method: GET
+    uri: /user/test@dummy.com/impact/api/
+  response:
+    body:
+      string: '{"version": "4.10.0"}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json; charset=utf-8
+      access-control-allow-headers:
+      - '*'
+      access-control-allow-methods:
+      - POST, PUT, GET, DELETE, OPTIONS
+      access-control-allow-origin:
+      - '*'
+      vary:
+      - Accept-Encoding
+      x-powered-by:
+      - Express
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '113'
+      Content-Type:
+      - application/json
+    method: POST
+    uri: /user/test@dummy.com/impact/api/login
+  response:
+    body:
+      string: '{}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json; charset=utf-8
+      access-control-allow-headers:
+      - '*'
+      access-control-allow-methods:
+      - POST, PUT, GET, DELETE, OPTIONS
+      access-control-allow-origin:
+      - '*'
+      vary:
+      - Accept-Encoding
+      x-powered-by:
+      - Express
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+    method: GET
+    uri: /user/test@dummy.com/impact/api/users/me
+  response:
+    body:
+      string: '{"data": {"license": "impact-pro", "username": "test@dummy.com"}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json; charset=utf-8
+      access-control-allow-headers:
+      - '*'
+      access-control-allow-methods:
+      - POST, PUT, GET, DELETE, OPTIONS
+      access-control-allow-origin:
+      - '*'
+      vary:
+      - Accept-Encoding
+      x-powered-by:
+      - Express
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+    method: GET
+    uri: /user/test@dummy.com/impact/api/users/me
+  response:
+    body:
+      string: '{"data": {"license": "impact-pro", "username": "test@dummy.com"}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json; charset=utf-8
+      access-control-allow-headers:
+      - '*'
+      access-control-allow-methods:
+      - POST, PUT, GET, DELETE, OPTIONS
+      access-control-allow-origin:
+      - '*'
+      vary:
+      - Accept-Encoding
+      x-powered-by:
+      - Express
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+    method: GET
+    uri: /user/test@dummy.com/impact/api/workspaces
+  response:
+    body:
+      string: '{"data": {"items": []}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json; charset=utf-8
+      access-control-allow-headers:
+      - '*'
+      access-control-allow-methods:
+      - POST, PUT, GET, DELETE, OPTIONS
+      access-control-allow-origin:
+      - '*'
+      vary:
+      - Accept-Encoding
+      x-powered-by:
+      - Express
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"new": {"name": "impact-python-client-workspace1"}}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '52'
+      Content-Type:
+      - application/json
+    method: POST
+    uri: /user/test@dummy.com/impact/api/workspaces
+  response:
+    body:
+      string: '{"definition": {"name": "impact-python-client-workspace1", "description":
+        "", "defaultProjectId": "5647d3e10045d4d812076676fe6f507df4a505ce", "projects":
+        [{"reference": {"id": "5647d3e10045d4d812076676fe6f507df4a505ce"}, "disabled":
+        false, "disabledContent": []}], "dependencies": [{"reference": {"id": "fec43f77925949bd7e7c0f10ac49ebc1189dc840",
+        "name": "Modelica", "version": "3.2.3"}, "disabled": true, "disabledContent":
+        []}, {"reference": {"id": "ac04a5da97bc2e11bffb7f41b2485da347846df6", "name":
+        "Modelica", "version": "4.0.0"}, "disabled": false, "disabledContent": []}],
+        "format": "1.0.0", "guid": "c24e09efc13c4d44a87e543d9ea81b0b", "createdBy":
+        "5c18f9f3-ef07-453a-9965-9de61f6d53f4", "createdAt": 1711001710130}, "id":
+        "impact-python-client-workspace1", "conversion": {"state": "UP_TO_DATE"}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json; charset=utf-8
+      access-control-allow-headers:
+      - '*'
+      access-control-allow-methods:
+      - POST, PUT, GET, DELETE, OPTIONS
+      access-control-allow-origin:
+      - '*'
+      vary:
+      - Accept-Encoding
+      x-powered-by:
+      - Express
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"workspaceId": "impact-python-client-workspace1", "publish": false}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '68'
+      Content-Type:
+      - application/json
+    method: POST
+    uri: /user/test@dummy.com/impact/api/workspace-exports
+  response:
+    body:
+      string: '{"data": {"location": "api/workspace-exports/3fdb16867d8d4b7fa99484040615d936"}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json; charset=utf-8
+      access-control-allow-headers:
+      - '*'
+      access-control-allow-methods:
+      - POST, PUT, GET, DELETE, OPTIONS
+      access-control-allow-origin:
+      - '*'
+      vary:
+      - Accept-Encoding
+      x-powered-by:
+      - Express
+    status:
+      code: 201
+      message: Created
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+    method: GET
+    uri: /user/test@dummy.com/impact/api/workspace-exports/3fdb16867d8d4b7fa99484040615d936
+  response:
+    body:
+      string: '{"data": {"id": "3fdb16867d8d4b7fa99484040615d936", "status": "ready",
+        "data": {"downloadUri": "api/exports/3fdb16867d8d4b7fa99484040615d936", "size":
+        2635}}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json; charset=utf-8
+      access-control-allow-headers:
+      - '*'
+      access-control-allow-methods:
+      - POST, PUT, GET, DELETE, OPTIONS
+      access-control-allow-origin:
+      - '*'
+      vary:
+      - Accept-Encoding
+      x-powered-by:
+      - Express
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+    method: GET
+    uri: /user/test@dummy.com/impact/api/workspace-exports/3fdb16867d8d4b7fa99484040615d936
+  response:
+    body:
+      string: '{"data": {"id": "3fdb16867d8d4b7fa99484040615d936", "status": "ready",
+        "data": {"downloadUri": "api/exports/3fdb16867d8d4b7fa99484040615d936", "size":
+        2635}}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json; charset=utf-8
+      access-control-allow-headers:
+      - '*'
+      access-control-allow-methods:
+      - POST, PUT, GET, DELETE, OPTIONS
+      access-control-allow-origin:
+      - '*'
+      vary:
+      - Accept-Encoding
+      x-powered-by:
+      - Express
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+    method: GET
+    uri: /user/test@dummy.com/impact/api/workspace-exports/3fdb16867d8d4b7fa99484040615d936
+  response:
+    body:
+      string: '{"data": {"id": "3fdb16867d8d4b7fa99484040615d936", "status": "ready",
+        "data": {"downloadUri": "api/exports/3fdb16867d8d4b7fa99484040615d936", "size":
+        2635}}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json; charset=utf-8
+      access-control-allow-headers:
+      - '*'
+      access-control-allow-methods:
+      - POST, PUT, GET, DELETE, OPTIONS
+      access-control-allow-origin:
+      - '*'
+      vary:
+      - Accept-Encoding
+      x-powered-by:
+      - Express
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+    method: GET
+    uri: /user/test@dummy.com/impact/api/workspace-exports/3fdb16867d8d4b7fa99484040615d936
+  response:
+    body:
+      string: '{"data": {"id": "3fdb16867d8d4b7fa99484040615d936", "status": "ready",
+        "data": {"downloadUri": "api/exports/3fdb16867d8d4b7fa99484040615d936", "size":
+        2635}}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json; charset=utf-8
+      access-control-allow-headers:
+      - '*'
+      access-control-allow-methods:
+      - POST, PUT, GET, DELETE, OPTIONS
+      access-control-allow-origin:
+      - '*'
+      vary:
+      - Accept-Encoding
+      x-powered-by:
+      - Express
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+    method: GET
+    uri: /user/test@dummy.com/impact/api/exports/3fdb16867d8d4b7fa99484040615d936
+  response:
+    body:
+      string: !!binary |
+        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
+        UKvYyVmM7bIO1jLcx6dco6Tbzle8mjC2I9zkD8d2mMXl1XW1Xa82b9MpdppNqbad3DmI9Ea6Dn4J
+        XDR16EcXGe+G2Kk/76YOtFDrHtPCy2uY9+N9o8FZJZ/zfgPfTXOkWZ7R39VyU11Xq0/Vm+365uO7
+        6mLzx5KCP7ykovP/Sc5+bPK/kP/FMJ6v42XjNPgPE/HTcpydHgFQSwMEFAAAAAgA5TF1WDZiOxMH
+        AAAABQAAAAsAAAB2ZXJzaW9uLnR4dDPUM9AzAABQSwECFAMUAAAAAADlMXVYAAAAAAAAAAAAAAAA
+        CgAAAAAAAAAAABAA7UUAAAAAd29ya3NwYWNlL1BLAQIUAxQAAAAIAOUxdVgAAAAAAgAAAAAAAAAU
+        AAAAAAAAAAAAAACkgSgAAAB3b3Jrc3BhY2UvLnN2bmlnbm9yZVBLAQIUAxQAAAAIAOUxdViTQsMj
+        MwAAADkAAAATAAAAAAAAAAAAAACkgVwAAAB3b3Jrc3BhY2UvbWV0YS5qc29uUEsBAhQDFAAAAAgA
+        5TF1WAAAAAACAAAAAAAAABQAAAAAAAAAAAAAAKSBwAAAAHdvcmtzcGFjZS8uZ2l0aWdub3JlUEsB
+        AhQDFAAAAAgA5TF1WJS0AzaTAQAAjgMAAB4AAAAAAAAAAAAAAKSB9AAAAHdvcmtzcGFjZS9sb2Nh
+        bF93b3Jrc3BhY2UuanNvblBLAQIUAxQAAAAAAOUxdVgAAAAAAAAAAAAAAAAZAAAAAAAAAAAAEADt
+        RcMCAABsb2NhbF9wcm9qZWN0cy9Qcm9qZWN0XzAvUEsBAhQDFAAAAAAA5TF1WAAAAAAAAAAAAAAA
+        ACEAAAAAAAAAAAAQAO1F+gIAAGxvY2FsX3Byb2plY3RzL1Byb2plY3RfMC8uaW1wYWN0L1BLAQIU
+        AxQAAAAIAOUxdVhz2FDc9AEAAGwFAAAtAAAAAAAAAAAAAACkgTkDAABsb2NhbF9wcm9qZWN0cy9Q
+        cm9qZWN0XzAvLmltcGFjdC9wcm9qZWN0Lmpzb25QSwECFAMUAAAACADlMXVY9Mjb+5IBAAClAwAA
+        HgAAAAAAAAAAAAAAgAF4BQAAd29ya3NwYWNlL2xvY2FsX3dvcmtzcGFjZS5qc29uUEsBAhQDFAAA
+        AAgA5TF1WDZiOxMHAAAABQAAAAsAAAAAAAAAAAAAAIABRgcAAHZlcnNpb24udHh0UEsFBgAAAAAK
+        AAoAvwIAAHYHAAAAAA==
+    headers:
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/zip
+      access-control-allow-headers:
+      - '*'
+      access-control-allow-methods:
+      - POST, PUT, GET, DELETE, OPTIONS
+      access-control-allow-origin:
+      - '*'
+      content-disposition:
+      - attachment; filename="impact-python-client-workspace1.zip"
+      content-length:
+      - '2635'
+      vary:
+      - Accept-Encoding
+      x-powered-by:
+      - Express
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+    method: GET
+    uri: /user/test@dummy.com/impact/api/workspaces
+  response:
+    body:
+      string: '{"data": {"items": [{"definition": {"name": "impact-python-client-workspace1",
+        "description": "", "defaultProjectId": "5647d3e10045d4d812076676fe6f507df4a505ce",
+        "projects": [{"reference": {"id": "5647d3e10045d4d812076676fe6f507df4a505ce"},
+        "disabled": false, "disabledContent": []}], "dependencies": [{"reference":
+        {"id": "fec43f77925949bd7e7c0f10ac49ebc1189dc840", "name": "Modelica", "version":
+        "3.2.3"}, "disabled": true, "disabledContent": []}, {"reference": {"id": "ac04a5da97bc2e11bffb7f41b2485da347846df6",
+        "name": "Modelica", "version": "4.0.0"}, "disabled": false, "disabledContent":
+        []}], "format": "1.0.0", "guid": "c24e09efc13c4d44a87e543d9ea81b0b", "createdBy":
+        "5c18f9f3-ef07-453a-9965-9de61f6d53f4", "createdAt": 1711001710130}, "id":
+        "impact-python-client-workspace1", "conversion": {"state": "UP_TO_DATE"}}]}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json; charset=utf-8
+      access-control-allow-headers:
+      - '*'
+      access-control-allow-methods:
+      - POST, PUT, GET, DELETE, OPTIONS
+      access-control-allow-origin:
+      - '*'
+      vary:
+      - Accept-Encoding
+      x-powered-by:
+      - Express
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+    method: GET
+    uri: /user/test@dummy.com/impact/api/workspaces/impact-python-client-workspace1/projects
+  response:
+    body:
+      string: '{"data": {"items": [{"id": "5647d3e10045d4d812076676fe6f507df4a505ce",
+        "definition": {"name": "Project", "format": "1.0.0", "dependencies": [{"name":
+        "Modelica", "versionSpecifier": "4.0.0"}], "content": [{"relpath": "Resources/Views",
+        "contentType": "VIEWS", "defaultDisabled": false, "id": "e233c6f844a1430bb34b82c31c07b7e9"},
+        {"relpath": "Resources/Favorites", "contentType": "FAVORITES", "defaultDisabled":
+        false, "id": "0491de23fcf246628818d60067b8bd8c"}, {"relpath": "Resources/CustomFunctions",
+        "contentType": "CUSTOM_FUNCTIONS", "defaultDisabled": false, "id": "78a3346ea2664161ad0179167f8a280b"},
+        {"relpath": "Resources/Custom", "contentType": "GENERIC", "defaultDisabled":
+        false, "id": "6c8d36785d934f1f9f5e21113424338b"}, {"relpath": "ReferenceResults",
+        "contentType": "REFERENCE_RESULTS", "defaultDisabled": false, "id": "5e767f43d8b24e4f8f92cc7b17c1f30c"},
+        {"relpath": "Resources/ExperimentDefinitions", "contentType": "EXPERIMENT_DEFINITIONS",
+        "defaultDisabled": false, "id": "a1bbbf9cdb144992a397220eedb5f151"}, {"relpath":
+        "Resources/CustomWebApps", "contentType": "CUSTOM_WEB_APPS", "defaultDisabled":
+        false, "id": "ee1c842bd1954144972240a5a563b78d"}], "executionOptions": []},
+        "projectType": "LOCAL", "storageLocation": "USERSPACE"}]}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json; charset=utf-8
+      access-control-allow-headers:
+      - '*'
+      access-control-allow-methods:
+      - POST, PUT, GET, DELETE, OPTIONS
+      access-control-allow-origin:
+      - '*'
+      content-length:
+      - '1177'
+      vary:
+      - Accept-Encoding
+      x-powered-by:
+      - Express
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '0'
+    method: DELETE
+    uri: /user/test@dummy.com/impact/api/projects/5647d3e10045d4d812076676fe6f507df4a505ce
+  response:
+    body:
+      string: '{"id": "5647d3e10045d4d812076676fe6f507df4a505ce", "definition": {"name":
+        "Project", "format": "1.0.0", "dependencies": [{"name": "Modelica", "versionSpecifier":
+        "4.0.0"}], "content": [{"relpath": "Resources/Views", "contentType": "VIEWS",
+        "defaultDisabled": false, "id": "e233c6f844a1430bb34b82c31c07b7e9"}, {"relpath":
+        "Resources/Favorites", "contentType": "FAVORITES", "defaultDisabled": false,
+        "id": "0491de23fcf246628818d60067b8bd8c"}, {"relpath": "Resources/CustomFunctions",
+        "contentType": "CUSTOM_FUNCTIONS", "defaultDisabled": false, "id": "78a3346ea2664161ad0179167f8a280b"},
+        {"relpath": "Resources/Custom", "contentType": "GENERIC", "defaultDisabled":
+        false, "id": "6c8d36785d934f1f9f5e21113424338b"}, {"relpath": "ReferenceResults",
+        "contentType": "REFERENCE_RESULTS", "defaultDisabled": false, "id": "5e767f43d8b24e4f8f92cc7b17c1f30c"},
+        {"relpath": "Resources/ExperimentDefinitions", "contentType": "EXPERIMENT_DEFINITIONS",
+        "defaultDisabled": false, "id": "a1bbbf9cdb144992a397220eedb5f151"}, {"relpath":
+        "Resources/CustomWebApps", "contentType": "CUSTOM_WEB_APPS", "defaultDisabled":
+        false, "id": "ee1c842bd1954144972240a5a563b78d"}], "executionOptions": []},
+        "projectType": "LOCAL", "storageLocation": "USERSPACE"}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json; charset=utf-8
+      access-control-allow-headers:
+      - '*'
+      access-control-allow-methods:
+      - POST, PUT, GET, DELETE, OPTIONS
+      access-control-allow-origin:
+      - '*'
+      content-length:
+      - '1156'
+      vary:
+      - Accept-Encoding
+      x-powered-by:
+      - Express
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '0'
+    method: DELETE
+    uri: /user/test@dummy.com/impact/api/workspaces/impact-python-client-workspace1
+  response:
+    body:
+      string: ''
+    headers:
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json; charset=utf-8
+      access-control-allow-headers:
+      - '*'
+      access-control-allow-methods:
+      - POST, PUT, GET, DELETE, OPTIONS
+      access-control-allow-origin:
+      - '*'
+      vary:
+      - Accept-Encoding
+      x-powered-by:
+      - Express
+    status:
+      code: 200
+      message: OK
+version: 1

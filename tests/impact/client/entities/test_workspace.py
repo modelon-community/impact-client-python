@@ -4,20 +4,19 @@ import unittest.mock as mock
 
 import pytest
 
-from modelon.impact.client import AccessSettings
+from modelon.impact.client import AccessSettings, SimpleModelicaExperimentDefinition
+from modelon.impact.client.entities.experiment import Experiment
+from modelon.impact.client.entities.model import Model
+from modelon.impact.client.entities.model_executable import ModelExecutable
+from modelon.impact.client.operations.workspace.exports import WorkspaceExportOperation
 from tests.files.paths import TEST_WORKSPACE_PATH
 from tests.impact.client.helpers import (
+    ClientHelper,
     IDs,
-    create_experiment_operation,
-    create_model_entity,
-    create_model_exe_entity,
-    create_project_entity,
     create_published_workspace_entity,
     create_workspace_entity,
-    create_workspace_export_operation,
-    get_test_workspace_definition,
 )
-
+import modelon.impact.client.sal.exceptions as sal_exceptions
 
 class TestPublishedWorkspace:
     def test_delete_published_workspace(self):
@@ -130,38 +129,41 @@ class TestPublishedWorkspace:
         assert len(pub_ws_acl.group_names) == 1
         assert pub_ws_acl.group_names[0] == IDs.GROUP_NAME
 
+
 class TestWorkspace:
-    def test_get_workspace_size(self, workspace):
-        assert workspace.entity.size == 7014
+    @pytest.mark.vcr()
+    def test_get_workspace_size(self, client_helper: ClientHelper):
+        assert client_helper.workspace.id == IDs.WORKSPACE_PRIMARY
+        assert isinstance(client_helper.workspace.size, int)
 
-    def test_rename_workspace(self, workspace):
-        assert workspace.entity.name == IDs.WORKSPACE_PRIMARY
-        workspace.entity.rename(IDs.WORKSPACE_SECONDARY)
-        data = {
-            "definition": get_test_workspace_definition(IDs.WORKSPACE_SECONDARY),
-            "id": IDs.WORKSPACE_PRIMARY,
-            "sizeInfo": {"total": 7014},
-        }
-        workspace.service.workspace.update_workspace.assert_called_with(
-            IDs.WORKSPACE_PRIMARY, data
-        )
+    @pytest.mark.vcr()
+    def test_rename_workspace(self, client_helper: ClientHelper):
+        workspace = client_helper.workspace
+        assert workspace.name == IDs.WORKSPACE_PRIMARY
+        workspace.rename(IDs.WORKSPACE_SECONDARY)
+        workspace = client_helper.client.get_workspace(IDs.WORKSPACE_PRIMARY)
+        assert workspace.name == IDs.WORKSPACE_SECONDARY
 
-    def test_get_custom_function(self, workspace):
-        custom_function = workspace.entity.get_custom_function(IDs.DYNAMIC_CF)
+    @pytest.mark.vcr()
+    def test_get_custom_function(self, client_helper: ClientHelper):
+        custom_function = client_helper.workspace.get_custom_function(IDs.DYNAMIC_CF)
         assert IDs.DYNAMIC_CF == custom_function.name
 
-    def test_get_custom_functions(self, workspace):
+    @pytest.mark.vcr()
+    def test_get_custom_functions(self, client_helper: ClientHelper):
         custom_function_list = [
             custom_function.name
-            for custom_function in workspace.entity.get_custom_functions()
+            for custom_function in client_helper.workspace.get_custom_functions()
         ]
-        assert [IDs.DYNAMIC_CF] == custom_function_list
+        assert IDs.DYNAMIC_CF in custom_function_list
 
-    def test_delete(self):
-        service = mock.MagicMock()
-        workspace = create_workspace_entity(IDs.WORKSPACE_PRIMARY, service=service)
+    @pytest.mark.vcr()
+    def test_delete(self, client_helper: ClientHelper):
+        workspace = client_helper.workspace
         workspace.delete()
-        service.workspace.workspace_delete.assert_called_with(IDs.WORKSPACE_PRIMARY)
+        with pytest.raises(sal_exceptions.HTTPError) as err:
+            client_helper.client.get_workspace(workspace.id)
+        assert str(err.value) == f"The workspace '{workspace.id}' does not exist"
 
     def test_upload_result(self, external_result_sal_upload):
         external_result_service = external_result_sal_upload.external_result
@@ -174,14 +176,23 @@ class TestWorkspace:
         )
         assert upload_op.id == IDs.IMPORT
 
-    def test_download_workspace(self, workspace):
-        t = os.path.join(tempfile.gettempdir(), workspace.entity.id + '.zip')
-        resp = workspace.entity.download(tempfile.gettempdir())
-        assert resp == t
+    @pytest.mark.vcr()
+    def test_download_workspace(self, client_helper: ClientHelper):
+        workspace = client_helper.workspace
+        temp_dir = tempfile.gettempdir()
+        resp = workspace.download(temp_dir)
+        download_path = os.path.join(temp_dir, workspace.id + '.zip')
+        assert resp == download_path
 
-    def test_export_workspace(self, workspace):
-        resp = workspace.entity.export()
-        assert resp == create_workspace_export_operation(IDs.EXPORT)
+    @pytest.mark.vcr()
+    def test_export_workspace(self, client_helper: ClientHelper):
+        workspace = client_helper.workspace
+        ops = workspace.export()
+        assert isinstance(ops, WorkspaceExportOperation)
+        temp_dir = tempfile.gettempdir()
+        download_path = os.path.join(temp_dir, workspace.id + '.zip')
+        path = ops.wait().download_as(download_path)
+        assert path == download_path
 
     def test_publish_workspace_without_group_share(self, workspace):
         workspace_entity = workspace.entity
@@ -193,89 +204,103 @@ class TestWorkspace:
             [mock.call(IDs.WORKSPACE_PRIMARY, True, None, access_settings)]
         )
 
-    def test_publish_workspace(self, workspace):
-        workspace_entity = workspace.entity
-        service = workspace.service
-        workspace_service = service.workspace
-        workspace_entity.export(publish=True)
-        workspace_service.workspace_export_setup.assert_has_calls(
-            [mock.call(IDs.WORKSPACE_PRIMARY, True, None, None)]
-        )
+    @pytest.mark.vcr()
+    def test_publish_workspace(self, client_helper: ClientHelper):
+        pwc = client_helper.client.get_published_workspaces_client()
+        pub_ws_id = client_helper.workspace.export(publish=True).wait().id
+        pw = pwc.get_by_id(pub_ws_id)
+        assert pw
+        assert pw.name == client_helper.workspace.name
 
-    def test_get_model(self, workspace):
-        model = workspace.entity.get_model("Modelica.Blocks.PID")
-        assert model == create_model_entity(
-            "Modelica.Blocks.PID", workspace.entity.id, IDs.PROJECT_PRIMARY
-        )
+    @pytest.mark.vcr()
+    def test_get_model(self, client_helper: ClientHelper):
+        model_name = IDs.MODELICA_CLASS_PATH
+        model = client_helper.workspace.get_model(model_name)
+        assert isinstance(model, Model)
+        assert model.name == model_name
 
-    def test_model_repr(self, workspace):
-        model = create_model_entity(
-            "Modelica.Blocks.PID", workspace.entity.id, IDs.PROJECT_PRIMARY
-        )
-        assert "Class name 'Modelica.Blocks.PID'" == model.__repr__()
+    @pytest.mark.vcr()
+    def test_model_repr(self, client_helper: ClientHelper):
+        model_name = IDs.MODELICA_CLASS_PATH
+        model = client_helper.workspace.get_model(model_name)
+        assert f"Class name '{model_name}'" == model.__repr__()
 
-    def test_get_fmus(self, workspace):
-        fmus = workspace.entity.get_fmus()
+    @pytest.mark.vcr()
+    def test_get_fmus(self, client_helper: ClientHelper):
+        client_helper.create_and_execute_experiment()
+        fmus = client_helper.workspace.get_fmus()
         assert len(fmus) == 2
-        assert fmus[0].id == IDs.FMU_PRIMARY
-        assert fmus[1].id == IDs.FMU_SECONDARY
 
-    def test_get_fmu(self, workspace):
-        fmu = workspace.entity.get_fmu(IDs.FMU_PRIMARY)
-        assert fmu == create_model_exe_entity(IDs.WORKSPACE_PRIMARY, IDs.FMU_PRIMARY)
+    @pytest.mark.vcr()
+    def test_get_fmu(self, client_helper: ClientHelper):
+        client_helper.create_and_execute_experiment(modifiers={})
+        fmus = client_helper.workspace.get_fmus()
+        assert len(fmus) == 1
+        fmu = client_helper.workspace.get_fmu(fmus[0].id)
+        assert isinstance(fmu, ModelExecutable)
 
-    def test_get_experiment(self, workspace):
-        exp = workspace.entity.get_experiment(IDs.EXPERIMENT_PRIMARY)
-        assert exp.id == IDs.EXPERIMENT_PRIMARY
+    @pytest.mark.vcr()
+    def test_get_experiment(self, client_helper: ClientHelper):
+        exp = client_helper.create_experiment(modifiers={})
+        exp = client_helper.workspace.get_experiment(exp.id)
+        assert isinstance(exp, Experiment)
 
-    def test_get_experiments(self, workspace):
-        exps = workspace.entity.get_experiments()
+    @pytest.mark.vcr()
+    def test_get_experiments(self, client_helper: ClientHelper):
+        client_helper.create_experiment(modifiers={})
+        client_helper.create_experiment(modifiers={})
+        exps = client_helper.workspace.get_experiments()
         assert len(exps) == 2
-        assert exps[0].id == IDs.EXPERIMENT_PRIMARY
-        assert exps[1].id == IDs.EXPERIMENT_SECONDARY
 
-    def test_create_experiment(self, workspace):
-        exp = workspace.entity.create_experiment({})
-        assert exp.id == IDs.EXPERIMENT_PRIMARY
+    @pytest.mark.vcr()
+    def test_create_experiment(self, client_helper: ClientHelper):
+        exp = client_helper.create_experiment(modifiers={})
+        assert isinstance(exp, Experiment)
+        assert exp.id
 
-    def test_create_experiment_with_user_data(self, workspace):
-        workspace_entity = workspace.entity
-        service = workspace.service
-        workspace_service = service.workspace
-        user_data = {"customWsGetKey": "customWsGetValue"}
-        workspace_entity.create_experiment({}, user_data)
+    @pytest.mark.vcr()
+    def test_create_experiment_with_user_data(self, client_helper: ClientHelper):
+        expected_user_data = {"customWsGetKey": "customWsGetValue"}
+        exp = client_helper.create_experiment(user_data=expected_user_data)
+        user_data = exp.metadata.user_data
+        assert user_data == expected_user_data
 
-        workspace_service.experiment_create.assert_has_calls(
-            [mock.call(IDs.WORKSPACE_PRIMARY, {}, user_data)]
-        )
+    @pytest.mark.vcr()
+    def test_experiment_def_as_dict(self, client_helper: ClientHelper):
+        workspace = client_helper.workspace
+        dynamic = workspace.get_custom_function('dynamic')
+        model = workspace.get_model(IDs.MODELICA_CLASS_PATH)
+        experiment_definition = SimpleModelicaExperimentDefinition(
+            model, dynamic
+        ).to_dict()
+        exp = workspace.execute(experiment_definition).wait()
+        assert isinstance(exp, Experiment)
 
-    def test_execute_options_dict(self, workspace):
-        exp = workspace.entity.execute({})
-        assert exp == create_experiment_operation(
-            IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY
-        )
+    @pytest.mark.vcr()
+    def test_get_default_project(self, client_helper: ClientHelper):
+        workspace = client_helper.workspace
+        project = workspace.get_default_project()
+        assert project.name == IDs.DEFAULT_PROJECT_NAME
 
-    def test_get_default_project(self, workspace):
-        project = workspace.entity.get_default_project()
-        assert project.id == IDs.PROJECT_PRIMARY
+    @pytest.mark.vcr()
+    def test_get_projects(self, client_helper: ClientHelper):
+        workspace = client_helper.workspace
+        workspace.create_project(IDs.PROJECT_NAME_PRIMARY)
+        projects = workspace.get_projects()
+        assert len(projects) == 2
 
-    def test_get_projects(self, workspace):
-        projects = workspace.entity.get_projects()
-        assert projects == [
-            create_project_entity(
-                project_id=IDs.PROJECT_PRIMARY, project_name="NewProject"
-            )
-        ]
+    @pytest.mark.vcr()
+    def test_get_all_dependencies(self, client_helper: ClientHelper):
+        workspace = client_helper.workspace
+        dependencies = workspace.get_dependencies()
+        assert len(dependencies) == 1
+        assert dependencies[0].name == "Modelica"
 
-    def test_get_all_dependencies(self, workspace):
-        dependencies = workspace.entity.get_dependencies()
-        assert len(dependencies) == 2
-        assert dependencies[0].id == IDs.MSL_300_PROJECT_ID
-        assert dependencies[1].id == IDs.MSL_400_PROJECT_ID
-
-    def test_create_project(self, workspace):
-        project = workspace.entity.create_project("my_project")
-        assert project.id == IDs.PROJECT_PRIMARY
+    @pytest.mark.vcr()
+    def test_create_project(self, client_helper: ClientHelper):
+        workspace = client_helper.workspace
+        project = workspace.create_project(IDs.PROJECT_NAME_PRIMARY)
+        assert project.name == IDs.PROJECT_NAME_PRIMARY
 
     def test_import_dependency_from_zip(self, workspace):
         project = workspace.entity.import_dependency_from_zip(
@@ -287,8 +312,9 @@ class TestWorkspace:
         project = workspace.entity.import_project_from_zip(TEST_WORKSPACE_PATH).wait()
         assert project.id == IDs.PROJECT_PRIMARY
 
-    def test_get_model_experiments(self, workspace):
-        experiments = workspace.entity.get_experiments(IDs.MODELICA_CLASS_PATH)
-        assert len(experiments) == 2
-        assert experiments[0].id == IDs.EXPERIMENT_PRIMARY
-        assert experiments[1].id == IDs.EXPERIMENT_SECONDARY
+    @pytest.mark.vcr()
+    def test_get_model_experiments(self, client_helper: ClientHelper):
+        workspace = client_helper.workspace
+        client_helper.create_experiment()
+        experiments = workspace.get_experiments(IDs.MODELICA_CLASS_PATH)
+        assert len(experiments) == 1

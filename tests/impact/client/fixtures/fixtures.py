@@ -1,5 +1,6 @@
 import collections
 import copy
+import os
 from unittest.mock import MagicMock
 
 import pytest
@@ -19,6 +20,7 @@ from tests.impact.client.helpers import (
     UNVERSIONED_PROJECT,
     VERSIONED_PROJECT_BRANCH,
     VERSIONED_PROJECT_TRUNK,
+    ClientHelper,
     IDs,
     create_custom_function_entity,
     create_experiment_entity,
@@ -318,8 +320,8 @@ def multiple_workspace(user_with_license):
     json = {
         'data': {
             'items': [
-                {'id': 'workspace_1', "definition": workspace_1_def},
-                {'id': 'workspace_2', "definition": workspace_2_def},
+                {'id': IDs.WORKSPACE_PRIMARY, "definition": workspace_1_def},
+                {'id': IDs.WORKSPACE_SECONDARY, "definition": workspace_2_def},
             ]
         }
     }
@@ -2297,3 +2299,27 @@ def executions(user_with_license, mock_server_base):
         'api/executions',
         resp,
     )
+
+
+@pytest.fixture(name="client_helper")
+def setup_client():
+    if os.environ.get("UPDATE_CASSETTE", "False") not in ["True", "1"]:
+        os.environ["MODELON_IMPACT_CLIENT_API_KEY"] = "dummy"
+        os.environ["JUPYTERHUB_API_TOKEN"] = "dummy"
+        os.environ["MODELON_IMPACT_USERNAME"] = IDs.MOCK_EMAIL
+    client = Client()
+    assert (
+        client._sal.users.get_me()["data"]["username"].lower()
+        == os.environ.get("MODELON_IMPACT_USERNAME", "").lower()
+    )
+    _clean_workspace_and_its_projects(client)
+    yield ClientHelper(client)
+    _clean_workspace_and_its_projects(client)
+
+
+def _clean_workspace_and_its_projects(client: Client):
+    for workspace in client.get_workspaces():
+        if workspace.id in IDs.WORKSPACE_IDS:
+            for project in workspace.get_projects():
+                project.delete()
+            workspace.delete()
