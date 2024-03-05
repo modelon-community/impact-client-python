@@ -1,5 +1,6 @@
 from unittest.mock import MagicMock
 
+from modelon.impact.client import Client, Range, SimpleModelicaExperimentDefinition
 from modelon.impact.client.entities.case import Case
 from modelon.impact.client.entities.custom_function import CustomFunction
 from modelon.impact.client.entities.experiment import Experiment
@@ -162,13 +163,19 @@ def with_octet_stream_route(
 
 
 class IDs:
-    WORKSPACE_PRIMARY = 'workspace_1'
-    WORKSPACE_SECONDARY = 'workspace_2'
+    MOCK_EMAIL = 'test@dummy.com'
+    MOCK_IMPACT_URL = 'https://modelon-test.com/'
+    _WORKSPACE_PREFIX = "impact-python-client-"
+    WORKSPACE_PRIMARY = _WORKSPACE_PREFIX + 'workspace1'
+    WORKSPACE_SECONDARY = _WORKSPACE_PREFIX + 'workspace2'
+    WORKSPACE_IDS = [WORKSPACE_PRIMARY, WORKSPACE_SECONDARY]
     USER_ID = "njcswjcjnscksnckjsnckndsk"
     USERNAME = 'alice'
     TENANT_ID = 'modelon'
     GROUP_NAME = 'impact-tenant-org1'
     PUBLISHED_WORKSPACE_ID = 'ekdncjndjcndejncjsncsndcijdsnc'
+    DEFAULT_PROJECT_NAME = 'Project'
+    PROJECT_NAME_PRIMARY = 'Project1'
     PROJECT_PRIMARY = 'bf1e2f2a2fd55dcfd844bc1f252528f707254425'
     PROJECT_SECONDARY = 'xbhcdhcbdbchdbhcbdhbchdchdhcbhdbchdbch'
     PROJECT_CONTENT_PRIMARY = '81ac23172d7a479db85126691e090b34'
@@ -633,3 +640,27 @@ def create_workspace_conversion_operation(ws_conversion_id, service=None):
         service or MagicMock(),
         Workspace.from_conversion_operation,
     )
+
+
+class ClientHelper:
+    def __init__(self, client: Client) -> None:
+        self.client = client
+        self.workspace = self.client.create_workspace(IDs.WORKSPACE_PRIMARY)
+
+    def create_and_execute_experiment(
+        self, model_path=IDs.MODELICA_CLASS_PATH, modifiers=None, user_data=None
+    ):
+        exp = self.create_experiment(model_path, modifiers, user_data)
+        return exp.execute().wait()
+
+    def create_experiment(
+        self, model_path=IDs.MODELICA_CLASS_PATH, modifiers=None, user_data=None
+    ):
+        dynamic = self.workspace.get_custom_function('dynamic')
+        model = self.workspace.get_model(model_path)
+        experiment_definition = SimpleModelicaExperimentDefinition(model, dynamic)
+        if modifiers is None:
+            modifiers = {'PI.yMax': Range(12, 13, 2)}
+        experiment_definition = experiment_definition.with_modifiers(modifiers)
+        exp = self.workspace.create_experiment(experiment_definition, user_data)
+        return exp

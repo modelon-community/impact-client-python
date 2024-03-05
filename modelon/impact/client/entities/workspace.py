@@ -712,15 +712,15 @@ class Workspace(WorkspaceInterface):
             path = workspace.export().wait().download_as('/home/workspace.zip')
 
             # Publish a workspace
-            path = workspace.export(publish=True,
-                class_path='Modelica.Blocks.Examples.PID_Controller')
+            workspace.export(publish=True,
+                class_path='Modelica.Blocks.Examples.PID_Controller').wait()
 
             # Publish a workspace without sharing with group
             from modelon.impact.client import AccessSettings
 
-            path = workspace.export(publish=True,
+            workspace.export(publish=True,
                 class_path='Modelica.Blocks.Examples.PID_Controller',
-                access=AccessSettings(group_names=[])
+                access=AccessSettings(group_names=[]).wait()
             )
 
         """

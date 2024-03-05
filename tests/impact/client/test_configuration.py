@@ -1,7 +1,8 @@
 import modelon.impact.client.configuration as configuration
 
 
-def test_get_client_url_default():
+def test_get_client_url_default(monkeypatch):
+    monkeypatch.delenv("MODELON_IMPACT_CLIENT_URL")
     assert "https://impact.modelon.cloud/" == configuration.get_client_url()
 
 

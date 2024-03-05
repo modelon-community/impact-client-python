@@ -11,39 +11,38 @@ from modelon.impact.client.operations.experiment import ExperimentOperation
 from modelon.impact.client.operations.model_executable import ModelExecutableOperation
 from tests.files.paths import TEST_WORKSPACE_PATH
 from tests.impact.client.helpers import (
+    ClientHelper,
     IDs,
     create_workspace_conversion_operation,
-    create_workspace_entity,
     get_test_workspace_definition,
 )
 
 
-def test_create_workspace(create_workspace):
-    client = Client(url=create_workspace.url, context=create_workspace.context)
-    workspace = client.create_workspace(IDs.WORKSPACE_PRIMARY)
-    assert workspace == create_workspace_entity(IDs.WORKSPACE_PRIMARY)
-    assert workspace.id == IDs.WORKSPACE_PRIMARY
+class TestClient:
+    @pytest.mark.vcr()
+    def test_create_workspace(self, client_helper: ClientHelper):
+        workspace = client_helper.client.create_workspace(IDs.WORKSPACE_SECONDARY)
+        assert workspace.id == IDs.WORKSPACE_SECONDARY
 
+    @pytest.mark.vcr()
+    def test_get_workspace(self, client_helper: ClientHelper):
+        workspace_id = client_helper.workspace.id
+        workspace = client_helper.client.get_workspace(workspace_id)
+        assert workspace.id == IDs.WORKSPACE_PRIMARY
 
-def test_get_workspace(single_workspace):
-    client = Client(url=single_workspace.url, context=single_workspace.context)
-    workspace = client.get_workspace(IDs.WORKSPACE_PRIMARY)
-    assert workspace.id == IDs.WORKSPACE_PRIMARY
+    @pytest.mark.vcr()
+    def test_get_workspace_by_name(self, client_helper: ClientHelper):
+        workspaces = client_helper.client.get_workspace_by_name(IDs.WORKSPACE_PRIMARY)
+        assert len(workspaces) == 1
+        assert workspaces[0].id == IDs.WORKSPACE_PRIMARY
 
-
-def test_get_workspace_by_name(multiple_workspace):
-    client = Client(url=multiple_workspace.url, context=multiple_workspace.context)
-    workspaces = client.get_workspace_by_name(IDs.WORKSPACE_PRIMARY)
-    assert len(workspaces) == 1
-    assert workspaces[0].id == IDs.WORKSPACE_PRIMARY
-
-
-def test_get_workspaces(multiple_workspace):
-    client = Client(url=multiple_workspace.url, context=multiple_workspace.context)
-    workspaces = client.get_workspaces()
-    assert len(workspaces) == 2
-    assert workspaces[0].id == IDs.WORKSPACE_PRIMARY
-    assert workspaces[1].id == IDs.WORKSPACE_SECONDARY
+    @pytest.mark.vcr()
+    def test_get_workspaces(self, client_helper: ClientHelper):
+        client = client_helper.client
+        client.create_workspace(IDs.WORKSPACE_SECONDARY)
+        workspace_ids = [workspace.id for workspace in client.get_workspaces()]
+        assert IDs.WORKSPACE_PRIMARY in workspace_ids
+        assert IDs.WORKSPACE_SECONDARY in workspace_ids
 
 
 def test_get_workspaces_error(workspaces_error):
