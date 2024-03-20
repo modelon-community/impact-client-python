@@ -203,7 +203,7 @@ class SimpleModelicaExperimentDefinition(BaseExperimentDefinition):
         return new
 
     def with_expansion(
-        self, expansion: Optional[Type[ExpansionAlgorithm]] = None
+        self, expansion: Optional[ExpansionAlgorithm] = None
     ) -> SimpleModelicaExperimentDefinition:
         """Sets the expansion algorithm for an experiment.
 
