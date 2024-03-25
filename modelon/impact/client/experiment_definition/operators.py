@@ -1,7 +1,13 @@
 """This module contains operators for parametrizing batch runs."""
 from abc import abstractmethod
 from dataclasses import dataclass
-from typing import Any
+from typing import Optional
+
+from modelon.impact.client.experiment_definition.modifiers import (
+    DataType,
+    Scalar,
+    data_type_from_value,
+)
 
 
 class Operator:
@@ -61,8 +67,55 @@ class Choices(Operator):
 
     """
 
-    def __init__(self, *values: Any):
+    def __init__(self, *values: Scalar, data_type: Optional[DataType] = None):
         self.values = values
+        self.data_type = self._resolve_data_type(values, data_type)
+
+    @classmethod
+    def _resolve_data_type(
+        cls, values: tuple[Scalar, ...], given_data_type: Optional[DataType]
+    ) -> DataType:
+        used_data_type = given_data_type
+        for value in values:
+            value_type = data_type_from_value(value)
+
+            if not used_data_type:
+                used_data_type = value_type
+
+            if cls._widen_from_int_to_real(given_data_type, used_data_type, value_type):
+                used_data_type = DataType.REAL
+
+            if used_data_type == DataType.REAL and value_type == DataType.INTEGER:
+                pass  # Integer can be assigned to real, do nothing
+            elif used_data_type != value_type:
+                if given_data_type:
+                    raise ValueError(
+                        f"Choices value '{value}', not compatible "
+                        f"with specified data type '{given_data_type}'"
+                    )
+                else:
+                    raise ValueError(
+                        f"Choices values are resolving to '{used_data_type}', "
+                        f"which is not compatible with the value '{value}'"
+                    )
+
+        return used_data_type or DataType.REAL
+
+    @classmethod
+    def _widen_from_int_to_real(
+        cls,
+        given_data_type: Optional[DataType],
+        used_data_type: DataType,
+        value_type: DataType,
+    ) -> bool:
+        # If no given data type and current used is integer but there
+        # is a value with type real then we say we can widen the type
+        # to use real.
+        return (
+            given_data_type is None
+            and used_data_type == DataType.INTEGER
+            and value_type == DataType.REAL
+        )
 
     def __str__(self) -> str:
         return f"choices({', '.join(map(str, self.values))})"
