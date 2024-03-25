@@ -1,3 +1,10 @@
+## [3.11.2](https://github.com/modelon-community/impact-client-python/compare/v3.11.1...v3.11.2) (2024-03-25)
+
+
+### Bug Fixes
+
+* use vcr based tests for client and workspace entities ([c082719](https://github.com/modelon-community/impact-client-python/commit/c082719161e737347bc0178d1c80de3578658c0d))
+
 ## [3.11.1](https://github.com/modelon-community/impact-client-python/compare/v3.11.0...v3.11.1) (2024-02-29)
 
 
