@@ -3,6 +3,7 @@ from __future__ import annotations
 import logging
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Union
 
+from modelon.impact.client.configuration import get_client_experiments_v3_experimental
 from modelon.impact.client.entities.interfaces.case import CaseInterface
 from modelon.impact.client.entities.interfaces.experiment import ExperimentInterface
 from modelon.impact.client.entities.interfaces.external_result import (
@@ -24,9 +25,14 @@ from modelon.impact.client.experiment_definition.extension import (
 from modelon.impact.client.experiment_definition.interfaces.definition import (
     BaseExperimentDefinition,
 )
-from modelon.impact.client.experiment_definition.operators import Operator
+from modelon.impact.client.experiment_definition.modifiers import (
+    Modifier,
+    ensure_as_modifier,
+    modifiers_to_dict,
+)
 from modelon.impact.client.experiment_definition.util import (
     case_to_identifier_dict,
+    custom_function_parameters_to_dict,
     get_options,
 )
 
@@ -148,7 +154,7 @@ class SimpleModelicaExperimentDefinition(BaseExperimentDefinition):
         )
         self._simulation_log_level = simulation_log_level
         self._initialize_from = initialize_from
-        self._variable_modifiers: Dict[str, Any] = {}
+        self._variable_modifiers: Dict[str, Modifier] = {}
         self._extensions: List[SimpleExperimentExtension] = []
         self._expansion: ExpansionAlgorithm = FullFactorial()
 
@@ -196,10 +202,8 @@ class SimpleModelicaExperimentDefinition(BaseExperimentDefinition):
         new._extensions = self._extensions
         new._expansion = self._expansion
 
-        for variable, value in modifiers.items():
-            new._variable_modifiers[variable] = (
-                str(value) if isinstance(value, Operator) else value
-            )
+        for name, value in modifiers.items():
+            new._variable_modifiers[name] = ensure_as_modifier(value)
         return new
 
     def with_expansion(
@@ -398,9 +402,14 @@ class SimpleModelicaExperimentDefinition(BaseExperimentDefinition):
 
         """
 
+        version = 3 if get_client_experiments_v3_experimental() else 2
+        custom_function_parameters = custom_function_parameters_to_dict(
+            self._custom_function.parameter_values
+        )
+        variable_modifiers = modifiers_to_dict(self._variable_modifiers)
         exp_dict: Dict[str, Any] = {
             "experiment": {
-                "version": 2,
+                "version": version,
                 "base": {
                     "model": {
                         "modelica": {
@@ -413,10 +422,10 @@ class SimpleModelicaExperimentDefinition(BaseExperimentDefinition):
                             "platform": self._platform,
                         }
                     },
-                    "modifiers": {"variables": self._variable_modifiers},
+                    "modifiers": {"variables": variable_modifiers},
                     "analysis": {
                         "type": self._custom_function.name,
-                        "parameters": self._custom_function.parameter_values,
+                        "parameters": custom_function_parameters,
                         "simulationOptions": self._simulation_options,
                         "solverOptions": self._solver_options,
                         "simulationLogLevel": self._simulation_log_level,
