@@ -6,7 +6,7 @@ SECRETS := $(CURDIR)/.secrets
 export MODELON_IMPACT_CLIENT_INTERACTIVE:=false
 export MODELON_IMPACT_CLIENT_API_KEY ?= $(shell cat $(SECRETS)/api.key)
 export JUPYTERHUB_API_TOKEN ?= $(shell cat $(SECRETS)/jupyterhub-api.key)
-export MODELON_IMPACT_CLIENT_URL ?= https://jhmi-staging.modelon.com/
+export MODELON_IMPACT_CLIENT_URL ?= https://impact.modelon.com/
 export MODELON_IMPACT_USERNAME ?= $(shell git config user.email)
 
 define _run
