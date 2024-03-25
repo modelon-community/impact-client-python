@@ -1,21 +1,25 @@
 """This module contains operators for parametrizing batch runs."""
 from abc import abstractmethod
 from dataclasses import dataclass
-from typing import Optional
+from typing import Any, Optional
 
 from modelon.impact.client.experiment_definition.modifiers import (
     DataType,
+    Modifier,
     Scalar,
     data_type_from_value,
 )
 
 
-class Operator:
+class Operator(Modifier):
     """Base class for an Operator."""
 
     @abstractmethod
     def __str__(self) -> str:
         "Returns a string representation of the operator"
+
+    def to_value(self) -> str:
+        return str(self)
 
 
 @dataclass
@@ -47,6 +51,15 @@ class Range(Operator):
 
     def __str__(self) -> str:
         return f"range({self.start_value},{self.end_value},{self.no_of_steps})"
+
+    def to_dict(self, name: str) -> dict[str, Any]:
+        return {
+            "kind": "range",
+            "name": name,
+            "start": self.start_value,
+            "end": self.end_value,
+            "steps": self.no_of_steps,
+        }
 
 
 class Choices(Operator):
@@ -120,6 +133,14 @@ class Choices(Operator):
     def __str__(self) -> str:
         return f"choices({', '.join(map(str, self.values))})"
 
+    def to_dict(self, name: str) -> dict[str, Any]:
+        return {
+            "kind": "choices",
+            "name": name,
+            "values": list(self.values),
+            "dataType": self.data_type.value,
+        }
+
 
 @dataclass
 class Uniform(Operator):
@@ -147,6 +168,14 @@ class Uniform(Operator):
 
     def __str__(self) -> str:
         return f"uniform({self.start},{self.end})"
+
+    def to_dict(self, name: str) -> dict[str, Any]:
+        return {
+            "kind": "uniform",
+            "name": name,
+            "start": self.start,
+            "end": self.end,
+        }
 
 
 @dataclass
@@ -177,6 +206,14 @@ class Beta(Operator):
     def __str__(self) -> str:
         return f"beta({self.alpha},{self.beta})"
 
+    def to_dict(self, name: str) -> dict[str, Any]:
+        return {
+            "kind": "beta",
+            "name": name,
+            "alpha": self.alpha,
+            "beta": self.beta,
+        }
+
 
 @dataclass
 class Normal(Operator):
@@ -206,8 +243,20 @@ class Normal(Operator):
 
     mean: float
     variance: float
-    start: float = float("-inf")
-    end: float = float("inf")
+    start: Optional[float] = None
+    end: Optional[float] = None
 
     def __str__(self) -> str:
-        return f"normal({self.mean},{self.variance},{self.start},{self.end})"
+        start = self.start or float("-inf")
+        end = self.end or float("inf")
+        return f"normal({self.mean},{self.variance},{start},{end})"
+
+    def to_dict(self, name: str) -> dict[str, Any]:
+        return {
+            "kind": "beta",
+            "name": name,
+            "mean": self.mean,
+            "variable": self.variance,
+            "start": self.start,
+            "end": self.end,
+        }
