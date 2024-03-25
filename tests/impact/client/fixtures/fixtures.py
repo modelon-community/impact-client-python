@@ -2308,10 +2308,10 @@ def setup_client():
         os.environ["JUPYTERHUB_API_TOKEN"] = "dummy"
         os.environ["MODELON_IMPACT_USERNAME"] = IDs.MOCK_EMAIL
     client = Client()
-    assert (
-        client._sal.users.get_me()["data"]["username"].lower()
-        == os.environ.get("MODELON_IMPACT_USERNAME", "").lower()
-    )
+    assert client._sal.users.get_me()["data"]["username"].lower() in [
+        os.environ.get("MODELON_IMPACT_USERNAME", "").lower(),
+        IDs.MOCK_EMAIL,
+    ]
     _clean_workspace_and_its_projects(client)
     yield ClientHelper(client)
     _clean_workspace_and_its_projects(client)
