@@ -1096,7 +1096,7 @@ class TestSimpleModelicaExperimentDefinition:
         config = definition.to_dict()
         assert config["experiment"]["base"]["modifiers"]["variables"] == {
             "h0": "uniform(0.1,0.5)",
-            "v": "beta(0.1,0.1)",
+            "v": "beta(0.1,0.5)",
             "t": "normal(0.1,0.5,-5,inf)",
         }
 

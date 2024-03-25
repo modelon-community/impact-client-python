@@ -122,7 +122,7 @@ class Beta(Operator):
     beta: float
 
     def __str__(self) -> str:
-        return f"beta({self.alpha},{self.alpha})"
+        return f"beta({self.alpha},{self.beta})"
 
 
 @dataclass
