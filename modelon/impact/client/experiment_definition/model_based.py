@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import logging
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Type, Union
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Union
 
 from modelon.impact.client.entities.interfaces.case import CaseInterface
 from modelon.impact.client.entities.interfaces.experiment import ExperimentInterface
@@ -150,7 +150,7 @@ class SimpleModelicaExperimentDefinition(BaseExperimentDefinition):
         self._initialize_from = initialize_from
         self._variable_modifiers: Dict[str, Any] = {}
         self._extensions: List[SimpleExperimentExtension] = []
-        self._expansion = FullFactorial()
+        self._expansion: ExpansionAlgorithm = FullFactorial()
 
     def validate(self) -> None:
         raise NotImplementedError(
@@ -227,7 +227,7 @@ class SimpleModelicaExperimentDefinition(BaseExperimentDefinition):
                 f"The expansion argument is of type '{type(expansion)}' "
                 "which is not a subtype of 'ExpansionAlgorithm'!"
             )
-        expansion = expansion or FullFactorial()
+        new_expansion = expansion or FullFactorial()
         new = SimpleModelicaExperimentDefinition(
             model=self._model,
             custom_function=self._custom_function,
@@ -243,7 +243,7 @@ class SimpleModelicaExperimentDefinition(BaseExperimentDefinition):
             initialize_from=self._initialize_from,
         )
         new._extensions = self._extensions
-        new._expansion = expansion
+        new._expansion = new_expansion
         new._variable_modifiers = self._variable_modifiers
         return new
 
