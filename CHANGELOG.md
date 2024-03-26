@@ -1,3 +1,11 @@
+## [3.11.3](https://github.com/modelon-community/impact-client-python/compare/v3.11.2...v3.11.3) (2024-03-26)
+
+
+### Bug Fixes
+
+* assert username in mock mail or git username before recording tests ([1a03b61](https://github.com/modelon-community/impact-client-python/commit/1a03b61403849dc8aa242595e1ccd06737b55551))
+* default MODELON_IMPACT_CLIENT_URL to modelon cloud for test generation ([351c338](https://github.com/modelon-community/impact-client-python/commit/351c33854dc40e83e9db99bfbed2ac4647f99413))
+
 ## [3.11.2](https://github.com/modelon-community/impact-client-python/compare/v3.11.1...v3.11.2) (2024-03-25)
 
 
