@@ -294,3 +294,18 @@ def test_get_executions_for_workspace(executions, model_compile, experiment_exec
     opeartions = list(client.get_executions(IDs.WORKSPACE_SECONDARY))
     assert len(opeartions) == 1
     assert isinstance(opeartions[0], ExperimentOperation)
+
+
+def test_get_me(user):
+    client = Client(url=user.url, context=user.context)
+    user = client.get_me()
+    assert user.tenant.id == IDs.TENANT_ID
+    assert user.tenant.group_name == IDs.GROUP_NAME
+    assert len(user.roles) == 2
+    assert user.username == IDs.USERNAME
+    assert user.roles[0] == IDs.UMA_ROLE
+    assert user.license == IDs.PRO_LICENSE_ROLE
+    assert user.username == IDs.USERNAME
+    assert user.firstname == IDs.USERNAME
+    assert user.last_name == ""
+    assert user.email == IDs.MOCK_EMAIL

@@ -173,6 +173,8 @@ class IDs:
     USERNAME = "alice"
     TENANT_ID = "modelon"
     GROUP_NAME = "impact-tenant-org1"
+    PRO_LICENSE_ROLE = "impact-pro"
+    UMA_ROLE = "impact-workspace-uma"
     PUBLISHED_WORKSPACE_ID = "ekdncjndjcndejncjsncsndcijdsnc"
     DEFAULT_PROJECT_NAME = "Project"
     PROJECT_NAME_PRIMARY = "Project1"
@@ -451,6 +453,24 @@ def get_test_published_workspace_definition(name=None):
         "status": "created",
         "tenantId": IDs.TENANT_ID,
         "workspaceName": name if name else IDs.WORKSPACE_PRIMARY,
+    }
+
+
+def get_test_get_user():
+    return {
+        "data": {
+            "id": IDs.USER_ID,
+            "username": IDs.USERNAME,
+            "firstName": IDs.USERNAME,
+            "lastName": "",
+            "email": IDs.MOCK_EMAIL,
+            "license": IDs.PRO_LICENSE_ROLE,
+            "roles": [
+                IDs.UMA_ROLE,
+                IDs.PRO_LICENSE_ROLE,
+            ],
+            "tenant": {"id": IDs.TENANT_ID, "groupName": IDs.GROUP_NAME},
+        }
     }
 
 
