@@ -1,4 +1,4 @@
-.PHONY: build build-docker shell poetry unit-test test test-watch test-with-coverage lint commitlint wheel publish format
+.PHONY: build build-docker shell poetry unit-test test test-watch test-with-coverage lint commitlint wheel publish format regenerate-cassette
 USER_ID := $(shell id -u)
 GROUP_ID := $(shell id -g)
 IN_DOCKER_IMG := $(shell ( test -f /.dockerenv && echo 1 ) || ( test -f /opt/impact/notebook_manifest.json && echo 1 ) || echo 0)
@@ -41,7 +41,7 @@ build-docker:
     fi
 
 .venv: poetry.lock pyproject.toml
-	$(call _run_bare, poetry install && touch .venv)
+	$(call _run_bare, poetry install && touch .venv || rm -rf .venv)
 
 build: build-docker .venv
 
@@ -99,11 +99,11 @@ commitlint:
 	$(eval COMMITS_IN_REPO=$$(shell (expr $(REV_LIST_HEAD) - 1)))
 	$(eval COMMITS_TO_LINT=$$(shell (echo $(COMMITS_IN_REPO) && echo 10) | sort -g | head -n1))
 	@echo "Will lint the last '$(COMMITS_TO_LINT)' commits"
-	$(call _run_bare, npx commitlint --from=HEAD~$(COMMITS) --config commitlint.config.js)
+	$(call _run_bare, npx commitlint --from=HEAD~$(COMMITS_TO_LINT) --config commitlint.config.js)
 
 
 lint: commitlint
-	$(call _run_bare, poetry run -- bash -c "black -S --check modelon && flake8 modelon --config .flake8 && mypy --disallow-untyped-defs modelon && isort --check modelon && docformatter -c modelon --config ./pyproject.toml && sphinx-build -b spelling docs/source docs/build && pylint --disable all --enable spelling modelon")
+	$(call _run_bare, poetry run -- bash -c "black --check modelon tests && flake8 modelon tests --config .flake8 && mypy --disallow-untyped-defs modelon && isort --check modelon tests && docformatter -c modelon --config ./pyproject.toml && sphinx-build -b spelling docs/source docs/build && pylint --disable all --enable spelling modelon")
 
 wheel: build
 	$(call _run_bare, poetry build -f wheel)
@@ -115,4 +115,4 @@ docs: build
 	$(call _run_bare, bash -c "poetry run -- sphinx-apidoc -f -d 5 -o docs/source modelon && poetry run -- $(MAKE) -C ./docs clean && poetry run -- $(MAKE) -C ./docs html")
 
 format:
-	$(call _run_bare, poetry run -- bash -c "black -S modelon && docformatter -i modelon --config ./pyproject.toml")
+	$(call _run_bare, poetry run -- bash -c "black modelon tests && isort modelon tests && docformatter -i modelon --config ./pyproject.toml")
