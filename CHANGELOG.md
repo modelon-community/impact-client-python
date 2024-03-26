@@ -1,3 +1,11 @@
+## [3.11.4](https://github.com/modelon-community/impact-client-python/compare/v3.11.3...v3.11.4) (2024-03-26)
+
+
+### Bug Fixes
+
+* formatting fixes ([9f2ff5e](https://github.com/modelon-community/impact-client-python/commit/9f2ff5e60134cfbeb33a54cb676fd3d1939476ab))
+* more manual formatting fixes ([46c10a6](https://github.com/modelon-community/impact-client-python/commit/46c10a6d1c52f868d3a8c47583e670fd6fcb95b6))
+
 ## [3.11.3](https://github.com/modelon-community/impact-client-python/compare/v3.11.2...v3.11.3) (2024-03-26)
 
 
