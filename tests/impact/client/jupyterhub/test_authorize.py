@@ -109,7 +109,7 @@ def test_given_wrong_token_when_authorize_then_error():
     cred_manager.get_key_from_prompt.assert_not_called()
 
 
-def test_given_wrong_token_and_interactive_when_authorize_then_prompt_for_key_and_write():
+def test_given_wrong_token_and_interactive_when_authorize_then_prmt_for_key_and_write():
     cred_manager = unittest.mock.MagicMock()
     service = unittest.mock.MagicMock()
     context = unittest.mock.MagicMock()
@@ -138,7 +138,7 @@ def test_given_wrong_token_and_interactive_when_authorize_then_prompt_for_key_an
     cred_manager.get_key_from_prompt.assert_called()
 
 
-def test_given_wrong_token_many_times_and_interactive_when_authorize_then_prompt_for_key_but_fail():
+def test_given_wrg_token_many_times_and_intr_when_authrze_then_prmt_for_key_but_fail():
     cred_manager = unittest.mock.MagicMock()
     service = unittest.mock.MagicMock()
     context = unittest.mock.MagicMock()

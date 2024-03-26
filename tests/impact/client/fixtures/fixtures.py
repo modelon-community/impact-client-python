@@ -709,7 +709,8 @@ def get_all_experiments_for_class(sem_ver_check, mock_server_base):
     return with_json_route(
         mock_server_base,
         "GET",
-        f"api/workspaces/{IDs.WORKSPACE_PRIMARY}/experiments?classPath={IDs.MODELICA_CLASS_PATH}",
+        f"api/workspaces/{IDs.WORKSPACE_PRIMARY}/experiments"
+        f"?classPath={IDs.MODELICA_CLASS_PATH}",
         json,
     )
 
@@ -1103,7 +1104,8 @@ def project_options_get(sem_ver_check, mock_server_base):
     return with_json_route(
         mock_server_base,
         "GET",
-        f"api/workspaces/{IDs.WORKSPACE_PRIMARY}/projects/{IDs.PROJECT_PRIMARY}/custom-functions/{IDs.DYNAMIC_CF}/options",
+        f"api/workspaces/{IDs.WORKSPACE_PRIMARY}/projects/{IDs.PROJECT_PRIMARY}"
+        f"/custom-functions/{IDs.DYNAMIC_CF}/options",
         json,
     )
 
@@ -1114,7 +1116,8 @@ def project_default_options_get(sem_ver_check, mock_server_base):
     return with_json_route(
         mock_server_base,
         "GET",
-        f"api/workspaces/{IDs.WORKSPACE_PRIMARY}/custom-functions/{IDs.DYNAMIC_CF}/default-options",
+        f"api/workspaces/{IDs.WORKSPACE_PRIMARY}/custom-functions/"
+        f"{IDs.DYNAMIC_CF}/default-options",
         json,
     )
 
@@ -1311,12 +1314,14 @@ def workspace():
     project_service.project_get.return_value = UNVERSIONED_PROJECT
     ws_service.import_project_from_zip.return_value = {
         "data": {
-            "location": f"api/workspaces/{IDs.WORKSPACE_PRIMARY}/project-imports/{IDs.IMPORT}"
+            "location": f"api/workspaces/{IDs.WORKSPACE_PRIMARY}/project-imports"
+            f"/{IDs.IMPORT}"
         }
     }
     ws_service.import_dependency_from_zip.return_value = {
         "data": {
-            "location": f"api/workspaces/{IDs.WORKSPACE_PRIMARY}/dependency-imports/{IDs.IMPORT}"
+            "location": f"api/workspaces/{IDs.WORKSPACE_PRIMARY}/dependency-imports/"
+            f"{IDs.IMPORT}"
         }
     }
     return WorkspaceMock(
@@ -1563,7 +1568,8 @@ def model():
             "id": IDs.IMPORT,
             "status": "ready",
             "data": {
-                "resourceUri": f"api/projects/{IDs.PROJECT_PRIMARY}/content/{IDs.PROJECT_CONTENT_PRIMARY}",
+                "resourceUri": f"api/projects/{IDs.PROJECT_PRIMARY}/content"
+                f"/{IDs.PROJECT_CONTENT_PRIMARY}",
                 "fmuClassPath": IDs.LOCAL_MODELICA_CLASS_PATH + ".test",
                 "importWarnings": [],
             },
@@ -2182,7 +2188,8 @@ def import_workspace(sem_ver_check, mock_server_base):
 def import_workspace_project(sem_ver_check, mock_server_base):
     json = {
         "data": {
-            "location": f"api/workspaces/{IDs.WORKSPACE_PRIMARY}/project-imports/{IDs.IMPORT}"
+            "location": f"api/workspaces/{IDs.WORKSPACE_PRIMARY}/project-imports"
+            f"/{IDs.IMPORT}"
         }
     }
 
@@ -2198,7 +2205,8 @@ def import_workspace_project(sem_ver_check, mock_server_base):
 def import_workspace_dependency(sem_ver_check, mock_server_base):
     json = {
         "data": {
-            "location": f"api/workspaces/{IDs.WORKSPACE_PRIMARY}/dependency-imports/{IDs.IMPORT}"
+            "location": f"api/workspaces/{IDs.WORKSPACE_PRIMARY}/"
+            f"dependency-imports/{IDs.IMPORT}"
         }
     }
 

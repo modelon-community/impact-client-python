@@ -1,5 +1,4 @@
 import modelon.impact.client.sal.service
-from modelon.impact.client import AccessSettings
 from modelon.impact.client.sal.uri import URI
 from tests.files.paths import TEST_WORKSPACE_PATH
 from tests.impact.client.helpers import (
@@ -441,7 +440,8 @@ class TestWorkspaceService:
         )
         assert data == {
             "data": {
-                "location": f"api/workspaces/{IDs.WORKSPACE_PRIMARY}/project-imports/{IDs.IMPORT}"
+                "location": f"api/workspaces/{IDs.WORKSPACE_PRIMARY}/"
+                f"project-imports/{IDs.IMPORT}"
             }
         }
 
@@ -455,7 +455,8 @@ class TestWorkspaceService:
         )
         assert data == {
             "data": {
-                "location": f"api/workspaces/{IDs.WORKSPACE_PRIMARY}/dependency-imports/{IDs.IMPORT}"
+                "location": f"api/workspaces/{IDs.WORKSPACE_PRIMARY}/"
+                f"dependency-imports/{IDs.IMPORT}"
             }
         }
 
@@ -532,8 +533,8 @@ class TestWorkspaceService:
         assert delete_published_workspace.adapter.called
         delete_call = delete_published_workspace.adapter.request_history[0]
         assert (
-            f"http://mock-impact.com/api/published-workspaces/{IDs.PUBLISHED_WORKSPACE_ID}"
-            == delete_call.url
+            f"http://mock-impact.com/api/published-workspaces/"
+            f"{IDs.PUBLISHED_WORKSPACE_ID}" == delete_call.url
         )
         assert "DELETE" == delete_call.method
 
@@ -548,8 +549,8 @@ class TestWorkspaceService:
         assert rename_published_workspace.adapter.called
         rename_call = rename_published_workspace.adapter.request_history[0]
         assert (
-            f"http://mock-impact.com/api/published-workspaces/{IDs.PUBLISHED_WORKSPACE_ID}"
-            == rename_call.url
+            f"http://mock-impact.com/api/published-workspaces/"
+            f"{IDs.PUBLISHED_WORKSPACE_ID}" == rename_call.url
         )
         assert "PATCH" == rename_call.method
 
@@ -564,7 +565,7 @@ class TestWorkspaceService:
         assert request_published_workspace_access.adapter.called
         access_call = request_published_workspace_access.adapter.request_history[0]
         assert (
-            f"http://mock-impact.com/api/published-workspaces/{IDs.PUBLISHED_WORKSPACE_ID}/access/users"
-            == access_call.url
+            f"http://mock-impact.com/api/published-workspaces/"
+            f"{IDs.PUBLISHED_WORKSPACE_ID}/access/users" == access_call.url
         )
         assert "PATCH" == access_call.method

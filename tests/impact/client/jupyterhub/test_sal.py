@@ -42,18 +42,6 @@ def test_given_jupyter_no_such_resource_error_when_get_user(
     )
 
 
-def test_given_jupyter_no_such_resource_error_when_get_user(
-    get_user_no_such_resource_error,
-):
-    uri = URI(get_user_no_such_resource_error.url)
-    context = JupyterContext(get_user_no_such_resource_error.context)
-    context.token = "secret-token"
-
-    pytest.raises(
-        exceptions.NotAJupyterHubUrl, JupyterHubService.get_user_data, uri, context
-    )
-
-
 def test_given_jupyter_unknown_error_when_get_user(get_user_unknown_error):
     uri = URI(get_user_unknown_error.url)
     context = JupyterContext(get_user_unknown_error.context)

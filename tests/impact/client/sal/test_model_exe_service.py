@@ -27,7 +27,10 @@ class TestModelExecutbleService:
         service.model_executable.compile_model(IDs.WORKSPACE_PRIMARY, fmu_id)
         compile_call = model_compile.adapter.request_history
         assert len(compile_call) == 2
-        assert f"http://mock-impact.com/api/workspaces/{IDs.WORKSPACE_PRIMARY}/model-executables/"
+        assert (
+            f"http://mock-impact.com/api/workspaces/"
+            f"{IDs.WORKSPACE_PRIMARY}/model-executables/"
+        )
         f"{IDs.FMU_PRIMARY}/compilation" == compile_call[1].url
 
     def test_get_cached_fmu_id(self, get_cached_fmu_id):
@@ -53,8 +56,8 @@ class TestModelExecutbleService:
         assert fmu_id, modifiers == (IDs.FMU_PRIMARY, {})
         assert len(cached_call) == 1
         assert (
-            f"http://mock-impact.com/api/workspaces/{IDs.WORKSPACE_PRIMARY}/model-executables?getCached=true"
-            == cached_call[0].url
+            f"http://mock-impact.com/api/workspaces/{IDs.WORKSPACE_PRIMARY}"
+            "/model-executables?getCached=true" == cached_call[0].url
         )
 
     def test_get_compile_log(self, get_compile_log):
