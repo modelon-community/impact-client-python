@@ -25,7 +25,7 @@ class Export:
     @property
     def id(self) -> str:
         """ID of the export."""
-        return self._download_uri.split('/')[-1]
+        return self._download_uri.split("/")[-1]
 
     def download_as(self, path_to_download: str) -> str:
         """Writes the binary archive to a file. Returns the path to downloaded archive.
@@ -76,7 +76,7 @@ class WorkspaceExportOperation(AsyncOperation[Entity]):
     @property
     def id(self) -> str:
         """Workspace export id."""
-        return self._location.split('/')[-1]
+        return self._location.split("/")[-1]
 
     @property
     def name(self) -> str:
@@ -94,7 +94,7 @@ class WorkspaceExportOperation(AsyncOperation[Entity]):
 
         """
         info = self._info()
-        if info['status'] == AsyncOperationStatus.ERROR.value:
+        if info["status"] == AsyncOperationStatus.ERROR.value:
             raise exceptions.IllegalWorkspaceExport(
                 f"Workspace export failed! Cause: {info['error'].get('message')}"
             )

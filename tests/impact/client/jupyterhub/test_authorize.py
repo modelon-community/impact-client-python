@@ -7,7 +7,7 @@ from modelon.impact.client.jupyterhub.authorize import authorize
 from modelon.impact.client.jupyterhub.sal import JupyterUser
 from modelon.impact.client.sal.uri import URI
 
-TEST_URI = URI('https//:impact-mock.com')
+TEST_URI = URI("https//:impact-mock.com")
 
 
 def test_given_token_when_authorize_then_ok():
@@ -17,7 +17,7 @@ def test_given_token_when_authorize_then_ok():
 
     # Given
     interactive = False
-    cred_manager.get_key.return_value = 'ok-secret'
+    cred_manager.get_key.return_value = "ok-secret"
 
     # When
     _, context = authorize(
@@ -29,7 +29,7 @@ def test_given_token_when_authorize_then_ok():
     )
 
     # Then
-    assert context.token == 'ok-secret'
+    assert context.token == "ok-secret"
     cred_manager.write_key_to_file.assert_not_called()
     cred_manager.get_key.assert_called()
 
@@ -41,7 +41,7 @@ def test_given_token_interactive_when_authorize_then_save_token():
 
     # Given
     interactive = True
-    cred_manager.get_key.return_value = 'ok-secret'
+    cred_manager.get_key.return_value = "ok-secret"
 
     # When
     _, context = authorize(
@@ -53,8 +53,8 @@ def test_given_token_interactive_when_authorize_then_save_token():
     )
 
     # Then
-    assert context.token == 'ok-secret'
-    cred_manager.write_key_to_file.assert_called_with('ok-secret')
+    assert context.token == "ok-secret"
+    cred_manager.write_key_to_file.assert_called_with("ok-secret")
     cred_manager.get_key.assert_called()
 
 
@@ -90,8 +90,8 @@ def test_given_wrong_token_when_authorize_then_error():
 
     # Given
     interactive = False
-    cred_manager.get_key.return_value = 'wrong-secret'
-    service.get_user_data.side_effect = exceptions.JupyterHubAuthrizationError('oh no')
+    cred_manager.get_key.return_value = "wrong-secret"
+    service.get_user_data.side_effect = exceptions.JupyterHubAuthrizationError("oh no")
 
     # When
     pytest.raises(
@@ -116,10 +116,10 @@ def test_given_wrong_token_and_interactive_when_authorize_then_prompt_for_key_an
 
     # Given
     interactive = True
-    cred_manager.get_key.return_value = 'wrong-secret'
-    cred_manager.get_key_from_prompt.return_value = 'ok-secret'
+    cred_manager.get_key.return_value = "wrong-secret"
+    cred_manager.get_key_from_prompt.return_value = "ok-secret"
     service.get_user_data.side_effect = [
-        exceptions.JupyterHubAuthrizationError('oh no'),
+        exceptions.JupyterHubAuthrizationError("oh no"),
         unittest.mock.MagicMock(),
     ]
 
@@ -133,8 +133,8 @@ def test_given_wrong_token_and_interactive_when_authorize_then_prompt_for_key_an
     )
 
     # Then
-    assert context.token == 'ok-secret'
-    cred_manager.write_key_to_file.assert_called_with('ok-secret')
+    assert context.token == "ok-secret"
+    cred_manager.write_key_to_file.assert_called_with("ok-secret")
     cred_manager.get_key_from_prompt.assert_called()
 
 
@@ -145,9 +145,9 @@ def test_given_wrong_token_many_times_and_interactive_when_authorize_then_prompt
 
     # Given
     interactive = True
-    cred_manager.get_key.return_value = 'wrong-secret'
-    cred_manager.get_key_from_prompt.return_value = 'wrong-secret'
-    service.get_user_data.side_effect = exceptions.JupyterHubAuthrizationError('oh no')
+    cred_manager.get_key.return_value = "wrong-secret"
+    cred_manager.get_key_from_prompt.return_value = "wrong-secret"
+    service.get_user_data.side_effect = exceptions.JupyterHubAuthrizationError("oh no")
 
     # When
     pytest.raises(
@@ -171,7 +171,7 @@ def test_given_user_has_no_server_when_authorize_then_error():
     context = unittest.mock.MagicMock()
 
     # Given
-    service.get_user_data.return_value = JupyterUser('some-user', None)
+    service.get_user_data.return_value = JupyterUser("some-user", None)
 
     # When, then
     pytest.raises(

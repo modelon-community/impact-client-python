@@ -69,7 +69,7 @@ class ModelDescription(str):
         if path is None:
             path = os.path.join(tempfile.gettempdir(), "impact-downloads")
         os.makedirs(path, exist_ok=True)
-        artifact_path = os.path.join(path, 'modelDescription.xml')
+        artifact_path = os.path.join(path, "modelDescription.xml")
         with open(artifact_path, mode="w", encoding="utf-8") as f:
             f.write(self)
         return artifact_path

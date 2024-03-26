@@ -22,7 +22,7 @@ def get_case_put_json_input(mock_method_call):
 
 def get_case_put_call_consistent_value(mock_method_call):
     json = get_case_put_json_input(mock_method_call)
-    return json['run_info']['consistent']
+    return json["run_info"]["consistent"]
 
 
 class TestCase:
@@ -35,9 +35,9 @@ class TestCase:
         assert case.run_info.finished == datetime(2022, 9, 12, 6, 42, 37, 990000)
         assert case.get_log() == "Successful Log"
         result, name = case.get_result()
-        assert (result, name) == (b'\x00\x00\x00\x00', IDs.RESULT_MAT)
+        assert (result, name) == (b"\x00\x00\x00\x00", IDs.RESULT_MAT)
         assert case.is_successful()
-        assert case.get_trajectories()['inertia.I'] == [1, 2, 3, 4]
+        assert case.get_trajectories()["inertia.I"] == [1, 2, 3, 4]
         fmu = case.get_fmu()
         assert fmu.id == IDs.FMU_PRIMARY
 
@@ -47,11 +47,11 @@ class TestCase:
         assert case.run_info.status == CaseStatus.SUCCESSFUL
         assert case.get_log() == "Successful Log"
         result, name = case.get_result()
-        assert (result, name) == (b'\x00\x00\x00\x00', IDs.RESULT_MAT)
+        assert (result, name) == (b"\x00\x00\x00\x00", IDs.RESULT_MAT)
         assert case.is_successful()
         result = case.get_trajectories()
-        assert result.keys() == ['inertia.I', 'time']
-        assert result['inertia.I'] == [14, 4, 4, 74]
+        assert result.keys() == ["inertia.I", "time"]
+        assert result["inertia.I"] == [14, 4, 4, 74]
 
     def test_failed_case(self, experiment_with_failed_case):
         failed_case = experiment_with_failed_case.get_case("case_2")
@@ -73,13 +73,13 @@ class TestCase:
         exp_sal = service.experiment
 
         case = exp.get_case(IDs.CASE_PRIMARY)
-        case.input.parametrization = {'PI.k': 120}
-        case.input.analysis.simulation_options = {'ncp': 600}
-        case.input.analysis.solver_options = {'atol': 1e-8}
+        case.input.parametrization = {"PI.k": 120}
+        case.input.analysis.simulation_options = {"ncp": 600}
+        case.input.analysis.solver_options = {"atol": 1e-8}
         case.input.analysis.simulation_log_level = "DEBUG"
         case.input.analysis.parameters = {"start_time": 1, "final_time": 2e5}
         case.meta.label = "Cruise operating condition"
-        case_2 = batch_experiment.get_case('case_2')
+        case_2 = batch_experiment.get_case("case_2")
         case.initialize_from_case = case_2
         case.sync()
         exp_sal.case_put.assert_has_calls(
@@ -89,32 +89,32 @@ class TestCase:
                     IDs.EXPERIMENT_PRIMARY,
                     IDs.CASE_PRIMARY,
                     {
-                        'id': IDs.CASE_PRIMARY,
-                        'run_info': {
-                            'status': 'successful',
-                            'consistent': True,
+                        "id": IDs.CASE_PRIMARY,
+                        "run_info": {
+                            "status": "successful",
+                            "consistent": True,
                             "datetime_started": 1662964956945,
                             "datetime_finished": 1662964957990,
                         },
-                        'input': {
-                            'fmu_id': IDs.FMU_PRIMARY,
-                            'analysis': {
-                                'analysis_function': IDs.DYNAMIC_CF,
-                                'parameters': {'start_time': 1, 'final_time': 200000.0},
-                                'simulation_options': {'ncp': 600},
-                                'solver_options': {'atol': 1e-08},
-                                'simulation_log_level': 'DEBUG',
+                        "input": {
+                            "fmu_id": IDs.FMU_PRIMARY,
+                            "analysis": {
+                                "analysis_function": IDs.DYNAMIC_CF,
+                                "parameters": {"start_time": 1, "final_time": 200000.0},
+                                "simulation_options": {"ncp": 600},
+                                "solver_options": {"atol": 1e-08},
+                                "simulation_log_level": "DEBUG",
                             },
-                            'parametrization': {'PI.k': 120},
-                            'structural_parametrization': {},
-                            'fmu_base_parametrization': {},
-                            'initialize_from_case': {
-                                'experimentId': IDs.EXPERIMENT_PRIMARY,
-                                'caseId': 'case_2',
+                            "parametrization": {"PI.k": 120},
+                            "structural_parametrization": {},
+                            "fmu_base_parametrization": {},
+                            "initialize_from_case": {
+                                "experimentId": IDs.EXPERIMENT_PRIMARY,
+                                "caseId": "case_2",
                             },
                             "initialize_from_external_result": None,
                         },
-                        "meta": {'label': 'Cruise operating condition'},
+                        "meta": {"label": "Cruise operating condition"},
                     },
                 )
             ]
@@ -152,7 +152,7 @@ class TestCase:
         service = experiment.service
 
         case = exp.get_case(IDs.CASE_PRIMARY)
-        case.input.parametrization = {'PI.k': 120}
+        case.input.parametrization = {"PI.k": 120}
         case.sync()
         case.sync()
         case_put_calls = service.experiment.case_put.call_args_list
@@ -161,7 +161,7 @@ class TestCase:
         assert not get_case_put_call_consistent_value(case_put_calls[1])
 
     def test_case_initialize_from_external_result(self, experiment):
-        result = create_external_result_entity('upload_id')
+        result = create_external_result_entity("upload_id")
         case = experiment.entity.get_case(IDs.CASE_PRIMARY)
         case.initialize_from_external_result = result
         assert case.initialize_from_external_result == result
@@ -175,28 +175,28 @@ class TestCase:
                     IDs.EXPERIMENT_PRIMARY,
                     IDs.CASE_PRIMARY,
                     {
-                        'id': IDs.CASE_PRIMARY,
-                        'run_info': {
-                            'status': 'successful',
-                            'consistent': True,
+                        "id": IDs.CASE_PRIMARY,
+                        "run_info": {
+                            "status": "successful",
+                            "consistent": True,
                             "datetime_started": 1662964956945,
                             "datetime_finished": 1662964957990,
                         },
-                        'input': {
-                            'fmu_id': IDs.FMU_PRIMARY,
-                            'analysis': {
-                                'analysis_function': IDs.DYNAMIC_CF,
-                                'parameters': {'start_time': 0, 'final_time': 1},
-                                'simulation_options': {},
-                                'solver_options': {},
-                                'simulation_log_level': 'NOTHING',
+                        "input": {
+                            "fmu_id": IDs.FMU_PRIMARY,
+                            "analysis": {
+                                "analysis_function": IDs.DYNAMIC_CF,
+                                "parameters": {"start_time": 0, "final_time": 1},
+                                "simulation_options": {},
+                                "solver_options": {},
+                                "simulation_log_level": "NOTHING",
                             },
-                            'parametrization': {},
-                            'structural_parametrization': {},
-                            'fmu_base_parametrization': {},
-                            'initialize_from_case': None,
-                            'initialize_from_external_result': {
-                                'uploadId': 'upload_id'
+                            "parametrization": {},
+                            "structural_parametrization": {},
+                            "fmu_base_parametrization": {},
+                            "initialize_from_case": None,
+                            "initialize_from_external_result": {
+                                "uploadId": "upload_id"
                             },
                         },
                         "meta": {"label": "Cruise operating point"},
@@ -206,9 +206,9 @@ class TestCase:
         )
 
     def test_reinitiazlizing_result_initialized_case_from_case(self, experiment):
-        result = create_external_result_entity('upload_id')
+        result = create_external_result_entity("upload_id")
         case_to_init = create_case_entity(
-            'Case_2', IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY
+            "Case_2", IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY
         )
         case = experiment.entity.get_case(IDs.CASE_PRIMARY)
         case.initialize_from_external_result = result
@@ -222,9 +222,9 @@ class TestCase:
         )
 
     def test_reinitiazlizing_case_initialized_case_from_result(self, experiment):
-        result = create_external_result_entity('upload_id')
+        result = create_external_result_entity("upload_id")
         case_to_init = create_case_entity(
-            'Case_2', IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY
+            "Case_2", IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY
         )
         case = experiment.entity.get_case(IDs.CASE_PRIMARY)
         case.initialize_from_case = case_to_init
@@ -242,19 +242,19 @@ class TestCase:
 
         case = exp.get_case(IDs.CASE_PRIMARY)
         case.input.analysis.parameters = {"start_time": 0, "final_time": 90}
-        case.input.analysis.simulation_options = {'ncp': 600}
-        case.input.analysis.solver_options = {'atol': 1e-8}
+        case.input.analysis.simulation_options = {"ncp": 600}
+        case.input.analysis.solver_options = {"atol": 1e-8}
         case.input.analysis.simulation_log_level = "DEBUG"
-        case.input.parametrization = {'PI.k': 120}
+        case.input.parametrization = {"PI.k": 120}
 
         assert case.input.analysis.parameters == {"start_time": 0, "final_time": 90}
-        assert case.input.analysis.simulation_options == {'ncp': 600}
-        assert case.input.analysis.solver_options == {'atol': 1e-8}
-        assert case.input.parametrization == {'PI.k': 120}
+        assert case.input.analysis.simulation_options == {"ncp": 600}
+        assert case.input.analysis.solver_options == {"atol": 1e-8}
+        assert case.input.parametrization == {"PI.k": 120}
 
     def test_get_result_invalid_format(self, experiment):
         case = experiment.entity.get_case(IDs.CASE_PRIMARY)
-        pytest.raises(ValueError, case.get_result, 'ma')
+        pytest.raises(ValueError, case.get_result, "ma")
 
     def test_get_custom_artifacts(self, experiment):
         case = experiment.entity.get_case(IDs.CASE_PRIMARY)
@@ -266,7 +266,7 @@ class TestCase:
         resp = artifacts[0].download(tempfile.gettempdir())
         assert resp == t
         artifact_stream = artifacts[0].get_data()
-        assert artifact_stream == b'\x00\x00\x00\x00'
+        assert artifact_stream == b"\x00\x00\x00\x00"
 
     def test_get_custom_artifact(self, experiment):
         case = experiment.entity.get_case(IDs.CASE_PRIMARY)
@@ -277,15 +277,15 @@ class TestCase:
         resp = artifact.download(tempfile.gettempdir())
         assert resp == t
         artifact_stream = artifact.get_data()
-        assert artifact_stream == b'\x00\x00\x00\x00'
+        assert artifact_stream == b"\x00\x00\x00\x00"
 
     def test_get_custom_artifact_with_download_as(self, experiment):
         case = experiment.entity.get_case(IDs.CASE_PRIMARY)
-        artifact = case.get_artifact(IDs.CUSTOM_ARTIFACT_ID, 'something.mat')
+        artifact = case.get_artifact(IDs.CUSTOM_ARTIFACT_ID, "something.mat")
         assert artifact.id == IDs.CUSTOM_ARTIFACT_ID
-        assert artifact.download_as == 'something.mat'
+        assert artifact.download_as == "something.mat"
         t = os.path.join(tempfile.gettempdir(), artifact.download_as)
         resp = artifact.download(tempfile.gettempdir())
         assert resp == t
         artifact_stream = artifact.get_data()
-        assert artifact_stream == b'\x00\x00\x00\x00'
+        assert artifact_stream == b"\x00\x00\x00\x00"

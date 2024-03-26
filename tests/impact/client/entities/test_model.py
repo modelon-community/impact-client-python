@@ -22,7 +22,7 @@ class TestModel:
         assert fmu == create_model_exe_operation(IDs.WORKSPACE_PRIMARY, IDs.FMU_PRIMARY)
 
     def test_force_compile_dict_options(self, model_compiled):
-        fmu = model_compiled.compile({'c_compiler': 'gcc'}, force_compilation=True)
+        fmu = model_compiled.compile({"c_compiler": "gcc"}, force_compilation=True)
         assert fmu == create_model_exe_operation(IDs.WORKSPACE_PRIMARY, IDs.FMU_PRIMARY)
 
     def test_compile_invalid_type_options(self, model_compiled):
@@ -36,31 +36,31 @@ class TestModel:
             custom_function=custom_function,
         )
         config = experiment_definition.to_dict()
-        assert config['experiment']['base']['analysis']['simulationOptions'] == {
-            'dynamic_diagnostics': False,
-            'ncp': 500,
+        assert config["experiment"]["base"]["analysis"]["simulationOptions"] == {
+            "dynamic_diagnostics": False,
+            "ncp": 500,
         }
-        assert config['experiment']['base']['analysis']['solverOptions'] == {
-            'rtol': 1e-05
+        assert config["experiment"]["base"]["analysis"]["solverOptions"] == {
+            "rtol": 1e-05
         }
-        assert config['experiment']['base']['model']['modelica']['compilerOptions'] == {
-            'c_compiler': 'gcc',
-            'generate_html_diagnostics': False,
-            'include_protected_variables': False,
+        assert config["experiment"]["base"]["model"]["modelica"]["compilerOptions"] == {
+            "c_compiler": "gcc",
+            "generate_html_diagnostics": False,
+            "include_protected_variables": False,
         }
-        assert config['experiment']['base']['model']['modelica']['runtimeOptions'] == {
-            'log_level': 2
+        assert config["experiment"]["base"]["model"]["modelica"]["runtimeOptions"] == {
+            "log_level": 2
         }
 
     def test_import_fmu(self, model):
         entity = model.entity
         project_service = model.service.project
         model = entity.import_fmu("test.fmu").wait()
-        expected_fmu_class_path = IDs.LOCAL_MODELICA_CLASS_PATH + '.test'
+        expected_fmu_class_path = IDs.LOCAL_MODELICA_CLASS_PATH + ".test"
         project_service.fmu_import.assert_called_with(
             IDs.PROJECT_PRIMARY,
             IDs.PROJECT_CONTENT_PRIMARY,
-            'test.fmu',
+            "test.fmu",
             expected_fmu_class_path,
             False,
             None,

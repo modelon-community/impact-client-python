@@ -54,7 +54,7 @@ def test_create_workspace_error(create_workspace_error):
     client = Client(
         url=create_workspace_error.url, context=create_workspace_error.context
     )
-    pytest.raises(sal_exceptions.HTTPError, client.create_workspace, ':^-')
+    pytest.raises(sal_exceptions.HTTPError, client.create_workspace, ":^-")
 
 
 def test_semantic_version_error(semantic_version_error):
@@ -70,14 +70,14 @@ def test_semantic_version_error(semantic_version_error):
 
 def assert_login_called(*, adapter, body):
     login_call = adapter.request_history[2]
-    assert 'http://mock-impact.com/api/login' == login_call.url
-    assert 'POST' == login_call.method
+    assert "http://mock-impact.com/api/login" == login_call.url
+    assert "POST" == login_call.method
     assert body == login_call.json()
 
 
 def test_client_login_api_key_from_credential_manager(user_with_license):
     cred_manager = MagicMock()
-    cred_manager.get_key.return_value = 'test_from_credential_manager_key'
+    cred_manager.get_key.return_value = "test_from_credential_manager_key"
     Client(
         url=user_with_license.url,
         context=user_with_license.context,
@@ -107,7 +107,7 @@ def test_client_login_api_key_missing(user_with_license):
 
 def test_client_login_interactive_saves_key(user_with_license):
     cred_manager = MagicMock()
-    cred_manager.get_key.return_value = 'test_client_login_interactive_saves_key'
+    cred_manager.get_key.return_value = "test_client_login_interactive_saves_key"
 
     Client(
         url=user_with_license.url,
@@ -117,14 +117,14 @@ def test_client_login_interactive_saves_key(user_with_license):
     )
 
     cred_manager.write_key_to_file.assert_called_with(
-        'test_client_login_interactive_saves_key'
+        "test_client_login_interactive_saves_key"
     )
 
 
 def test_client_login_fail_interactive_dont_save_key(login_fails, user_with_license):
     cred_manager = MagicMock()
-    cred_manager.get_key.return_value = 'test_client_login_fails'
-    cred_manager.get_key_from_prompt.return_value = 'test_client_login_still_fails'
+    cred_manager.get_key.return_value = "test_client_login_fails"
+    cred_manager.get_key_from_prompt.return_value = "test_client_login_still_fails"
 
     pytest.raises(
         sal_exceptions.HTTPError,
@@ -140,8 +140,8 @@ def test_client_login_fail_interactive_dont_save_key(login_fails, user_with_lice
 
 def test_client_login_fail_lets_user_enter_new_key(sem_ver_check, login_fails):
     cred_manager = MagicMock()
-    cred_manager.get_key.return_value = 'test_client_login_fails'
-    cred_manager.get_key_from_prompt.return_value = 'test_client_login_still_fails'
+    cred_manager.get_key.return_value = "test_client_login_fails"
+    cred_manager.get_key_from_prompt.return_value = "test_client_login_still_fails"
 
     pytest.raises(
         sal_exceptions.HTTPError,
@@ -157,7 +157,7 @@ def test_client_login_fail_lets_user_enter_new_key(sem_ver_check, login_fails):
 
 def test_empty_api_key_when_login_then_anon_login_and_dont_save_key(user_with_license):
     cred_manager = MagicMock()
-    cred_manager.get_key.return_value = ''
+    cred_manager.get_key.return_value = ""
     Client(
         url=user_with_license.url,
         context=user_with_license.context,
@@ -173,7 +173,7 @@ def test_client_connect_against_jupyterhub_can_authorize(jupyterhub_api):
     cred_manager = MagicMock()
     cred_manager.get_key.return_value = None
     jupyterhub_cred_manager = MagicMock()
-    jupyterhub_cred_manager.get_key.return_value = 'secret-token'
+    jupyterhub_cred_manager.get_key.return_value = "secret-token"
 
     Client(
         url=jupyterhub_api.url,
@@ -182,7 +182,7 @@ def test_client_connect_against_jupyterhub_can_authorize(jupyterhub_api):
         interactive=True,
         jupyterhub_credential_manager=jupyterhub_cred_manager,
     )
-    jupyterhub_cred_manager.write_key_to_file.assert_called_with('secret-token')
+    jupyterhub_cred_manager.write_key_to_file.assert_called_with("secret-token")
 
 
 def test_no_assigned_license_error(user_with_no_license):
@@ -258,7 +258,7 @@ def test_workspace_conversion(setup_workspace_conversion):
         url=setup_workspace_conversion.url, context=setup_workspace_conversion.context
     )
 
-    conversioin_op = client.convert_workspace(IDs.CONVERSION, 'backup')
+    conversioin_op = client.convert_workspace(IDs.CONVERSION, "backup")
     assert conversioin_op == create_workspace_conversion_operation(IDs.CONVERSION)
 
 

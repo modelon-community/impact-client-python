@@ -25,7 +25,7 @@ def mock_home_dir_api_key(monkeypatch, tmp_path):
     api_key_file = home / ".impact" / "api.key"
     api_key_file.write_text("api_key_from_file")
 
-    monkeypatch.setattr(os.path, 'expanduser', lambda path: str(home))
+    monkeypatch.setattr(os.path, "expanduser", lambda path: str(home))
 
 
 @pytest.fixture
@@ -35,7 +35,7 @@ def mock_home_dir_with_empty_impact_dir(monkeypatch, tmp_path):
     impact = home / ".impact"
     impact.mkdir()
 
-    monkeypatch.setattr(os.path, 'expanduser', lambda path: str(home))
+    monkeypatch.setattr(os.path, "expanduser", lambda path: str(home))
 
 
 @pytest.fixture
@@ -43,7 +43,7 @@ def mock_home_dir_no_api_key(monkeypatch, tmp_path):
     home = tmp_path / "home"
     home.mkdir()
 
-    monkeypatch.setattr(os.path, 'expanduser', lambda path: str(home))
+    monkeypatch.setattr(os.path, "expanduser", lambda path: str(home))
 
 
 def test_credential_manager_from_env_defined(mock_env_api_key):

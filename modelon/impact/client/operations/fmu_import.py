@@ -44,7 +44,7 @@ class FMUImportOperation(AsyncOperation[Entity]):
     @property
     def id(self) -> str:
         """FMU import id."""
-        return self._location.split('/')[-1]
+        return self._location.split("/")[-1]
 
     @property
     def name(self) -> str:
@@ -62,7 +62,7 @@ class FMUImportOperation(AsyncOperation[Entity]):
 
         """
         info = self._info()
-        if info['status'] == AsyncOperationStatus.ERROR.value:
+        if info["status"] == AsyncOperationStatus.ERROR.value:
             raise exceptions.IllegalFMUImport(
                 f"FMU import failed! Cause: {info['error'].get('message')}"
             )

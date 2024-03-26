@@ -29,8 +29,8 @@ _EXPECTED_FMU_EXP = {
         "base": {
             "model": {"fmu": {"id": IDs.FMU_PRIMARY}},
             "modifiers": {
-                'variables': {'h0': 'range(0.1,0.5,3)'},
-                'initializeFrom': IDs.EXPERIMENT_PRIMARY,
+                "variables": {"h0": "range(0.1,0.5,3)"},
+                "initializeFrom": IDs.EXPERIMENT_PRIMARY,
             },
             "analysis": {
                 "type": "dynamic",
@@ -52,14 +52,14 @@ _EXPECTED_MODELICA_EXP = {
                     "className": IDs.LOCAL_MODELICA_CLASS_PATH,
                     "compilerOptions": {"c_compiler": "gcc"},
                     "runtimeOptions": {},
-                    "compilerLogLevel": 'warning',
-                    "fmiTarget": 'me',
-                    "fmiVersion": '2.0',
-                    "platform": 'auto',
+                    "compilerLogLevel": "warning",
+                    "fmiTarget": "me",
+                    "fmiVersion": "2.0",
+                    "platform": "auto",
                 }
             },
             "modifiers": {
-                'variables': {'h0': 'range(0.1,0.5,3)'},
+                "variables": {"h0": "range(0.1,0.5,3)"},
                 "initializeFrom": IDs.EXPERIMENT_PRIMARY,
             },
             "analysis": {
@@ -79,23 +79,23 @@ _EXPECTED_MODELICA_EXP = {
 def get_experiment_extension_with_case_label_init_modifier():
     return {
         "analysis": {
-            "parameters": {'stop_time': 5},
-            "simulationOptions": {'ncp': 2000, 'rtol': 0.0001},
-            "solverOptions": {'a': 1},
-            'simulationLogLevel': 'Warning',
+            "parameters": {"stop_time": 5},
+            "simulationOptions": {"ncp": 2000, "rtol": 0.0001},
+            "solverOptions": {"a": 1},
+            "simulationLogLevel": "Warning",
         },
         "modifiers": {
-            'initializeFrom': IDs.EXPERIMENT_PRIMARY,
-            "variables": {'PI.k': 10, 'P': 5, 'd': 15},
+            "initializeFrom": IDs.EXPERIMENT_PRIMARY,
+            "variables": {"PI.k": 10, "P": 5, "d": 15},
         },
-        'caseData': [{'label': 'Cruise condition'}],
+        "caseData": [{"label": "Cruise condition"}],
     }
 
 
 def get_base_ext(custom_function_no_param):
     return SimpleExperimentExtension(
-        {'stop_time': 5},
-        {'a': 1},
+        {"stop_time": 5},
+        {"a": 1},
         custom_function_no_param.get_simulation_options().with_values(
             ncp=2000, rtol=0.0001
         ),
@@ -124,11 +124,11 @@ def get_expected_with_cases_first(experiment_body):
 def get_expected_with_sobol_expansion(experiment_body):
     expected = copy.deepcopy(experiment_body)
     expected["experiment"]["base"]["modifiers"] = {
-        "variables": {'h0': 'uniform(0.1,0.5)'}
+        "variables": {"h0": "uniform(0.1,0.5)"}
     }
     expected["experiment"]["base"]["expansion"] = {
         "algorithm": "SOBOL",
-        "parameters": {'samples': 5},
+        "parameters": {"samples": 5},
     }
     return expected
 
@@ -136,11 +136,11 @@ def get_expected_with_sobol_expansion(experiment_body):
 def get_expected_with_lhs_expansion(experiment_body):
     expected = copy.deepcopy(experiment_body)
     expected["experiment"]["base"]["modifiers"] = {
-        "variables": {'h0': 'normal(0.1,0.5,-inf,inf)'}
+        "variables": {"h0": "normal(0.1,0.5,-inf,inf)"}
     }
     expected["experiment"]["base"]["expansion"] = {
         "algorithm": "LATINHYPERCUBE",
-        "parameters": {'samples': 5, 'seed': 1},
+        "parameters": {"samples": 5, "seed": 1},
     }
     return expected
 
@@ -156,7 +156,7 @@ class TestSimpleFMUExperimentDefinition:
                 "version": 2,
                 "base": {
                     "model": {"fmu": {"id": IDs.FMU_PRIMARY}},
-                    "modifiers": {'variables': {}},
+                    "modifiers": {"variables": {}},
                     "analysis": {
                         "type": "dynamic",
                         "parameters": {},
@@ -177,9 +177,9 @@ class TestSimpleFMUExperimentDefinition:
         ext = SimpleExperimentExtension().with_modifiers(t=2)
         exp_def = (
             SimpleFMUExperimentDefinition(fmu, custom_function=custom_function_no_param)
-            .with_modifiers({'h0': Range(0.1, 0.5, 3)})
+            .with_modifiers({"h0": Range(0.1, 0.5, 3)})
             .with_extensions([ext])
-            .with_cases([{'p': 3}])
+            .with_cases([{"p": 3}])
             .with_initialize_from(experiment)
             .to_dict()
         )
@@ -193,8 +193,8 @@ class TestSimpleFMUExperimentDefinition:
         ext = SimpleExperimentExtension().with_modifiers(t=2)
         exp_def = (
             SimpleFMUExperimentDefinition(fmu, custom_function=custom_function_no_param)
-            .with_cases([{'p': 3}])
-            .with_modifiers({'h0': Range(0.1, 0.5, 3)})
+            .with_cases([{"p": 3}])
+            .with_modifiers({"h0": Range(0.1, 0.5, 3)})
             .with_initialize_from(experiment)
             .with_extensions([ext])
             .to_dict()
@@ -210,8 +210,8 @@ class TestSimpleFMUExperimentDefinition:
         exp_def = (
             SimpleFMUExperimentDefinition(fmu, custom_function=custom_function_no_param)
             .with_extensions([ext])
-            .with_cases([{'p': 3}])
-            .with_modifiers({'h0': Range(0.1, 0.5, 3)})
+            .with_cases([{"p": 3}])
+            .with_modifiers({"h0": Range(0.1, 0.5, 3)})
             .with_initialize_from(experiment)
             .to_dict()
         )
@@ -227,8 +227,8 @@ class TestSimpleFMUExperimentDefinition:
             SimpleFMUExperimentDefinition(fmu, custom_function=custom_function_no_param)
             .with_initialize_from(experiment)
             .with_extensions([ext])
-            .with_cases([{'p': 3}])
-            .with_modifiers({'h0': Range(0.1, 0.5, 3)})
+            .with_cases([{"p": 3}])
+            .with_modifiers({"h0": Range(0.1, 0.5, 3)})
             .to_dict()
         )
         assert exp_def == expected
@@ -242,9 +242,9 @@ class TestSimpleFMUExperimentDefinition:
         exp_def = (
             SimpleFMUExperimentDefinition(fmu, custom_function=custom_function_no_param)
             .with_initialize_from(experiment)
-            .with_modifiers({'h0': Range(0.1, 0.5, 3)})
+            .with_modifiers({"h0": Range(0.1, 0.5, 3)})
             .with_extensions([ext])
-            .with_cases([{'p': 3}])
+            .with_cases([{"p": 3}])
             .to_dict()
         )
         assert exp_def == expected
@@ -257,9 +257,9 @@ class TestSimpleFMUExperimentDefinition:
         ext = SimpleExperimentExtension().with_modifiers(t=2)
         exp_def = (
             SimpleFMUExperimentDefinition(fmu, custom_function=custom_function_no_param)
-            .with_modifiers({'h0': Range(0.1, 0.5, 3)})
+            .with_modifiers({"h0": Range(0.1, 0.5, 3)})
             .with_initialize_from(experiment)
-            .with_cases([{'p': 3}])
+            .with_cases([{"p": 3}])
             .with_extensions([ext])
             .to_dict()
         )
@@ -273,10 +273,10 @@ class TestSimpleFMUExperimentDefinition:
         ext = SimpleExperimentExtension().with_modifiers(t=2)
         exp_def = (
             SimpleFMUExperimentDefinition(fmu, custom_function=custom_function_no_param)
-            .with_cases([{'p': 3}])
+            .with_cases([{"p": 3}])
             .with_extensions([ext])
             .with_initialize_from(experiment)
-            .with_modifiers({'h0': Range(0.1, 0.5, 3)})
+            .with_modifiers({"h0": Range(0.1, 0.5, 3)})
             .to_dict()
         )
         assert exp_def == expected
@@ -289,9 +289,9 @@ class TestSimpleFMUExperimentDefinition:
         ext = SimpleExperimentExtension().with_modifiers(t=2)
         exp_def = (
             SimpleFMUExperimentDefinition(fmu, custom_function=custom_function_no_param)
-            .with_cases([{'p': 3}])
+            .with_cases([{"p": 3}])
             .with_extensions([ext])
-            .with_modifiers({'h0': Range(0.1, 0.5, 3)})
+            .with_modifiers({"h0": Range(0.1, 0.5, 3)})
             .with_initialize_from(experiment)
             .to_dict()
         )
@@ -305,9 +305,9 @@ class TestSimpleFMUExperimentDefinition:
         ext = SimpleExperimentExtension().with_modifiers(t=2)
         exp_def = (
             SimpleFMUExperimentDefinition(fmu, custom_function=custom_function_no_param)
-            .with_cases([{'p': 3}])
+            .with_cases([{"p": 3}])
             .with_initialize_from(experiment)
-            .with_modifiers({'h0': Range(0.1, 0.5, 3)})
+            .with_modifiers({"h0": Range(0.1, 0.5, 3)})
             .with_extensions([ext])
             .to_dict()
         )
@@ -322,9 +322,9 @@ class TestSimpleFMUExperimentDefinition:
         exp_def = (
             SimpleFMUExperimentDefinition(fmu, custom_function=custom_function_no_param)
             .with_initialize_from(experiment)
-            .with_cases([{'p': 3}])
+            .with_cases([{"p": 3}])
             .with_extensions([ext])
-            .with_modifiers({'h0': Range(0.1, 0.5, 3)})
+            .with_modifiers({"h0": Range(0.1, 0.5, 3)})
             .to_dict()
         )
         assert exp_def == expected
@@ -338,8 +338,8 @@ class TestSimpleFMUExperimentDefinition:
         exp_def = (
             SimpleFMUExperimentDefinition(fmu, custom_function=custom_function_no_param)
             .with_extensions([ext])
-            .with_modifiers({'h0': Range(0.1, 0.5, 3)})
-            .with_cases([{'p': 3}])
+            .with_modifiers({"h0": Range(0.1, 0.5, 3)})
+            .with_cases([{"p": 3}])
             .with_initialize_from(experiment)
             .to_dict()
         )
@@ -354,9 +354,9 @@ class TestSimpleFMUExperimentDefinition:
         exp_def = (
             SimpleFMUExperimentDefinition(fmu, custom_function=custom_function_no_param)
             .with_extensions([ext])
-            .with_modifiers({'h0': Range(0.1, 0.5, 3)})
+            .with_modifiers({"h0": Range(0.1, 0.5, 3)})
             .with_initialize_from(experiment)
-            .with_cases([{'p': 3}])
+            .with_cases([{"p": 3}])
             .to_dict()
         )
         assert exp_def == expected
@@ -370,9 +370,9 @@ class TestSimpleFMUExperimentDefinition:
         exp_def = (
             SimpleFMUExperimentDefinition(fmu, custom_function=custom_function_no_param)
             .with_extensions([ext])
-            .with_cases([{'p': 3}])
+            .with_cases([{"p": 3}])
             .with_initialize_from(experiment)
-            .with_modifiers({'h0': Range(0.1, 0.5, 3)})
+            .with_modifiers({"h0": Range(0.1, 0.5, 3)})
             .to_dict()
         )
         assert exp_def == expected
@@ -387,8 +387,8 @@ class TestSimpleFMUExperimentDefinition:
             SimpleFMUExperimentDefinition(fmu, custom_function=custom_function_no_param)
             .with_initialize_from(experiment)
             .with_extensions([ext])
-            .with_modifiers({'h0': Range(0.1, 0.5, 3)})
-            .with_cases([{'p': 3}])
+            .with_modifiers({"h0": Range(0.1, 0.5, 3)})
+            .with_cases([{"p": 3}])
             .to_dict()
         )
         assert exp_def == expected
@@ -401,10 +401,10 @@ class TestSimpleFMUExperimentDefinition:
         ext = SimpleExperimentExtension().with_modifiers(t=2)
         exp_def = (
             SimpleFMUExperimentDefinition(fmu, custom_function=custom_function_no_param)
-            .with_cases([{'p': 3}])
+            .with_cases([{"p": 3}])
             .with_initialize_from(experiment)
             .with_extensions([ext])
-            .with_modifiers({'h0': Range(0.1, 0.5, 3)})
+            .with_modifiers({"h0": Range(0.1, 0.5, 3)})
             .to_dict()
         )
         assert exp_def == expected
@@ -417,22 +417,23 @@ class TestSimpleFMUExperimentDefinition:
         ext = SimpleExperimentExtension().with_modifiers(t=2)
         exp_def = (
             SimpleFMUExperimentDefinition(fmu, custom_function=custom_function_no_param)
-            .with_modifiers({'h0': Range(0.1, 0.5, 3)})
+            .with_modifiers({"h0": Range(0.1, 0.5, 3)})
             .with_initialize_from(experiment)
-            .with_cases([{'p': 3}])
+            .with_cases([{"p": 3}])
             .with_extensions([ext])
             .to_dict()
         )
         assert exp_def == expected
 
     def test_experiment_definition_with_options(self, fmu, custom_function_no_param):
+        sim_opts = custom_function_no_param.get_simulation_options().with_values(
+            ncp=2000, rtol=0.0001
+        )
         definition = SimpleFMUExperimentDefinition(
             fmu,
             custom_function=custom_function_no_param,
-            simulation_options=custom_function_no_param.get_simulation_options().with_values(
-                ncp=2000, rtol=0.0001
-            ),
-            solver_options={'a': 1},
+            simulation_options=sim_opts,
+            solver_options={"a": 1},
         )
         config = definition.to_dict()
         assert config["experiment"]["base"]["analysis"]["simulationOptions"] == {
@@ -444,11 +445,11 @@ class TestSimpleFMUExperimentDefinition:
     def test_experiment_definition_with_modifier(self, fmu, custom_function_no_param):
         definition = SimpleFMUExperimentDefinition(
             fmu, custom_function=custom_function_no_param
-        ).with_modifiers({'h0': Range(0.1, 0.5, 3)}, v=Choices(0.1, 0.5, 3))
+        ).with_modifiers({"h0": Range(0.1, 0.5, 3)}, v=Choices(0.1, 0.5, 3))
         config = definition.to_dict()
         assert config["experiment"]["base"]["modifiers"]["variables"] == {
-            'h0': 'range(0.1,0.5,3)',
-            'v': 'choices(0.1, 0.5, 3)',
+            "h0": "range(0.1,0.5,3)",
+            "v": "choices(0.1, 0.5, 3)",
         }
 
     def test_experiment_definition_with_choices_1_input_modifier(
@@ -459,7 +460,7 @@ class TestSimpleFMUExperimentDefinition:
         ).with_modifiers(v=Choices(0.1))
         config = definition.to_dict()
         assert config["experiment"]["base"]["modifiers"]["variables"] == {
-            'v': 'choices(0.1)',
+            "v": "choices(0.1)",
         }
 
     def test_experiment_definition_with_fmu_modifiers(
@@ -469,11 +470,11 @@ class TestSimpleFMUExperimentDefinition:
             fmu_with_modifiers, custom_function=custom_function_no_param
         )
         config = definition.to_dict()
-        assert config["experiment"]["base"]["modifiers"]["variables"] == {'PI.K': 20}
+        assert config["experiment"]["base"]["modifiers"]["variables"] == {"PI.K": 20}
 
     def test_experiment_definition_with_extensions(self, fmu, custom_function_no_param):
         ext1 = SimpleExperimentExtension().with_modifiers(p=2)
-        ext2 = SimpleExperimentExtension({'final_time': 10}).with_modifiers(p=3)
+        ext2 = SimpleExperimentExtension({"final_time": 10}).with_modifiers(p=3)
         definition = SimpleFMUExperimentDefinition(
             fmu, custom_function=custom_function_no_param
         ).with_extensions([ext1, ext2])
@@ -482,7 +483,7 @@ class TestSimpleFMUExperimentDefinition:
             {"modifiers": {"variables": {"p": 2}}},
             {
                 "modifiers": {"variables": {"p": 3}},
-                "analysis": {"parameters": {'final_time': 10}},
+                "analysis": {"parameters": {"final_time": 10}},
             },
         ]
 
@@ -490,7 +491,7 @@ class TestSimpleFMUExperimentDefinition:
         definition = SimpleFMUExperimentDefinition(
             fmu,
             custom_function=custom_function_no_param,
-        ).with_cases([{'p': 2}, {'p': 3}])
+        ).with_cases([{"p": 2}, {"p": 3}])
         config = definition.to_dict()
         assert config["experiment"]["extensions"] == [
             {"modifiers": {"variables": {"p": 2}}},
@@ -557,8 +558,8 @@ class TestSimpleExperimentExtension:
 
     def test_experiment_extension_with_options(self, custom_function_no_param):
         ext = SimpleExperimentExtension(
-            {'stop_time': 5},
-            {'a': 1},
+            {"stop_time": 5},
+            {"a": 1},
             custom_function_no_param.get_simulation_options().with_values(
                 ncp=2000, rtol=0.0001
             ),
@@ -566,32 +567,32 @@ class TestSimpleExperimentExtension:
         config = ext.to_dict()
         assert config == {
             "analysis": {
-                "parameters": {'stop_time': 5},
-                "simulationOptions": {'ncp': 2000, 'rtol': 0.0001},
-                "solverOptions": {'a': 1},
+                "parameters": {"stop_time": 5},
+                "simulationOptions": {"ncp": 2000, "rtol": 0.0001},
+                "solverOptions": {"a": 1},
             },
         }
 
     def test_experiment_extension_with_modifiers(self):
-        ext = SimpleExperimentExtension().with_modifiers({'PI.k': 10}, P=5, d=15)
+        ext = SimpleExperimentExtension().with_modifiers({"PI.k": 10}, P=5, d=15)
         config = ext.to_dict()
         assert config == {
-            "modifiers": {"variables": {'PI.k': 10, 'P': 5, 'd': 15}},
+            "modifiers": {"variables": {"PI.k": 10, "P": 5, "d": 15}},
         }
 
     def test_experiment_extension_with_case_label(self):
-        ext = SimpleExperimentExtension().with_case_label('Cruise condition')
+        ext = SimpleExperimentExtension().with_case_label("Cruise condition")
         config = ext.to_dict()
-        assert config == {'caseData': [{'label': 'Cruise condition'}]}
+        assert config == {"caseData": [{"label": "Cruise condition"}]}
 
     def test_experiment_extension_order_1(self, custom_function_no_param, experiment):
         expected_output = get_experiment_extension_with_case_label_init_modifier()
         experiment = experiment.entity
         base_ext = get_base_ext(custom_function_no_param)
         ext = (
-            base_ext.with_modifiers({'PI.k': 10}, P=5, d=15)
+            base_ext.with_modifiers({"PI.k": 10}, P=5, d=15)
             .with_initialize_from(experiment)
-            .with_case_label('Cruise condition')
+            .with_case_label("Cruise condition")
             .to_dict()
         )
         assert ext == expected_output
@@ -602,8 +603,8 @@ class TestSimpleExperimentExtension:
         base_ext = get_base_ext(custom_function_no_param)
         ext = (
             base_ext.with_initialize_from(experiment)
-            .with_modifiers({'PI.k': 10}, P=5, d=15)
-            .with_case_label('Cruise condition')
+            .with_modifiers({"PI.k": 10}, P=5, d=15)
+            .with_case_label("Cruise condition")
             .to_dict()
         )
         assert ext == expected_output
@@ -614,8 +615,8 @@ class TestSimpleExperimentExtension:
         base_ext = get_base_ext(custom_function_no_param)
         ext = (
             base_ext.with_initialize_from(experiment)
-            .with_case_label('Cruise condition')
-            .with_modifiers({'PI.k': 10}, P=5, d=15)
+            .with_case_label("Cruise condition")
+            .with_modifiers({"PI.k": 10}, P=5, d=15)
             .to_dict()
         )
         assert ext == expected_output
@@ -625,9 +626,9 @@ class TestSimpleExperimentExtension:
         experiment = experiment.entity
         base_ext = get_base_ext(custom_function_no_param)
         ext = (
-            base_ext.with_case_label('Cruise condition')
+            base_ext.with_case_label("Cruise condition")
             .with_initialize_from(experiment)
-            .with_modifiers({'PI.k': 10}, P=5, d=15)
+            .with_modifiers({"PI.k": 10}, P=5, d=15)
         ).to_dict()
         assert ext == expected_output
 
@@ -636,8 +637,8 @@ class TestSimpleExperimentExtension:
         experiment = experiment.entity
         base_ext = get_base_ext(custom_function_no_param)
         ext = (
-            base_ext.with_case_label('Cruise condition')
-            .with_modifiers({'PI.k': 10}, P=5, d=15)
+            base_ext.with_case_label("Cruise condition")
+            .with_modifiers({"PI.k": 10}, P=5, d=15)
             .with_initialize_from(experiment)
         ).to_dict()
         assert ext == expected_output
@@ -647,19 +648,19 @@ class TestSimpleExperimentExtension:
         experiment = experiment.entity
         base_ext = get_base_ext(custom_function_no_param)
         ext = (
-            base_ext.with_modifiers({'PI.k': 10}, P=5, d=15)
+            base_ext.with_modifiers({"PI.k": 10}, P=5, d=15)
             .with_initialize_from(experiment)
-            .with_case_label('Cruise condition')
+            .with_case_label("Cruise condition")
         ).to_dict()
         assert ext == expected_output
 
     def test_experiment_extension_with_range_modifier(self):
         ext = SimpleExperimentExtension()
-        pytest.raises(ValueError, ext.with_modifiers, {'h0': Range(0.1, 0.5, 3)})
+        pytest.raises(ValueError, ext.with_modifiers, {"h0": Range(0.1, 0.5, 3)})
 
     def test_experiment_extension_with_choices_modifier(self):
         ext = SimpleExperimentExtension()
-        pytest.raises(ValueError, ext.with_modifiers, {'h0': Choices(0.1, 0.5, 3)})
+        pytest.raises(ValueError, ext.with_modifiers, {"h0": Choices(0.1, 0.5, 3)})
 
     def test_invalid_with_extensions_input(self, fmu, custom_function_no_param):
         definition = SimpleFMUExperimentDefinition(
@@ -703,13 +704,13 @@ class TestSimpleModelicaExperimentDefinition:
                             "className": IDs.LOCAL_MODELICA_CLASS_PATH,
                             "compilerOptions": {"c_compiler": "gcc"},
                             "runtimeOptions": {},
-                            "compilerLogLevel": 'warning',
-                            "fmiTarget": 'me',
-                            "fmiVersion": '2.0',
-                            "platform": 'auto',
+                            "compilerLogLevel": "warning",
+                            "fmiTarget": "me",
+                            "fmiVersion": "2.0",
+                            "platform": "auto",
                         }
                     },
-                    "modifiers": {'variables': {}},
+                    "modifiers": {"variables": {}},
                     "analysis": {
                         "type": "dynamic",
                         "parameters": {},
@@ -731,7 +732,7 @@ class TestSimpleModelicaExperimentDefinition:
             SimpleModelicaExperimentDefinition(
                 model.entity, custom_function=custom_function_no_param
             )
-            .with_modifiers({'h0': Uniform(0.1, 0.5)})
+            .with_modifiers({"h0": Uniform(0.1, 0.5)})
             .with_expansion(expansion=Sobol(5))
             .to_dict()
         )
@@ -746,7 +747,7 @@ class TestSimpleModelicaExperimentDefinition:
             SimpleModelicaExperimentDefinition(
                 model.entity, custom_function=custom_function_no_param
             )
-            .with_modifiers({'h0': Normal(0.1, 0.5)})
+            .with_modifiers({"h0": Normal(0.1, 0.5)})
             .with_expansion(expansion=LatinHypercube(5, 1))
             .to_dict()
         )
@@ -763,9 +764,9 @@ class TestSimpleModelicaExperimentDefinition:
             SimpleModelicaExperimentDefinition(
                 model.entity, custom_function=custom_function_no_param
             )
-            .with_modifiers({'h0': Range(0.1, 0.5, 3)})
+            .with_modifiers({"h0": Range(0.1, 0.5, 3)})
             .with_extensions([ext])
-            .with_cases([{'p': 3}])
+            .with_cases([{"p": 3}])
             .with_initialize_from(experiment)
             .to_dict()
         )
@@ -782,8 +783,8 @@ class TestSimpleModelicaExperimentDefinition:
             SimpleModelicaExperimentDefinition(
                 model.entity, custom_function=custom_function_no_param
             )
-            .with_cases([{'p': 3}])
-            .with_modifiers({'h0': Range(0.1, 0.5, 3)})
+            .with_cases([{"p": 3}])
+            .with_modifiers({"h0": Range(0.1, 0.5, 3)})
             .with_initialize_from(experiment)
             .with_extensions([ext])
             .to_dict()
@@ -801,8 +802,8 @@ class TestSimpleModelicaExperimentDefinition:
                 model.entity, custom_function=custom_function_no_param
             )
             .with_extensions([ext])
-            .with_cases([{'p': 3}])
-            .with_modifiers({'h0': Range(0.1, 0.5, 3)})
+            .with_cases([{"p": 3}])
+            .with_modifiers({"h0": Range(0.1, 0.5, 3)})
             .with_initialize_from(experiment)
             .to_dict()
         )
@@ -820,8 +821,8 @@ class TestSimpleModelicaExperimentDefinition:
             )
             .with_initialize_from(experiment)
             .with_extensions([ext])
-            .with_cases([{'p': 3}])
-            .with_modifiers({'h0': Range(0.1, 0.5, 3)})
+            .with_cases([{"p": 3}])
+            .with_modifiers({"h0": Range(0.1, 0.5, 3)})
             .to_dict()
         )
         assert exp_def == expected
@@ -837,9 +838,9 @@ class TestSimpleModelicaExperimentDefinition:
                 model.entity, custom_function=custom_function_no_param
             )
             .with_initialize_from(experiment)
-            .with_modifiers({'h0': Range(0.1, 0.5, 3)})
+            .with_modifiers({"h0": Range(0.1, 0.5, 3)})
             .with_extensions([ext])
-            .with_cases([{'p': 3}])
+            .with_cases([{"p": 3}])
             .to_dict()
         )
         assert exp_def == expected
@@ -854,9 +855,9 @@ class TestSimpleModelicaExperimentDefinition:
             SimpleModelicaExperimentDefinition(
                 model.entity, custom_function=custom_function_no_param
             )
-            .with_modifiers({'h0': Range(0.1, 0.5, 3)})
+            .with_modifiers({"h0": Range(0.1, 0.5, 3)})
             .with_initialize_from(experiment)
-            .with_cases([{'p': 3}])
+            .with_cases([{"p": 3}])
             .with_extensions([ext])
             .to_dict()
         )
@@ -872,10 +873,10 @@ class TestSimpleModelicaExperimentDefinition:
             SimpleModelicaExperimentDefinition(
                 model.entity, custom_function=custom_function_no_param
             )
-            .with_cases([{'p': 3}])
+            .with_cases([{"p": 3}])
             .with_extensions([ext])
             .with_initialize_from(experiment)
-            .with_modifiers({'h0': Range(0.1, 0.5, 3)})
+            .with_modifiers({"h0": Range(0.1, 0.5, 3)})
             .to_dict()
         )
         assert exp_def == expected
@@ -890,9 +891,9 @@ class TestSimpleModelicaExperimentDefinition:
             SimpleModelicaExperimentDefinition(
                 model.entity, custom_function=custom_function_no_param
             )
-            .with_cases([{'p': 3}])
+            .with_cases([{"p": 3}])
             .with_extensions([ext])
-            .with_modifiers({'h0': Range(0.1, 0.5, 3)})
+            .with_modifiers({"h0": Range(0.1, 0.5, 3)})
             .with_initialize_from(experiment)
             .to_dict()
         )
@@ -908,9 +909,9 @@ class TestSimpleModelicaExperimentDefinition:
             SimpleModelicaExperimentDefinition(
                 model.entity, custom_function=custom_function_no_param
             )
-            .with_cases([{'p': 3}])
+            .with_cases([{"p": 3}])
             .with_initialize_from(experiment)
-            .with_modifiers({'h0': Range(0.1, 0.5, 3)})
+            .with_modifiers({"h0": Range(0.1, 0.5, 3)})
             .with_extensions([ext])
             .to_dict()
         )
@@ -927,9 +928,9 @@ class TestSimpleModelicaExperimentDefinition:
                 model.entity, custom_function=custom_function_no_param
             )
             .with_initialize_from(experiment)
-            .with_cases([{'p': 3}])
+            .with_cases([{"p": 3}])
             .with_extensions([ext])
-            .with_modifiers({'h0': Range(0.1, 0.5, 3)})
+            .with_modifiers({"h0": Range(0.1, 0.5, 3)})
             .to_dict()
         )
         assert exp_def == expected
@@ -945,8 +946,8 @@ class TestSimpleModelicaExperimentDefinition:
                 model.entity, custom_function=custom_function_no_param
             )
             .with_extensions([ext])
-            .with_modifiers({'h0': Range(0.1, 0.5, 3)})
-            .with_cases([{'p': 3}])
+            .with_modifiers({"h0": Range(0.1, 0.5, 3)})
+            .with_cases([{"p": 3}])
             .with_initialize_from(experiment)
             .to_dict()
         )
@@ -963,9 +964,9 @@ class TestSimpleModelicaExperimentDefinition:
                 model.entity, custom_function=custom_function_no_param
             )
             .with_extensions([ext])
-            .with_modifiers({'h0': Range(0.1, 0.5, 3)})
+            .with_modifiers({"h0": Range(0.1, 0.5, 3)})
             .with_initialize_from(experiment)
-            .with_cases([{'p': 3}])
+            .with_cases([{"p": 3}])
             .to_dict()
         )
         assert exp_def == expected
@@ -981,9 +982,9 @@ class TestSimpleModelicaExperimentDefinition:
                 model.entity, custom_function=custom_function_no_param
             )
             .with_extensions([ext])
-            .with_cases([{'p': 3}])
+            .with_cases([{"p": 3}])
             .with_initialize_from(experiment)
-            .with_modifiers({'h0': Range(0.1, 0.5, 3)})
+            .with_modifiers({"h0": Range(0.1, 0.5, 3)})
             .to_dict()
         )
         assert exp_def == expected
@@ -1000,8 +1001,8 @@ class TestSimpleModelicaExperimentDefinition:
             )
             .with_initialize_from(experiment)
             .with_extensions([ext])
-            .with_modifiers({'h0': Range(0.1, 0.5, 3)})
-            .with_cases([{'p': 3}])
+            .with_modifiers({"h0": Range(0.1, 0.5, 3)})
+            .with_cases([{"p": 3}])
             .to_dict()
         )
         assert exp_def == expected
@@ -1016,10 +1017,10 @@ class TestSimpleModelicaExperimentDefinition:
             SimpleModelicaExperimentDefinition(
                 model.entity, custom_function=custom_function_no_param
             )
-            .with_cases([{'p': 3}])
+            .with_cases([{"p": 3}])
             .with_initialize_from(experiment)
             .with_extensions([ext])
-            .with_modifiers({'h0': Range(0.1, 0.5, 3)})
+            .with_modifiers({"h0": Range(0.1, 0.5, 3)})
             .to_dict()
         )
         assert exp_def == expected
@@ -1034,32 +1035,34 @@ class TestSimpleModelicaExperimentDefinition:
             SimpleModelicaExperimentDefinition(
                 model.entity, custom_function=custom_function_no_param
             )
-            .with_modifiers({'h0': Range(0.1, 0.5, 3)})
+            .with_modifiers({"h0": Range(0.1, 0.5, 3)})
             .with_initialize_from(experiment)
-            .with_cases([{'p': 3}])
+            .with_cases([{"p": 3}])
             .with_extensions([ext])
             .to_dict()
         )
         assert exp_def == expected
 
     def test_experiment_definition_with_options(self, model, custom_function_no_param):
+        compiler_opts = custom_function_no_param.get_compiler_options().with_values(
+            a=2, b=1
+        )
+        sim_opts = custom_function_no_param.get_simulation_options().with_values(
+            ncp=2000, rtol=0.0001
+        )
         definition = SimpleModelicaExperimentDefinition(
             model.entity,
             custom_function=custom_function_no_param,
-            compiler_options=custom_function_no_param.get_compiler_options().with_values(
-                a=2, b=1
-            ),
-            runtime_options={'d': 1},
-            simulation_options=custom_function_no_param.get_simulation_options().with_values(
-                ncp=2000, rtol=0.0001
-            ),
-            solver_options={'a': 1},
+            compiler_options=compiler_opts,
+            runtime_options={"d": 1},
+            simulation_options=sim_opts,
+            solver_options={"a": 1},
         )
         config = definition.to_dict()
         assert config["experiment"]["base"]["model"]["modelica"]["compilerOptions"] == {
             "a": 2,
             "b": 1,
-            'c_compiler': 'gcc',
+            "c_compiler": "gcc",
         }
         assert config["experiment"]["base"]["model"]["modelica"]["runtimeOptions"] == {
             "d": 1,
@@ -1075,11 +1078,11 @@ class TestSimpleModelicaExperimentDefinition:
     ):
         definition = SimpleModelicaExperimentDefinition(
             model.entity, custom_function=custom_function_no_param
-        ).with_modifiers({'h0': Range(0.1, 0.5, 3), 'v': Choices(0.1, 0.5, 3)})
+        ).with_modifiers({"h0": Range(0.1, 0.5, 3), "v": Choices(0.1, 0.5, 3)})
         config = definition.to_dict()
         assert config["experiment"]["base"]["modifiers"]["variables"] == {
-            'h0': 'range(0.1,0.5,3)',
-            'v': 'choices(0.1, 0.5, 3)',
+            "h0": "range(0.1,0.5,3)",
+            "v": "choices(0.1, 0.5, 3)",
         }
 
     def test_experiment_definition_with_distribution_modifier(
@@ -1088,13 +1091,13 @@ class TestSimpleModelicaExperimentDefinition:
         definition = SimpleModelicaExperimentDefinition(
             model.entity, custom_function=custom_function_no_param
         ).with_modifiers(
-            {'h0': Uniform(0.1, 0.5), 'v': Beta(0.1, 0.5), 't': Normal(0.1, 0.5, -5)}
+            {"h0": Uniform(0.1, 0.5), "v": Beta(0.1, 0.5), "t": Normal(0.1, 0.5, -5)}
         )
         config = definition.to_dict()
         assert config["experiment"]["base"]["modifiers"]["variables"] == {
-            'h0': 'uniform(0.1,0.5)',
-            'v': 'beta(0.1,0.1)',
-            't': 'normal(0.1,0.5,-5,inf)',
+            "h0": "uniform(0.1,0.5)",
+            "v": "beta(0.1,0.1)",
+            "t": "normal(0.1,0.5,-5,inf)",
         }
 
     def test_experiment_definition_initialize_from_result(
@@ -1158,7 +1161,7 @@ class TestSimpleModelicaExperimentDefinition:
 
         # Reinitializing with case entity
         case_to_init = create_case_entity(
-            'Case_2', IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY
+            "Case_2", IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY
         )
         definition = definition.with_initialize_from(case_to_init)
         modifiers = definition.to_dict()["experiment"]["base"]["modifiers"]
@@ -1169,7 +1172,7 @@ class TestSimpleModelicaExperimentDefinition:
         }
 
         # Reinitializing with external result entity
-        result_to_init = create_external_result_entity('result_id')
+        result_to_init = create_external_result_entity("result_id")
         definition = definition.with_initialize_from(result_to_init)
         modifiers = definition.to_dict()["experiment"]["base"]["modifiers"]
         assert len(modifiers) == 2
@@ -1179,7 +1182,7 @@ class TestSimpleModelicaExperimentDefinition:
         self, model, custom_function_no_param
     ):
         ext1 = SimpleExperimentExtension().with_modifiers(p=2)
-        ext2 = SimpleExperimentExtension({'final_time': 10}).with_modifiers(p=3)
+        ext2 = SimpleExperimentExtension({"final_time": 10}).with_modifiers(p=3)
         definition = SimpleModelicaExperimentDefinition(
             model.entity, custom_function=custom_function_no_param
         ).with_extensions([ext1, ext2])
@@ -1188,7 +1191,7 @@ class TestSimpleModelicaExperimentDefinition:
             {"modifiers": {"variables": {"p": 2}}},
             {
                 "modifiers": {"variables": {"p": 3}},
-                "analysis": {"parameters": {'final_time': 10}},
+                "analysis": {"parameters": {"final_time": 10}},
             },
         ]
 
@@ -1201,7 +1204,7 @@ class TestSimpleModelicaExperimentDefinition:
     ):
         experiment = experiment.entity
         ext1 = SimpleExperimentExtension().with_modifiers(p=2)
-        ext2 = SimpleExperimentExtension({'final_time': 10}).with_modifiers(p=3)
+        ext2 = SimpleExperimentExtension({"final_time": 10}).with_modifiers(p=3)
         ext2 = ext2.with_initialize_from(experiment)
         definition = SimpleModelicaExperimentDefinition(
             model.entity, custom_function=custom_function_no_param
@@ -1210,8 +1213,8 @@ class TestSimpleModelicaExperimentDefinition:
         assert config["experiment"]["extensions"] == [
             {"modifiers": {"variables": {"p": 2}}},
             {
-                "modifiers": {'initializeFrom': experiment.id, "variables": {"p": 3}},
-                "analysis": {"parameters": {'final_time': 10}},
+                "modifiers": {"initializeFrom": experiment.id, "variables": {"p": 3}},
+                "analysis": {"parameters": {"final_time": 10}},
             },
         ]
 
@@ -1221,7 +1224,7 @@ class TestSimpleModelicaExperimentDefinition:
         case_1 = experiment.entity.get_case(IDs.CASE_PRIMARY)
         ext1 = SimpleExperimentExtension().with_modifiers(p=2)
         ext2 = (
-            SimpleExperimentExtension({'final_time': 10})
+            SimpleExperimentExtension({"final_time": 10})
             .with_modifiers(p=3)
             .with_initialize_from(case_1)
         )
@@ -1239,7 +1242,7 @@ class TestSimpleModelicaExperimentDefinition:
                     },
                     "variables": {"p": 3},
                 },
-                "analysis": {"parameters": {'final_time': 10}},
+                "analysis": {"parameters": {"final_time": 10}},
             },
         ]
 
@@ -1248,25 +1251,25 @@ class TestSimpleModelicaExperimentDefinition:
     ):
         experiment = experiment.entity
         case_1 = experiment.get_case(IDs.CASE_PRIMARY)
-        ext1 = SimpleExperimentExtension({'final_time': 10}).with_modifiers(p=3)
+        ext1 = SimpleExperimentExtension({"final_time": 10}).with_modifiers(p=3)
         ext1 = ext1.with_initialize_from(case_1)
-        modifiers = ext1.to_dict()['modifiers']
+        modifiers = ext1.to_dict()["modifiers"]
         assert len(modifiers) == 2
-        assert modifiers['initializeFromCase'] == {
+        assert modifiers["initializeFromCase"] == {
             "experimentId": case_1.experiment_id,
             "caseId": case_1.id,
         }
 
         # Reinitializing with experiment entity
         ext1 = ext1.with_initialize_from(experiment)
-        modifiers = ext1.to_dict()['modifiers']
+        modifiers = ext1.to_dict()["modifiers"]
         assert len(modifiers) == 2
-        assert modifiers['initializeFrom'] == case_1.experiment_id
+        assert modifiers["initializeFrom"] == case_1.experiment_id
 
     def test_experiment_definition_with_cases(self, model, custom_function_no_param):
         definition = SimpleModelicaExperimentDefinition(
             model.entity, custom_function=custom_function_no_param
-        ).with_cases([{'p': 2}, {'p': 3}])
+        ).with_cases([{"p": 2}, {"p": 3}])
         config = definition.to_dict()
         assert config["experiment"]["extensions"] == [
             {"modifiers": {"variables": {"p": 2}}},

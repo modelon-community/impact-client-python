@@ -25,7 +25,7 @@ class TestExperimentService:
         )
         assert experiment_execute.adapter.called
         assert experiment_execute.adapter.request_history[0].json() == {
-            'includeCases': {'ids': [IDs.CASE_PRIMARY]}
+            "includeCases": {"ids": [IDs.CASE_PRIMARY]}
         }
 
     def test_set_label_for_experiment(self, set_experiment_label):
@@ -38,7 +38,7 @@ class TestExperimentService:
         )
         assert set_experiment_label.adapter.called
         assert set_experiment_label.adapter.request_history[0].json() == {
-            'label': "Label"
+            "label": "Label"
         }
 
     def test_delete_experiment(self, delete_experiment):
@@ -149,7 +149,7 @@ class TestExperimentService:
         data = service.experiment.case_get_log(
             IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY, IDs.CASE_PRIMARY
         )
-        assert data == 'Simulation log..'
+        assert data == "Simulation log.."
 
     def test_get_mat_case_result(self, get_mat_case_results):
         uri = URI(get_mat_case_results.url)
@@ -162,8 +162,8 @@ class TestExperimentService:
             IDs.CASE_PRIMARY,
             ResultFormat.MAT,
         )
-        assert data == b'\x00\x00\x00\x00'
-        assert name == 'Modelica.Blocks.Examples.PID_Controller_2020-10-22_06-03.mat'
+        assert data == b"\x00\x00\x00\x00"
+        assert name == "Modelica.Blocks.Examples.PID_Controller_2020-10-22_06-03.mat"
 
     def test_get_csv_case_result(self, get_csv_case_results):
         uri = URI(get_csv_case_results.url)
@@ -176,8 +176,8 @@ class TestExperimentService:
             IDs.CASE_PRIMARY,
             ResultFormat.CSV,
         )
-        assert data == '1;2;3'
-        assert name == 'Modelica.Blocks.Examples.PID_Controller_2020-10-22_06-03.csv'
+        assert data == "1;2;3"
+        assert name == "Modelica.Blocks.Examples.PID_Controller_2020-10-22_06-03.csv"
 
     def test_get_case_artifact(self, get_case_artifact):
         uri = URI(get_case_artifact.url)
@@ -190,8 +190,8 @@ class TestExperimentService:
             IDs.CASE_PRIMARY,
             IDs.CUSTOM_ARTIFACT_ID,
         )
-        assert data == b'\x00\x00\x00\x00'
-        assert name == 'Modelica.Blocks.Examples.PID_Controller_2020-10-22_06-03.mat'
+        assert data == b"\x00\x00\x00\x00"
+        assert name == "Modelica.Blocks.Examples.PID_Controller_2020-10-22_06-03.mat"
 
     def test_get_case_artifact_meta(self, get_case_artifact_meta):
         uri = URI(get_case_artifact_meta.url)

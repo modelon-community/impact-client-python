@@ -13,7 +13,7 @@ class TestModelExecutable:
     def test_compile_successful(self, fmu):
         assert fmu.id == IDs.FMU_PRIMARY
         assert fmu.is_successful()
-        assert fmu.get_settable_parameters() == ['h0', 'v']
+        assert fmu.get_settable_parameters() == ["h0", "v"]
         assert fmu.get_log() == "Successful Log"
         assert fmu.metadata == {
             "steady_state": {
@@ -28,9 +28,9 @@ class TestModelExecutable:
         model_description = fmu.get_model_description()
         assert model_description == MODEL_DESCRIPTION_XML
         tree = ElementTree.fromstring(model_description)
-        model_variables = tree.find('ModelVariables')
-        variable_names = [child.attrib.get('name') for child in model_variables]
-        assert variable_names == ['_block_jacobian_check', '_block_jacobian_check_tol']
+        model_variables = tree.find("ModelVariables")
+        variable_names = [child.attrib.get("name") for child in model_variables]
+        assert variable_names == ["_block_jacobian_check", "_block_jacobian_check_tol"]
 
     def test_compilation_running(self, fmu_compile_running):
         assert fmu_compile_running.run_info.status == ModelExecutableStatus.NOTSTARTED
@@ -67,14 +67,14 @@ class TestModelExecutable:
             ),
         )
         config = experiment_definition.to_dict()
-        assert config['experiment']['base']['model']['fmu']['id'] == fmu.id
-        assert config['experiment']['base']['analysis']['simulationOptions'] == {
-            'ncp': 2000,
-            'rtol': 0.1,
+        assert config["experiment"]["base"]["model"]["fmu"]["id"] == fmu.id
+        assert config["experiment"]["base"]["analysis"]["simulationOptions"] == {
+            "ncp": 2000,
+            "rtol": 0.1,
         }
 
     def test_download_fmu(self, fmu):
-        t = os.path.join(tempfile.gettempdir(), fmu.id + '.fmu')
+        t = os.path.join(tempfile.gettempdir(), fmu.id + ".fmu")
         resp = fmu.download(tempfile.gettempdir())
         assert resp == t
 
@@ -85,7 +85,7 @@ class TestModelExecutable:
         )
 
     def test_download_fmu_no_path(self, fmu):
-        t = os.path.join(tempfile.gettempdir(), 'impact-downloads', fmu.id + '.fmu')
+        t = os.path.join(tempfile.gettempdir(), "impact-downloads", fmu.id + ".fmu")
         resp = fmu.download()
         assert resp == t
 

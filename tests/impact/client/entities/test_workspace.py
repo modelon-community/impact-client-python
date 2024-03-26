@@ -4,6 +4,7 @@ import unittest.mock as mock
 
 import pytest
 
+import modelon.impact.client.sal.exceptions as sal_exceptions
 from modelon.impact.client import AccessSettings, SimpleModelicaExperimentDefinition
 from modelon.impact.client.entities.experiment import Experiment
 from modelon.impact.client.entities.model import Model
@@ -16,7 +17,7 @@ from tests.impact.client.helpers import (
     create_published_workspace_entity,
     create_workspace_entity,
 )
-import modelon.impact.client.sal.exceptions as sal_exceptions
+
 
 class TestPublishedWorkspace:
     def test_delete_published_workspace(self):
@@ -172,7 +173,7 @@ class TestWorkspace:
         )
         upload_op = workspace.upload_result("test.mat", "Workspace")
         external_result_service.result_upload.assert_called_with(
-            IDs.WORKSPACE_PRIMARY, 'test.mat', description=None, label='Workspace'
+            IDs.WORKSPACE_PRIMARY, "test.mat", description=None, label="Workspace"
         )
         assert upload_op.id == IDs.IMPORT
 
@@ -181,7 +182,7 @@ class TestWorkspace:
         workspace = client_helper.workspace
         temp_dir = tempfile.gettempdir()
         resp = workspace.download(temp_dir)
-        download_path = os.path.join(temp_dir, workspace.id + '.zip')
+        download_path = os.path.join(temp_dir, workspace.id + ".zip")
         assert resp == download_path
 
     @pytest.mark.vcr()
@@ -190,7 +191,7 @@ class TestWorkspace:
         ops = workspace.export()
         assert isinstance(ops, WorkspaceExportOperation)
         temp_dir = tempfile.gettempdir()
-        download_path = os.path.join(temp_dir, workspace.id + '.zip')
+        download_path = os.path.join(temp_dir, workspace.id + ".zip")
         path = ops.wait().download_as(download_path)
         assert path == download_path
 
@@ -199,7 +200,7 @@ class TestWorkspace:
         service = workspace.service
         workspace_service = service.workspace
         workspace_entity.export(publish=True, access=AccessSettings(group_names=[]))
-        access_settings = {'groupNames': []}
+        access_settings = {"groupNames": []}
         workspace_service.workspace_export_setup.assert_has_calls(
             [mock.call(IDs.WORKSPACE_PRIMARY, True, None, access_settings)]
         )
@@ -268,7 +269,7 @@ class TestWorkspace:
     @pytest.mark.vcr()
     def test_experiment_def_as_dict(self, client_helper: ClientHelper):
         workspace = client_helper.workspace
-        dynamic = workspace.get_custom_function('dynamic')
+        dynamic = workspace.get_custom_function("dynamic")
         model = workspace.get_model(IDs.MODELICA_CLASS_PATH)
         experiment_definition = SimpleModelicaExperimentDefinition(
             model, dynamic

@@ -38,7 +38,7 @@ class CredentialManager:
 
     def get_key_from_prompt(self) -> str:
         key = getpass(self._interactive_help_text)
-        if key == '\x16':
+        if key == "\x16":
             # This is a getpass Windows bug...
             logger.error("Does not support Ctrl+V on Windows")
             return self.get_key_from_prompt()

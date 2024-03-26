@@ -15,7 +15,7 @@ class TestExternalResultImportOperation:
     ):
         # Given
         upload_op = ExternalResultImportOperation[ExternalResult](
-            f'api/uploads/results/{IDs.IMPORT}',
+            f"api/uploads/results/{IDs.IMPORT}",
             external_result_sal_upload_running,
             ExternalResult.from_operation,
         )
@@ -28,7 +28,7 @@ class TestExternalResultImportOperation:
     ):
         # Given
         upload_op = ExternalResultImportOperation[ExternalResult](
-            f'api/uploads/results/{IDs.IMPORT}',
+            f"api/uploads/results/{IDs.IMPORT}",
             external_result_sal_upload_error,
             ExternalResult.from_operation,
         )
@@ -39,7 +39,7 @@ class TestExternalResultImportOperation:
     def test_given_ready_when_wait_then_ok(self, external_result_sal_upload_ready):
         # Given
         upload_op = ExternalResultImportOperation[ExternalResult](
-            f'api/uploads/results/{IDs.IMPORT}',
+            f"api/uploads/results/{IDs.IMPORT}",
             external_result_sal_upload_ready,
             ExternalResult.from_operation,
         )
@@ -65,7 +65,7 @@ class TestExternalResultImportOperation:
     ):
         # Given
         upload_op = ExternalResultImportOperation[ExternalResult](
-            f'api/uploads/results/{IDs.IMPORT}',
+            f"api/uploads/results/{IDs.IMPORT}",
             external_result_sal_upload_ready,
             ExternalResult.from_operation,
         )

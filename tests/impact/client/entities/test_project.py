@@ -23,49 +23,49 @@ class TestProject:
                 "include_protected_variables": False,
             },
             "runtime": {"log_level": 2},
-            "simulation": {'dynamic_diagnostics': False, 'ncp': 500},
+            "simulation": {"dynamic_diagnostics": False, "ncp": 500},
             "solver": {"rtol": 1e-5},
-            'customFunction': IDs.DYNAMIC_CF,
+            "customFunction": IDs.DYNAMIC_CF,
         }
 
     def test_get_project_default_options(self, project, custom_function):
         options = project.entity.get_options(custom_function, use_defaults=True)
         assert options.to_dict() == {
-            'compiler': {'c_compiler': 'gcc'},
-            'customFunction': IDs.DYNAMIC_CF,
+            "compiler": {"c_compiler": "gcc"},
+            "customFunction": IDs.DYNAMIC_CF,
         }
 
     def test_get_project_contents(self, project):
         contents = project.entity.get_contents()
         assert len(contents) == 1
         assert contents[0].id == IDs.PROJECT_CONTENT_PRIMARY
-        assert contents[0].relpath == Path('MyPackage')
+        assert contents[0].relpath == Path("MyPackage")
         assert contents[0].content_type == ContentType.MODELICA
-        assert contents[0].name == 'MyPackage'
+        assert contents[0].name == "MyPackage"
         assert not contents[0].default_disabled
 
     def test_get_project_content_by_id(self, project):
         content = project.entity.get_content(IDs.PROJECT_CONTENT_SECONDARY)
         assert content.id == IDs.PROJECT_CONTENT_SECONDARY
-        assert content.relpath == Path('test.mo')
+        assert content.relpath == Path("test.mo")
         assert content.content_type == ContentType.MODELICA
-        assert content.name == 'test'
+        assert content.name == "test"
         assert not content.default_disabled
 
     def test_get_project_content_by_name(self, project):
-        content = project.entity.get_content_by_name('MyPackage', ContentType.MODELICA)
+        content = project.entity.get_content_by_name("MyPackage", ContentType.MODELICA)
         assert content.id == IDs.PROJECT_CONTENT_PRIMARY
-        assert content.relpath == Path('MyPackage')
+        assert content.relpath == Path("MyPackage")
         assert content.content_type == ContentType.MODELICA
-        assert content.name == 'MyPackage'
+        assert content.name == "MyPackage"
         assert not content.default_disabled
 
     def test_get_modelica_library_by_name(self, project):
-        content = project.entity.get_modelica_library_by_name('MyPackage')
+        content = project.entity.get_modelica_library_by_name("MyPackage")
         assert content.id == IDs.PROJECT_CONTENT_PRIMARY
-        assert content.relpath == Path('MyPackage')
+        assert content.relpath == Path("MyPackage")
         assert content.content_type == ContentType.MODELICA
-        assert content.name == 'MyPackage'
+        assert content.name == "MyPackage"
         assert not content.default_disabled
 
     def test_delete_project_contents(self, project):
@@ -97,9 +97,9 @@ class TestProject:
         content = content_operation.data()
 
         assert content.id == IDs.PROJECT_CONTENT_SECONDARY
-        assert content.relpath == Path('test.mo')
+        assert content.relpath == Path("test.mo")
         assert content.content_type == ContentType.MODELICA
-        assert content.name == 'test'
+        assert content.name == "test"
         assert not content.default_disabled
 
     def test_import_modelica_library(self, project):
@@ -110,7 +110,7 @@ class TestProject:
 
         content = content_operation.data()
         assert content.id == IDs.PROJECT_CONTENT_SECONDARY
-        assert content.relpath == Path('test.mo')
+        assert content.relpath == Path("test.mo")
         assert content.content_type == ContentType.MODELICA
-        assert content.name == 'test'
+        assert content.name == "test"
         assert not content.default_disabled

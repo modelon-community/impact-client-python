@@ -47,11 +47,11 @@ class TestExperiment:
         assert result.id == IDs.EXPERIMENT_PRIMARY
         assert result.run_info.successful == 1
         assert result.run_info.not_started == 3
-        assert experiment.get_case('case_3').is_successful()
+        assert experiment.get_case("case_3").is_successful()
 
     def test_get_cases_label(self, batch_experiment_with_case_filter):
         experiment = batch_experiment_with_case_filter.entity
-        cases = experiment.get_cases_with_label('Cruise operating point')
+        cases = experiment.get_cases_with_label("Cruise operating point")
         assert cases == [
             create_case_entity("case_2", IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY),
             create_case_entity("case_4", IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY),
@@ -71,10 +71,10 @@ class TestExperiment:
 
     def test_experiment_get_last_time_point(self, experiment_last_time_point):
         experiment = experiment_last_time_point.entity
-        exp = experiment.get_last_point(['inertia.I', 'time'])
+        exp = experiment.get_last_point(["inertia.I", "time"])
         assert isinstance(exp, ExperimentResultPoint)
-        assert exp.cases == ['case_1', 'case_2', 'case_3']
-        assert exp.variables == ['inertia.I', 'time']
+        assert exp.cases == ["case_1", "case_2", "case_3"]
+        assert exp.variables == ["inertia.I", "time"]
         assert exp.as_lists() == [[1.0, 1.0], [1.0, 2.0], [1.0, None]]
 
     def test_experiment_get_last_time_point_all_variables(
@@ -83,8 +83,8 @@ class TestExperiment:
         experiment = experiment_last_time_point.entity
         exp = experiment.get_last_point()
         assert isinstance(exp, ExperimentResultPoint)
-        assert exp.cases == ['case_1', 'case_2', 'case_3']
-        assert exp.variables == ['inertia.I', 'time']
+        assert exp.cases == ["case_1", "case_2", "case_3"]
+        assert exp.variables == ["inertia.I", "time"]
         assert exp.as_lists() == [[1.0, 1.0], [1.0, 2.0], [1.0, None]]
 
     def test_execute_successful(self, experiment):
@@ -107,32 +107,32 @@ class TestExperiment:
             IDs.CASE_PRIMARY, IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY
         )
 
-        exp = experiment.get_trajectories(['inertia.I', 'time'])
-        assert exp[IDs.CASE_PRIMARY]['inertia.I'] == [1, 2, 3, 4]
-        assert exp[IDs.CASE_PRIMARY]['time'] == [5, 2, 9, 4]
+        exp = experiment.get_trajectories(["inertia.I", "time"])
+        assert exp[IDs.CASE_PRIMARY]["inertia.I"] == [1, 2, 3, 4]
+        assert exp[IDs.CASE_PRIMARY]["time"] == [5, 2, 9, 4]
 
     def test_successful_fmu_based_experiment(self, fmu_based_experiment):
         experiment = fmu_based_experiment.entity
         assert experiment.get_class_name() == IDs.MODELICA_CLASS_PATH
         assert experiment.custom_function == IDs.DYNAMIC_CF
-        assert dict(experiment.get_compiler_options()) == {'c_compiler': 'gcc'}
-        assert dict(experiment.get_runtime_options()) == {'a': 1}
-        assert dict(experiment.get_solver_options()) == {'solver': 'Cvode'}
+        assert dict(experiment.get_compiler_options()) == {"c_compiler": "gcc"}
+        assert dict(experiment.get_runtime_options()) == {"a": 1}
+        assert dict(experiment.get_solver_options()) == {"solver": "Cvode"}
         assert dict(experiment.get_simulation_options()) == {
-            'dynamic_diagnostics': False,
-            'ncp': 500,
+            "dynamic_diagnostics": False,
+            "ncp": 500,
         }
 
     def test_successful_model_based_experiment(self, experiment):
         experiment = experiment.entity
         assert experiment.get_class_name() == IDs.MODELICA_CLASS_PATH
         assert experiment.custom_function == IDs.DYNAMIC_CF
-        assert dict(experiment.get_compiler_options()) == {'c_compiler': 'gcc'}
-        assert dict(experiment.get_runtime_options()) == {'a': 1}
-        assert dict(experiment.get_solver_options()) == {'solver': 'Cvode'}
+        assert dict(experiment.get_compiler_options()) == {"c_compiler": "gcc"}
+        assert dict(experiment.get_runtime_options()) == {"a": 1}
+        assert dict(experiment.get_solver_options()) == {"solver": "Cvode"}
         assert dict(experiment.get_simulation_options()) == {
-            'dynamic_diagnostics': False,
-            'ncp': 500,
+            "dynamic_diagnostics": False,
+            "ncp": 500,
         }
 
     def test_successful_batch_execute(self, batch_experiment):
@@ -149,9 +149,9 @@ class TestExperiment:
             ),
             create_case_entity("case_2", IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY),
         ]
-        exp = batch_experiment.get_trajectories(['inertia.I'])
-        assert exp[IDs.CASE_PRIMARY]['inertia.I'] == [1, 2, 3, 4]
-        assert exp['case_2']['inertia.I'] == [14, 4, 4, 74]
+        exp = batch_experiment.get_trajectories(["inertia.I"])
+        assert exp[IDs.CASE_PRIMARY]["inertia.I"] == [1, 2, 3, 4]
+        assert exp["case_2"]["inertia.I"] == [14, 4, 4, 74]
 
     def test_some_successful_batch_execute(self, batch_experiment_some_successful):
         assert not batch_experiment_some_successful.is_successful()
@@ -178,15 +178,15 @@ class TestExperiment:
         pytest.raises(
             exceptions.OperationNotCompleteError,
             running_experiment.get_trajectories,
-            ['inertia.I'],
+            ["inertia.I"],
         )
 
     def test_failed_execution(self, failed_experiment):
         assert failed_experiment.run_info.status == ExperimentStatus.FAILED
         assert not failed_experiment.is_successful()
         assert failed_experiment.run_info.errors == [
-            'out of licenses',
-            'too large experiment',
+            "out of licenses",
+            "too large experiment",
         ]
 
     def test_execution_with_failed_cases(self, experiment_with_failed_case):
@@ -202,8 +202,8 @@ class TestExperiment:
             IDs.CASE_PRIMARY, IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY
         )
         assert not experiment_with_failed_case.is_successful()
-        assert experiment_with_failed_case.get_trajectories(['inertia.I']) == {
-            IDs.CASE_PRIMARY: {'inertia.I': [1, 2, 3, 4]}
+        assert experiment_with_failed_case.get_trajectories(["inertia.I"]) == {
+            IDs.CASE_PRIMARY: {"inertia.I": [1, 2, 3, 4]}
         }
 
     def test_cancelled_execution(self, cancelled_experiment):
@@ -224,14 +224,14 @@ class TestExperiment:
         pytest.raises(
             exceptions.OperationFailureError,
             cancelled_experiment.get_trajectories,
-            ['inertia.I'],
+            ["inertia.I"],
         )
 
     def test_exp_trajectories_non_list_entry(self, experiment):
-        pytest.raises(TypeError, experiment.entity.get_trajectories, 'hh')
+        pytest.raises(TypeError, experiment.entity.get_trajectories, "hh")
 
     def test_exp_trajectories_invalid_keys(self, experiment):
-        pytest.raises(ValueError, experiment.entity.get_trajectories, ['s'])
+        pytest.raises(ValueError, experiment.entity.get_trajectories, ["s"])
 
     def test_execute_with_user_data(self, workspace):
         workspace_entity = workspace.entity

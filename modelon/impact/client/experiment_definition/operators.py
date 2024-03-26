@@ -153,8 +153,8 @@ class Normal(Operator):
 
     mean: float
     variance: float
-    start: float = float('-inf')
-    end: float = float('inf')
+    start: float = float("-inf")
+    end: float = float("inf")
 
     def __str__(self) -> str:
         return f"normal({self.mean},{self.variance},{self.start},{self.end})"

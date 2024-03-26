@@ -13,7 +13,7 @@ class TestService:
             uri=uri, context=sem_ver_check.context
         )
         data = service.api_get_metadata()
-        assert data == {'version': '4.0.0'}
+        assert data == {"version": "4.0.0"}
 
     def test_is_jh_url_correct_jh_headers(self, jupyterhub_api):
         uri = URI(jupyterhub_api.url)
@@ -36,9 +36,9 @@ class TestService:
         )
         assert not service.is_jupyterhub_url()
         assert (
-            'Unknown exception trying to determine '
-            'if URL is to JupyterHub or Modelon Impact,'
-            ' will assume the URL goes directly to the Modelon Impact API\n'
+            "Unknown exception trying to determine "
+            "if URL is to JupyterHub or Modelon Impact,"
+            " will assume the URL goes directly to the Modelon Impact API\n"
             in caplog.text
         )
 
@@ -48,7 +48,7 @@ class TestService:
             uri=uri, context=is_jh_url_communication_error.context
         )
         assert not service.is_jupyterhub_url()
-        assert caplog.text == ''
+        assert caplog.text == ""
 
     def test_given_no_error_when_access_then_no_login_and_ok(self, create_workspace):
         # Given
@@ -64,8 +64,8 @@ class TestService:
         # Then
         assert len(create_workspace.adapter.request_history) == 1
         assert data == {
-            'definition': get_test_workspace_definition(),
-            'id': IDs.WORKSPACE_PRIMARY,
+            "definition": get_test_workspace_definition(),
+            "id": IDs.WORKSPACE_PRIMARY,
         }
 
     def test_given_authenticat_fail_once_when_access_then_login_and_ok(
@@ -83,7 +83,7 @@ class TestService:
 
         # Then
         assert len(create_workspace_fail_auth_once.adapter.request_history) == 3
-        assert data == {'id': IDs.WORKSPACE_PRIMARY}
+        assert data == {"id": IDs.WORKSPACE_PRIMARY}
 
     def test_given_authenticat_fail_many_when_access_then_fail(
         self, create_workspace_fail_auth_many

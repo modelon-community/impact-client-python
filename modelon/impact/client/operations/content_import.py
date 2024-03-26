@@ -36,7 +36,7 @@ class ContentImportOperation(AsyncOperation[Entity]):
     @property
     def id(self) -> str:
         """Content import id."""
-        return self._location.split('/')[-1]
+        return self._location.split("/")[-1]
 
     @property
     def name(self) -> str:
@@ -54,11 +54,11 @@ class ContentImportOperation(AsyncOperation[Entity]):
 
         """
         info = self._info()
-        if info['status'] == AsyncOperationStatus.ERROR.value:
+        if info["status"] == AsyncOperationStatus.ERROR.value:
             raise exceptions.IllegalContentImport(
                 f"Content import failed! Cause: {info['error'].get('message')}"
             )
-        project_id = self._location.split('/')[-3]
+        project_id = self._location.split("/")[-3]
         content_id = info["data"]["contentId"]
         resp = self._sal.project.project_content_get(project_id, content_id)
         return self._create_entity(self, content=resp, project_id=project_id)

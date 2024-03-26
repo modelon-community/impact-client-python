@@ -71,8 +71,8 @@ class ExperimentResultPoint:
 class _Workflow(enum.Enum):
     """Workflow type."""
 
-    FMU_BASED = 'FMU_BASED'
-    CLASS_BASED = 'CLASS_BASED'
+    FMU_BASED = "FMU_BASED"
+    CLASS_BASED = "CLASS_BASED"
 
 
 def _assert_experiment_is_complete(
@@ -538,7 +538,7 @@ class Experiment(ExperimentInterface):
         model = self._get_info()["experiment"]["base"]["model"]
         if self._get_workflow() == _Workflow.CLASS_BASED:
             return model["modelica"]["className"]
-        return self._get_fmu_info(model["fmu"]["id"])['input']["class_name"]
+        return self._get_fmu_info(model["fmu"]["id"])["input"]["class_name"]
 
     def get_compiler_options(self) -> CompilerOptions:
         """Return a CompilerOptions object."""
@@ -547,7 +547,7 @@ class Experiment(ExperimentInterface):
             return CompilerOptions(
                 model["modelica"].get("compilerOptions", {}), self.custom_function
             )
-        fmu_info = self._get_fmu_info(model["fmu"]["id"])['input']
+        fmu_info = self._get_fmu_info(model["fmu"]["id"])["input"]
         return CompilerOptions(
             fmu_info.get("compiler_options", {}), self.custom_function
         )
@@ -559,7 +559,7 @@ class Experiment(ExperimentInterface):
             return RuntimeOptions(
                 model["modelica"].get("runtimeOptions", {}), self.custom_function
             )
-        fmu_info = self._get_fmu_info(model["fmu"]["id"])['input']
+        fmu_info = self._get_fmu_info(model["fmu"]["id"])["input"]
         return RuntimeOptions(fmu_info.get("runtime_options", {}), self.custom_function)
 
     def get_simulation_options(self) -> SimulationOptions:
