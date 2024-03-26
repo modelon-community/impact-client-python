@@ -298,7 +298,7 @@ MODEL_DESCRIPTION_XML = """<?xml version="1.0" encoding="UTF-8"?>
 		</ScalarVariable>
 	</ModelVariables>
 </fmiModelDescription>
-"""
+"""  # noqa
 
 LAST_POINT_TRAJECTORY = {
     "data": {

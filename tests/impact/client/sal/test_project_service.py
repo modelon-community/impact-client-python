@@ -41,7 +41,7 @@ class TestProjectService:
         assert filtered_projects.adapter.called
         fetch_call = filtered_projects.adapter.request_history[0]
         assert (
-            f"http://mock-impact.com/api/projects?vcsInfo=False&type=LOCAL"
+            "http://mock-impact.com/api/projects?vcsInfo=False&type=LOCAL"
             == fetch_call.url
         )
         assert "GET" == fetch_call.method
@@ -66,8 +66,8 @@ class TestProjectService:
         assert delete_project_content.adapter.called
         delete_call = delete_project_content.adapter.request_history[0]
         assert (
-            f"http://mock-impact.com/api/projects/{IDs.PROJECT_PRIMARY}/content/{IDs.PROJECT_CONTENT_PRIMARY}"
-            == delete_call.url
+            f"http://mock-impact.com/api/projects/{IDs.PROJECT_PRIMARY}"
+            f"/content/{IDs.PROJECT_CONTENT_PRIMARY}" == delete_call.url
         )
         assert "DELETE" == delete_call.method
 
@@ -117,7 +117,8 @@ class TestProjectService:
         assert data == {
             "fmuClassPath": "Workspace.PID_Controller.Model",
             "importWarnings": [
-                "Specified argument for 'top_level_inputs=['a']' does not match any variable"
+                "Specified argument for 'top_level_inputs=['a']' does not match any "
+                "variable"
             ],
             "library": {
                 "project_id": IDs.PROJECT_PRIMARY,
