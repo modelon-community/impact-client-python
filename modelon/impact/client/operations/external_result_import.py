@@ -37,7 +37,7 @@ class ExternalResultImportOperation(AsyncOperation[Entity]):
     @property
     def id(self) -> str:
         """Result import id."""
-        return self._location.split('/')[-1]
+        return self._location.split("/")[-1]
 
     @property
     def name(self) -> str:
@@ -55,12 +55,12 @@ class ExternalResultImportOperation(AsyncOperation[Entity]):
 
         """
         info = self._info()
-        if info['status'] == AsyncOperationStatus.ERROR.value:
+        if info["status"] == AsyncOperationStatus.ERROR.value:
             raise exceptions.ExternalResultUploadError(
                 f"External result upload failed! Cause: {info['error'].get('message')}"
             )
         resp = self._sal.external_result.get_uploaded_result(self.id)
-        return self._create_entity(self, result_id=resp['data']['id'])
+        return self._create_entity(self, result_id=resp["data"]["id"])
 
     @property
     def status(self) -> AsyncOperationStatus:

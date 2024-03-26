@@ -17,25 +17,25 @@ if TYPE_CHECKING:
     from modelon.impact.client.operations.base import BaseOperation
 
 logger = logging.getLogger(__name__)
-RepoURL = Union['GitRepoURL', 'SvnRepoURL']
+RepoURL = Union["GitRepoURL", "SvnRepoURL"]
 
 
 @enum.unique
 class ProjectType(enum.Enum):
     """Type of project."""
 
-    LOCAL = 'LOCAL'
-    RELEASED = 'RELEASED'
-    SYSTEM = 'SYSTEM'
+    LOCAL = "LOCAL"
+    RELEASED = "RELEASED"
+    SYSTEM = "SYSTEM"
 
 
 @enum.unique
 class StorageLocation(enum.Enum):
     """The storage location of the project."""
 
-    APPMODE = 'APPMODE'
-    USERSPACE = 'USERSPACE'
-    SYSTEM = 'SYSTEM'
+    APPMODE = "APPMODE"
+    USERSPACE = "USERSPACE"
+    SYSTEM = "SYSTEM"
 
 
 @dataclass
@@ -55,11 +55,11 @@ class GitRepoURL:
     def __str__(self) -> str:
         repo_url = self.url
         if self.refname or self.sha1:
-            repo_url += '@'
+            repo_url += "@"
         if self.refname:
             repo_url += self.refname
         if self.sha1:
-            repo_url += ':' + self.sha1
+            repo_url += ":" + self.sha1
         return repo_url
 
     @classmethod
@@ -100,7 +100,7 @@ class SvnRepoURL:
     def get_rev(self) -> str:
         rev = self.rev
         if rev == "":
-            return 'HEAD'
+            return "HEAD"
         return rev
 
     def __str__(self) -> str:
@@ -109,9 +109,9 @@ class SvnRepoURL:
             segments.append(self.branch)
         if self.url_from_root:
             segments.append(self.url_from_root)
-        repo_url = '/'.join(segments)
+        repo_url = "/".join(segments)
         if self.rev:
-            repo_url += '@' + self.rev
+            repo_url += "@" + self.rev
         return repo_url
 
     @classmethod
@@ -147,7 +147,7 @@ class VcsUri:
             service_kind=service_kind,
             service_url=data.get("serviceUrl"),
             repourl=GitRepoURL.from_dict(repo_url)
-            if service_kind.lower() == 'git'
+            if service_kind.lower() == "git"
             else SvnRepoURL.from_dict(repo_url),
             protocol=data.get("protocol"),
             subdir=data.get("subdir"),
@@ -163,12 +163,12 @@ class ProjectDependency:
     @property
     def name(self) -> Optional[str]:
         """The name of the project dependency."""
-        return self._data.get('name')
+        return self._data.get("name")
 
     @property
     def version_specifier(self) -> Optional[str]:
         """Version specifier."""
-        return self._data.get('versionSpecifier')
+        return self._data.get("versionSpecifier")
 
 
 class ProjectDefinition:
@@ -191,19 +191,19 @@ class ProjectDefinition:
 
     @property
     def dependencies(self) -> List[ProjectDependency]:
-        dependencies = self._data.get('dependencies', [])
+        dependencies = self._data.get("dependencies", [])
         return [ProjectDependency(dependency) for dependency in dependencies]
 
     @property
     def content(self) -> list:
-        return self._data.get('content', [])
+        return self._data.get("content", [])
 
     @property
     def execution_options(self) -> List[ProjectExecutionOptions]:
-        execution_options = self._data.get('executionOptions', [])
+        execution_options = self._data.get("executionOptions", [])
         return [
             ProjectExecutionOptions(
-                execution_option, execution_option['customFunction']
+                execution_option, execution_option["customFunction"]
             )
             for execution_option in execution_options
         ]
@@ -261,7 +261,7 @@ class Project:
     def size(self) -> float:
         """Project size in bytes."""
         return self._sal.project.project_get(self.id, vcs_info=False, size_info=True)[
-            'size'
+            "size"
         ]
 
     @property
@@ -381,7 +381,7 @@ class Project:
             path_to_content, self._project_id, content_type.value
         )
         return ContentImportOperation[ProjectContent](
-            resp['data']['location'], self._sal, ProjectContent.from_operation
+            resp["data"]["location"], self._sal, ProjectContent.from_operation
         )
 
     def import_modelica_library(self, path_to_lib: str) -> ContentImportOperation:
@@ -399,7 +399,7 @@ class Project:
             content  = project.import_modelica_library('B.zip').wait()
 
         """
-        if Path(path_to_lib).suffix.lower() not in ['.mo', '.zip']:
+        if Path(path_to_lib).suffix.lower() not in [".mo", ".zip"]:
             raise ValueError(
                 "Only '.mo' or '.zip' file extension are supported for uploading "
                 "Modelica content into project."

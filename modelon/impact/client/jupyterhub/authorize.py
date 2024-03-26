@@ -23,7 +23,7 @@ def _running_in_jupyterhub_environment() -> bool:
 
 
 def _running_with_same_jupyterhub_server(uri: URI) -> bool:
-    return str(uri) in os.environ.get('IMPACT_URL', '')
+    return str(uri) in os.environ.get("IMPACT_URL", "")
 
 
 def authorize(
@@ -40,8 +40,8 @@ def authorize(
     if _running_in_jupyterhub_environment() and _running_with_same_jupyterhub_server(
         uri
     ):
-        jupyter_context.token = os.environ.get('JUPYTERHUB_API_TOKEN', '')
-        server = os.environ.get('JUPYTERHUB_SERVICE_PREFIX')
+        jupyter_context.token = os.environ.get("JUPYTERHUB_API_TOKEN", "")
+        server = os.environ.get("JUPYTERHUB_SERVICE_PREFIX")
         user = service.get_user_data(uri, jupyter_context, server)
         return user.impact_server_uri(uri), jupyter_context
 
@@ -74,7 +74,7 @@ def authorize(
         credential_manager.write_key_to_file(jupyter_token)
 
     if not user.server_running():
-        uri_to_start_server = uri / 'hub/home'
+        uri_to_start_server = uri / "hub/home"
         raise exceptions.NoJupyterHubServerRunningError(
             "The user does not have a server running. "
             f"Go to {uri_to_start_server} and start a server."

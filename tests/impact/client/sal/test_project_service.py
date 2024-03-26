@@ -17,10 +17,10 @@ class TestProjectService:
         assert delete_project.adapter.called
         delete_call = delete_project.adapter.request_history[0]
         assert (
-            f'http://mock-impact.com/api/projects/{IDs.PROJECT_PRIMARY}'
+            f"http://mock-impact.com/api/projects/{IDs.PROJECT_PRIMARY}"
             == delete_call.url
         )
-        assert 'DELETE' == delete_call.method
+        assert "DELETE" == delete_call.method
 
     def test_get_project(self, single_project):
         uri = URI(single_project.url)
@@ -41,10 +41,10 @@ class TestProjectService:
         assert filtered_projects.adapter.called
         fetch_call = filtered_projects.adapter.request_history[0]
         assert (
-            f'http://mock-impact.com/api/projects?vcsInfo=False&type=LOCAL'
+            f"http://mock-impact.com/api/projects?vcsInfo=False&type=LOCAL"
             == fetch_call.url
         )
-        assert 'GET' == fetch_call.method
+        assert "GET" == fetch_call.method
 
     def test_get_projects(self, multiple_projects):
         uri = URI(multiple_projects.url)
@@ -66,10 +66,10 @@ class TestProjectService:
         assert delete_project_content.adapter.called
         delete_call = delete_project_content.adapter.request_history[0]
         assert (
-            f'http://mock-impact.com/api/projects/{IDs.PROJECT_PRIMARY}/content/{IDs.PROJECT_CONTENT_PRIMARY}'
+            f"http://mock-impact.com/api/projects/{IDs.PROJECT_PRIMARY}/content/{IDs.PROJECT_CONTENT_PRIMARY}"
             == delete_call.url
         )
-        assert 'DELETE' == delete_call.method
+        assert "DELETE" == delete_call.method
 
     def test_get_project_content(self, get_project_content):
         uri = URI(get_project_content.url)
@@ -98,7 +98,7 @@ class TestProjectService:
             IDs.PROJECT_PRIMARY,
             "MODELICA",
         )
-        assert 'data' in data
+        assert "data" in data
 
     def test_fmu_upload(self, import_fmu):
         uri = URI(import_fmu.url)
@@ -120,17 +120,17 @@ class TestProjectService:
                 "Specified argument for 'top_level_inputs=['a']' does not match any variable"
             ],
             "library": {
-                'project_id': IDs.PROJECT_PRIMARY,
-                'content_id': IDs.PROJECT_CONTENT_PRIMARY,
+                "project_id": IDs.PROJECT_PRIMARY,
+                "content_id": IDs.PROJECT_CONTENT_PRIMARY,
             },
         }
 
         import_fmu_call = import_fmu.adapter.request_history[0]
         assert (
-            f'http://mock-impact.com/api/projects/{IDs.PROJECT_PRIMARY}'
-            f'/content/{IDs.PROJECT_CONTENT_PRIMARY}/fmu-imports' == import_fmu_call.url
+            f"http://mock-impact.com/api/projects/{IDs.PROJECT_PRIMARY}"
+            f"/content/{IDs.PROJECT_CONTENT_PRIMARY}/fmu-imports" == import_fmu_call.url
         )
-        assert 'POST' == import_fmu_call.method
+        assert "POST" == import_fmu_call.method
 
     def test_get_project_options(self, project_options_get):
         uri = URI(project_options_get.url)
@@ -147,7 +147,7 @@ class TestProjectService:
                 "include_protected_variables": False,
             },
             "runtime": {"log_level": 2},
-            "simulation": {'dynamic_diagnostics': False, 'ncp': 500},
+            "simulation": {"dynamic_diagnostics": False, "ncp": 500},
             "solver": {"rtol": 1e-5},
         }
 
@@ -159,7 +159,7 @@ class TestProjectService:
         data = service.project.project_default_options_get(
             IDs.WORKSPACE_PRIMARY, IDs.DYNAMIC_CF
         )
-        assert data == {'compiler': {'c_compiler': 'gcc'}}
+        assert data == {"compiler": {"c_compiler": "gcc"}}
 
     def test_project_import_from_zip(self, import_project):
         uri = URI(import_project.url)

@@ -101,7 +101,7 @@ class CaseRunInfo:
 class CaseAnalysis:
     """Class containing Case analysis configuration."""
 
-    __slots__ = ['_analysis']
+    __slots__ = ["_analysis"]
 
     def __init__(self, analysis: Dict[str, Any]):
         self._analysis = analysis
@@ -118,7 +118,7 @@ class CaseAnalysis:
             analysis_function = case.input.analysis.analysis_function
 
         """
-        return self._analysis['analysis_function']
+        return self._analysis["analysis_function"]
 
     @property
     def parameters(self) -> Dict[str, Any]:
@@ -135,11 +135,11 @@ class CaseAnalysis:
             parameters = case.input.analysis.parameters
 
         """
-        return self._analysis['parameters']
+        return self._analysis["parameters"]
 
     @parameters.setter
     def parameters(self, parameters: Dict[str, Any]) -> None:
-        self._analysis['parameters'] = parameters
+        self._analysis["parameters"] = parameters
 
     @property
     def simulation_options(self) -> Dict[str, Any]:
@@ -155,11 +155,11 @@ class CaseAnalysis:
             simulation_options = case.input.analysis.simulation_options
 
         """
-        return self._analysis['simulation_options']
+        return self._analysis["simulation_options"]
 
     @simulation_options.setter
     def simulation_options(self, simulation_options: Dict[str, Any]) -> None:
-        self._analysis['simulation_options'] = simulation_options
+        self._analysis["simulation_options"] = simulation_options
 
     @property
     def solver_options(self) -> Dict[str, Any]:
@@ -176,11 +176,11 @@ class CaseAnalysis:
             solver_options = case.input.analysis.solver_options
 
         """
-        return self._analysis['solver_options']
+        return self._analysis["solver_options"]
 
     @solver_options.setter
     def solver_options(self, solver_options: Dict[str, Any]) -> None:
-        self._analysis['solver_options'] = solver_options
+        self._analysis["solver_options"] = solver_options
 
     @property
     def simulation_log_level(self) -> str:
@@ -196,11 +196,11 @@ class CaseAnalysis:
             simulation_log_level = case.input.analysis.simulation_log_level
 
         """
-        return self._analysis['simulation_log_level']
+        return self._analysis["simulation_log_level"]
 
     @simulation_log_level.setter
     def simulation_log_level(self, simulation_log_level: str) -> None:
-        self._analysis['simulation_log_level'] = simulation_log_level
+        self._analysis["simulation_log_level"] = simulation_log_level
 
 
 class CustomArtifact:
@@ -285,7 +285,7 @@ class CustomArtifact:
 class CaseMeta:
     """Class containing Case meta."""
 
-    __slots__ = ['_data']
+    __slots__ = ["_data"]
 
     def __init__(self, data: Dict[str, Any]):
         self._data = data
@@ -303,24 +303,24 @@ class CaseMeta:
             label = case.meta.label
 
         """
-        return self._data['label']
+        return self._data["label"]
 
     @label.setter
     def label(self, label: str) -> None:
-        self._data['label'] = label
+        self._data["label"] = label
 
 
 class CaseInput:
     """Class containing Case input."""
 
-    __slots__ = ['_data']
+    __slots__ = ["_data"]
 
     def __init__(self, data: Dict[str, Any]):
         self._data = data
 
     @property
     def analysis(self) -> CaseAnalysis:
-        return CaseAnalysis(self._data['analysis'])
+        return CaseAnalysis(self._data["analysis"])
 
     @property
     def parametrization(self) -> Dict[str, Any]:
@@ -338,16 +338,16 @@ class CaseInput:
             parametrization = case.input.parametrization
 
         """
-        return self._data['parametrization']
+        return self._data["parametrization"]
 
     @parametrization.setter
     def parametrization(self, parametrization: Dict[str, Any]) -> None:
-        self._data['parametrization'] = parametrization
+        self._data["parametrization"] = parametrization
 
     @property
     def fmu_id(self) -> str:
         """Reference ID to the compiled model used running the case."""
-        return self._data['fmu_id']
+        return self._data["fmu_id"]
 
     @property
     def structural_parametrization(self) -> Dict[str, Any]:
@@ -357,7 +357,7 @@ class CaseInput:
         These are values that cannot be applied to the FMU/Model after compilation.
 
         """
-        return self._data['structural_parametrization']
+        return self._data["structural_parametrization"]
 
     @property
     def fmu_base_parametrization(self) -> Dict[str, Any]:
@@ -367,13 +367,13 @@ class CaseInput:
         It often comes as a result from of caching to reuse the FMU.
 
         """
-        return self._data['fmu_base_parametrization']
+        return self._data["fmu_base_parametrization"]
 
 
 class Case(CaseInterface):
     """Class containing Case functionalities."""
 
-    __slots__ = ['_case_id', '_workspace_id', '_exp_id', '_sal', '_info']
+    __slots__ = ["_case_id", "_workspace_id", "_exp_id", "_sal", "_info"]
 
     def __init__(
         self,
@@ -445,7 +445,7 @@ class Case(CaseInterface):
             dir(case.input) # See nested attributes
 
         """
-        return CaseInput(self._info['input'])
+        return CaseInput(self._info["input"])
 
     @property
     def meta(self) -> CaseMeta:
@@ -460,7 +460,7 @@ class Case(CaseInterface):
             dir(case.input) # See nested attributes
 
         """
-        return CaseMeta(self._info['meta'])
+        return CaseMeta(self._info["meta"])
 
     @property
     def initialize_from_case(self) -> Optional[Case]:
@@ -486,12 +486,12 @@ class Case(CaseInterface):
             initialized_from_case = case.initialize_from_case
 
         """
-        init_from_dict = self._info['input'].get('initialize_from_case')
+        init_from_dict = self._info["input"].get("initialize_from_case")
         if init_from_dict is None:
             return None
 
-        experiment_id = init_from_dict.get('experimentId')
-        case_id = init_from_dict.get('caseId')
+        experiment_id = init_from_dict.get("experimentId")
+        case_id = init_from_dict.get("caseId")
 
         case_data = self._sal.experiment.case_get(
             self._workspace_id, experiment_id, case_id
@@ -504,10 +504,10 @@ class Case(CaseInterface):
     def initialize_from_case(self, case: Case) -> None:
         if not isinstance(case, Case):
             raise TypeError("The value must be an instance of Case")
-        self._assert_unique_case_initialization('initialize_from_external_result')
-        self._info['input']['initialize_from_case'] = {
-            'experimentId': case.experiment_id,
-            'caseId': case.id,
+        self._assert_unique_case_initialization("initialize_from_external_result")
+        self._info["input"]["initialize_from_case"] = {
+            "experimentId": case.experiment_id,
+            "caseId": case.id,
         }
 
     @property
@@ -532,12 +532,12 @@ class Case(CaseInterface):
             initialize_from_external_result = case.initialize_from_external_result
 
         """
-        init_from_dict = self._info['input'].get('initialize_from_external_result')
+        init_from_dict = self._info["input"].get("initialize_from_external_result")
 
         if init_from_dict is None:
             return None
 
-        result_id = init_from_dict.get('uploadId')
+        result_id = init_from_dict.get("uploadId")
 
         return ExternalResult(result_id, self._sal)
 
@@ -545,8 +545,8 @@ class Case(CaseInterface):
     def initialize_from_external_result(self, result: ExternalResult) -> None:
         if not isinstance(result, ExternalResult):
             raise TypeError("The value must be an instance of ExternalResult")
-        self._assert_unique_case_initialization('initialize_from_case')
-        self._info['input']['initialize_from_external_result'] = {"uploadId": result.id}
+        self._assert_unique_case_initialization("initialize_from_case")
+        self._info["input"]["initialize_from_external_result"] = {"uploadId": result.id}
 
     def is_successful(self) -> bool:
         """Returns True if a case has completed successfully.
@@ -580,7 +580,7 @@ class Case(CaseInterface):
             )
         )
 
-    def get_result(self, format: str = 'mat') -> Tuple[Union[bytes, Text], str]:
+    def get_result(self, format: str = "mat") -> Tuple[Union[bytes, Text], str]:
         """Returns the result stream and the file name for a finished case.
 
         Args:
@@ -680,9 +680,9 @@ class Case(CaseInterface):
         )
         if not meta:
             raise exceptions.NoSuchCustomArtifactError(
-                f'No custom artifact found with ID: {artifact_id}.'
+                f"No custom artifact found with ID: {artifact_id}."
             )
-        return meta['downloadAs']
+        return meta["downloadAs"]
 
     def get_artifacts(self) -> List[CustomArtifact]:
         """Returns a list of CustomArtifact classes for a finished case.
@@ -708,8 +708,8 @@ class Case(CaseInterface):
                 self._workspace_id,
                 self.experiment_id,
                 self._case_id,
-                meta['id'],
-                meta['downloadAs'],
+                meta["id"],
+                meta["downloadAs"],
                 self._sal.experiment,
             )
             for meta in resp["data"]["items"]
@@ -783,7 +783,7 @@ class Case(CaseInterface):
         )
 
     def _assert_unique_case_initialization(self, unsupported_init: str) -> None:
-        if self._info['input'][unsupported_init]:
+        if self._info["input"][unsupported_init]:
             raise ValueError(
                 "A case cannot use both 'initialize_from_case' and "
                 "'initialize_from_external_result' to specify what to initialize from! "

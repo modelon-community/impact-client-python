@@ -37,7 +37,7 @@ class WorkspaceConversionOperation(AsyncOperation[Entity]):
     @property
     def id(self) -> str:
         """Workspace conversion id."""
-        return self._location.split('/')[-1]
+        return self._location.split("/")[-1]
 
     @property
     def name(self) -> str:
@@ -57,7 +57,7 @@ class WorkspaceConversionOperation(AsyncOperation[Entity]):
 
         """
         info = self._info()
-        if info['status'] == AsyncOperationStatus.ERROR.value:
+        if info["status"] == AsyncOperationStatus.ERROR.value:
             raise exceptions.IllegalWorkspaceConversion(
                 f"Workspace conversion failed! Cause: {info['error'].get('message')}"
             )

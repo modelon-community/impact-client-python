@@ -39,8 +39,8 @@ logger = logging.getLogger(__name__)
 
 @enum.unique
 class ExecutionKind(enum.Enum):
-    COMPILATION = 'COMPILATION'
-    EXPERIMENT = 'EXPERIMENT'
+    COMPILATION = "COMPILATION"
+    EXPERIMENT = "EXPERIMENT"
 
 
 @dataclass
@@ -70,7 +70,7 @@ class Selection:
     project: Project
 
     def to_dict(self) -> Dict[str, Any]:
-        return {'id': self.entry_id, 'project': {'id': self.project.id}}
+        return {"id": self.entry_id, "project": {"id": self.project.id}}
 
 
 @dataclass
@@ -132,7 +132,7 @@ class ProjectMatching:
 
         while True:
             try:
-                chosen_index = int(input('\nPlease enter one of the above choices:-'))
+                chosen_index = int(input("\nPlease enter one of the above choices:-"))
                 selection = self.get_selection(index=chosen_index)
                 break
             except (KeyError, ValueError, IndexError):
@@ -274,7 +274,7 @@ class Client:
         self._sal.add_login_retry_with(api_key)
 
         resp = self._sal.users.get_me()
-        if 'license' not in resp['data']:
+        if "license" not in resp["data"]:
             raise exceptions.NoAssignedLicenseError(
                 "No assigned license during login. Either out of floating Deployment "
                 "Add-on licenses or your assigned user license could not be validated"
@@ -352,7 +352,7 @@ class Client:
         return [
             Workspace(item["id"], self._sal)
             for item in resp["data"]["items"]
-            if item['definition']['name'] == workspace_name
+            if item["definition"]["name"] == workspace_name
         ]
 
     def get_workspaces(
@@ -623,7 +623,7 @@ class Client:
         project_matchings = []
         matchings = self._sal.workspace.get_project_matchings(
             {"definition": shared_definition.to_dict()}
-        )['data']['vcs']
+        )["data"]["vcs"]
         for entry in matchings:
             projects = [
                 Project(
@@ -634,7 +634,7 @@ class Client:
                     VcsUri.from_dict(project["vcsUri"]),
                     self._sal,
                 )
-                for project in entry['projects']
+                for project in entry["projects"]
             ]
 
             project_matchings.append(

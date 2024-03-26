@@ -9,7 +9,7 @@ from modelon.impact.client.sal.uri import URI
 
 
 class JupyterContext:
-    __slots__ = ['_base', '_token']
+    __slots__ = ["_base", "_token"]
 
     def __init__(self, base: Optional[Context] = None):
         self._base = base if base else Context()
@@ -26,7 +26,7 @@ class JupyterContext:
     @token.setter
     def token(self, token: str) -> None:
         self._token = token
-        self.session.headers.update({'Authorization': 'token %s' % token})
+        self.session.headers.update({"Authorization": "token %s" % token})
 
 
 class JupyterUser:
@@ -38,7 +38,7 @@ class JupyterUser:
         return self._server is not None
 
     def impact_server_uri(self, jupyterhub_uri: URI) -> URI:
-        return jupyterhub_uri / f'user/{self.id}/impact'
+        return jupyterhub_uri / f"user/{self.id}/impact"
 
 
 class JupyterHubService:
@@ -47,7 +47,7 @@ class JupyterHubService:
         cls, uri: URI, context: JupyterContext, server: Optional[str] = None
     ) -> JupyterUser:
         auth_token_url = (
-            uri / f'hub/api/authorizations/token/{context.token}'
+            uri / f"hub/api/authorizations/token/{context.token}"
         ).resolve()
 
         try:
@@ -76,7 +76,7 @@ class JupyterHubService:
 
         try:
             user_data = user_response.json()
-            return JupyterUser(user_data['name'], user_data.get('server', server))
+            return JupyterUser(user_data["name"], user_data.get("server", server))
         except (KeyError, json.decoder.JSONDecodeError) as e:
             raise exceptions.NotAJupyterHubUrl(
                 "User response data is not correct, "

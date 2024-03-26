@@ -29,7 +29,7 @@ def _decorate_all_methods(cls: Any, decorator: Callable) -> Any:
 
 
 class Service:
-    _JUPYTERHUB_VERSION_HEADER = 'x-jupyterhub-version'
+    _JUPYTERHUB_VERSION_HEADER = "x-jupyterhub-version"
 
     def __init__(
         self, uri: URI, context: Optional[Union[Context, JupyterContext]] = None
@@ -96,9 +96,9 @@ class Service:
             return False
         except Exception:
             logger.warning(
-                'Unknown exception trying to determine if URL is to JupyterHub or '
-                'Modelon Impact, will assume the URL goes directly to the '
-                'Modelon Impact API'
+                "Unknown exception trying to determine if URL is to JupyterHub or "
+                "Modelon Impact, will assume the URL goes directly to the "
+                "Modelon Impact API"
             )
             return False
         return self._JUPYTERHUB_VERSION_HEADER in response.headers

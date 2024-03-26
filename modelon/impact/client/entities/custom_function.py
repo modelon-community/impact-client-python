@@ -21,7 +21,7 @@ logger = logging.getLogger(__name__)
 
 
 class _Parameter:
-    __slots__ = ['_name', '_value', '_value_type', '_valid_values']
+    __slots__ = ["_name", "_value", "_value_type", "_valid_values"]
 
     _JSON_2_PY_TYPE = {
         "Number": (

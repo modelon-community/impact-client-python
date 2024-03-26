@@ -37,7 +37,7 @@ class WorkspaceImportOperation(AsyncOperation[Entity]):
     @property
     def id(self) -> str:
         """Workspace import id."""
-        return self._location.split('/')[-1]
+        return self._location.split("/")[-1]
 
     @property
     def name(self) -> str:
@@ -55,7 +55,7 @@ class WorkspaceImportOperation(AsyncOperation[Entity]):
 
         """
         info = self._info()
-        if info['status'] == AsyncOperationStatus.ERROR.value:
+        if info["status"] == AsyncOperationStatus.ERROR.value:
             raise exceptions.IllegalWorkspaceImport(
                 f"Workspace import failed! Cause: {info['error'].get('message')}"
             )

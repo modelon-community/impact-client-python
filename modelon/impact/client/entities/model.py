@@ -362,7 +362,7 @@ class Model(ModelInterface):
         class_name = class_name or ".".join(
             [
                 self._class_name,
-                os.path.split(fmu_path)[-1].strip('.fmu'),
+                os.path.split(fmu_path)[-1].strip(".fmu"),
             ]
         )
         resp = self._sal.project.fmu_import(
@@ -378,7 +378,7 @@ class Model(ModelInterface):
         )
 
         return FMUImportOperation[Model](
-            resp['data']['location'],
+            resp["data"]["location"],
             self._workspace_id,
             self._project_id,
             self._sal,

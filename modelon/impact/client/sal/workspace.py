@@ -37,7 +37,7 @@ class WorkspaceService:
             query["sharingId"] = sharing_id
         if only_app_mode:
             query["onlyAppMode"] = str(only_app_mode)
-        query_args = '&'.join(f'{key}={value}' for key, value in query.items())
+        query_args = "&".join(f"{key}={value}" for key, value in query.items())
         url = (self._base_uri / f"api/workspaces?{query_args}").resolve()
         return self._http_client.get_json(url)
 
@@ -77,15 +77,15 @@ class WorkspaceService:
         if access_settings:
             body["access"] = access_settings
         if class_path:
-            body['appMode'] = {'model': class_path}
+            body["appMode"] = {"model": class_path}
         return self._http_client.post_json(url, body=body)
 
     def workspace_conversion_setup(
         self, workspace_id: str, backup_name: Optional[str]
     ) -> Dict[str, Any]:
         url = (self._base_uri / "api/workspace-conversions").resolve()
-        backup_data = {'backup': {'name': backup_name}} if backup_name else {}
-        body: Dict[str, Any] = {'data': {'workspaceId': workspace_id, **backup_data}}
+        backup_data = {"backup": {"name": backup_name}} if backup_name else {}
+        body: Dict[str, Any] = {"data": {"workspaceId": workspace_id, **backup_data}}
         return self._http_client.post_json(url, body=body)
 
     def get_workspace_conversion_status(self, location: str) -> Dict[str, Any]:
@@ -236,7 +236,7 @@ class WorkspaceService:
             query["type"] = type
         if group_name:
             query["groupName"] = group_name
-        query_args = '&'.join(f'{key}={value}' for key, value in query.items())
+        query_args = "&".join(f"{key}={value}" for key, value in query.items())
         url = (self._base_uri / f"api/published-workspaces?{query_args}").resolve()
         resp = self._http_client.get_json_response(url)
         return resp.data
@@ -254,7 +254,7 @@ class WorkspaceService:
             query["first"] = str(first)
         if maximum >= 0:
             query["max"] = str(maximum)
-        query_args = '&'.join(f'{key}={value}' for key, value in query.items())
+        query_args = "&".join(f"{key}={value}" for key, value in query.items())
         url = (
             self._base_uri / f"/api/published-workspaces/access/users?{query_args}"
         ).resolve()
@@ -276,7 +276,7 @@ class WorkspaceService:
     def rename_published_workspace(self, sharing_id: str, workspace_name: str) -> None:
         url = (self._base_uri / f"api/published-workspaces/{sharing_id}").resolve()
         self._http_client.patch_json_no_response_body(
-            url, body={'workspaceName': workspace_name}
+            url, body={"workspaceName": workspace_name}
         )
 
     def _user_access_request(
@@ -287,7 +287,7 @@ class WorkspaceService:
         ).resolve()
         body = {"operation": operation}
         if username:
-            body['requesterUsername'] = username
+            body["requesterUsername"] = username
         self._http_client.patch_json_no_response_body(url, body=body)
 
     def _group_access_request(
@@ -298,7 +298,7 @@ class WorkspaceService:
         ).resolve()
         body = {"operation": operation}
         if group_name:
-            body['groupName'] = group_name
+            body["groupName"] = group_name
         self._http_client.patch_json_no_response_body(url, body=body)
 
     def _community_access_request(self, operation: str, sharing_id: str) -> None:
@@ -311,25 +311,25 @@ class WorkspaceService:
     def grant_group_access(
         self, sharing_id: str, group_name: Optional[str] = None
     ) -> None:
-        self._group_access_request('grant', sharing_id, group_name)
+        self._group_access_request("grant", sharing_id, group_name)
 
     def revoke_group_access(self, sharing_id: str, group_name: str) -> None:
-        self._group_access_request('revoke', sharing_id, group_name)
+        self._group_access_request("revoke", sharing_id, group_name)
 
     def request_user_access(self, sharing_id: str) -> None:
-        self._user_access_request('request', sharing_id)
+        self._user_access_request("request", sharing_id)
 
     def grant_user_access(self, sharing_id: str, username: str) -> None:
-        self._user_access_request('grant', sharing_id, username)
+        self._user_access_request("grant", sharing_id, username)
 
     def revoke_user_access(self, sharing_id: str, username: str) -> None:
-        self._user_access_request('revoke', sharing_id, username)
+        self._user_access_request("revoke", sharing_id, username)
 
     def grant_community_access(self, sharing_id: str) -> None:
-        self._community_access_request('grant', sharing_id)
+        self._community_access_request("grant", sharing_id)
 
     def revoke_community_access(self, sharing_id: str) -> None:
-        self._community_access_request('revoke', sharing_id)
+        self._community_access_request("revoke", sharing_id)
 
     def delete_published_workspace(self, sharing_id: str) -> None:
         url = (self._base_uri / f"api/published-workspaces/{sharing_id}").resolve()

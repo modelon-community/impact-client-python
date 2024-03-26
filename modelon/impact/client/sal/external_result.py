@@ -28,8 +28,8 @@ class ExternalResultService:
             options["description"] = description
         with open(path_to_result, "rb") as f:
             multipart_form_data = {
-                'file': f,
-                'options': json.dumps(options),
+                "file": f,
+                "options": json.dumps(options),
             }
             return self._http_client.post_json(url, files=multipart_form_data)
 

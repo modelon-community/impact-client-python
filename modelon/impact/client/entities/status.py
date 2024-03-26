@@ -16,7 +16,7 @@ class CaseStatus(Enum):
     NOT_STARTED = "not_started"
     """Status for experiment execution that has not yet started."""
 
-    STARTED = 'started'
+    STARTED = "started"
     """Status for case that has  started execution."""
 
 

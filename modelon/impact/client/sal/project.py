@@ -22,9 +22,9 @@ class ProjectService:
         project_type: Optional[ProjectType] = None,
         storage_location: Optional[StorageLocation] = None,
     ) -> Dict[str, Any]:
-        prj_type = '&type=' + project_type.value if project_type else ""
+        prj_type = "&type=" + project_type.value if project_type else ""
         stg_loc = (
-            '&storageLocation=' + storage_location.value if storage_location else ""
+            "&storageLocation=" + storage_location.value if storage_location else ""
         )
         url = (
             self._base_uri / f"api/projects?vcsInfo={vcs_info}{prj_type}{stg_loc}"
@@ -80,8 +80,8 @@ class ProjectService:
         url = (self._base_uri / f"/api/projects/{project_id}/content-imports").resolve()
         with open(path_to_result, "rb") as f:
             multipart_form_data = {
-                'file': f,
-                'options': json.dumps({'contentType': content_type}),
+                "file": f,
+                "options": json.dumps({"contentType": content_type}),
             }
             return self._http_client.post_json(url, files=multipart_form_data)
 
@@ -122,8 +122,8 @@ class ProjectService:
 
         with open(fmu_path, "rb") as f:
             multipart_form_data = {
-                'file': f,
-                'options': json.dumps(options),
+                "file": f,
+                "options": json.dumps(options),
             }
             return self._http_client.post_json(url, files=multipart_form_data)
 

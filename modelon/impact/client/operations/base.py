@@ -41,13 +41,13 @@ class Status(enum.Enum):
 class AsyncOperationStatus(enum.Enum):
     """Defines all states for import."""
 
-    RUNNING = 'running'
+    RUNNING = "running"
     """Status for an async operation that is running."""
 
-    READY = 'ready'
+    READY = "ready"
     """Status for an async operation that is ready."""
 
-    ERROR = 'error'
+    ERROR = "error"
     """Status for an async operation that has errors."""
 
     def done(self) -> bool:
@@ -129,7 +129,7 @@ class AsyncOperation(BaseOperation[Entity]):
             time.sleep(0.5)
 
     def cancel(self) -> None:
-        raise NotImplementedError('Cancel is not supported for this operation')
+        raise NotImplementedError("Cancel is not supported for this operation")
 
 
 class ExecutionOperation(BaseOperation[Entity]):

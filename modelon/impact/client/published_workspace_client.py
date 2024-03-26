@@ -88,7 +88,7 @@ class PublishedWorkspacesClient:
         )["data"]["items"]
         return [
             PublishedWorkspace(
-                item['id'],
+                item["id"],
                 definition=PublishedWorkspaceDefinition.from_dict(item),
                 service=self._sal,
             )
@@ -121,7 +121,7 @@ class PublishedWorkspacesClient:
             return None
         data = self._sal.workspace.get_published_workspace(sharing_id)
         definition = PublishedWorkspaceDefinition.from_dict(data)
-        return PublishedWorkspace(data['id'], definition=definition, service=self._sal)
+        return PublishedWorkspace(data["id"], definition=definition, service=self._sal)
 
     @Experimental
     def get_by_access_kind(
@@ -155,17 +155,17 @@ class PublishedWorkspacesClient:
         )["data"]["items"]
         return [
             PublishedWorkspaceAccess(
-                item['sharingId'],
-                item['requesterId'],
-                item['requesterUsername'],
+                item["sharingId"],
+                item["requesterId"],
+                item["requesterUsername"],
                 PublishedWorkspace(
-                    item['publishedWorkspace']['id'],
+                    item["publishedWorkspace"]["id"],
                     definition=PublishedWorkspaceDefinition.from_dict(
-                        item['publishedWorkspace']
+                        item["publishedWorkspace"]
                     ),
                     service=self._sal,
                 )
-                if 'publishedWorkspace' in item
+                if "publishedWorkspace" in item
                 else None,
             )
             for item in data

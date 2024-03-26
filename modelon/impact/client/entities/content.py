@@ -15,13 +15,13 @@ if TYPE_CHECKING:
 class ContentType(enum.Enum):
     """Supported content types in a project."""
 
-    MODELICA = 'MODELICA'
-    VIEWS = 'VIEWS'
-    FAVORITES = 'FAVORITES'
-    CUSTOM_FUNCTIONS = 'CUSTOM_FUNCTIONS'
-    REFERENCE_RESULTS = 'REFERENCE_RESULTS'
-    EXPERIMENT_DEFINITIONS = 'EXPERIMENT_DEFINITIONS'
-    GENERIC = 'GENERIC'
+    MODELICA = "MODELICA"
+    VIEWS = "VIEWS"
+    FAVORITES = "FAVORITES"
+    CUSTOM_FUNCTIONS = "CUSTOM_FUNCTIONS"
+    REFERENCE_RESULTS = "REFERENCE_RESULTS"
+    EXPERIMENT_DEFINITIONS = "EXPERIMENT_DEFINITIONS"
+    GENERIC = "GENERIC"
 
 
 class ProjectContent:
@@ -45,26 +45,26 @@ class ProjectContent:
         Can be file (e.g., SomeLib.mo) or folder
 
         """
-        return Path(self._content['relpath'])
+        return Path(self._content["relpath"])
 
     @property
     def content_type(self) -> ContentType:
         """Type of content."""
-        return ContentType(self._content['contentType'])
+        return ContentType(self._content["contentType"])
 
     @property
     def id(self) -> str:
         """Content ID."""
-        return self._content['id']
+        return self._content["id"]
 
     @property
     def name(self) -> Optional[str]:
         """Modelica library name."""
-        return self._content.get('name')
+        return self._content.get("name")
 
     @property
     def default_disabled(self) -> str:
-        return self._content['defaultDisabled']
+        return self._content["defaultDisabled"]
 
     def delete(self) -> None:
         """Deletes a project content.

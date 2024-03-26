@@ -10,9 +10,9 @@ class TestCustomFunctionService:
             uri=uri, context=get_custom_function.context
         )
         data = service.custom_function.custom_function_get(
-            IDs.WORKSPACE_PRIMARY, 'cust_func'
+            IDs.WORKSPACE_PRIMARY, "cust_func"
         )
-        assert data == {'name': 'cust_func', 'version': '0.0.1'}
+        assert data == {"name": "cust_func", "version": "0.0.1"}
 
     def test_get_custom_functions(self, get_custom_functions):
         uri = URI(get_custom_functions.url)
@@ -30,9 +30,9 @@ class TestCustomFunctionService:
             uri=uri, context=get_custom_function_default_options.context
         )
         data = service.custom_function.custom_function_default_options_get(
-            IDs.WORKSPACE_PRIMARY, 'cust_func'
+            IDs.WORKSPACE_PRIMARY, "cust_func"
         )
-        assert data == {'compiler': {'c_compiler': 'gcc'}}
+        assert data == {"compiler": {"c_compiler": "gcc"}}
 
     def test_get_custom_function_options(self, get_custom_function_options):
         uri = URI(get_custom_function_options.url)
@@ -40,6 +40,6 @@ class TestCustomFunctionService:
             uri=uri, context=get_custom_function_options.context
         )
         data = service.custom_function.custom_function_options_get(
-            IDs.WORKSPACE_PRIMARY, 'cust_func'
+            IDs.WORKSPACE_PRIMARY, "cust_func"
         )
         assert data == {"compiler": {"generate_html_diagnostics": True}}

@@ -18,7 +18,7 @@ class ResultFormat(enum.Enum):
 
     @classmethod
     def _missing_(cls, value: Any) -> Any:
-        if cls not in ['mat', 'csv']:
+        if cls not in ["mat", "csv"]:
             raise ValueError(
                 "Invalid result format! Allowed formats are 'mat' and 'csv."
             )
@@ -145,10 +145,10 @@ class ExperimentService:
             f"{case_id}/result"
         ).resolve()
         if result_format == ResultFormat.CSV:
-            headers = {'Accept': 'text/csv'}
+            headers = {"Accept": "text/csv"}
             csv_resp = self._http_client.get_csv(url, headers=headers)
             return csv_resp.stream, csv_resp.file_name
-        headers = {'Accept': 'application/vnd.impact.mat.v1+octet-stream'}
+        headers = {"Accept": "application/vnd.impact.mat.v1+octet-stream"}
         mat_resp = self._http_client.get_mat(url, headers=headers)
         return mat_resp.stream, mat_resp.file_name
 
