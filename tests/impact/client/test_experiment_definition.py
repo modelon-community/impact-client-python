@@ -17,6 +17,7 @@ from modelon.impact.client import (
     exceptions,
 )
 from modelon.impact.client.entities.result import Result
+from modelon.impact.client.experiment_definition.modifiers import DataType
 from tests.impact.client.helpers import (
     IDs,
     create_case_entity,
@@ -1085,6 +1086,31 @@ class TestSimpleModelicaExperimentDefinition:
             "v": "choices(0.1, 0.5, 3)",
         }
 
+    def test_given_str_and_bool_when_choices_then_type_error(self):
+        with pytest.raises(ValueError):
+            Choices("test", True)
+
+    def test_given_int_and_real_when_choices_then_type_real(self):
+        assert Choices(1, 2.3).data_type == DataType.REAL
+
+    def test_given_real_and_int_when_choices_then_type_real(self):
+        assert Choices(2.3, 1).data_type == DataType.REAL
+
+    def test_given_real_int_and_bool_when_choices_then_type_error(self):
+        with pytest.raises(ValueError):
+            Choices(2.3, 1, False)
+
+    def test_given_int_and_real_data_type_set_to_real_when_choices_then_type_real(
+        self,
+    ):
+        assert Choices(2.3, 1, data_type=DataType.REAL).data_type == DataType.REAL
+
+    def test_given_int_and_real_data_type_set_to_integer_when_choices_then_type_error(
+        self,
+    ):
+        with pytest.raises(ValueError):
+            assert Choices(1, 2.3, data_type=DataType.INTEGER)
+
     def test_experiment_definition_with_distribution_modifier(
         self, model, custom_function_no_param
     ):
@@ -1096,7 +1122,7 @@ class TestSimpleModelicaExperimentDefinition:
         config = definition.to_dict()
         assert config["experiment"]["base"]["modifiers"]["variables"] == {
             "h0": "uniform(0.1,0.5)",
-            "v": "beta(0.1,0.1)",
+            "v": "beta(0.1,0.5)",
             "t": "normal(0.1,0.5,-5,inf)",
         }
 

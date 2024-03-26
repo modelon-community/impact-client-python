@@ -1,15 +1,25 @@
 """This module contains operators for parametrizing batch runs."""
 from abc import abstractmethod
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, Optional
+
+from modelon.impact.client.experiment_definition.modifiers import (
+    DataType,
+    Modifier,
+    Scalar,
+    data_type_from_value,
+)
 
 
-class Operator:
+class Operator(Modifier):
     """Base class for an Operator."""
 
     @abstractmethod
     def __str__(self) -> str:
         "Returns a string representation of the operator"
+
+    def to_value(self) -> str:
+        return str(self)
 
 
 @dataclass
@@ -42,6 +52,15 @@ class Range(Operator):
     def __str__(self) -> str:
         return f"range({self.start_value},{self.end_value},{self.no_of_steps})"
 
+    def to_dict(self, name: str) -> dict[str, Any]:
+        return {
+            "kind": "range",
+            "name": name,
+            "start": self.start_value,
+            "end": self.end_value,
+            "steps": self.no_of_steps,
+        }
+
 
 class Choices(Operator):
     """Choices operator class for parametrizing batch runs. Choices defines a list of
@@ -61,11 +80,66 @@ class Choices(Operator):
 
     """
 
-    def __init__(self, *values: Any):
+    def __init__(self, *values: Scalar, data_type: Optional[DataType] = None):
         self.values = values
+        self.data_type = self._resolve_data_type(values, data_type)
+
+    @classmethod
+    def _resolve_data_type(
+        cls, values: tuple[Scalar, ...], given_data_type: Optional[DataType]
+    ) -> DataType:
+        used_data_type = given_data_type
+        for value in values:
+            value_type = data_type_from_value(value)
+
+            if not used_data_type:
+                used_data_type = value_type
+
+            if cls._widen_from_int_to_real(given_data_type, used_data_type, value_type):
+                used_data_type = DataType.REAL
+
+            if used_data_type == DataType.REAL and value_type == DataType.INTEGER:
+                pass  # Integer can be assigned to real, do nothing
+            elif used_data_type != value_type:
+                if given_data_type:
+                    raise ValueError(
+                        f"Choices value '{value}', not compatible "
+                        f"with specified data type '{given_data_type}'"
+                    )
+                else:
+                    raise ValueError(
+                        f"Choices values are resolving to '{used_data_type}', "
+                        f"which is not compatible with the value '{value}'"
+                    )
+
+        return used_data_type or DataType.REAL
+
+    @classmethod
+    def _widen_from_int_to_real(
+        cls,
+        given_data_type: Optional[DataType],
+        used_data_type: DataType,
+        value_type: DataType,
+    ) -> bool:
+        # If no given data type and current used is integer but there
+        # is a value with type real then we say we can widen the type
+        # to use real.
+        return (
+            given_data_type is None
+            and used_data_type == DataType.INTEGER
+            and value_type == DataType.REAL
+        )
 
     def __str__(self) -> str:
         return f"choices({', '.join(map(str, self.values))})"
+
+    def to_dict(self, name: str) -> dict[str, Any]:
+        return {
+            "kind": "choices",
+            "name": name,
+            "values": list(self.values),
+            "dataType": self.data_type.value,
+        }
 
 
 @dataclass
@@ -95,6 +169,14 @@ class Uniform(Operator):
     def __str__(self) -> str:
         return f"uniform({self.start},{self.end})"
 
+    def to_dict(self, name: str) -> dict[str, Any]:
+        return {
+            "kind": "uniform",
+            "name": name,
+            "start": self.start,
+            "end": self.end,
+        }
+
 
 @dataclass
 class Beta(Operator):
@@ -122,7 +204,15 @@ class Beta(Operator):
     beta: float
 
     def __str__(self) -> str:
-        return f"beta({self.alpha},{self.alpha})"
+        return f"beta({self.alpha},{self.beta})"
+
+    def to_dict(self, name: str) -> dict[str, Any]:
+        return {
+            "kind": "beta",
+            "name": name,
+            "alpha": self.alpha,
+            "beta": self.beta,
+        }
 
 
 @dataclass
@@ -153,8 +243,20 @@ class Normal(Operator):
 
     mean: float
     variance: float
-    start: float = float("-inf")
-    end: float = float("inf")
+    start: Optional[float] = None
+    end: Optional[float] = None
 
     def __str__(self) -> str:
-        return f"normal({self.mean},{self.variance},{self.start},{self.end})"
+        start = self.start or float("-inf")
+        end = self.end or float("inf")
+        return f"normal({self.mean},{self.variance},{start},{end})"
+
+    def to_dict(self, name: str) -> dict[str, Any]:
+        return {
+            "kind": "beta",
+            "name": name,
+            "mean": self.mean,
+            "variable": self.variance,
+            "start": self.start,
+            "end": self.end,
+        }

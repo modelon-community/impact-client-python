@@ -8,9 +8,15 @@ from modelon.impact.client.entities.interfaces.experiment import ExperimentInter
 from modelon.impact.client.experiment_definition.interfaces.extension import (
     BaseExperimentExtension,
 )
+from modelon.impact.client.experiment_definition.modifiers import (
+    Modifier,
+    ensure_as_modifier,
+    modifiers_to_dict,
+)
 from modelon.impact.client.experiment_definition.operators import Operator
 from modelon.impact.client.experiment_definition.util import (
     case_to_identifier_dict,
+    custom_function_parameters_to_dict,
     get_options,
 )
 
@@ -94,7 +100,7 @@ class SimpleExperimentExtension(BaseExperimentExtension):
         self._solver_options = get_options(dict, solver_options)
         self._simulation_options = get_options(dict, simulation_options)
         self._simulation_log_level = simulation_log_level
-        self._variable_modifiers: Dict[str, Any] = {}
+        self._variable_modifiers: Dict[str, Modifier] = {}
         self._initialize_from = initialize_from
         self._case_label: Optional[str] = None
 
@@ -138,10 +144,10 @@ class SimpleExperimentExtension(BaseExperimentExtension):
         for variable, value in modifiers_aggregate.items():
             if isinstance(value, Operator):
                 raise ValueError(
-                    "Range operator is not supported when using extentions"
+                    "Operators are not supported when using extentions"
                     " in the experiment"
                 )
-            new._variable_modifiers[variable] = value
+            new._variable_modifiers[variable] = ensure_as_modifier(value)
         return new
 
     def with_case_label(self, case_label: str) -> SimpleExperimentExtension:
@@ -235,11 +241,15 @@ class SimpleExperimentExtension(BaseExperimentExtension):
         ext_dict: Dict[str, Any] = {}
         if self._variable_modifiers:
             ext_dict.setdefault("modifiers", {})
-            ext_dict["modifiers"]["variables"] = self._variable_modifiers
+            variable_modifiers = modifiers_to_dict(self._variable_modifiers)
+            ext_dict["modifiers"]["variables"] = variable_modifiers
 
         if self._parameter_modifiers:
             ext_dict.setdefault("analysis", {})
-            ext_dict["analysis"]["parameters"] = self._parameter_modifiers
+            custom_function_parameters = custom_function_parameters_to_dict(
+                self._parameter_modifiers
+            )
+            ext_dict["analysis"]["parameters"] = custom_function_parameters
 
         if self._solver_options:
             ext_dict.setdefault("analysis", {})

@@ -5,7 +5,7 @@ import json
 import logging
 import os
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Type, Union
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Union
 
 from modelon.impact.client.configuration import Experimental
 from modelon.impact.client.entities.custom_function import CustomFunction
@@ -39,7 +39,7 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 ExperimentDefinition = Union[
-    Type[BaseExperimentDefinition],
+    BaseExperimentDefinition,
     Dict[str, Any],
 ]
 
