@@ -31,6 +31,7 @@ from tests.impact.client.helpers import (
     create_workspace_entity,
     get_test_fmu_experiment_definition,
     get_test_get_fmu,
+    get_test_get_user,
     get_test_modelica_experiment_definition,
     get_test_published_workspace_definition,
     get_test_workspace_definition,
@@ -327,6 +328,12 @@ def multiple_workspace(user_with_license):
     }
 
     return with_json_route(user_with_license, "GET", "api/workspaces", json)
+
+
+@pytest.fixture
+def user(user_with_license):
+    tenant_user = get_test_get_user()
+    return with_json_route(user_with_license, "GET", "api/users/me", tenant_user)
 
 
 @pytest.fixture
