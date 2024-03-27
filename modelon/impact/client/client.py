@@ -725,3 +725,50 @@ class Client:
 
         """
         return PublishedWorkspacesClient(self._sal)
+
+    def get_me(self) -> User:
+        """Return the User class object for the logged in user.
+
+        Example::
+
+            user = client.get_me()
+            user_tenant_group_name = user.tenant.group_name
+
+        """
+        user = self._sal.users.get_me()["data"]
+        return User.from_dict(user)
+
+
+@dataclass
+class Tenant:
+    id: str
+    group_name: str
+
+    @classmethod
+    def from_dict(cls, tenant_data: Dict[str, Any]) -> Tenant:
+        return Tenant(id=tenant_data["id"], group_name=tenant_data["groupName"])
+
+
+@dataclass
+class User:
+    id: str
+    username: str
+    firstname: str
+    last_name: str
+    email: str
+    license: str
+    roles: List[str]
+    tenant: Tenant
+
+    @classmethod
+    def from_dict(cls, data: Dict[str, Any]) -> User:
+        return User(
+            id=data["id"],
+            username=data["username"],
+            firstname=data["firstName"],
+            last_name=data["lastName"],
+            email=data["email"],
+            license=data["license"],
+            roles=data["roles"],
+            tenant=Tenant.from_dict(tenant_data=data["tenant"]),
+        )
