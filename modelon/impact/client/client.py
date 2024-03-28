@@ -8,9 +8,7 @@ from typing import Any, Dict, Iterable, List, Optional, Union
 
 from semantic_version import SimpleSpec, Version  # type: ignore
 
-import modelon.impact.client.jupyterhub
 import modelon.impact.client.sal.exceptions
-import modelon.impact.client.sal.service
 from modelon.impact.client import exceptions
 from modelon.impact.client.configuration import (
     Experimental,
@@ -39,6 +37,7 @@ from modelon.impact.client.operations.workspace.conversion import (
 from modelon.impact.client.operations.workspace.imports import WorkspaceImportOperation
 from modelon.impact.client.published_workspace_client import PublishedWorkspacesClient
 from modelon.impact.client.sal.context import Context
+from modelon.impact.client.sal.service import Service, is_jupyterhub_url
 from modelon.impact.client.sal.uri import URI
 
 logger = logging.getLogger(__name__)
@@ -231,7 +230,6 @@ class Client:
         interactive: Optional[bool] = None,
         credential_manager: Optional[CredentialManager] = None,
         context: Optional[Context] = None,
-        jupyterhub_credential_manager: Optional[CredentialManager] = None,
     ):
         if url is None:
             url = get_client_url()
@@ -240,33 +238,19 @@ class Client:
             interactive = get_client_interactive()
 
         self._uri = URI(url)
-        self._sal = modelon.impact.client.sal.service.Service(self._uri, context)
-
-        if self._sal.is_jupyterhub_url():
-            logger.info(
-                "API response indicates that the URL '%s' hosts a JupyterHub.",
-                str(self._uri),
-            )
-            self._uri, jupyter_context = modelon.impact.client.jupyterhub.authorize(
-                self._uri,
-                interactive,
-                context,
-                jupyterhub_credential_manager,
-            )
-            self._sal = modelon.impact.client.sal.service.Service(
-                self._uri, jupyter_context
-            )
-
-        self._validate_compatible_api_version()
-
         if credential_manager is None:
-            help_hint = f"can be generated at {self._uri / 'admin/keys'}"
+            uri = (
+                self._uri / "user-redirect/impact"
+                if is_jupyterhub_url(self._uri)
+                else self._uri
+            )
+            help_hint = f"can be generated at {uri / 'admin/keys'}"
             help_text = f"Enter Modelon Impact API key ({help_hint}):"
             credential_manager = CredentialManager(interactive_help_text=help_text)
         self._credential_manager = credential_manager
 
         try:
-            api_key = self._authenticate_against_api(interactive)
+            self._sal = self._get_authenticated_service(interactive, self._uri, context)
         except modelon.impact.client.sal.exceptions.HTTPError:
             if interactive:
                 logger.warning(
@@ -274,18 +258,14 @@ class Client:
                     "please enter a new key"
                 )
                 api_key = self._credential_manager.get_key_from_prompt()
-                api_key = self._authenticate_against_api(interactive, api_key=api_key)
+                self._sal = self._get_authenticated_service(
+                    interactive, self._uri, context, api_key=api_key
+                )
             else:
                 raise
 
-        self._sal.add_login_retry_with(api_key)
-
-        resp = self._sal.users.get_me()
-        if "license" not in resp["data"]:
-            raise exceptions.NoAssignedLicenseError(
-                "No assigned license during login. Either out of floating Deployment "
-                "Add-on licenses or your assigned user license could not be validated"
-            )
+        # TODO Update to use the unprotected API route https://impact.modelon.cloud/api
+        self._validate_compatible_api_version()
 
     def _validate_compatible_api_version(self) -> None:
         try:
@@ -304,25 +284,35 @@ class Client:
                 f"that supports version '{version}' of the HTTP REST API."
             )
 
-    def _authenticate_against_api(
-        self, interactive: bool, api_key: Optional[str] = None
-    ) -> Optional[str]:
+    def _get_authenticated_service(
+        self,
+        interactive: bool,
+        uri: URI,
+        context: Optional[Context] = None,
+        api_key: Optional[str] = None,
+    ) -> Service:
         if not api_key:
             api_key = self._credential_manager.get_key(interactive=interactive)
 
         if not api_key:
-            logger.warning(
-                "No Modelon Impact API key could be found, "
-                "will log in as anonymous user. Permissions may be limited"
+            raise exceptions.AuthenticationError(
+                "Authentication failed! No Modelon Impact API key could be found"
             )
+        # TODO: Do we need a key validation API?
+        sal = Service(uri, api_key, context)
+        resp = sal.users.get_me()
 
-        self._sal.api_login(api_key=api_key)
         if api_key and interactive:
             # Save the api_key for next time if
             # running interactively and login was successfully
             self._credential_manager.write_key_to_file(api_key)
 
-        return api_key
+        if "license" not in resp["data"]:
+            raise exceptions.NoAssignedLicenseError(
+                "No assigned license during login. Either out of floating Deployment "
+                "Add-on licenses or your assigned user license could not be validated"
+            )
+        return sal
 
     def get_workspace(self, workspace_id: str) -> Workspace:
         """Returns a Workspace class object.

@@ -5,7 +5,6 @@ IN_DOCKER_IMG := $(shell ( test -f /.dockerenv && echo 1 ) || ( test -f /opt/imp
 SECRETS := $(CURDIR)/.secrets
 export MODELON_IMPACT_CLIENT_INTERACTIVE:=false
 export MODELON_IMPACT_CLIENT_API_KEY ?= $(shell cat $(SECRETS)/api.key)
-export JUPYTERHUB_API_TOKEN ?= $(shell cat $(SECRETS)/jupyterhub-api.key)
 export MODELON_IMPACT_CLIENT_URL ?= https://impact.modelon.cloud/
 export MODELON_IMPACT_USERNAME ?= $(shell git config user.email)
 
@@ -76,13 +75,6 @@ check_environment_variables:
 		exit 1; \
 	else \
 		echo "Variable 'MODELON_IMPACT_CLIENT_API_KEY' is set"; \
-	fi
-	@echo "Checking for environmental variables..."
-	@if [ -z "$$JUPYTERHUB_API_TOKEN" ]; then \
-		echo "Error: 'JUPYTERHUB_API_TOKEN' variable not set"; \
-		exit 1; \
-	else \
-		echo "Variable 'JUPYTERHUB_API_TOKEN' is set"; \
 	fi
 	@if [ -z "$$MODELON_IMPACT_CLIENT_URL" ]; then \
 		echo "Error: 'MODELON_IMPACT_CLIENT_URL' variable not set"; \

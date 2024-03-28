@@ -4,6 +4,7 @@ conftest.py
 import json
 import os
 import re
+from urllib.parse import urlparse
 
 import pytest
 from vcr.filters import replace_post_data_parameters
@@ -72,7 +73,13 @@ def vcr_config():
             pass
         return request
 
+    def remove_query_characters(url):
+        parsed_url = urlparse(url)
+        return parsed_url.path
+
     def scrub_content_before_response_record(response):
+        username = os.environ.get("MODELON_IMPACT_USERNAME")
+        insensitive_username = re.compile(re.escape(username), re.IGNORECASE)
         if response:
             # Scrubbing off headers that are not relevant or contain cookies
             headers_to_exclude = [
@@ -82,10 +89,22 @@ def vcr_config():
                 "Strict-Transport-Security",
                 "Date",
                 "Content-Length",
+                "Set-Cookie",
+                "Via",
+                "X-Kong-Upstream-Latency",
+                "X-Kong-Proxy-Latency",
+                "X-Kong-Request-Id",
             ]
             for header in headers_to_exclude:
                 response["headers"].pop(header, None)
-            username = os.environ.get("MODELON_IMPACT_USERNAME")
+                # Scrub off location header for username and query params(client_id)
+                if response["headers"].get("location"):
+                    location = response["headers"]["location"][0]
+                    new_location = insensitive_username.sub(
+                        IDs.USERNAME, remove_query_characters(location)
+                    )
+                    response["headers"]["location"] = [new_location]
+
             if response.get("body", {}).get("string"):
                 try:
                     body = response["body"]["string"].decode("utf-8")
@@ -129,18 +148,20 @@ def vcr_config():
                         },
                     }
 
-                # Scrub off response from /hub/api/authorizations/token/<token>
+                # Scrub off response from /hub/api/user
                 elif response_body.get("last_activity"):
                     response_body = keep_only_keys(response_body, ["name", "server"])
-                # Scrub off response from /api/login
-                elif response_body.get("identifier"):
-                    response_body.pop("identifier", None)
                 response["body"]["string"] = json.dumps(response_body).encode()
         return response
 
     return {
         "record_mode": "once",
-        "filter_headers": ["authorization", "Cookie", "User-Agent"],  # Scrub off tokens
+        "filter_headers": [
+            "authorization",
+            "Cookie",
+            "User-Agent",
+            "impact-api-key",
+        ],
         "before_record_request": scrub_request_before_record,
         "before_record_response": scrub_content_before_response_record,
         "decode_compressed_response": True,
