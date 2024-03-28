@@ -82,3 +82,7 @@ class NoAssociatedPublishedWorkspaceError(Error):
 
 class RemotePublishedWorkspaceLinkError(Error):
     pass
+
+
+class AuthenticationError(Error):
+    pass

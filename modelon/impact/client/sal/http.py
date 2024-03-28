@@ -1,7 +1,6 @@
 """HTTP client class."""
-from typing import Any, Dict, Optional, Union
+from typing import Any, Dict, Optional
 
-from modelon.impact.client.jupyterhub.sal import JupyterContext
 from modelon.impact.client.sal.context import Context
 from modelon.impact.client.sal.request import (
     RequestCSV,
@@ -21,8 +20,12 @@ from modelon.impact.client.sal.response import (
 
 
 class HTTPClient:
-    def __init__(self, context: Optional[Union[Context, JupyterContext]] = None):
+    def __init__(
+        self, api_key: Optional[str] = None, context: Optional[Context] = None
+    ):
         self._context = context if context else Context()
+        if api_key:
+            self._context.session.headers["impact-api-key"] = api_key
 
     def get_json(self, url: str, headers: Optional[Dict[str, Any]] = None) -> Any:
         return self.get_json_response(url, headers=headers).data
