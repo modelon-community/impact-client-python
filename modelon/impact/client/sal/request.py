@@ -38,41 +38,34 @@ class Request:
         self.headers = headers
 
     def execute(self, check_return: bool = True) -> Any:
-        session_cookies = self.context.session.cookies
-        if "localhost" in self.url:
-            access_token = session_cookies.get("access_token")
-            session_cookies = {"access_token": access_token}
         try:
+            extra_headers = self.headers or {}
+            headers = {**self.context.session.headers, **extra_headers}
             if self.method == "POST":
                 logger.debug("POST with JSON body: {}".format(self.body))
                 resp = self.context.session.post(
                     self.url,
                     json=self.body,
                     files=self.files,
-                    headers=self.headers,
-                    cookies=session_cookies,
+                    headers=headers,
                 )
             elif self.method == "GET":
-                resp = self.context.session.get(
-                    self.url, headers=self.headers, cookies=session_cookies
-                )
+                resp = self.context.session.get(self.url, headers=headers)
             elif self.method == "PUT":
                 resp = self.context.session.put(
                     self.url,
                     json=self.body,
-                    headers=self.headers,
-                    cookies=session_cookies,
+                    headers=headers,
                 )
             elif self.method == "PATCH":
                 resp = self.context.session.patch(
                     self.url,
                     json=self.body,
-                    headers=self.headers,
-                    cookies=session_cookies,
+                    headers=headers,
                 )
             elif self.method == "DELETE":
                 resp = self.context.session.delete(
-                    self.url, json=self.body, cookies=session_cookies
+                    self.url, json=self.body, headers=headers
                 )
             else:
                 raise NotImplementedError()

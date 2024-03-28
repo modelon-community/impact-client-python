@@ -30,9 +30,7 @@ from tests.impact.client.helpers import (
     get_test_modelica_experiment_definition,
     get_test_published_workspace_definition,
     get_test_workspace_definition,
-    json_request_list_item,
     with_exception,
-    with_json_request_list_route,
     with_json_route,
 )
 
@@ -59,9 +57,8 @@ def mock_server_base():
     mock_url = "http://mock-impact.com"
 
     mock_server_base = MockedServer(mock_url, MockContex(session), adapter)
-    mock_server = with_json_route(mock_server_base, "POST", "api/login", {})
     mock_server = with_json_route(
-        mock_server,
+        mock_server_base,
         "GET",
         "hub/api/",
         {},
@@ -89,44 +86,10 @@ def user_with_no_license(sem_ver_check):
 
 
 @pytest.fixture
-def login_fails(mock_server_base):
-    json = {"error": {"message": "no authorization", "code": 123}}
+def key_validation_fails(mock_server_base):
+    json = {"error": {"message": "no authorization", "code": 401}}
 
-    return with_json_route(mock_server_base, "POST", "api/login", json, 401)
-
-
-@pytest.fixture
-def jupyterhub_api(mock_server_base):
-    jupyter_api_json = {"version": "1.3.0"}
-    jupyter_user_json = {"name": "user-name", "server": "ok"}
-    impact_api_json = {"version": "4.0.0"}
-
-    mock_server = with_json_route(
-        mock_server_base,
-        "GET",
-        "hub/api/",
-        jupyter_api_json,
-        extra_headers={"x-jupyterhub-version": "1.3.0"},
-    )
-    mock_server = with_json_route(
-        mock_server,
-        "GET",
-        "hub/api/authorizations/token/secret-token",
-        jupyter_user_json,
-    )
-    mock_server = with_json_route(
-        mock_server, "GET", "user/user-name/impact/api/", impact_api_json
-    )
-    mock_server = with_json_route(
-        mock_server, "POST", "user/user-name/impact/api/login", {}
-    )
-    mock_server = with_json_route(
-        mock_server,
-        "GET",
-        "user/user-name/impact/api/users/me",
-        {"data": {"license": "impact-pro"}},
-    )
-    return mock_server
+    return with_json_route(mock_server_base, "GET", "api/users/me", json, 401)
 
 
 @pytest.fixture
@@ -161,39 +124,6 @@ def create_workspace(user_with_license):
 
 
 @pytest.fixture
-def create_workspace_fail_auth_once(sem_ver_check, mock_server_base):
-    json_error = {"error": {"code": 123456, "message": "JWT expired"}}
-    json_ok = {"id": IDs.WORKSPACE_ID_PRIMARY}
-    request_list = [
-        json_request_list_item(json_error, 401),
-        json_request_list_item(json_ok, 200),
-    ]
-
-    return with_json_request_list_route(
-        mock_server_base, "POST", "api/workspaces", request_list
-    )
-
-
-@pytest.fixture
-def create_workspace_fail_auth_many(sem_ver_check, mock_server_base):
-    json_error = {"error": {"code": 123456, "message": "JWT expired"}}
-    request_list = [
-        json_request_list_item(json_error, 401),
-        json_request_list_item(json_error, 401),
-    ]
-
-    return with_json_request_list_route(
-        mock_server_base, "POST", "api/workspaces", request_list
-    )
-
-
-@pytest.fixture
-def create_workspace_fail_bad_input(sem_ver_check, mock_server_base):
-    json_error = {"error": {"code": 123456, "message": "Not an allowed workspace name"}}
-    return with_json_route(mock_server_base, "POST", "api/workspaces", json_error, 400)
-
-
-@pytest.fixture
 def single_workspace(user_with_license):
     json = {
         "definition": get_test_workspace_definition(),
@@ -205,7 +135,7 @@ def single_workspace(user_with_license):
 
 
 @pytest.fixture
-def semantic_version_error(mock_server_base):
+def semantic_version_error(mock_server_base, user_with_license):
     json = {"version": "1.0.0"}
 
     return with_json_route(mock_server_base, "GET", "api/", json)
@@ -1056,7 +986,6 @@ def get_versioned_new_project_branch(user_with_license, mock_server_base):
 def setup_client():
     if os.environ.get("UPDATE_CASSETTE", "False") not in ["True", "1"]:
         os.environ["MODELON_IMPACT_CLIENT_API_KEY"] = "dummy"
-        os.environ["JUPYTERHUB_API_TOKEN"] = "dummy"
         os.environ["MODELON_IMPACT_USERNAME"] = IDs.USERNAME
     client = Client()
     assert client._sal.users.get_me()["data"]["username"].lower() in [

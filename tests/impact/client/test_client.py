@@ -22,13 +22,6 @@ from tests.impact.client.helpers import (
 )
 
 
-def assert_login_called(*, adapter, body):
-    login_call = adapter.request_history[2]
-    assert "http://mock-impact.com/api/login" == login_call.url
-    assert "POST" == login_call.method
-    assert body == login_call.json()
-
-
 class TestClient:
     @pytest.mark.vcr()
     def test_create_workspace(self, client_helper: ClientHelper):
@@ -77,116 +70,6 @@ class TestClient:
             in str(excinfo.value)
         )
 
-    def test_client_login_api_key_from_credential_manager(self, user_with_license):
-        cred_manager = MagicMock()
-        cred_manager.get_key.return_value = "test_from_credential_manager_key"
-        Client(
-            url=user_with_license.url,
-            context=user_with_license.context,
-            credential_manager=cred_manager,
-        )
-
-        assert_login_called(
-            adapter=user_with_license.adapter,
-            body={"secretKey": "test_from_credential_manager_key"},
-        )
-
-    def test_client_login_api_key_missing(self, user_with_license):
-        cred_manager = MagicMock()
-        cred_manager.get_key.return_value = None
-        Client(
-            url=user_with_license.url,
-            context=user_with_license.context,
-            credential_manager=cred_manager,
-        )
-
-        assert_login_called(
-            adapter=user_with_license.adapter,
-            body={},
-        )
-
-    def test_client_login_interactive_saves_key(self, user_with_license):
-        cred_manager = MagicMock()
-        cred_manager.get_key.return_value = "test_client_login_interactive_saves_key"
-
-        Client(
-            url=user_with_license.url,
-            context=user_with_license.context,
-            credential_manager=cred_manager,
-            interactive=True,
-        )
-
-        cred_manager.write_key_to_file.assert_called_with(
-            "test_client_login_interactive_saves_key"
-        )
-
-    def test_client_login_fail_interactive_dont_save_key(
-        self, login_fails, user_with_license
-    ):
-        cred_manager = MagicMock()
-        cred_manager.get_key.return_value = "test_client_login_fails"
-        cred_manager.get_key_from_prompt.return_value = "test_client_login_still_fails"
-
-        pytest.raises(
-            sal_exceptions.HTTPError,
-            Client,
-            url=login_fails.url,
-            context=login_fails.context,
-            credential_manager=cred_manager,
-            interactive=True,
-        )
-
-        cred_manager.write_key_to_file.assert_not_called()
-
-    def test_client_login_fail_lets_user_enter_new_key(
-        self, sem_ver_check, login_fails
-    ):
-        cred_manager = MagicMock()
-        cred_manager.get_key.return_value = "test_client_login_fails"
-        cred_manager.get_key_from_prompt.return_value = "test_client_login_still_fails"
-
-        pytest.raises(
-            sal_exceptions.HTTPError,
-            Client,
-            url=login_fails.url,
-            context=login_fails.context,
-            credential_manager=cred_manager,
-            interactive=True,
-        )
-
-        cred_manager.get_key_from_prompt.assert_called()
-
-    def test_empty_api_key_when_login_then_anon_login_and_dont_save_key(
-        self,
-        user_with_license,
-    ):
-        cred_manager = MagicMock()
-        cred_manager.get_key.return_value = ""
-        Client(
-            url=user_with_license.url,
-            context=user_with_license.context,
-            credential_manager=cred_manager,
-            interactive=True,
-        )
-
-        assert_login_called(adapter=user_with_license.adapter, body={})
-        cred_manager.write_key_to_file.assert_not_called()
-
-    def test_client_connect_against_jupyterhub_can_authorize(self, jupyterhub_api):
-        cred_manager = MagicMock()
-        cred_manager.get_key.return_value = None
-        jupyterhub_cred_manager = MagicMock()
-        jupyterhub_cred_manager.get_key.return_value = "secret-token"
-
-        Client(
-            url=jupyterhub_api.url,
-            context=jupyterhub_api.context,
-            credential_manager=cred_manager,
-            interactive=True,
-            jupyterhub_credential_manager=jupyterhub_cred_manager,
-        )
-        jupyterhub_cred_manager.write_key_to_file.assert_called_with("secret-token")
-
     def test_no_assigned_license_error(self, user_with_no_license):
         with pytest.raises(exceptions.NoAssignedLicenseError):
             Client(url=user_with_no_license.url, context=user_with_no_license.context)
@@ -203,7 +86,6 @@ class TestClient:
         )
         definition = WorkspaceDefinition(get_test_workspace_definition())
         project_matching_entries = client.get_project_matchings(definition).entries
-
         assert len(project_matching_entries) == 1
         assert project_matching_entries[0].entry_id == IDs.VERSIONED_PROJECT_REFERENCE
         url = "https://github.com/project/test"
@@ -370,3 +252,89 @@ class TestClient:
         )
         experiment = client_helper.client.get_experiment_by_reference(experiment_ref)
         assert isinstance(experiment, Experiment)
+
+
+def assert_key_validate_called(*, adapter, key):
+    login_call = adapter.request_history[0]
+    assert "http://mock-impact.com/api/users/me" == login_call.url
+    assert "GET" == login_call.method
+    assert key == login_call.headers["impact-api-key"]
+
+
+def test_validate_api_key_from_credential_manager(user_with_license):
+    cred_manager = MagicMock()
+    cred_manager.get_key.return_value = "test_from_credential_manager_key"
+    Client(
+        url=user_with_license.url,
+        context=user_with_license.context,
+        credential_manager=cred_manager,
+    )
+
+    assert_key_validate_called(
+        adapter=user_with_license.adapter,
+        key="test_from_credential_manager_key",
+    )
+
+
+def test_api_key_missing(user_with_license):
+    cred_manager = MagicMock()
+    cred_manager.get_key.return_value = None
+    pytest.raises(
+        exceptions.AuthenticationError,
+        Client,
+        url=user_with_license.url,
+        context=user_with_license.context,
+        credential_manager=cred_manager,
+    )
+
+
+def test_api_key_set_interactive_saves_key(user_with_license):
+    cred_manager = MagicMock()
+    cred_manager.get_key.return_value = "test_api_key_set_interactive_saves_key"
+
+    Client(
+        url=user_with_license.url,
+        context=user_with_license.context,
+        credential_manager=cred_manager,
+        interactive=True,
+    )
+
+    cred_manager.write_key_to_file.assert_called_with(
+        "test_api_key_set_interactive_saves_key"
+    )
+
+
+def test_api_key_validation_fail_interactive_dont_save_key(key_validation_fails):
+    cred_manager = MagicMock()
+    cred_manager.get_key.return_value = "test_api_key_validation_fails"
+    cred_manager.get_key_from_prompt.return_value = (
+        "test_api_key_validation_still_fails"
+    )
+
+    pytest.raises(
+        sal_exceptions.HTTPError,
+        Client,
+        url=key_validation_fails.url,
+        context=key_validation_fails.context,
+        credential_manager=cred_manager,
+        interactive=True,
+    )
+
+    cred_manager.write_key_to_file.assert_not_called()
+
+
+def test_client_login_fail_lets_user_enter_new_key(key_validation_fails):
+    cred_manager = MagicMock()
+    cred_manager.get_key.return_value = "test_client_key_validation_fails"
+    cred_manager.get_key_from_prompt.return_value = "test_client_login_still_fails"
+
+    pytest.raises(
+        sal_exceptions.HTTPError,
+        Client,
+        url=key_validation_fails.url,
+        context=key_validation_fails.context,
+        credential_manager=cred_manager,
+        interactive=True,
+    )
+
+    cred_manager.get_key_from_prompt.assert_called()

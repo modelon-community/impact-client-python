@@ -1,9 +1,7 @@
 """Service class."""
-import inspect
 import logging
-from typing import Any, Callable, Dict, Optional, Union
+from typing import Any, Dict, Optional
 
-from modelon.impact.client.jupyterhub.sal import JupyterContext
 from modelon.impact.client.sal import exceptions
 from modelon.impact.client.sal.context import Context
 from modelon.impact.client.sal.custom_function import CustomFunctionService
@@ -21,21 +19,44 @@ from modelon.impact.client.sal.workspace import WorkspaceService
 logger = logging.getLogger(__name__)
 
 
-def _decorate_all_methods(cls: Any, decorator: Callable) -> Any:
-    for method_name, method in inspect.getmembers(cls, lambda x: inspect.ismethod(x)):
-        setattr(cls, method_name, decorator(method))
+def _get_impact_base_uri(uri: URI, http_client: HTTPClient) -> URI:
+    url = (uri / "hub/api/user").resolve()
+    server_url = http_client.get_json(url)["server"]
+    return uri / f"{server_url}/impact"
 
-    return cls
+
+def is_jupyterhub_url(uri: URI) -> bool:
+    _JUPYTERHUB_VERSION_HEADER = "x-jupyterhub-version"
+    url = (uri / "hub/api/").resolve()
+
+    try:
+        http_client = HTTPClient()
+        response = http_client.get_json_response(url)
+    except (
+        exceptions.CommunicationError,
+        exceptions.SSLError,
+        exceptions.HTTPError,
+        exceptions.ErrorBodyIsNotJSONError,
+    ):
+        return False
+    except Exception:
+        logger.warning(
+            "Unknown exception trying to determine if URL is to JupyterHub or "
+            "Modelon Impact, will assume the URL goes directly to the "
+            "Modelon Impact API"
+        )
+        return False
+    return _JUPYTERHUB_VERSION_HEADER in response.headers
 
 
 class Service:
-    _JUPYTERHUB_VERSION_HEADER = "x-jupyterhub-version"
-
-    def __init__(
-        self, uri: URI, context: Optional[Union[Context, JupyterContext]] = None
-    ):
-        self._base_uri = uri
-        self._http_client = HTTPClient(context)
+    def __init__(self, uri: URI, api_key: str, context: Optional[Context] = None):
+        self._http_client = HTTPClient(api_key, context)
+        self._base_uri = (
+            _get_impact_base_uri(uri, self._http_client)
+            if is_jupyterhub_url(uri)
+            else uri
+        )
         self.workspace = WorkspaceService(self._base_uri, self._http_client)
         self.project = ProjectService(self._base_uri, self._http_client)
         self.model_executable = ModelExecutableService(
@@ -48,71 +69,11 @@ class Service:
         self.exports = ExportService(self._base_uri, self._http_client)
         self.imports = ImportService(self._base_uri, self._http_client)
 
-    def add_login_retry_with(self, api_key: Optional[str] = None) -> None:
-        def retry_with_login_decorator(func: Callable) -> Callable:
-            def wrapped(*args: Any, **kwargs: Any) -> Callable:
-                try:
-                    return func(*args, **kwargs)
-                except exceptions.HTTPError as e:
-                    if e.status_code != 401:
-                        raise
-
-                    self.api_login(api_key=api_key)
-                    return func(*args, **kwargs)
-
-            return wrapped
-
-        self.workspace = _decorate_all_methods(
-            self.workspace, retry_with_login_decorator
-        )
-        self.project = _decorate_all_methods(self.project, retry_with_login_decorator)
-        self.model_executable = _decorate_all_methods(
-            self.model_executable, retry_with_login_decorator
-        )
-        self.experiment = _decorate_all_methods(
-            self.experiment, retry_with_login_decorator
-        )
-        self.custom_function = _decorate_all_methods(
-            self.custom_function, retry_with_login_decorator
-        )
-        self.users = _decorate_all_methods(self.users, retry_with_login_decorator)
-        self.exports = _decorate_all_methods(self.exports, retry_with_login_decorator)
-        self.imports = _decorate_all_methods(self.imports, retry_with_login_decorator)
-        self.external_result = _decorate_all_methods(
-            self.external_result, retry_with_login_decorator
-        )
-
-    def is_jupyterhub_url(self) -> bool:
-        url = (self._base_uri / "hub/api/").resolve()
-
-        try:
-            response = self._http_client.get_json_response(url)
-        except (
-            exceptions.CommunicationError,
-            exceptions.SSLError,
-            exceptions.HTTPError,
-            exceptions.ErrorBodyIsNotJSONError,
-        ):
-            return False
-        except Exception:
-            logger.warning(
-                "Unknown exception trying to determine if URL is to JupyterHub or "
-                "Modelon Impact, will assume the URL goes directly to the "
-                "Modelon Impact API"
-            )
-            return False
-        return self._JUPYTERHUB_VERSION_HEADER in response.headers
-
     def api_get_metadata(self) -> Dict[str, Any]:
         url = (self._base_uri / "api/").resolve()
         response = self._http_client.get_json_response(url)
 
         return response.data
-
-    def api_login(self, api_key: Optional[str] = None) -> Dict[str, Any]:
-        login_data = {"secretKey": api_key} if api_key else {}
-        url = (self._base_uri / "api/login").resolve()
-        return self._http_client.post_json(url, login_data)
 
     def get_executions(self) -> Dict[str, Any]:
         url = (self._base_uri / "api/executions").resolve()
