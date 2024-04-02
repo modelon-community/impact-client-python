@@ -201,6 +201,7 @@ class SimpleModelicaExperimentDefinition(BaseExperimentDefinition):
         )
         new._extensions = self._extensions
         new._expansion = self._expansion
+        new._variable_modifiers = self._variable_modifiers
 
         for name, value in modifiers.items():
             new._variable_modifiers[name] = ensure_as_modifier(value)

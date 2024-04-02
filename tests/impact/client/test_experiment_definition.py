@@ -1221,6 +1221,30 @@ class TestSimpleModelicaExperimentDefinition:
             },
         ]
 
+    def test_model_experiment_definition_with_many_modifiers(
+        self, model, custom_function_no_param
+    ):
+        definition = (
+            SimpleModelicaExperimentDefinition(
+                model.entity, custom_function=custom_function_no_param
+            )
+            .with_modifiers({"p1": 1})
+            .with_modifiers({"p2": 2})
+        )
+        modifiers_dict = definition.to_dict()["experiment"]["base"]["modifiers"]
+        assert modifiers_dict["variables"] == {"p1": 1, "p2": 2}
+
+    def test_fmu_experiment_definition_with_many_modifiers(
+        self, fmu, custom_function_no_param
+    ):
+        definition = (
+            SimpleFMUExperimentDefinition(fmu, custom_function=custom_function_no_param)
+            .with_modifiers({"p1": 1})
+            .with_modifiers({"p2": 2})
+        )
+        modifiers_dict = definition.to_dict()["experiment"]["base"]["modifiers"]
+        assert modifiers_dict["variables"] == {"p1": 1, "p2": 2}
+
     def test_experiment_definition_with_extensions_initialize_from_result(self):
         ext = SimpleExperimentExtension()
         pytest.raises(TypeError, ext.with_initialize_from, Result)

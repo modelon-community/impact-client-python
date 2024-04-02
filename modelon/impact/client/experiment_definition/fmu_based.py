@@ -155,6 +155,7 @@ class SimpleFMUExperimentDefinition(BaseExperimentDefinition):
             self._initialize_from,
         )
         new._extensions = self._extensions
+        new._variable_modifiers = self._variable_modifiers
         for variable, value in modifiers_aggregate.items():
             new._variable_modifiers[variable] = (
                 str(value) if isinstance(value, Operator) else value
