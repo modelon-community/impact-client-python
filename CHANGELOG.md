@@ -1,3 +1,10 @@
+# [3.12.0](https://github.com/modelon-community/impact-client-python/compare/v3.11.4...v3.12.0) (2024-04-02)
+
+
+### Features
+
+* added client method to fetch user data ([0c671f0](https://github.com/modelon-community/impact-client-python/commit/0c671f0a9654f12d5974a8e57075ebe7874c006a))
+
 ## [3.11.4](https://github.com/modelon-community/impact-client-python/compare/v3.11.3...v3.11.4) (2024-03-26)
 
 
