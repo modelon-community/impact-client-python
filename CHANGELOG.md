@@ -1,3 +1,19 @@
+# [3.13.0](https://github.com/modelon-community/impact-client-python/compare/v3.12.0...v3.13.0) (2024-04-03)
+
+
+### Bug Fixes
+
+* ensure 'with_modifiers' method don't removes any previously set modifiers ([0540cd5](https://github.com/modelon-community/impact-client-python/commit/0540cd5fc0c9d4c64b7b52106b0b9a8263ba8074))
+* handle 'alpha' for Beta operator modifier correctly ([509de36](https://github.com/modelon-community/impact-client-python/commit/509de36f7b00338486dc5073e28c462f20b81fdd))
+* incorrect type for expansion paramter in with_expansion method for experiment ([2136071](https://github.com/modelon-community/impact-client-python/commit/2136071df9e3da1f388d763343cc00da29664b3b))
+* type for definition input to create_experiment method is now correct ([0ae1664](https://github.com/modelon-community/impact-client-python/commit/0ae1664c4b30321c351637164e14b893114b009b))
+
+
+### Features
+
+* adding experimental support for version 3 of experiment definition with enumeration support ([c0725a4](https://github.com/modelon-community/impact-client-python/commit/c0725a404efcd68119309fc9d63b09d2506dbb4c))
+* verify consistent types for choices modifier ([420b796](https://github.com/modelon-community/impact-client-python/commit/420b796872767f87b37c4197ca14bb6a21107b54))
+
 # [3.12.0](https://github.com/modelon-community/impact-client-python/compare/v3.11.4...v3.12.0) (2024-04-02)
 
 
