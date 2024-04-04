@@ -451,8 +451,7 @@ class Experiment(ExperimentInterface):
         the cases.
 
         Args:
-            variables: An optional list of result variables to fetch
-            trajectories for.
+            variables: An optional list of variables to fetch results for.
 
         Returns:
             An ExperimentResultPoint class object.
