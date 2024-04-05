@@ -1,3 +1,10 @@
+## [3.13.1](https://github.com/modelon-community/impact-client-python/compare/v3.13.0...v3.13.1) (2024-04-05)
+
+
+### Bug Fixes
+
+* correct documentation for import_to_userspace and experimental method get_access_control_list ([812c714](https://github.com/modelon-community/impact-client-python/commit/812c71495eb240577afe53aad10acc0d0581abef))
+
 # [3.13.0](https://github.com/modelon-community/impact-client-python/compare/v3.12.0...v3.13.0) (2024-04-03)
 
 
