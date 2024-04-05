@@ -346,9 +346,8 @@ class PublishedWorkspace:
             The workspace class object.
 
         Example::
-
-            published_workspace = client.get_published_workspaces(owner="username",
-                name="A Workspace")[0]
+            pw_client = client.get_published_workspaces_client()
+            published_workspace = pw_client.find(owner="sasuke", name="A workspace")[0]
             workspace = published_workspace.import_to_userspace()
 
         """
@@ -401,8 +400,8 @@ class PublishedWorkspace:
 
         Example::
 
-            published_workspace = client.get_published_workspaces(owner="username",
-                name="A Workspace")[0]
+            pw_client = client.get_published_workspaces_client()
+            published_workspace = pw_client.find(owner="sasuke", name="A workspace")[0]
             published_workspace_acl = published_workspace.get_access_control_list()
 
             published_workspace_shared_with = published_workspace_acl.shared_with
