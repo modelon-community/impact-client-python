@@ -7,8 +7,8 @@ def test_get_client_url_default(monkeypatch):
 
 
 def test_get_client_url_env(monkeypatch):
-    monkeypatch.setenv("MODELON_IMPACT_CLIENT_URL", "https://impact.modelon.com")
-    assert "https://impact.modelon.com" == configuration.get_client_url()
+    monkeypatch.setenv("MODELON_IMPACT_CLIENT_URL", "https://impact.modelon.cloud")
+    assert "https://impact.modelon.cloud" == configuration.get_client_url()
 
 
 def test_get_client_interactive_default():

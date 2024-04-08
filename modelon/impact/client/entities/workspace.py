@@ -15,6 +15,10 @@ from modelon.impact.client.entities.interfaces.workspace import WorkspaceInterfa
 from modelon.impact.client.entities.model import Model
 from modelon.impact.client.entities.model_executable import ModelExecutable
 from modelon.impact.client.entities.project import Project, VcsUri
+from modelon.impact.client.exceptions import (
+    NoAssociatedPublishedWorkspaceError,
+    RemotePublishedWorkspaceLinkError,
+)
 from modelon.impact.client.experiment_definition.interfaces.definition import (
     BaseExperimentDefinition,
 )
@@ -31,6 +35,7 @@ from modelon.impact.client.operations.workspace.exports import (
     WorkspaceExportOperation,
 )
 from modelon.impact.client.operations.workspace.imports import WorkspaceImportOperation
+from modelon.impact.client.sal.exceptions import HTTPError
 from modelon.impact.client.sal.service import Service
 
 if TYPE_CHECKING:
@@ -445,6 +450,89 @@ class ReceivedFrom:
     @property
     def created_at(self) -> int:
         return self._data["createdAt"]
+
+
+class ReceivedFromWorkspace:
+    def __init__(self, workspace: Workspace) -> None:
+        self._workspace = workspace
+        self._received_from = self._workspace.definition.received_from
+        if not self._received_from:
+            raise NoAssociatedPublishedWorkspaceError(
+                "The workspace has no link to a published workspace."
+            )
+
+    @property
+    def metadata(self) -> ReceivedFrom:
+        """Reference metadata for the published workspace."""
+        assert self._received_from
+        return self._received_from
+
+    def get_workspace(self) -> Optional[PublishedWorkspace]:
+        """Return the published workspace from which the workspace was imported from.
+        Returns None if workspace is not linked to any published workspace.
+
+        Returns:
+            An PublishedWorkspace class object.
+
+        Example::
+
+            published_ws = workspace.received_from.get_workspace()
+
+        """
+        try:
+            sharing_id = self.metadata.sharing_id
+            data = self._workspace._sal.workspace.get_published_workspace(sharing_id)
+        except HTTPError as e:
+            logger.warning(
+                f"Published workspace with ID: {sharing_id} doesn't exist. Cause{e}"
+            )
+            return None
+        definition = PublishedWorkspaceDefinition.from_dict(data)
+        return PublishedWorkspace(
+            data["id"], definition=definition, service=self._workspace._sal
+        )
+
+    def has_updates(self) -> Optional[bool]:
+        """Return True if there are updates available for the published workspace
+        corresponding to the local workspace(if any) else False.
+
+        Example::
+
+            has_updates = workspace.received_from.has_updates()
+
+        """
+        pw = self.get_workspace()
+        if not pw:
+            return None
+        local_ws_created_at = self.metadata.created_at  # type: ignore
+        return pw.created_at != local_ws_created_at
+
+    def _import_to_userspace(self, sharing_id: str) -> Workspace:
+        resp = self._workspace._sal.workspace.import_from_cloud(
+            sharing_id, self._workspace.id
+        )
+        return WorkspaceImportOperation[Workspace](
+            resp["data"]["location"],
+            self._workspace._sal,
+            Workspace.from_import_operation,
+        ).wait()
+
+    def update_userspace(self) -> Workspace:
+        """Returns the workspaces updated from the latest published one.
+
+        Example::
+
+            updated_workspace = workspace.received_from.update_userspace()
+
+        """
+        logger.info("Updating the workspace to the latest published workspace.")
+        pub_ws = self.get_workspace()
+        if not pub_ws:
+            raise NoAssociatedPublishedWorkspaceError(
+                "No published workspace found that are "
+                f"associated with local workspace with ID: {self._workspace.id}"
+            )
+        return self._import_to_userspace(sharing_id=pub_ws.id)
 
 
 class WorkspaceDefinition:
@@ -1149,3 +1237,59 @@ class Workspace(WorkspaceInterface):
     ) -> Workspace:
         assert isinstance(operation, WorkspaceConversionOperation)
         return cls(**kwargs, service=operation._sal)
+
+    @property
+    def received_from(self) -> ReceivedFromWorkspace:
+        """Returns an instance of ReceivedFromWorkspace class."""
+        return ReceivedFromWorkspace(self)
+
+    def get_published_workspace(
+        self, model_name: Optional[str] = None
+    ) -> Optional[PublishedWorkspace]:
+        """Returns the published workspace with the name matching this workspace.
+
+        Args:
+            model_name: Class path of the Modelica model. If specified,
+             an app mode published workspace corresponding to the local workspace
+             is returned(if it exists).
+
+        Returns:
+            An PublishedWorkspace class object.
+
+        Example::
+
+            published_ws = workspace.get_published_workspace()
+
+        """
+        recieved_from = self.definition.received_from
+        if recieved_from:
+            raise RemotePublishedWorkspaceLinkError(
+                "This workspace is imported from published workspace with ID:"
+                f"{recieved_from.sharing_id}. Use received_from.get_workspace()"
+                " to retrieve the information"
+            )
+        user = self._sal.users.get_me()["data"]
+        published_workspaces = self._sal.workspace.get_published_workspaces(
+            name=self.name,
+            owner_username=user["username"],
+            type=PublishedWorkspaceType.APP_MODE.value
+            if model_name
+            else PublishedWorkspaceType.ARCHIVE.value,
+        )["data"]["items"]
+        if model_name:
+            published_workspaces = [
+                pw
+                for pw in published_workspaces
+                if pw.get("appMode", {}).get("model") == model_name
+            ]
+        if not published_workspaces:
+            logger.warning(
+                "No published workspace corresponding to the local workspace with"
+                f" ID: {self.id} exist!"
+            )
+            return None
+        return PublishedWorkspace(
+            published_workspaces[0]["id"],
+            definition=PublishedWorkspaceDefinition.from_dict(published_workspaces[0]),
+            service=self._sal,
+        )
