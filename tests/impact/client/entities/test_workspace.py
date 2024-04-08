@@ -9,6 +9,7 @@ from modelon.impact.client import AccessSettings, SimpleModelicaExperimentDefini
 from modelon.impact.client.entities.experiment import Experiment
 from modelon.impact.client.entities.model import Model
 from modelon.impact.client.entities.model_executable import ModelExecutable
+from modelon.impact.client.exceptions import NoAssociatedPublishedWorkspaceError
 from modelon.impact.client.operations.workspace.exports import WorkspaceExportOperation
 from tests.files.paths import TEST_WORKSPACE_PATH
 from tests.impact.client.helpers import (
@@ -215,7 +216,9 @@ class TestWorkspace:
         pw.delete()
 
     @pytest.mark.vcr()
-    def test_get_publish_workspace_corresponding_to_workspace(self, client_helper: ClientHelper):
+    def test_get_publish_workspace_corresponding_to_workspace(
+        self, client_helper: ClientHelper
+    ):
         pub_ws = client_helper.workspace.get_published_workspace()
         assert not pub_ws
         pw = client_helper.workspace.export(publish=True).wait()
@@ -224,6 +227,24 @@ class TestWorkspace:
         assert pub_ws.id == pw.id
         pwc = client_helper.client.get_published_workspaces_client()
         pw = pwc.get_by_id(pw.id)
+        pw.delete()
+
+    @pytest.mark.vcr()
+    def test_has_remote_update_fails_for_local_workspace(
+        self, client_helper: ClientHelper
+    ):
+        with pytest.raises(NoAssociatedPublishedWorkspaceError):
+            client_helper.workspace.has_remote_updates()
+
+    @pytest.mark.vcr()
+    def test_workspace_has_remote_updates(self, client_helper: ClientHelper):
+        pw = client_helper.workspace.export(publish=True).wait()
+        pwc = client_helper.client.get_published_workspaces_client()
+        pw = pwc.get_by_id(pw.id)
+        workspace = pw.import_to_userspace()
+        assert not workspace.has_remote_updates()
+        client_helper.workspace.export(publish=True).wait()
+        assert workspace.has_remote_updates()
         pw.delete()
 
     @pytest.mark.vcr()

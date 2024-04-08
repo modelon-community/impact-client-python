@@ -15,6 +15,7 @@ from modelon.impact.client.entities.interfaces.workspace import WorkspaceInterfa
 from modelon.impact.client.entities.model import Model
 from modelon.impact.client.entities.model_executable import ModelExecutable
 from modelon.impact.client.entities.project import Project, VcsUri
+from modelon.impact.client.exceptions import NoAssociatedPublishedWorkspaceError
 from modelon.impact.client.experiment_definition.interfaces.definition import (
     BaseExperimentDefinition,
 )
@@ -1149,3 +1150,23 @@ class Workspace(WorkspaceInterface):
                 definition=PublishedWorkspaceDefinition.from_dict(data[0]),
                 service=self._sal,
             )
+
+    def has_remote_updates(self) -> bool:
+        """Return True if there are remote updates available for the published workspace
+        corresponding to the local workspace(if any) else False.
+
+        Example::
+
+            has_updates = workspace.has_remote_updates()
+
+        """
+        pw = self.get_published_workspace()
+        if not pw:
+            raise NoAssociatedPublishedWorkspaceError(
+                "No published workspace found that are"
+                f"associated with local workspace with ID: {self.id}"
+            )
+
+        local_ws_recieved_from = self.definition.received_from
+        local_ws_created_at = local_ws_recieved_from.created_at  # type: ignore
+        return pw.created_at != local_ws_created_at
