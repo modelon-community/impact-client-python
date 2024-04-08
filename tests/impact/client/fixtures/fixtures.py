@@ -2334,7 +2334,10 @@ def setup_client():
 
 def _clean_workspace_and_its_projects(client: Client):
     for workspace in client.get_workspaces():
-        if workspace.id in IDs.WORKSPACE_IDS:
+        if any(
+            workspace.name.startswith(workspace_name)
+            for workspace_name in IDs.WORKSPACE_NAMES
+        ):
             for project in workspace.get_projects():
                 project.delete()
             workspace.delete()

@@ -169,6 +169,7 @@ class IDs:
     WORKSPACE_PRIMARY = _WORKSPACE_PREFIX + "workspace1"
     WORKSPACE_SECONDARY = _WORKSPACE_PREFIX + "workspace2"
     WORKSPACE_IDS = [WORKSPACE_PRIMARY, WORKSPACE_SECONDARY]
+    WORKSPACE_NAMES = WORKSPACE_IDS
     USER_ID = "njcswjcjnscksnckjsnckndsk"
     USERNAME = "alice"
     TENANT_ID = "modelon"

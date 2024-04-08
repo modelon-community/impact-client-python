@@ -74,3 +74,11 @@ class ExternalResultUploadError(Error):
 
 class NoSuchCustomArtifactError(Error):
     pass
+
+
+class NoAssociatedPublishedWorkspaceError(Error):
+    pass
+
+
+class RemotePublishedWorkspaceLinkError(Error):
+    pass

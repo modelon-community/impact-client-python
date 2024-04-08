@@ -239,8 +239,8 @@ interactions:
         "name": "Modelica", "version": "3.2.3"}, "disabled": true, "disabledContent":
         []}, {"reference": {"id": "ac04a5da97bc2e11bffb7f41b2485da347846df6", "name":
         "Modelica", "version": "4.0.0"}, "disabled": false, "disabledContent": []}],
-        "format": "1.0.0", "guid": "210e8b1c741b4e99a301f772d4cf1b4e", "createdBy":
-        "ce771b6a-56ea-464b-9ab7-f527a8a3c051", "createdAt": 1712678290333}, "id":
+        "format": "1.0.0", "guid": "4485db0b7bcd4dbabca2e3d30eb8413d", "createdBy":
+        "ce771b6a-56ea-464b-9ab7-f527a8a3c051", "createdAt": 1712678485001}, "id":
         "impact-python-client-workspace1", "conversion": {"state": "UP_TO_DATE"}}'
     headers:
       Connection:
@@ -261,6 +261,142 @@ interactions:
       code: 200
       message: OK
 - request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+    method: GET
+    uri: /user/test@dummy.com/impact/api/workspaces/impact-python-client-workspace1
+  response:
+    body:
+      string: '{"definition": {"name": "impact-python-client-workspace1", "description":
+        "", "defaultProjectId": "5647d3e10045d4d812076676fe6f507df4a505ce", "projects":
+        [{"reference": {"id": "5647d3e10045d4d812076676fe6f507df4a505ce"}, "disabled":
+        false, "disabledContent": []}], "dependencies": [{"reference": {"id": "fec43f77925949bd7e7c0f10ac49ebc1189dc840",
+        "name": "Modelica", "version": "3.2.3"}, "disabled": true, "disabledContent":
+        []}, {"reference": {"id": "ac04a5da97bc2e11bffb7f41b2485da347846df6", "name":
+        "Modelica", "version": "4.0.0"}, "disabled": false, "disabledContent": []}],
+        "format": "1.0.0", "guid": "4485db0b7bcd4dbabca2e3d30eb8413d", "createdBy":
+        "ce771b6a-56ea-464b-9ab7-f527a8a3c051", "createdAt": 1712678485001}, "id":
+        "impact-python-client-workspace1", "conversion": {"state": "UP_TO_DATE"}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json; charset=utf-8
+      access-control-allow-headers:
+      - '*'
+      access-control-allow-methods:
+      - POST, PUT, GET, DELETE, OPTIONS
+      access-control-allow-origin:
+      - '*'
+      vary:
+      - Accept-Encoding
+      x-powered-by:
+      - Express
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+    method: GET
+    uri: /user/test@dummy.com/impact/api/users/me
+  response:
+    body:
+      string: '{"data": {"license": "impact-pro", "username": "test@dummy.com"}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json; charset=utf-8
+      access-control-allow-headers:
+      - '*'
+      access-control-allow-methods:
+      - POST, PUT, GET, DELETE, OPTIONS
+      access-control-allow-origin:
+      - '*'
+      vary:
+      - Accept-Encoding
+      x-powered-by:
+      - Express
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+    method: GET
+    uri: /user/test@dummy.com/impact/api/workspaces/impact-python-client-workspace1
+  response:
+    body:
+      string: '{"definition": {"name": "impact-python-client-workspace1", "description":
+        "", "defaultProjectId": "5647d3e10045d4d812076676fe6f507df4a505ce", "projects":
+        [{"reference": {"id": "5647d3e10045d4d812076676fe6f507df4a505ce"}, "disabled":
+        false, "disabledContent": []}], "dependencies": [{"reference": {"id": "fec43f77925949bd7e7c0f10ac49ebc1189dc840",
+        "name": "Modelica", "version": "3.2.3"}, "disabled": true, "disabledContent":
+        []}, {"reference": {"id": "ac04a5da97bc2e11bffb7f41b2485da347846df6", "name":
+        "Modelica", "version": "4.0.0"}, "disabled": false, "disabledContent": []}],
+        "format": "1.0.0", "guid": "4485db0b7bcd4dbabca2e3d30eb8413d", "createdBy":
+        "ce771b6a-56ea-464b-9ab7-f527a8a3c051", "createdAt": 1712678485001}, "id":
+        "impact-python-client-workspace1", "conversion": {"state": "UP_TO_DATE"}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json; charset=utf-8
+      access-control-allow-headers:
+      - '*'
+      access-control-allow-methods:
+      - POST, PUT, GET, DELETE, OPTIONS
+      access-control-allow-origin:
+      - '*'
+      vary:
+      - Accept-Encoding
+      x-powered-by:
+      - Express
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+    method: GET
+    uri: /user/test@dummy.com/impact/api/published-workspaces
+  response:
+    body:
+      string: '{"data": {"items": []}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json
+    status:
+      code: 200
+      message: OK
+- request:
     body: '{"workspaceId": "impact-python-client-workspace1", "publish": true}'
     headers:
       Accept:
@@ -277,7 +413,7 @@ interactions:
     uri: /user/test@dummy.com/impact/api/workspace-exports
   response:
     body:
-      string: '{"data": {"location": "api/workspace-exports/7fa90018-8df0-44c5-8d2b-4e76cca4f021"}}'
+      string: '{"data": {"location": "api/workspace-exports/e53ab205-a6b5-41b1-ab22-43699231284e"}}'
     headers:
       Connection:
       - keep-alive
@@ -306,10 +442,10 @@ interactions:
       Connection:
       - keep-alive
     method: GET
-    uri: /user/test@dummy.com/impact/api/workspace-exports/7fa90018-8df0-44c5-8d2b-4e76cca4f021
+    uri: /user/test@dummy.com/impact/api/workspace-exports/e53ab205-a6b5-41b1-ab22-43699231284e
   response:
     body:
-      string: '{"data": {"id": "7fa90018-8df0-44c5-8d2b-4e76cca4f021", "status": "running"}}'
+      string: '{"data": {"id": "e53ab205-a6b5-41b1-ab22-43699231284e", "status": "running"}}'
     headers:
       Connection:
       - keep-alive
@@ -338,10 +474,10 @@ interactions:
       Connection:
       - keep-alive
     method: GET
-    uri: /user/test@dummy.com/impact/api/workspace-exports/7fa90018-8df0-44c5-8d2b-4e76cca4f021
+    uri: /user/test@dummy.com/impact/api/workspace-exports/e53ab205-a6b5-41b1-ab22-43699231284e
   response:
     body:
-      string: '{"data": {"id": "7fa90018-8df0-44c5-8d2b-4e76cca4f021", "status": "running"}}'
+      string: '{"data": {"id": "e53ab205-a6b5-41b1-ab22-43699231284e", "status": "running"}}'
     headers:
       Connection:
       - keep-alive
@@ -370,11 +506,11 @@ interactions:
       Connection:
       - keep-alive
     method: GET
-    uri: /user/test@dummy.com/impact/api/workspace-exports/7fa90018-8df0-44c5-8d2b-4e76cca4f021
+    uri: /user/test@dummy.com/impact/api/workspace-exports/e53ab205-a6b5-41b1-ab22-43699231284e
   response:
     body:
-      string: '{"data": {"id": "7fa90018-8df0-44c5-8d2b-4e76cca4f021", "status": "ready",
-        "data": {"downloadUri": "api/exports/7fa90018-8df0-44c5-8d2b-4e76cca4f021",
+      string: '{"data": {"id": "e53ab205-a6b5-41b1-ab22-43699231284e", "status": "ready",
+        "data": {"downloadUri": "api/exports/e53ab205-a6b5-41b1-ab22-43699231284e",
         "size": 0}}}'
     headers:
       Connection:
@@ -404,11 +540,11 @@ interactions:
       Connection:
       - keep-alive
     method: GET
-    uri: /user/test@dummy.com/impact/api/workspace-exports/7fa90018-8df0-44c5-8d2b-4e76cca4f021
+    uri: /user/test@dummy.com/impact/api/workspace-exports/e53ab205-a6b5-41b1-ab22-43699231284e
   response:
     body:
-      string: '{"data": {"id": "7fa90018-8df0-44c5-8d2b-4e76cca4f021", "status": "ready",
-        "data": {"downloadUri": "api/exports/7fa90018-8df0-44c5-8d2b-4e76cca4f021",
+      string: '{"data": {"id": "e53ab205-a6b5-41b1-ab22-43699231284e", "status": "ready",
+        "data": {"downloadUri": "api/exports/e53ab205-a6b5-41b1-ab22-43699231284e",
         "size": 0}}}'
     headers:
       Connection:
@@ -438,11 +574,11 @@ interactions:
       Connection:
       - keep-alive
     method: GET
-    uri: /user/test@dummy.com/impact/api/workspace-exports/7fa90018-8df0-44c5-8d2b-4e76cca4f021
+    uri: /user/test@dummy.com/impact/api/workspace-exports/e53ab205-a6b5-41b1-ab22-43699231284e
   response:
     body:
-      string: '{"data": {"id": "7fa90018-8df0-44c5-8d2b-4e76cca4f021", "status": "ready",
-        "data": {"downloadUri": "api/exports/7fa90018-8df0-44c5-8d2b-4e76cca4f021",
+      string: '{"data": {"id": "e53ab205-a6b5-41b1-ab22-43699231284e", "status": "ready",
+        "data": {"downloadUri": "api/exports/e53ab205-a6b5-41b1-ab22-43699231284e",
         "size": 0}}}'
     headers:
       Connection:
@@ -472,11 +608,11 @@ interactions:
       Connection:
       - keep-alive
     method: GET
-    uri: /user/test@dummy.com/impact/api/workspace-exports/7fa90018-8df0-44c5-8d2b-4e76cca4f021
+    uri: /user/test@dummy.com/impact/api/workspace-exports/e53ab205-a6b5-41b1-ab22-43699231284e
   response:
     body:
-      string: '{"data": {"id": "7fa90018-8df0-44c5-8d2b-4e76cca4f021", "status": "ready",
-        "data": {"downloadUri": "api/exports/7fa90018-8df0-44c5-8d2b-4e76cca4f021",
+      string: '{"data": {"id": "e53ab205-a6b5-41b1-ab22-43699231284e", "status": "ready",
+        "data": {"downloadUri": "api/exports/e53ab205-a6b5-41b1-ab22-43699231284e",
         "size": 0}}}'
     headers:
       Connection:
@@ -493,31 +629,6 @@ interactions:
       - Accept-Encoding
       x-powered-by:
       - Express
-    status:
-      code: 200
-      message: OK
-- request:
-    body: null
-    headers:
-      Accept:
-      - '*/*'
-      Accept-Encoding:
-      - gzip, deflate
-      Connection:
-      - keep-alive
-    method: GET
-    uri: /user/test@dummy.com/impact/api/published-workspaces/7fa90018-8df0-44c5-8d2b-4e76cca4f021
-  response:
-    body:
-      string: '{"workspaceName": "impact-python-client-workspace1", "id": "7fa90018-8df0-44c5-8d2b-4e76cca4f021",
-        "tenantId": "modelon", "createdAt": 1712678290709, "status": "created", "size":
-        2595, "ownerId": "ce771b6a-56ea-464b-9ab7-f527a8a3c051", "ownerUsername":
-        "test@dummy.com"}'
-    headers:
-      Connection:
-      - keep-alive
-      Content-Type:
-      - application/json
     status:
       code: 200
       message: OK
@@ -541,8 +652,8 @@ interactions:
         "name": "Modelica", "version": "3.2.3"}, "disabled": true, "disabledContent":
         []}, {"reference": {"id": "ac04a5da97bc2e11bffb7f41b2485da347846df6", "name":
         "Modelica", "version": "4.0.0"}, "disabled": false, "disabledContent": []}],
-        "format": "1.0.0", "guid": "210e8b1c741b4e99a301f772d4cf1b4e", "createdBy":
-        "ce771b6a-56ea-464b-9ab7-f527a8a3c051", "createdAt": 1712678290333}, "id":
+        "format": "1.0.0", "guid": "4485db0b7bcd4dbabca2e3d30eb8413d", "createdBy":
+        "ce771b6a-56ea-464b-9ab7-f527a8a3c051", "createdAt": 1712678485001}, "id":
         "impact-python-client-workspace1", "conversion": {"state": "UP_TO_DATE"}}'
     headers:
       Connection:
@@ -571,10 +682,133 @@ interactions:
       - gzip, deflate
       Connection:
       - keep-alive
+    method: GET
+    uri: /user/test@dummy.com/impact/api/users/me
+  response:
+    body:
+      string: '{"data": {"license": "impact-pro", "username": "test@dummy.com"}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json; charset=utf-8
+      access-control-allow-headers:
+      - '*'
+      access-control-allow-methods:
+      - POST, PUT, GET, DELETE, OPTIONS
+      access-control-allow-origin:
+      - '*'
+      vary:
+      - Accept-Encoding
+      x-powered-by:
+      - Express
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+    method: GET
+    uri: /user/test@dummy.com/impact/api/workspaces/impact-python-client-workspace1
+  response:
+    body:
+      string: '{"definition": {"name": "impact-python-client-workspace1", "description":
+        "", "defaultProjectId": "5647d3e10045d4d812076676fe6f507df4a505ce", "projects":
+        [{"reference": {"id": "5647d3e10045d4d812076676fe6f507df4a505ce"}, "disabled":
+        false, "disabledContent": []}], "dependencies": [{"reference": {"id": "fec43f77925949bd7e7c0f10ac49ebc1189dc840",
+        "name": "Modelica", "version": "3.2.3"}, "disabled": true, "disabledContent":
+        []}, {"reference": {"id": "ac04a5da97bc2e11bffb7f41b2485da347846df6", "name":
+        "Modelica", "version": "4.0.0"}, "disabled": false, "disabledContent": []}],
+        "format": "1.0.0", "guid": "4485db0b7bcd4dbabca2e3d30eb8413d", "createdBy":
+        "ce771b6a-56ea-464b-9ab7-f527a8a3c051", "createdAt": 1712678485001}, "id":
+        "impact-python-client-workspace1", "conversion": {"state": "UP_TO_DATE"}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json; charset=utf-8
+      access-control-allow-headers:
+      - '*'
+      access-control-allow-methods:
+      - POST, PUT, GET, DELETE, OPTIONS
+      access-control-allow-origin:
+      - '*'
+      vary:
+      - Accept-Encoding
+      x-powered-by:
+      - Express
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+    method: GET
+    uri: /user/test@dummy.com/impact/api/published-workspaces
+  response:
+    body:
+      string: '{"data": {"items": [{"workspaceName": "impact-python-client-workspace1",
+        "id": "e53ab205-a6b5-41b1-ab22-43699231284e", "tenantId": "modelon", "createdAt":
+        1712678486508, "status": "created", "size": 2599, "ownerId": "ce771b6a-56ea-464b-9ab7-f527a8a3c051",
+        "ownerUsername": "test@dummy.com"}]}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+    method: GET
+    uri: /user/test@dummy.com/impact/api/published-workspaces/e53ab205-a6b5-41b1-ab22-43699231284e
+  response:
+    body:
+      string: '{"workspaceName": "impact-python-client-workspace1", "id": "e53ab205-a6b5-41b1-ab22-43699231284e",
+        "tenantId": "modelon", "createdAt": 1712678486508, "status": "created", "size":
+        2599, "ownerId": "ce771b6a-56ea-464b-9ab7-f527a8a3c051", "ownerUsername":
+        "test@dummy.com"}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
       Content-Length:
       - '0'
     method: DELETE
-    uri: /user/test@dummy.com/impact/api/published-workspaces/7fa90018-8df0-44c5-8d2b-4e76cca4f021
+    uri: /user/test@dummy.com/impact/api/published-workspaces/e53ab205-a6b5-41b1-ab22-43699231284e
   response:
     body:
       string: ''
@@ -606,8 +840,8 @@ interactions:
         {"id": "fec43f77925949bd7e7c0f10ac49ebc1189dc840", "name": "Modelica", "version":
         "3.2.3"}, "disabled": true, "disabledContent": []}, {"reference": {"id": "ac04a5da97bc2e11bffb7f41b2485da347846df6",
         "name": "Modelica", "version": "4.0.0"}, "disabled": false, "disabledContent":
-        []}], "format": "1.0.0", "guid": "210e8b1c741b4e99a301f772d4cf1b4e", "createdBy":
-        "ce771b6a-56ea-464b-9ab7-f527a8a3c051", "createdAt": 1712678290333}, "id":
+        []}], "format": "1.0.0", "guid": "4485db0b7bcd4dbabca2e3d30eb8413d", "createdBy":
+        "ce771b6a-56ea-464b-9ab7-f527a8a3c051", "createdAt": 1712678485001}, "id":
         "impact-python-client-workspace1", "conversion": {"state": "UP_TO_DATE"}}]}}'
     headers:
       Connection:
@@ -647,8 +881,8 @@ interactions:
         "name": "Modelica", "version": "3.2.3"}, "disabled": true, "disabledContent":
         []}, {"reference": {"id": "ac04a5da97bc2e11bffb7f41b2485da347846df6", "name":
         "Modelica", "version": "4.0.0"}, "disabled": false, "disabledContent": []}],
-        "format": "1.0.0", "guid": "210e8b1c741b4e99a301f772d4cf1b4e", "createdBy":
-        "ce771b6a-56ea-464b-9ab7-f527a8a3c051", "createdAt": 1712678290333}, "id":
+        "format": "1.0.0", "guid": "4485db0b7bcd4dbabca2e3d30eb8413d", "createdBy":
+        "ce771b6a-56ea-464b-9ab7-f527a8a3c051", "createdAt": 1712678485001}, "id":
         "impact-python-client-workspace1", "conversion": {"state": "UP_TO_DATE"}}'
     headers:
       Connection:
@@ -684,15 +918,15 @@ interactions:
       string: '{"data": {"items": [{"id": "5647d3e10045d4d812076676fe6f507df4a505ce",
         "definition": {"name": "Project", "format": "1.0.0", "dependencies": [{"name":
         "Modelica", "versionSpecifier": "4.0.0"}], "content": [{"relpath": "Resources/Views",
-        "contentType": "VIEWS", "defaultDisabled": false, "id": "119df30c4b3a44159a506f8a4ca7dffc"},
+        "contentType": "VIEWS", "defaultDisabled": false, "id": "fb01676f79cd43839c1c79874c5fae58"},
         {"relpath": "Resources/Favorites", "contentType": "FAVORITES", "defaultDisabled":
-        false, "id": "ea029aa3737f48c99fc0fe6560219559"}, {"relpath": "Resources/CustomFunctions",
-        "contentType": "CUSTOM_FUNCTIONS", "defaultDisabled": false, "id": "03ca2ac59168449390a1965c6d26ebd6"},
+        false, "id": "518a3d05153d4cb893a8a5f25dad373e"}, {"relpath": "Resources/CustomFunctions",
+        "contentType": "CUSTOM_FUNCTIONS", "defaultDisabled": false, "id": "7b9a7de404844c64b9b07cc7a0bbbbdf"},
         {"relpath": "Resources/Custom", "contentType": "GENERIC", "defaultDisabled":
-        false, "id": "857cfa8f5aca4082babc103932ab9135"}, {"relpath": "ReferenceResults",
-        "contentType": "REFERENCE_RESULTS", "defaultDisabled": false, "id": "6eb418d751814f35a7cca5602b58e71c"},
+        false, "id": "4880214c8802406ebe02953b8831d3e3"}, {"relpath": "ReferenceResults",
+        "contentType": "REFERENCE_RESULTS", "defaultDisabled": false, "id": "d5a5d28132f34b3d974b0f6921789ef5"},
         {"relpath": "Resources/ExperimentDefinitions", "contentType": "EXPERIMENT_DEFINITIONS",
-        "defaultDisabled": false, "id": "da505dc737f3486d87b23a126a9e803a"}], "executionOptions":
+        "defaultDisabled": false, "id": "1cda38dff4aa4c83b68ad65b5f2c6477"}], "executionOptions":
         []}, "projectType": "LOCAL", "storageLocation": "USERSPACE"}]}}'
     headers:
       Connection:
@@ -732,15 +966,15 @@ interactions:
       string: '{"id": "5647d3e10045d4d812076676fe6f507df4a505ce", "definition": {"name":
         "Project", "format": "1.0.0", "dependencies": [{"name": "Modelica", "versionSpecifier":
         "4.0.0"}], "content": [{"relpath": "Resources/Views", "contentType": "VIEWS",
-        "defaultDisabled": false, "id": "119df30c4b3a44159a506f8a4ca7dffc"}, {"relpath":
+        "defaultDisabled": false, "id": "fb01676f79cd43839c1c79874c5fae58"}, {"relpath":
         "Resources/Favorites", "contentType": "FAVORITES", "defaultDisabled": false,
-        "id": "ea029aa3737f48c99fc0fe6560219559"}, {"relpath": "Resources/CustomFunctions",
-        "contentType": "CUSTOM_FUNCTIONS", "defaultDisabled": false, "id": "03ca2ac59168449390a1965c6d26ebd6"},
+        "id": "518a3d05153d4cb893a8a5f25dad373e"}, {"relpath": "Resources/CustomFunctions",
+        "contentType": "CUSTOM_FUNCTIONS", "defaultDisabled": false, "id": "7b9a7de404844c64b9b07cc7a0bbbbdf"},
         {"relpath": "Resources/Custom", "contentType": "GENERIC", "defaultDisabled":
-        false, "id": "857cfa8f5aca4082babc103932ab9135"}, {"relpath": "ReferenceResults",
-        "contentType": "REFERENCE_RESULTS", "defaultDisabled": false, "id": "6eb418d751814f35a7cca5602b58e71c"},
+        false, "id": "4880214c8802406ebe02953b8831d3e3"}, {"relpath": "ReferenceResults",
+        "contentType": "REFERENCE_RESULTS", "defaultDisabled": false, "id": "d5a5d28132f34b3d974b0f6921789ef5"},
         {"relpath": "Resources/ExperimentDefinitions", "contentType": "EXPERIMENT_DEFINITIONS",
-        "defaultDisabled": false, "id": "da505dc737f3486d87b23a126a9e803a"}], "executionOptions":
+        "defaultDisabled": false, "id": "1cda38dff4aa4c83b68ad65b5f2c6477"}], "executionOptions":
         []}, "projectType": "LOCAL", "storageLocation": "USERSPACE"}'
     headers:
       Connection:

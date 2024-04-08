@@ -13,6 +13,10 @@ from modelon.impact.client import (
 from modelon.impact.client.entities.experiment import Experiment
 from modelon.impact.client.entities.model import Model
 from modelon.impact.client.entities.model_executable import ModelExecutable
+from modelon.impact.client.exceptions import (
+    NoAssociatedPublishedWorkspaceError,
+    RemotePublishedWorkspaceLinkError,
+)
 from modelon.impact.client.experiment_definition.expansion import LatinHypercube, Sobol
 from modelon.impact.client.experiment_definition.extension import (
     SimpleExperimentExtension,
@@ -221,6 +225,169 @@ class TestWorkspace:
         pw = pwc.get_by_id(pub_ws_id)
         assert pw
         assert pw.name == client_helper.workspace.name
+        pw.delete()
+
+    @pytest.mark.vcr()
+    def test_get_remote_workspace_corresponding_to_workspace(
+        self, client_helper: ClientHelper
+    ):
+        pw = client_helper.workspace.export(publish=True).wait()
+        pwc = client_helper.client.get_published_workspaces_client()
+        pw = pwc.get_by_id(pw.id)
+        assert pw
+        workspace = pw.import_to_userspace()
+        pub_ws = workspace.received_from.get_workspace()
+        assert pub_ws
+        pw.delete()
+
+    @pytest.mark.vcr()
+    def test_get_remote_workspace_fails_if_remote_deleted(
+        self, client_helper: ClientHelper
+    ):
+        pw = client_helper.workspace.export(publish=True).wait()
+        pwc = client_helper.client.get_published_workspaces_client()
+        pw = pwc.get_by_id(pw.id)
+        assert pw
+        workspace = pw.import_to_userspace()
+
+        pub_ws = workspace.received_from.get_workspace()
+        assert pub_ws
+
+        # Delete published workspace, local workspace still has a link to it
+        pw.delete()
+
+        pub_ws = workspace.received_from.get_workspace()
+        assert pub_ws is None
+
+    @pytest.mark.vcr()
+    def test_get_remote_workspace_fails_for_local_workspace(
+        self, client_helper: ClientHelper
+    ):
+        with pytest.raises(NoAssociatedPublishedWorkspaceError):
+            client_helper.workspace.received_from.get_workspace()
+
+    @pytest.mark.vcr()
+    def test_has_remote_update_fails_for_local_workspace(
+        self, client_helper: ClientHelper
+    ):
+        with pytest.raises(NoAssociatedPublishedWorkspaceError):
+            client_helper.workspace.received_from.has_updates()
+
+    @pytest.mark.vcr()
+    def test_has_remote_update_returns_None_if_no_published_workspace_found(
+        self, client_helper: ClientHelper
+    ):
+        pw = client_helper.workspace.export(publish=True).wait()
+        pwc = client_helper.client.get_published_workspaces_client()
+        pw = pwc.get_by_id(pw.id)
+        assert pw
+        workspace = pw.import_to_userspace()
+
+        has_remote_updates = workspace.received_from.has_updates()
+        assert has_remote_updates is False
+
+        # Delete published workspace, local workspace still has a link to it
+        pw.delete()
+
+        has_remote_updates = workspace.received_from.has_updates()
+        assert has_remote_updates is None
+
+    @pytest.mark.vcr()
+    def test_workspace_has_remote_updates(self, client_helper: ClientHelper):
+        pw = client_helper.workspace.export(publish=True).wait()
+        pwc = client_helper.client.get_published_workspaces_client()
+        pw = pwc.get_by_id(pw.id)
+        assert pw
+        workspace = pw.import_to_userspace()
+        assert not workspace.received_from.has_updates()
+
+        # Republish workspace
+        client_helper.workspace.export(publish=True).wait()
+
+        assert workspace.received_from.has_updates()
+        pw.delete()
+
+    @pytest.mark.vcr()
+    def test_update_from_remote(self, client_helper: ClientHelper):
+        pw = client_helper.workspace.export(publish=True).wait()
+        pwc = client_helper.client.get_published_workspaces_client()
+        pw = pwc.get_by_id(pw.id)
+        assert pw
+        workspace = pw.import_to_userspace()
+        assert not workspace.received_from.has_updates()
+
+        # Republish workspace
+        client_helper.workspace.export(publish=True).wait()
+        assert workspace.received_from.has_updates()
+
+        # Update from remote
+        workspace = workspace.received_from.update_userspace()
+
+        assert not workspace.received_from.has_updates()
+
+        pw.delete()
+
+    @pytest.mark.vcr()
+    def test_get_published_workspace_corresponding_to_workspace(
+        self, client_helper: ClientHelper
+    ):
+        pub_ws = client_helper.workspace.get_published_workspace()
+        assert not pub_ws
+        pw_id = client_helper.workspace.export(publish=True).wait().id
+
+        pub_ws = client_helper.workspace.get_published_workspace()
+        assert pub_ws
+        assert pub_ws.id == pw_id
+
+        # Cleanup
+        pwc = client_helper.client.get_published_workspaces_client()
+        pw = pwc.get_by_id(pw_id)
+        assert pw
+        pw.delete()
+
+    @pytest.mark.vcr()
+    def test_get_published_app_mode_workspace_corresponding_to_workspace(
+        self, client_helper: ClientHelper
+    ):
+        pub_ws = client_helper.workspace.get_published_workspace(
+            model_name=IDs.MODELICA_CLASS_PATH
+        )
+        assert not pub_ws
+        pw_id = (
+            client_helper.workspace.export(
+                publish=True, class_path=IDs.MODELICA_CLASS_PATH
+            )
+            .wait()
+            .id
+        )
+
+        pub_ws = client_helper.workspace.get_published_workspace(
+            model_name=IDs.MODELICA_CLASS_PATH
+        )
+        assert pub_ws
+        assert pub_ws.id == pw_id
+
+        # Cleanup
+        pwc = client_helper.client.get_published_workspaces_client()
+        pw = pwc.get_by_id(pw_id)
+        assert pw
+        pw.delete()
+
+    @pytest.mark.vcr()
+    def test_get_published_workspace_fails_for_remote_imported_workspace(
+        self, client_helper: ClientHelper
+    ):
+        pw_id = client_helper.workspace.export(publish=True).wait().id
+        pwc = client_helper.client.get_published_workspaces_client()
+        pw = pwc.get_by_id(pw_id)
+        assert pw
+        workspace = pw.import_to_userspace()
+
+        with pytest.raises(RemotePublishedWorkspaceLinkError):
+            workspace.get_published_workspace()
+
+        # Cleanup
+        pw.delete()
 
     @pytest.mark.vcr()
     def test_get_model(self, client_helper: ClientHelper):
