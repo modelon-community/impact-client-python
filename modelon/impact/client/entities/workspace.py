@@ -1144,12 +1144,15 @@ class Workspace(WorkspaceInterface):
             name=self.name,
             owner_username=user["username"],
         )["data"]["items"]
-        if data:
-            return PublishedWorkspace(
+        return (
+            PublishedWorkspace(
                 data[0]["id"],
                 definition=PublishedWorkspaceDefinition.from_dict(data[0]),
                 service=self._sal,
             )
+            if data
+            else None
+        )
 
     def has_remote_updates(self) -> bool:
         """Return True if there are remote updates available for the published workspace
