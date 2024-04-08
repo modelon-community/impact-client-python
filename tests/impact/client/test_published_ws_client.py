@@ -12,7 +12,6 @@ from modelon.impact.client.sal.uri import URI
 from tests.impact.client.helpers import IDs
 
 
-@pytest.mark.experimental
 def test_get_publised_workspaces(multiple_published_workspaces):
     uri = URI(multiple_published_workspaces.url)
     service = Service(uri=uri, context=multiple_published_workspaces.context)
@@ -28,7 +27,6 @@ def test_get_publised_workspaces(multiple_published_workspaces):
     assert workspaces[0].definition.status == PublishedWorkspaceUploadStatus.CREATED
 
 
-@pytest.mark.experimental
 def test_get_publised_workspace(published_workspace):
     uri = URI(published_workspace.url)
     service = Service(uri=uri, context=published_workspace.context)
