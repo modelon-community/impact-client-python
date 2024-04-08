@@ -212,6 +212,16 @@ class TestWorkspace:
         pw = pwc.get_by_id(pub_ws_id)
         assert pw
         assert pw.name == client_helper.workspace.name
+        pw.delete()
+
+    @pytest.mark.vcr()
+    def test_get_publish_workspace_corresponding_to_workspace(self, client_helper: ClientHelper):
+        pub_ws = client_helper.workspace.get_published_workspace()
+        assert not pub_ws
+        pw = client_helper.workspace.export(publish=True).wait()
+        pub_ws = client_helper.workspace.get_published_workspace()
+        assert pub_ws
+        assert pub_ws.id == pw.id
 
     @pytest.mark.vcr()
     def test_get_model(self, client_helper: ClientHelper):

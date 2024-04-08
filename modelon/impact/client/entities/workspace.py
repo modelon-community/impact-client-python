@@ -1126,3 +1126,26 @@ class Workspace(WorkspaceInterface):
     ) -> Workspace:
         assert isinstance(operation, WorkspaceConversionOperation)
         return cls(**kwargs, service=operation._sal)
+
+    def get_published_workspace(self) -> Optional[PublishedWorkspace]:
+        """Return the published workspace corresponding to the local workspace if any.
+
+        Returns:
+            An PublishedWorkspace class object.
+
+        Example::
+
+            published_ws = workspace.get_published_workspace()
+
+        """
+        user = self._sal.users.get_me()["data"]
+        data = self._sal.workspace.get_published_workspaces(
+            name=self.name,
+            owner_username=user["username"],
+        )["data"]["items"]
+        if data:
+            return PublishedWorkspace(
+                data[0]["id"],
+                definition=PublishedWorkspaceDefinition.from_dict(data[0]),
+                service=self._sal,
+            )
