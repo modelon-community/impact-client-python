@@ -5,10 +5,19 @@ import unittest.mock as mock
 import pytest
 
 import modelon.impact.client.sal.exceptions as sal_exceptions
-from modelon.impact.client import AccessSettings, SimpleModelicaExperimentDefinition
+from modelon.impact.client import (
+    AccessSettings,
+    SimpleFMUExperimentDefinition,
+    SimpleModelicaExperimentDefinition,
+)
 from modelon.impact.client.entities.experiment import Experiment
 from modelon.impact.client.entities.model import Model
 from modelon.impact.client.entities.model_executable import ModelExecutable
+from modelon.impact.client.experiment_definition.expansion import LatinHypercube, Sobol
+from modelon.impact.client.experiment_definition.extension import (
+    SimpleExperimentExtension,
+)
+from modelon.impact.client.experiment_definition.operators import Uniform
 from modelon.impact.client.operations.workspace.exports import WorkspaceExportOperation
 from tests.files.paths import TEST_WORKSPACE_PATH
 from tests.impact.client.helpers import (
@@ -319,3 +328,109 @@ class TestWorkspace:
         client_helper.create_experiment()
         experiments = workspace.get_experiments(IDs.MODELICA_CLASS_PATH)
         assert len(experiments) == 1
+
+    @pytest.mark.vcr()
+    def test_create_class_based_experiment_definition_from_experiment_result(
+        self, client_helper: ClientHelper
+    ):
+        workspace = client_helper.workspace
+        dynamic = workspace.get_custom_function("dynamic")
+        model = workspace.get_model(IDs.MODELICA_CLASS_PATH)
+        base_experiment_definition = SimpleModelicaExperimentDefinition(model, dynamic)
+        _exp_for_init = workspace.create_experiment(base_experiment_definition)
+        exp_for_init = _exp_for_init.execute().wait()
+        case_for_init = exp_for_init.get_case("case_1")
+
+        # Setup extensions
+        simulation_options = dynamic.get_simulation_options().with_values(ncp=500)
+        solver_options = {"atol": 1e-8}
+        simulate_ext_1 = SimpleExperimentExtension().with_case_label(
+            "Cruise condition 1"
+        )
+        simulate_ext_2 = SimpleExperimentExtension(
+            {"start_time": 0.0, "final_time": 4.0}, solver_options, simulation_options
+        ).with_case_label("Cruise condition 2")
+
+        # Initializing with experiment and expanding with Sobol
+        experiment_definition = (
+            base_experiment_definition.with_modifiers({"PI.k": Uniform(100, 200)})
+            .with_expansion(Sobol(5))
+            .with_extensions([simulate_ext_1, simulate_ext_2])
+            .with_cases([{"inertia1.J": 3}])
+            .with_initialize_from(exp_for_init)
+        )
+        experiment = workspace.create_experiment(experiment_definition)
+
+        definition_dict = workspace.create_experiment_definition_from_experiment_result(
+            experiment.id
+        ).to_dict()
+        expected_definition_dict = experiment_definition.to_dict()
+        assert definition_dict == expected_definition_dict
+
+        # Initializing with case and expanding with Latinhypercube
+        experiment_definition = (
+            base_experiment_definition.with_modifiers({"PI.k": Uniform(100, 200)})
+            .with_expansion(LatinHypercube(5, 2))
+            .with_extensions([simulate_ext_1, simulate_ext_2])
+            .with_cases([{"inertia1.J": 3}])
+            .with_initialize_from(case_for_init)
+        )
+        experiment = workspace.create_experiment(experiment_definition)
+        definition_dict = workspace.create_experiment_definition_from_experiment_result(
+            experiment.id
+        ).to_dict()
+        expected_definition_dict = experiment_definition.to_dict()
+        assert definition_dict == expected_definition_dict
+
+    @pytest.mark.vcr()
+    def test_create_fmu_based_experiment_definition_from_experiment_result(
+        self, client_helper: ClientHelper
+    ):
+        workspace = client_helper.workspace
+        dynamic = workspace.get_custom_function("dynamic")
+        model = workspace.get_model(IDs.MODELICA_CLASS_PATH)
+        compiler_options = dynamic.get_compiler_options().with_values(c_compiler="gcc")
+        fmu = model.compile(compiler_options).wait()
+        base_experiment_definition = SimpleFMUExperimentDefinition(fmu, dynamic)
+        _exp_for_init = workspace.create_experiment(base_experiment_definition)
+        exp_for_init = _exp_for_init.execute().wait()
+        case_for_init = exp_for_init.get_case("case_1")
+
+        # Setup extensions
+        simulation_options = dynamic.get_simulation_options().with_values(ncp=500)
+        solver_options = {"atol": 1e-8}
+        simulate_ext_1 = SimpleExperimentExtension().with_case_label(
+            "Cruise condition 1"
+        )
+        simulate_ext_2 = SimpleExperimentExtension(
+            {"start_time": 0.0, "final_time": 4.0}, solver_options, simulation_options
+        ).with_case_label("Cruise condition 2")
+
+        # Initializing with experiment
+        experiment_definition = (
+            base_experiment_definition.with_modifiers({"PI.k": Uniform(100, 200)})
+            .with_extensions([simulate_ext_1, simulate_ext_2])
+            .with_cases([{"inertia1.J": 3}])
+            .with_initialize_from(exp_for_init)
+        )
+        experiment = workspace.create_experiment(experiment_definition)
+
+        definition_dict = workspace.create_experiment_definition_from_experiment_result(
+            experiment.id
+        ).to_dict()
+        expected_definition_dict = experiment_definition.to_dict()
+        assert definition_dict == expected_definition_dict
+
+        # Initializing with case
+        experiment_definition = (
+            base_experiment_definition.with_modifiers({"PI.k": Uniform(100, 200)})
+            .with_extensions([simulate_ext_1, simulate_ext_2])
+            .with_cases([{"inertia1.J": 3}])
+            .with_initialize_from(case_for_init)
+        )
+        experiment = workspace.create_experiment(experiment_definition)
+        definition_dict = workspace.create_experiment_definition_from_experiment_result(
+            experiment.id
+        ).to_dict()
+        expected_definition_dict = experiment_definition.to_dict()
+        assert definition_dict == expected_definition_dict

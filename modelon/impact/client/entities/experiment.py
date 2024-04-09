@@ -7,8 +7,27 @@ from typing import TYPE_CHECKING, Any, Dict, List, Optional, Union
 from modelon.impact.client import exceptions
 from modelon.impact.client.entities.asserts import assert_variable_in_result
 from modelon.impact.client.entities.case import Case
+from modelon.impact.client.entities.custom_function import CustomFunction
+from modelon.impact.client.entities.external_result import ExternalResult
 from modelon.impact.client.entities.interfaces.experiment import ExperimentInterface
+from modelon.impact.client.entities.model import (
+    Model,
+    SimpleModelicaExperimentDefinition,
+)
+from modelon.impact.client.entities.model_executable import (
+    ModelExecutable,
+    SimpleFMUExperimentDefinition,
+)
 from modelon.impact.client.entities.status import ExperimentStatus
+from modelon.impact.client.experiment_definition.expansion import (
+    ExpansionAlgorithm,
+    FullFactorial,
+    LatinHypercube,
+    Sobol,
+)
+from modelon.impact.client.experiment_definition.extension import (
+    SimpleExperimentExtension,
+)
 from modelon.impact.client.operations import experiment
 from modelon.impact.client.options import (
     CompilerOptions,
@@ -18,12 +37,18 @@ from modelon.impact.client.options import (
 )
 
 if TYPE_CHECKING:
+    from modelon.impact.client.entities.model import CaseOrExperimentOrExternalResult
+    from modelon.impact.client.experiment_definition.extension import CaseOrExperiment
     from modelon.impact.client.operations.base import BaseOperation
     from modelon.impact.client.sal.service import Service
 
 logger = logging.getLogger(__name__)
 
 ScalarValue = Union[float, int, str]
+ValidExperimentDefinitions = Union[
+    SimpleModelicaExperimentDefinition,
+    SimpleFMUExperimentDefinition,
+]
 
 
 @enum.unique
@@ -572,3 +597,139 @@ class Experiment(ExperimentInterface):
         """Return a SolverOptions object."""
         analysis = self._get_info()["experiment"]["base"]["analysis"]
         return SolverOptions(analysis.get("solverOptions", {}), self.custom_function)
+
+    def _get_initialize_from(
+        self, modifiers: Dict[str, Any]
+    ) -> Optional[CaseOrExperimentOrExternalResult]:
+        if "initializeFrom" in modifiers:
+            exp_id = modifiers["initializeFrom"]
+            return Experiment(
+                workspace_id=self._workspace_id, exp_id=exp_id, service=self._sal
+            )
+        elif "initializeFromCase" in modifiers:
+            case_id = modifiers["initializeFromCase"]["caseId"]
+            exp_id = modifiers["initializeFromCase"]["experimentId"]
+            return Case(case_id, self._workspace_id, exp_id, self._sal, info={})
+        elif "initializeFromExternalResult" in modifiers:
+            ext_result_id = modifiers["initializeFromExternalResult"]
+            return ExternalResult(result_id=ext_result_id, service=self._sal)
+        return None
+
+    def _get_extension_initialize_from(
+        self, modifiers: Dict[str, Any]
+    ) -> Optional[CaseOrExperiment]:
+        if "initializeFrom" in modifiers:
+            exp_id = modifiers["initializeFrom"]
+            return Experiment(
+                workspace_id=self._workspace_id, exp_id=exp_id, service=self._sal
+            )
+        elif "initializeFromCase" in modifiers:
+            case_id = modifiers["initializeFromCase"]["caseId"]
+            exp_id = modifiers["initializeFromCase"]["experimentId"]
+            return Case(case_id, self._workspace_id, exp_id, self._sal, info={})
+        return None
+
+    def get_definition(self) -> ValidExperimentDefinitions:
+        """Returns an experiment definition class for the experiment.
+
+        Returns:
+            A SimpleFMUExperimentDefinition or SimpleModelicaExperimentDefinition class
+            object.
+
+        Example::
+
+            definition = experiment.get_definition()
+
+        """
+        custom_function = self._get_custom_function()
+        base = self._get_info()["experiment"]["base"]
+        analysis = base["analysis"]
+        if self._get_workflow() == _Workflow.CLASS_BASED:
+            model = Model(
+                self.get_class_name(),
+                workspace_id=self._workspace_id,
+                project_id="",
+                service=self._sal,
+            )
+            modelica = base["model"]["modelica"]
+            definition = SimpleModelicaExperimentDefinition(
+                model=model,
+                custom_function=custom_function,
+                compiler_options=self.get_compiler_options(),
+                fmi_target=modelica["fmiTarget"],
+                fmi_version=modelica["fmiVersion"],
+                platform=modelica["platform"],
+                compiler_log_level=modelica["compilerLogLevel"],
+                runtime_options=self.get_runtime_options(),
+                solver_options=self.get_solver_options(),
+                simulation_options=self.get_simulation_options(),
+                simulation_log_level=analysis["simulationLogLevel"],
+                initialize_from=self._get_initialize_from(base["modifiers"]),
+            )
+            expansion = base.get("expansion", {})
+            expansion = self._get_expansion_algorithm(
+                expansion.get("algorithm"), expansion.get("parameters", {})
+            )
+            definition = definition.with_expansion(expansion=expansion)
+        else:
+            fmu_id = base["model"]["fmu"]["id"]
+            definition = SimpleFMUExperimentDefinition(
+                fmu=ModelExecutable(self._workspace_id, fmu_id, self._sal),
+                custom_function=custom_function,
+                solver_options=self.get_solver_options(),
+                simulation_options=self.get_simulation_options(),
+                simulation_log_level=analysis["simulationLogLevel"],
+                initialize_from=self._get_initialize_from(base["modifiers"]),
+            )  # type: ignore
+        modifiers = base["modifiers"]["variables"]
+        definition = definition.with_modifiers(modifiers=modifiers)
+        extensions = self._get_info()["experiment"].get("extensions")
+        if extensions:
+            sim_exts = []
+            for extension in extensions:
+                analysis = extension.get("analysis", {})
+                sim_ext = SimpleExperimentExtension(
+                    parameter_modifiers=analysis.get("parameters"),
+                    solver_options=analysis.get("solverOptions"),
+                    simulation_options=analysis.get("simulationOptions"),
+                    simulation_log_level=analysis.get("simulationLogLevel"),
+                    initialize_from=self._get_extension_initialize_from(
+                        extension["modifiers"]
+                    )
+                    if extension.get("modifiers")
+                    else None,
+                )
+                sim_ext = sim_ext.with_modifiers(
+                    modifiers=extension.get("modifiers", {}).get("variables")
+                )
+                case_data = extension.get("caseData", [])
+                case_labels = [data.get("label") for data in case_data]
+                if case_labels:
+                    case_label = case_labels[0]
+                    sim_ext = sim_ext.with_case_label(case_label)
+                sim_exts.append(sim_ext)
+            definition = definition.with_extensions(sim_exts)
+        return definition
+
+    def _get_custom_function(self) -> CustomFunction:
+        custom_function = self._sal.custom_function.custom_function_get(
+            self._workspace_id, self.custom_function
+        )
+        return CustomFunction(
+            self._workspace_id,
+            custom_function["name"],
+            custom_function["parameters"],
+            self._sal,
+        )
+
+    def _get_expansion_algorithm(
+        self, algorithm: str, parameters: Dict[str, Any]
+    ) -> ExpansionAlgorithm:
+        if algorithm == "SOBOL":
+            return Sobol(samples=parameters["samples"])
+        elif algorithm == "LATINHYPERCUBE":
+            return LatinHypercube(
+                samples=parameters["samples"], seed=parameters.get("seed")
+            )
+        else:
+            return FullFactorial()
