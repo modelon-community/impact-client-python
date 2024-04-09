@@ -34,6 +34,7 @@ from modelon.impact.client.operations.workspace.imports import WorkspaceImportOp
 from modelon.impact.client.sal.service import Service
 
 if TYPE_CHECKING:
+    from modelon.impact.client.entities.experiment import ValidExperimentDefinitions
     from modelon.impact.client.operations.base import BaseOperation
 
 logger = logging.getLogger(__name__)
@@ -888,6 +889,28 @@ class Workspace(WorkspaceInterface):
             self._workspace_id, definition_as_dict, user_data
         )
         return Experiment(self._workspace_id, resp["experiment_id"], self._sal)
+
+    def create_experiment_definition_from_experiment_result(
+        self, experiment_id: str
+    ) -> ValidExperimentDefinitions:
+        """Creates an experiment definition that can be used to reproduce the results
+        with the experiment ID.
+
+        Args:
+            experiment_id: The ID of the experiment.
+
+        Returns:
+            An instance of SimpleFMUExperimentDefinition or
+            SimpleModelicaExperimentDefinition class.
+
+        Example::
+
+            definition = workspace.create_experiment_definition_from_experiment_result(
+                experiment_id)
+
+        """
+        experiment = self.get_experiment(experiment_id)
+        return experiment.get_definition()
 
     def execute(
         self,
