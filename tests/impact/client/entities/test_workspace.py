@@ -344,12 +344,22 @@ class TestWorkspace:
         # Setup extensions
         simulation_options = dynamic.get_simulation_options().with_values(ncp=500)
         solver_options = {"atol": 1e-8}
-        simulate_ext_1 = SimpleExperimentExtension().with_case_label(
-            "Cruise condition 1"
+        # Extension initialized from case
+        simulate_ext_1 = (
+            SimpleExperimentExtension()
+            .with_case_label("Cruise condition 1")
+            .with_initialize_from(case_for_init)
         )
-        simulate_ext_2 = SimpleExperimentExtension(
-            {"start_time": 0.0, "final_time": 4.0}, solver_options, simulation_options
-        ).with_case_label("Cruise condition 2")
+        # Extension initialized from experiment
+        simulate_ext_2 = (
+            SimpleExperimentExtension(
+                {"start_time": 0.0, "final_time": 4.0},
+                solver_options,
+                simulation_options,
+            )
+            .with_case_label("Cruise condition 2")
+            .with_initialize_from(exp_for_init)
+        )
 
         # Initializing with experiment and expanding with Sobol
         experiment_definition = (
@@ -399,12 +409,22 @@ class TestWorkspace:
         # Setup extensions
         simulation_options = dynamic.get_simulation_options().with_values(ncp=500)
         solver_options = {"atol": 1e-8}
-        simulate_ext_1 = SimpleExperimentExtension().with_case_label(
-            "Cruise condition 1"
+        # Extension initialized from case
+        simulate_ext_1 = (
+            SimpleExperimentExtension()
+            .with_case_label("Cruise condition 1")
+            .with_initialize_from(case_for_init)
         )
-        simulate_ext_2 = SimpleExperimentExtension(
-            {"start_time": 0.0, "final_time": 4.0}, solver_options, simulation_options
-        ).with_case_label("Cruise condition 2")
+        # Extension initialized from experiment
+        simulate_ext_2 = (
+            SimpleExperimentExtension(
+                {"start_time": 0.0, "final_time": 4.0},
+                solver_options,
+                simulation_options,
+            )
+            .with_case_label("Cruise condition 2")
+            .with_initialize_from(exp_for_init)
+        )
 
         # Initializing with experiment
         experiment_definition = (
