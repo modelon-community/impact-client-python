@@ -267,6 +267,7 @@ class SimpleExperimentExtension(BaseExperimentExtension):
             ext_dict.setdefault("modifiers", {})
             ext_dict["modifiers"]["initializeFrom"] = self.initialize_from.id
         elif isinstance(self.initialize_from, CaseInterface):
+            ext_dict.setdefault("modifiers", {})
             ext_dict["modifiers"]["initializeFromCase"] = case_to_identifier_dict(
                 self.initialize_from
             )
