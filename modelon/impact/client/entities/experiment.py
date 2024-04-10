@@ -598,18 +598,28 @@ class Experiment(ExperimentInterface):
         analysis = self._get_info()["experiment"]["base"]["analysis"]
         return SolverOptions(analysis.get("solverOptions", {}), self.custom_function)
 
+    def _get_initialize_from_case(self, experiment_id: str, case_id: str) -> Case:
+        case_data = self._sal.experiment.case_get(
+            self._workspace_id, experiment_id, case_id
+        )
+        return Case(
+            case_data["id"], self._workspace_id, experiment_id, self._sal, case_data
+        )
+
+    def _get_initialize_from_experiment(self, experiment_id: str) -> Experiment:
+        resp = self._sal.workspace.experiment_get(self._workspace_id, experiment_id)
+        return Experiment(self._workspace_id, resp["id"], self._sal, resp)
+
     def _get_initialize_from(
         self, modifiers: Dict[str, Any]
     ) -> Optional[CaseOrExperimentOrExternalResult]:
         if "initializeFrom" in modifiers:
             exp_id = modifiers["initializeFrom"]
-            return Experiment(
-                workspace_id=self._workspace_id, exp_id=exp_id, service=self._sal
-            )
+            return self._get_initialize_from_experiment(exp_id)
         elif "initializeFromCase" in modifiers:
             case_id = modifiers["initializeFromCase"]["caseId"]
             exp_id = modifiers["initializeFromCase"]["experimentId"]
-            return Case(case_id, self._workspace_id, exp_id, self._sal, info={})
+            return self._get_initialize_from_case(exp_id, case_id)
         elif "initializeFromExternalResult" in modifiers:
             ext_result_id = modifiers["initializeFromExternalResult"]
             return ExternalResult(result_id=ext_result_id, service=self._sal)
@@ -620,21 +630,20 @@ class Experiment(ExperimentInterface):
     ) -> Optional[CaseOrExperiment]:
         if "initializeFrom" in modifiers:
             exp_id = modifiers["initializeFrom"]
-            return Experiment(
-                workspace_id=self._workspace_id, exp_id=exp_id, service=self._sal
-            )
+            return self._get_initialize_from_experiment(exp_id)
         elif "initializeFromCase" in modifiers:
             case_id = modifiers["initializeFromCase"]["caseId"]
             exp_id = modifiers["initializeFromCase"]["experimentId"]
-            return Case(case_id, self._workspace_id, exp_id, self._sal, info={})
+            return self._get_initialize_from_case(exp_id, case_id)
         return None
 
     def get_definition(self) -> ValidExperimentDefinitions:
-        """Returns an experiment definition class for the experiment.
+        """Get an experiment definition that can be used to reproduce this experiment
+        result.
 
         Returns:
-            A SimpleFMUExperimentDefinition or SimpleModelicaExperimentDefinition class
-            object.
+            An instance of SimpleFMUExperimentDefinition or
+            SimpleModelicaExperimentDefinition class.
 
         Example::
 

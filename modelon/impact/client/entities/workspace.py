@@ -893,14 +893,15 @@ class Workspace(WorkspaceInterface):
     def create_experiment_definition_from_experiment_result(
         self, experiment_id: str
     ) -> ValidExperimentDefinitions:
-        """Creates an experiment definition given an experiment ID.
+        """Creates an experiment definition that can be used to reproduce the results
+        with the experiment ID.
 
         Args:
             experiment_id: The ID of the experiment.
 
         Returns:
-            A SimpleFMUExperimentDefinition or SimpleModelicaExperimentDefinition class
-            object.
+            An instance of SimpleFMUExperimentDefinition or
+            SimpleModelicaExperimentDefinition class.
 
         Example::
 
