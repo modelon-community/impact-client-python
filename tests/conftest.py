@@ -119,7 +119,7 @@ def vcr_config():
                     response_body = json.loads(body)
                 except json.JSONDecodeError as e:
                     # body = response["body"]["string"]
-                    raise ValueError(body) from e
+                    raise ValueError(body, username) from e
                 except UnicodeDecodeError:
                     # Handle case where response is not json
                     return response
