@@ -21,28 +21,30 @@ from tests.impact.client.helpers import (
 class TestClient:
     @pytest.mark.vcr()
     def test_create_workspace(self, client_helper: ClientHelper):
-        workspace = client_helper.client.create_workspace(IDs.WORKSPACE_SECONDARY)
-        assert workspace.id == IDs.WORKSPACE_SECONDARY
+        workspace = client_helper.client.create_workspace(IDs.WORKSPACE_ID_SECONDARY)
+        assert workspace.id == IDs.WORKSPACE_ID_SECONDARY
 
     @pytest.mark.vcr()
     def test_get_workspace(self, client_helper: ClientHelper):
         workspace_id = client_helper.workspace.id
         workspace = client_helper.client.get_workspace(workspace_id)
-        assert workspace.id == IDs.WORKSPACE_PRIMARY
+        assert workspace.id == IDs.WORKSPACE_ID_PRIMARY
 
     @pytest.mark.vcr()
     def test_get_workspace_by_name(self, client_helper: ClientHelper):
-        workspaces = client_helper.client.get_workspace_by_name(IDs.WORKSPACE_PRIMARY)
+        workspaces = client_helper.client.get_workspace_by_name(
+            IDs.WORKSPACE_ID_PRIMARY
+        )
         assert len(workspaces) == 1
-        assert workspaces[0].id == IDs.WORKSPACE_PRIMARY
+        assert workspaces[0].id == IDs.WORKSPACE_ID_PRIMARY
 
     @pytest.mark.vcr()
     def test_get_workspaces(self, client_helper: ClientHelper):
         client = client_helper.client
-        client.create_workspace(IDs.WORKSPACE_SECONDARY)
+        client.create_workspace(IDs.WORKSPACE_ID_SECONDARY)
         workspace_ids = [workspace.id for workspace in client.get_workspaces()]
-        assert IDs.WORKSPACE_PRIMARY in workspace_ids
-        assert IDs.WORKSPACE_SECONDARY in workspace_ids
+        assert IDs.WORKSPACE_ID_PRIMARY in workspace_ids
+        assert IDs.WORKSPACE_ID_SECONDARY in workspace_ids
 
 
 def test_get_workspaces_error(workspaces_error):
@@ -258,8 +260,8 @@ def test_workspace_conversion(setup_workspace_conversion):
         url=setup_workspace_conversion.url, context=setup_workspace_conversion.context
     )
 
-    conversioin_op = client.convert_workspace(IDs.CONVERSION, "backup")
-    assert conversioin_op == create_workspace_conversion_operation(IDs.CONVERSION)
+    conversioin_op = client.convert_workspace(IDs.CONVERSION_ID, "backup")
+    assert conversioin_op == create_workspace_conversion_operation(IDs.CONVERSION_ID)
 
 
 def test_import_project_from_zip(
@@ -291,7 +293,7 @@ def test_get_executions_for_workspace(executions, model_compile, experiment_exec
         url=executions.url,
         context=executions.context,
     )
-    opeartions = list(client.get_executions(IDs.WORKSPACE_SECONDARY))
+    opeartions = list(client.get_executions(IDs.WORKSPACE_ID_SECONDARY))
     assert len(opeartions) == 1
     assert isinstance(opeartions[0], ExperimentOperation)
 

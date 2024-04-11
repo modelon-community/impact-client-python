@@ -59,13 +59,13 @@ class TestService:
         service.add_login_retry_with(api_key=None)
 
         # when
-        data = service.workspace.workspace_create(IDs.WORKSPACE_PRIMARY)
+        data = service.workspace.workspace_create(IDs.WORKSPACE_ID_PRIMARY)
 
         # Then
         assert len(create_workspace.adapter.request_history) == 1
         assert data == {
             "definition": get_test_workspace_definition(),
-            "id": IDs.WORKSPACE_PRIMARY,
+            "id": IDs.WORKSPACE_ID_PRIMARY,
         }
 
     def test_given_authenticat_fail_once_when_access_then_login_and_ok(
@@ -79,11 +79,11 @@ class TestService:
         service.add_login_retry_with(api_key=None)
 
         # When
-        data = service.workspace.workspace_create(IDs.WORKSPACE_PRIMARY)
+        data = service.workspace.workspace_create(IDs.WORKSPACE_ID_PRIMARY)
 
         # Then
         assert len(create_workspace_fail_auth_once.adapter.request_history) == 3
-        assert data == {"id": IDs.WORKSPACE_PRIMARY}
+        assert data == {"id": IDs.WORKSPACE_ID_PRIMARY}
 
     def test_given_authenticat_fail_many_when_access_then_fail(
         self, create_workspace_fail_auth_many
@@ -97,7 +97,7 @@ class TestService:
 
         # When
         with pytest.raises(modelon.impact.client.sal.exceptions.HTTPError):
-            service.workspace.workspace_create(IDs.WORKSPACE_PRIMARY)
+            service.workspace.workspace_create(IDs.WORKSPACE_ID_PRIMARY)
 
         # Then
         assert len(create_workspace_fail_auth_many.adapter.request_history) == 3
@@ -114,7 +114,7 @@ class TestService:
 
         # When
         with pytest.raises(modelon.impact.client.sal.exceptions.HTTPError):
-            service.workspace.workspace_create(IDs.WORKSPACE_PRIMARY)
+            service.workspace.workspace_create(IDs.WORKSPACE_ID_PRIMARY)
 
         # Then
         assert len(create_workspace_fail_bad_input.adapter.request_history) == 1

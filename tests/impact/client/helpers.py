@@ -165,10 +165,10 @@ def with_octet_stream_route(
 class IDs:
     MOCK_EMAIL = "test@dummy.com"
     MOCK_IMPACT_URL = "https://modelon-test.com/"
-    _WORKSPACE_PREFIX = "impact-python-client-"
-    WORKSPACE_PRIMARY = _WORKSPACE_PREFIX + "workspace1"
-    WORKSPACE_SECONDARY = _WORKSPACE_PREFIX + "workspace2"
-    WORKSPACE_IDS = [WORKSPACE_PRIMARY, WORKSPACE_SECONDARY]
+    _WORKSPACE_ID_PREFIX = "impact-python-client-"
+    WORKSPACE_ID_PRIMARY = _WORKSPACE_ID_PREFIX + "workspace1"
+    WORKSPACE_ID_SECONDARY = _WORKSPACE_ID_PREFIX + "workspace2"
+    WORKSPACE_IDS = [WORKSPACE_ID_PRIMARY, WORKSPACE_ID_SECONDARY]
     WORKSPACE_NAMES = WORKSPACE_IDS
     USER_ID = "njcswjcjnscksnckjsnckndsk"
     USERNAME = "alice"
@@ -179,47 +179,47 @@ class IDs:
     PUBLISHED_WORKSPACE_ID = "ekdncjndjcndejncjsncsndcijdsnc"
     DEFAULT_PROJECT_NAME = "Project"
     PROJECT_NAME_PRIMARY = "Project1"
-    PROJECT_PRIMARY = "bf1e2f2a2fd55dcfd844bc1f252528f707254425"
-    PROJECT_SECONDARY = "xbhcdhcbdbchdbhcbdhbchdchdhcbhdbchdbch"
-    PROJECT_CONTENT_PRIMARY = "81ac23172d7a479db85126691e090b34"
+    PROJECT_ID_PRIMARY = "bf1e2f2a2fd55dcfd844bc1f252528f707254425"
+    PROJECT_ID_SECONDARY = "xbhcdhcbdbchdbhcbdhbchdchdhcbhdbchdbch"
+    PROJECT_CONTENT_ID_PRIMARY = "81ac23172d7a479db85126691e090b34"
+    PROJECT_CONTENT_ID_SECONDARY = "f727f04210b94a0fac81f17f83b869e6"
     FMU_IMPORT_PRIMARY = "1nj2jn3jnjnjnfnvjewjnnmsjnjijiwwwll"
-    PROJECT_CONTENT_SECONDARY = "f727f04210b94a0fac81f17f83b869e6"
     VERSIONED_PROJECT_REFERENCE = "4019c58d4a3b41fc463934274ece3f9a0ac27436"
     VERSIONED_PROJECT_PRIMARY = "c1f1d74f0b612c6b67e4165bf9a1ad30b2630039"
     VERSIONED_PROJECT_SECONDARY = "da282cc77feaa60fc93879a7f39e27ab78304940"
     MSL_400_PROJECT_ID = "cdbde8922bd2c48c392b1b4bb740adc0273c737c"
     MSL_300_PROJECT_ID = "84fb1c37abe6ed97a53972fb7239630e1212438b"
     MSL_CONTENT_ID = "925cbe6daaf3ebde61dfcc2a26f93e6d0798085a"
-    FMU_PRIMARY = "test_pid_fmu_id"
-    FMU_SECONDARY = "test_filter_fmu_id"
-    EXPERIMENT_PRIMARY = "pid_20090615_134"
-    EXPERIMENT_SECONDARY = "filter_20090615_135"
-    CASE_PRIMARY = "case_1"
-    IMPORT = "9a8fg798a7g"
-    EXPORT = "79sd8-3n2a4-e3t24"
-    CONVERSION = "t24e3-a43n2-d879s"
+    FMU_ID_PRIMARY = "test_pid_fmu_id"
+    FMU_ID_SECONDARY = "test_filter_fmu_id"
+    EXPERIMENT_ID_PRIMARY = "pid_20090615_134"
+    EXPERIMENT_ID_SECONDARY = "filter_20090615_135"
+    CASE_ID_PRIMARY = "case_1"
+    IMPORT_ID = "9a8fg798a7g"
+    EXPORT_ID = "79sd8-3n2a4-e3t24"
+    CONVERSION_ID = "t24e3-a43n2-d879s"
     DYNAMIC_CF = "dynamic"
-    EXTERNAL_RESULT = IMPORT
+    EXTERNAL_RESULT_ID = IMPORT_ID
     CUSTOM_ARTIFACT_ID = "ABCD"
     RESULT_MAT = "result.mat"
-    MODELICA_CLASS_PATH = "Modelica.Blocks.Examples.PID_Controller"
+    PID_MODELICA_CLASS_PATH = "Modelica.Blocks.Examples.PID_Controller"
     FILTER_MODELICA_CLASS_PATH = "Modelica.Blocks.Examples.Filter"
-    LOCAL_MODELICA_CLASS_PATH = "Test.PID"
+    LOCAL_PROJECT_MODELICA_CLASS_PATH = "Test.PID"
     EXPERIMENT_LABEL = "EXPERIMENT_LABEL"
 
 
 UNVERSIONED_PROJECT = {
-    "id": IDs.PROJECT_PRIMARY,
+    "id": IDs.PROJECT_ID_PRIMARY,
     "definition": {
         "name": "NewProject",
         "format": "1.0",
         "dependencies": [{"name": "MSL", "versionSpecifier": "4.0.0"}],
         "content": [
             {
-                "id": IDs.PROJECT_CONTENT_PRIMARY,
-                "relpath": IDs.LOCAL_MODELICA_CLASS_PATH,
+                "id": IDs.PROJECT_CONTENT_ID_PRIMARY,
+                "relpath": IDs.LOCAL_PROJECT_MODELICA_CLASS_PATH,
                 "contentType": "MODELICA",
-                "name": IDs.LOCAL_MODELICA_CLASS_PATH,
+                "name": IDs.LOCAL_PROJECT_MODELICA_CLASS_PATH,
                 "defaultDisabled": False,
             }
         ],
@@ -237,7 +237,7 @@ VERSIONED_PROJECT_TRUNK = {
         "format": "1.0",
         "content": [
             {
-                "id": IDs.PROJECT_CONTENT_PRIMARY,
+                "id": IDs.PROJECT_CONTENT_ID_PRIMARY,
                 "relpath": "MyPackage",
                 "contentType": "MODELICA",
                 "name": "MyPackage",
@@ -266,7 +266,7 @@ VERSIONED_PROJECT_BRANCH = {
         "format": "1.0",
         "content": [
             {
-                "id": IDs.PROJECT_CONTENT_SECONDARY,
+                "id": IDs.PROJECT_CONTENT_ID_SECONDARY,
                 "relpath": "MyPackage",
                 "contentType": "MODELICA",
                 "name": "MyPackage",
@@ -335,9 +335,9 @@ LAST_POINT_TRAJECTORY = {
 
 def get_test_get_fmu():
     return {
-        "id": IDs.FMU_PRIMARY,
+        "id": IDs.FMU_ID_PRIMARY,
         "input": {
-            "class_name": IDs.MODELICA_CLASS_PATH,
+            "class_name": IDs.PID_MODELICA_CLASS_PATH,
             "compiler_options": {"c_compiler": "gcc"},
             "runtime_options": {"a": 1},
             "compiler_log_level": "w",
@@ -364,11 +364,11 @@ def get_test_get_fmu():
 
 def get_test_fmu_experiment_definition():
     return {
-        "id": IDs.EXPERIMENT_PRIMARY,
+        "id": IDs.EXPERIMENT_ID_PRIMARY,
         "experiment": {
             "version": 2,
             "base": {
-                "model": {"fmu": {"id": IDs.FMU_PRIMARY}},
+                "model": {"fmu": {"id": IDs.FMU_ID_PRIMARY}},
                 "modifiers": {"variables": {}},
                 "analysis": {
                     "type": "dynamic",
@@ -384,7 +384,7 @@ def get_test_fmu_experiment_definition():
             "created_epoch": 1682399802,
             "experiment_hash": "7a9aac52afbe7452f236105f4c864ae4",
             "label": "",
-            "model_names": [IDs.MODELICA_CLASS_PATH],
+            "model_names": [IDs.PID_MODELICA_CLASS_PATH],
         },
         "run_info": {
             "status": "done",
@@ -400,13 +400,13 @@ def get_test_fmu_experiment_definition():
 
 def get_test_modelica_experiment_definition():
     return {
-        "id": IDs.EXPERIMENT_PRIMARY,
+        "id": IDs.EXPERIMENT_ID_PRIMARY,
         "experiment": {
             "version": 2,
             "base": {
                 "model": {
                     "modelica": {
-                        "className": IDs.MODELICA_CLASS_PATH,
+                        "className": IDs.PID_MODELICA_CLASS_PATH,
                         "compilerOptions": {
                             "c_compiler": "gcc",
                         },
@@ -433,7 +433,7 @@ def get_test_modelica_experiment_definition():
             "created_epoch": 1682399102,
             "experiment_hash": "c32aa5210e066950a62db469158aeb43",
             "label": IDs.EXPERIMENT_LABEL,
-            "model_names": [IDs.MODELICA_CLASS_PATH],
+            "model_names": [IDs.PID_MODELICA_CLASS_PATH],
         },
         "run_info": {
             "status": "done",
@@ -454,7 +454,7 @@ def get_test_published_workspace_definition(name=None):
         "size": 10,
         "status": "created",
         "tenantId": IDs.TENANT_ID,
-        "workspaceName": name if name else IDs.WORKSPACE_PRIMARY,
+        "workspaceName": name if name else IDs.WORKSPACE_ID_PRIMARY,
     }
 
 
@@ -480,15 +480,15 @@ def get_test_workspace_definition(name=None):
     git_url = "https://github.com/project/test"
     vcs_uri = f"git+{git_url}.git@main:da6abb188a089527df1b54b27ace84274b819e4a"
     return {
-        "name": name if name else IDs.WORKSPACE_PRIMARY,
+        "name": name if name else IDs.WORKSPACE_ID_PRIMARY,
         "format": "1.0",
         "description": "",
         "createdBy": "local-installation-user-id",
         "createdAt": "1659072911361",
-        "defaultProjectId": IDs.PROJECT_PRIMARY,
+        "defaultProjectId": IDs.PROJECT_ID_PRIMARY,
         "projects": [
             {
-                "reference": {"id": IDs.PROJECT_PRIMARY},
+                "reference": {"id": IDs.PROJECT_ID_PRIMARY},
                 "disabled": False,
                 "disabledContent": [],
             },
@@ -572,7 +572,7 @@ def create_project_entity(
             "dependencies": [{"name": "MSL", "versionSpecifier": "4.0.0"}],
             "content": [
                 {
-                    "id": IDs.PROJECT_CONTENT_PRIMARY,
+                    "id": IDs.PROJECT_CONTENT_ID_PRIMARY,
                     "relpath": "MyPackage",
                     "contentType": "MODELICA",
                     "name": "MyPackage",
@@ -592,7 +592,7 @@ def create_project_entity(
 
 
 def create_project_content_entity(
-    project_id, content_id=IDs.PROJECT_CONTENT_PRIMARY, content=None, service=None
+    project_id, content_id=IDs.PROJECT_CONTENT_ID_PRIMARY, content=None, service=None
 ):
     if not content:
         content = {
@@ -667,16 +667,16 @@ def create_workspace_conversion_operation(ws_conversion_id, service=None):
 class ClientHelper:
     def __init__(self, client: Client) -> None:
         self.client = client
-        self.workspace = self.client.create_workspace(IDs.WORKSPACE_PRIMARY)
+        self.workspace = self.client.create_workspace(IDs.WORKSPACE_ID_PRIMARY)
 
     def create_and_execute_experiment(
-        self, model_path=IDs.MODELICA_CLASS_PATH, modifiers=None, user_data=None
+        self, model_path=IDs.PID_MODELICA_CLASS_PATH, modifiers=None, user_data=None
     ):
         exp = self.create_experiment(model_path, modifiers, user_data)
         return exp.execute().wait()
 
     def create_experiment(
-        self, model_path=IDs.MODELICA_CLASS_PATH, modifiers=None, user_data=None
+        self, model_path=IDs.PID_MODELICA_CLASS_PATH, modifiers=None, user_data=None
     ):
         dynamic = self.workspace.get_custom_function("dynamic")
         model = self.workspace.get_model(model_path)
