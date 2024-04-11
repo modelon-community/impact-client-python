@@ -108,6 +108,7 @@ def vcr_config():
             for header in headers_to_exclude:
                 response["headers"].pop(header, None)
             username = os.environ.get("MODELON_IMPACT_USERNAME")
+            raise ValueError(username)
             if response.get("body", {}).get("string"):
                 try:
                     body = response["body"]["string"].decode("utf-8")
