@@ -1,3 +1,15 @@
+# [3.14.0](https://github.com/modelon-community/impact-client-python/compare/v3.13.1...v3.14.0) (2024-04-11)
+
+
+### Bug Fixes
+
+* fixed a bug where modifiers key was not set when initializing from case for an extension ([87d544d](https://github.com/modelon-community/impact-client-python/commit/87d544d4935c643822e4c3dae2625eb4e4a15829))
+
+
+### Features
+
+* added support for fetching experiment definition given a experiment result ([106b88a](https://github.com/modelon-community/impact-client-python/commit/106b88a441c9564567deb3fa0e81b4d1e175fe65))
+
 ## [3.13.1](https://github.com/modelon-community/impact-client-python/compare/v3.13.0...v3.13.1) (2024-04-05)
 
 
