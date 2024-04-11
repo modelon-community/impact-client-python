@@ -9,5 +9,5 @@ class TestWorkspaceService:
         service = modelon.impact.client.sal.service.Service(
             uri=uri, context=get_export_archive.context
         )
-        data = service.exports.export_download(f"api/exports/{IDs.EXPORT}")
+        data = service.exports.export_download(f"api/exports/{IDs.EXPORT_ID}")
         assert data == b"\x00\x00\x00\x00"

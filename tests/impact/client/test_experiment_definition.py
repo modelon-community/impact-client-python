@@ -28,10 +28,10 @@ _EXPECTED_FMU_EXP = {
     "experiment": {
         "version": 2,
         "base": {
-            "model": {"fmu": {"id": IDs.FMU_PRIMARY}},
+            "model": {"fmu": {"id": IDs.FMU_ID_PRIMARY}},
             "modifiers": {
                 "variables": {"h0": "range(0.1,0.5,3)"},
-                "initializeFrom": IDs.EXPERIMENT_PRIMARY,
+                "initializeFrom": IDs.EXPERIMENT_ID_PRIMARY,
             },
             "analysis": {
                 "type": "dynamic",
@@ -50,7 +50,7 @@ _EXPECTED_MODELICA_EXP = {
         "base": {
             "model": {
                 "modelica": {
-                    "className": IDs.LOCAL_MODELICA_CLASS_PATH,
+                    "className": IDs.LOCAL_PROJECT_MODELICA_CLASS_PATH,
                     "compilerOptions": {"c_compiler": "gcc"},
                     "runtimeOptions": {},
                     "compilerLogLevel": "warning",
@@ -61,7 +61,7 @@ _EXPECTED_MODELICA_EXP = {
             },
             "modifiers": {
                 "variables": {"h0": "range(0.1,0.5,3)"},
-                "initializeFrom": IDs.EXPERIMENT_PRIMARY,
+                "initializeFrom": IDs.EXPERIMENT_ID_PRIMARY,
             },
             "analysis": {
                 "type": "dynamic",
@@ -86,7 +86,7 @@ def get_experiment_extension_with_case_label_init_modifier():
             "simulationLogLevel": "Warning",
         },
         "modifiers": {
-            "initializeFrom": IDs.EXPERIMENT_PRIMARY,
+            "initializeFrom": IDs.EXPERIMENT_ID_PRIMARY,
             "variables": {"PI.k": 10, "P": 5, "d": 15},
         },
         "caseData": [{"label": "Cruise condition"}],
@@ -156,7 +156,7 @@ class TestSimpleFMUExperimentDefinition:
             "experiment": {
                 "version": 2,
                 "base": {
-                    "model": {"fmu": {"id": IDs.FMU_PRIMARY}},
+                    "model": {"fmu": {"id": IDs.FMU_ID_PRIMARY}},
                     "modifiers": {"variables": {}},
                     "analysis": {
                         "type": "dynamic",
@@ -702,7 +702,7 @@ class TestSimpleModelicaExperimentDefinition:
                 "base": {
                     "model": {
                         "modelica": {
-                            "className": IDs.LOCAL_MODELICA_CLASS_PATH,
+                            "className": IDs.LOCAL_PROJECT_MODELICA_CLASS_PATH,
                             "compilerOptions": {"c_compiler": "gcc"},
                             "runtimeOptions": {},
                             "compilerLogLevel": "warning",
@@ -1137,7 +1137,7 @@ class TestSimpleModelicaExperimentDefinition:
     ):
         with mock.patch("builtins.open", mock.mock_open()) as mock_file:
             result = workspace_ops.upload_result(
-                "test.mat", IDs.WORKSPACE_PRIMARY
+                "test.mat", IDs.WORKSPACE_ID_PRIMARY
             ).wait()
             mock_file.assert_called_with("test.mat", "rb")
 
@@ -1165,7 +1165,7 @@ class TestSimpleModelicaExperimentDefinition:
     def test_experiment_definition_initialize_from_case(
         self, model, custom_function_no_param, experiment
     ):
-        case_1 = experiment.entity.get_case(IDs.CASE_PRIMARY)
+        case_1 = experiment.entity.get_case(IDs.CASE_ID_PRIMARY)
         definition = SimpleModelicaExperimentDefinition(
             model.entity, custom_function=custom_function_no_param
         ).with_initialize_from(case_1)
@@ -1187,7 +1187,7 @@ class TestSimpleModelicaExperimentDefinition:
 
         # Reinitializing with case entity
         case_to_init = create_case_entity(
-            "Case_2", IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY
+            "Case_2", IDs.WORKSPACE_ID_PRIMARY, IDs.EXPERIMENT_ID_PRIMARY
         )
         definition = definition.with_initialize_from(case_to_init)
         modifiers = definition.to_dict()["experiment"]["base"]["modifiers"]
@@ -1271,7 +1271,7 @@ class TestSimpleModelicaExperimentDefinition:
     def test_experiment_definition_with_extensions_initialize_from_case(
         self, model, custom_function_no_param, experiment
     ):
-        case_1 = experiment.entity.get_case(IDs.CASE_PRIMARY)
+        case_1 = experiment.entity.get_case(IDs.CASE_ID_PRIMARY)
         ext1 = SimpleExperimentExtension().with_modifiers(p=2)
         ext2 = (
             SimpleExperimentExtension({"final_time": 10})
@@ -1300,7 +1300,7 @@ class TestSimpleModelicaExperimentDefinition:
         self, model, custom_function_no_param, experiment
     ):
         experiment = experiment.entity
-        case_1 = experiment.get_case(IDs.CASE_PRIMARY)
+        case_1 = experiment.get_case(IDs.CASE_ID_PRIMARY)
         ext1 = SimpleExperimentExtension({"final_time": 10}).with_modifiers(p=3)
         ext1 = ext1.with_initialize_from(case_1)
         modifiers = ext1.to_dict()["modifiers"]

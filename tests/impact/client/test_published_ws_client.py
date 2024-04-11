@@ -20,7 +20,7 @@ def test_get_publised_workspaces(multiple_published_workspaces):
     assert workspaces
     assert len(workspaces) == 1
     assert workspaces[0].id == IDs.PUBLISHED_WORKSPACE_ID
-    assert workspaces[0].name == IDs.WORKSPACE_PRIMARY
+    assert workspaces[0].name == IDs.WORKSPACE_ID_PRIMARY
     assert workspaces[0].definition.owner_username == IDs.USERNAME
     assert workspaces[0].definition.tenant_id == IDs.TENANT_ID
     assert workspaces[0].definition.size == 10
@@ -34,7 +34,7 @@ def test_get_publised_workspace(published_workspace):
     workspace = client.get_by_id(IDs.PUBLISHED_WORKSPACE_ID)
     assert workspace
     assert workspace.id == IDs.PUBLISHED_WORKSPACE_ID
-    assert workspace.name == IDs.WORKSPACE_PRIMARY
+    assert workspace.name == IDs.WORKSPACE_ID_PRIMARY
     assert workspace.definition.owner_username == IDs.USERNAME
     assert workspace.definition.tenant_id == IDs.TENANT_ID
     assert workspace.definition.size == 10
@@ -54,7 +54,7 @@ def test_get_publised_workspace_by_kind_shared_by_me(published_workspace_shared_
     assert workspace.requested_username == IDs.USERNAME
     assert workspace.published_workspace
     assert workspace.published_workspace.id == IDs.PUBLISHED_WORKSPACE_ID
-    assert workspace.published_workspace.name == IDs.WORKSPACE_PRIMARY
+    assert workspace.published_workspace.name == IDs.WORKSPACE_ID_PRIMARY
     assert workspace.published_workspace.definition.owner_username == IDs.USERNAME
     assert workspace.published_workspace.definition.tenant_id == IDs.TENANT_ID
     assert workspace.published_workspace.definition.size == 10

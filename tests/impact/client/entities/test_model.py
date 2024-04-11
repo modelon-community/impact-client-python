@@ -12,18 +12,22 @@ class TestModel:
     def test_find_cached(self, model_cached, compiler_options, runtime_options):
         fmu = model_cached.compile(compiler_options, runtime_options)
         assert fmu == create_cached_model_exe_operation(
-            IDs.WORKSPACE_PRIMARY, IDs.FMU_PRIMARY
+            IDs.WORKSPACE_ID_PRIMARY, IDs.FMU_ID_PRIMARY
         )
 
     def test_force_compile(self, model_compiled, compiler_options, runtime_options):
         fmu = model_compiled.compile(
             compiler_options, runtime_options, force_compilation=True
         )
-        assert fmu == create_model_exe_operation(IDs.WORKSPACE_PRIMARY, IDs.FMU_PRIMARY)
+        assert fmu == create_model_exe_operation(
+            IDs.WORKSPACE_ID_PRIMARY, IDs.FMU_ID_PRIMARY
+        )
 
     def test_force_compile_dict_options(self, model_compiled):
         fmu = model_compiled.compile({"c_compiler": "gcc"}, force_compilation=True)
-        assert fmu == create_model_exe_operation(IDs.WORKSPACE_PRIMARY, IDs.FMU_PRIMARY)
+        assert fmu == create_model_exe_operation(
+            IDs.WORKSPACE_ID_PRIMARY, IDs.FMU_ID_PRIMARY
+        )
 
     def test_compile_invalid_type_options(self, model_compiled):
         pytest.raises(TypeError, model_compiled.compile, [])
@@ -56,10 +60,10 @@ class TestModel:
         entity = model.entity
         project_service = model.service.project
         model = entity.import_fmu("test.fmu").wait()
-        expected_fmu_class_path = IDs.LOCAL_MODELICA_CLASS_PATH + ".test"
+        expected_fmu_class_path = IDs.LOCAL_PROJECT_MODELICA_CLASS_PATH + ".test"
         project_service.fmu_import.assert_called_with(
-            IDs.PROJECT_PRIMARY,
-            IDs.PROJECT_CONTENT_PRIMARY,
+            IDs.PROJECT_ID_PRIMARY,
+            IDs.PROJECT_CONTENT_ID_PRIMARY,
             "test.fmu",
             expected_fmu_class_path,
             False,

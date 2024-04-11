@@ -13,11 +13,11 @@ class TestProjectService:
         service = modelon.impact.client.sal.service.Service(
             uri=uri, context=delete_project.context
         )
-        service.project.project_delete(IDs.PROJECT_PRIMARY)
+        service.project.project_delete(IDs.PROJECT_ID_PRIMARY)
         assert delete_project.adapter.called
         delete_call = delete_project.adapter.request_history[0]
         assert (
-            f"http://mock-impact.com/api/projects/{IDs.PROJECT_PRIMARY}"
+            f"http://mock-impact.com/api/projects/{IDs.PROJECT_ID_PRIMARY}"
             == delete_call.url
         )
         assert "DELETE" == delete_call.method
@@ -28,7 +28,7 @@ class TestProjectService:
             uri=uri, context=single_project.context
         )
         data = service.project.project_get(
-            IDs.PROJECT_PRIMARY, vcs_info=False, size_info=False
+            IDs.PROJECT_ID_PRIMARY, vcs_info=False, size_info=False
         )
         assert data == UNVERSIONED_PROJECT
 
@@ -60,14 +60,14 @@ class TestProjectService:
             uri=uri, context=delete_project_content.context
         )
         service.project.project_content_delete(
-            IDs.PROJECT_PRIMARY,
-            IDs.PROJECT_CONTENT_PRIMARY,
+            IDs.PROJECT_ID_PRIMARY,
+            IDs.PROJECT_CONTENT_ID_PRIMARY,
         )
         assert delete_project_content.adapter.called
         delete_call = delete_project_content.adapter.request_history[0]
         assert (
-            f"http://mock-impact.com/api/projects/{IDs.PROJECT_PRIMARY}"
-            f"/content/{IDs.PROJECT_CONTENT_PRIMARY}" == delete_call.url
+            f"http://mock-impact.com/api/projects/{IDs.PROJECT_ID_PRIMARY}"
+            f"/content/{IDs.PROJECT_CONTENT_ID_PRIMARY}" == delete_call.url
         )
         assert "DELETE" == delete_call.method
 
@@ -77,11 +77,11 @@ class TestProjectService:
             uri=uri, context=get_project_content.context
         )
         data = service.project.project_content_get(
-            IDs.PROJECT_PRIMARY,
-            IDs.PROJECT_CONTENT_SECONDARY,
+            IDs.PROJECT_ID_PRIMARY,
+            IDs.PROJECT_CONTENT_ID_SECONDARY,
         )
         assert data == {
-            "id": IDs.PROJECT_CONTENT_SECONDARY,
+            "id": IDs.PROJECT_CONTENT_ID_SECONDARY,
             "relpath": "test.mo",
             "contentType": "MODELICA",
             "name": "test",
@@ -95,7 +95,7 @@ class TestProjectService:
         )
         data = service.project.project_content_upload(
             SINGLE_FILE_LIBRARY_PATH,
-            IDs.PROJECT_PRIMARY,
+            IDs.PROJECT_ID_PRIMARY,
             "MODELICA",
         )
         assert "data" in data
@@ -107,8 +107,8 @@ class TestProjectService:
         )
         with mock.patch("builtins.open", mock.mock_open()) as mock_file:
             data = service.project.fmu_import(
-                IDs.PROJECT_PRIMARY,
-                IDs.PROJECT_CONTENT_PRIMARY,
+                IDs.PROJECT_ID_PRIMARY,
+                IDs.PROJECT_CONTENT_ID_PRIMARY,
                 "test.fmu",
                 "Workspace",
             )
@@ -121,15 +121,16 @@ class TestProjectService:
                 "variable"
             ],
             "library": {
-                "project_id": IDs.PROJECT_PRIMARY,
-                "content_id": IDs.PROJECT_CONTENT_PRIMARY,
+                "project_id": IDs.PROJECT_ID_PRIMARY,
+                "content_id": IDs.PROJECT_CONTENT_ID_PRIMARY,
             },
         }
 
         import_fmu_call = import_fmu.adapter.request_history[0]
         assert (
-            f"http://mock-impact.com/api/projects/{IDs.PROJECT_PRIMARY}"
-            f"/content/{IDs.PROJECT_CONTENT_PRIMARY}/fmu-imports" == import_fmu_call.url
+            f"http://mock-impact.com/api/projects/{IDs.PROJECT_ID_PRIMARY}"
+            f"/content/{IDs.PROJECT_CONTENT_ID_PRIMARY}/fmu-imports"
+            == import_fmu_call.url
         )
         assert "POST" == import_fmu_call.method
 
@@ -139,7 +140,7 @@ class TestProjectService:
             uri=uri, context=project_options_get.context
         )
         data = service.project.project_options_get(
-            IDs.PROJECT_PRIMARY, IDs.WORKSPACE_PRIMARY, IDs.DYNAMIC_CF
+            IDs.PROJECT_ID_PRIMARY, IDs.WORKSPACE_ID_PRIMARY, IDs.DYNAMIC_CF
         )
         assert data == {
             "compiler": {
@@ -158,7 +159,7 @@ class TestProjectService:
             uri=uri, context=project_default_options_get.context
         )
         data = service.project.project_default_options_get(
-            IDs.WORKSPACE_PRIMARY, IDs.DYNAMIC_CF
+            IDs.WORKSPACE_ID_PRIMARY, IDs.DYNAMIC_CF
         )
         assert data == {"compiler": {"c_compiler": "gcc"}}
 
@@ -168,4 +169,4 @@ class TestProjectService:
             uri=uri, context=import_project.context
         )
         data = service.project.import_from_zip(TEST_WORKSPACE_PATH)
-        assert data == {"data": {"location": f"api/project-imports/{IDs.IMPORT}"}}
+        assert data == {"data": {"location": f"api/project-imports/{IDs.IMPORT_ID}"}}

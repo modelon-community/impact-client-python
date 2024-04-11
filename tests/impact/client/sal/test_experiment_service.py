@@ -11,7 +11,7 @@ class TestExperimentService:
             uri=uri, context=experiment_execute.context
         )
         service.experiment.experiment_execute(
-            IDs.WORKSPACE_SECONDARY, IDs.EXPERIMENT_PRIMARY
+            IDs.WORKSPACE_ID_SECONDARY, IDs.EXPERIMENT_ID_PRIMARY
         )
         assert experiment_execute.adapter.called
 
@@ -21,11 +21,13 @@ class TestExperimentService:
             uri=uri, context=experiment_execute.context
         )
         service.experiment.experiment_execute(
-            IDs.WORKSPACE_SECONDARY, IDs.EXPERIMENT_PRIMARY, case_ids=[IDs.CASE_PRIMARY]
+            IDs.WORKSPACE_ID_SECONDARY,
+            IDs.EXPERIMENT_ID_PRIMARY,
+            case_ids=[IDs.CASE_ID_PRIMARY],
         )
         assert experiment_execute.adapter.called
         assert experiment_execute.adapter.request_history[0].json() == {
-            "includeCases": {"ids": [IDs.CASE_PRIMARY]}
+            "includeCases": {"ids": [IDs.CASE_ID_PRIMARY]}
         }
 
     def test_set_label_for_experiment(self, set_experiment_label):
@@ -34,7 +36,7 @@ class TestExperimentService:
             uri=uri, context=set_experiment_label.context
         )
         service.experiment.experiment_set_label(
-            IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY, "Label"
+            IDs.WORKSPACE_ID_PRIMARY, IDs.EXPERIMENT_ID_PRIMARY, "Label"
         )
         assert set_experiment_label.adapter.called
         assert set_experiment_label.adapter.request_history[0].json() == {
@@ -47,7 +49,7 @@ class TestExperimentService:
             uri=uri, context=delete_experiment.context
         )
         service.experiment.experiment_delete(
-            IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY
+            IDs.WORKSPACE_ID_PRIMARY, IDs.EXPERIMENT_ID_PRIMARY
         )
         assert delete_experiment.adapter.called
 
@@ -57,7 +59,7 @@ class TestExperimentService:
             uri=uri, context=experiment_status.context
         )
         data = service.experiment.execute_status(
-            IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY
+            IDs.WORKSPACE_ID_PRIMARY, IDs.EXPERIMENT_ID_PRIMARY
         )
         assert data == {
             "finished_executions": 1,
@@ -71,7 +73,9 @@ class TestExperimentService:
         service = modelon.impact.client.sal.service.Service(
             uri=uri, context=cancel_execute.context
         )
-        service.experiment.execute_cancel(IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY)
+        service.experiment.execute_cancel(
+            IDs.WORKSPACE_ID_PRIMARY, IDs.EXPERIMENT_ID_PRIMARY
+        )
         assert cancel_execute.adapter.called
 
     def test_get_result_variables(self, get_result_variables):
@@ -80,7 +84,7 @@ class TestExperimentService:
             uri=uri, context=get_result_variables.context
         )
         data = service.experiment.result_variables_get(
-            IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY
+            IDs.WORKSPACE_ID_PRIMARY, IDs.EXPERIMENT_ID_PRIMARY
         )
         assert data == ["PI.J", "inertia.I"]
 
@@ -90,8 +94,8 @@ class TestExperimentService:
             uri=uri, context=get_trajectories.context
         )
         data = service.experiment.trajectories_get(
-            IDs.WORKSPACE_PRIMARY,
-            IDs.EXPERIMENT_PRIMARY,
+            IDs.WORKSPACE_ID_PRIMARY,
+            IDs.EXPERIMENT_ID_PRIMARY,
             ["variable1", "variable2"],
             False,
         )
@@ -103,8 +107,8 @@ class TestExperimentService:
             uri=uri, context=get_last_point.context
         )
         data = service.experiment.trajectories_get(
-            IDs.WORKSPACE_PRIMARY,
-            IDs.EXPERIMENT_PRIMARY,
+            IDs.WORKSPACE_ID_PRIMARY,
+            IDs.EXPERIMENT_ID_PRIMARY,
             ["variable1", "variable2"],
             True,
             "application/vnd.impact.trajectories.v2+json",
@@ -117,9 +121,9 @@ class TestExperimentService:
             uri=uri, context=get_cases.context
         )
         data = service.experiment.cases_get(
-            IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY
+            IDs.WORKSPACE_ID_PRIMARY, IDs.EXPERIMENT_ID_PRIMARY
         )
-        assert data == {"data": {"items": [{"id": IDs.CASE_PRIMARY}]}}
+        assert data == {"data": {"items": [{"id": IDs.CASE_ID_PRIMARY}]}}
 
     def test_get_case(self, get_case):
         uri = URI(get_case.url)
@@ -127,9 +131,9 @@ class TestExperimentService:
             uri=uri, context=get_case.context
         )
         data = service.experiment.case_get(
-            IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY, IDs.CASE_PRIMARY
+            IDs.WORKSPACE_ID_PRIMARY, IDs.EXPERIMENT_ID_PRIMARY, IDs.CASE_ID_PRIMARY
         )
-        assert data == {"id": IDs.CASE_PRIMARY}
+        assert data == {"id": IDs.CASE_ID_PRIMARY}
 
     def test_put_case(self, put_case):
         uri = URI(put_case.url)
@@ -137,7 +141,7 @@ class TestExperimentService:
             uri=uri, context=put_case.context
         )
         service.experiment.case_put(
-            IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY, IDs.CASE_PRIMARY, {}
+            IDs.WORKSPACE_ID_PRIMARY, IDs.EXPERIMENT_ID_PRIMARY, IDs.CASE_ID_PRIMARY, {}
         )
         assert put_case.adapter.called
 
@@ -147,7 +151,7 @@ class TestExperimentService:
             uri=uri, context=get_case_log.context
         )
         data = service.experiment.case_get_log(
-            IDs.WORKSPACE_PRIMARY, IDs.EXPERIMENT_PRIMARY, IDs.CASE_PRIMARY
+            IDs.WORKSPACE_ID_PRIMARY, IDs.EXPERIMENT_ID_PRIMARY, IDs.CASE_ID_PRIMARY
         )
         assert data == "Simulation log.."
 
@@ -157,9 +161,9 @@ class TestExperimentService:
             uri=uri, context=get_mat_case_results.context
         )
         data, name = service.experiment.case_result_get(
-            IDs.WORKSPACE_PRIMARY,
-            IDs.EXPERIMENT_PRIMARY,
-            IDs.CASE_PRIMARY,
+            IDs.WORKSPACE_ID_PRIMARY,
+            IDs.EXPERIMENT_ID_PRIMARY,
+            IDs.CASE_ID_PRIMARY,
             ResultFormat.MAT,
         )
         assert data == b"\x00\x00\x00\x00"
@@ -171,9 +175,9 @@ class TestExperimentService:
             uri=uri, context=get_csv_case_results.context
         )
         data, name = service.experiment.case_result_get(
-            IDs.WORKSPACE_PRIMARY,
-            IDs.EXPERIMENT_PRIMARY,
-            IDs.CASE_PRIMARY,
+            IDs.WORKSPACE_ID_PRIMARY,
+            IDs.EXPERIMENT_ID_PRIMARY,
+            IDs.CASE_ID_PRIMARY,
             ResultFormat.CSV,
         )
         assert data == "1;2;3"
@@ -185,9 +189,9 @@ class TestExperimentService:
             uri=uri, context=get_case_artifact.context
         )
         data, name = service.experiment.case_artifact_get(
-            IDs.WORKSPACE_PRIMARY,
-            IDs.EXPERIMENT_PRIMARY,
-            IDs.CASE_PRIMARY,
+            IDs.WORKSPACE_ID_PRIMARY,
+            IDs.EXPERIMENT_ID_PRIMARY,
+            IDs.CASE_ID_PRIMARY,
             IDs.CUSTOM_ARTIFACT_ID,
         )
         assert data == b"\x00\x00\x00\x00"
@@ -199,9 +203,9 @@ class TestExperimentService:
             uri=uri, context=get_case_artifact_meta.context
         )
         data = service.experiment.case_artifacts_meta_get(
-            IDs.WORKSPACE_PRIMARY,
-            IDs.EXPERIMENT_PRIMARY,
-            IDs.CASE_PRIMARY,
+            IDs.WORKSPACE_ID_PRIMARY,
+            IDs.EXPERIMENT_ID_PRIMARY,
+            IDs.CASE_ID_PRIMARY,
         )
         assert data == {
             "data": {
@@ -215,9 +219,9 @@ class TestExperimentService:
             uri=uri, context=get_case_trajectories.context
         )
         data = service.experiment.case_trajectories_get(
-            IDs.WORKSPACE_PRIMARY,
-            IDs.EXPERIMENT_PRIMARY,
-            IDs.CASE_PRIMARY,
+            IDs.WORKSPACE_ID_PRIMARY,
+            IDs.EXPERIMENT_ID_PRIMARY,
+            IDs.CASE_ID_PRIMARY,
             ["variable1", "variable2"],
             False,
         )

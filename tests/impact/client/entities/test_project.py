@@ -38,15 +38,15 @@ class TestProject:
     def test_get_project_contents(self, project):
         contents = project.entity.get_contents()
         assert len(contents) == 1
-        assert contents[0].id == IDs.PROJECT_CONTENT_PRIMARY
+        assert contents[0].id == IDs.PROJECT_CONTENT_ID_PRIMARY
         assert contents[0].relpath == Path("MyPackage")
         assert contents[0].content_type == ContentType.MODELICA
         assert contents[0].name == "MyPackage"
         assert not contents[0].default_disabled
 
     def test_get_project_content_by_id(self, project):
-        content = project.entity.get_content(IDs.PROJECT_CONTENT_SECONDARY)
-        assert content.id == IDs.PROJECT_CONTENT_SECONDARY
+        content = project.entity.get_content(IDs.PROJECT_CONTENT_ID_SECONDARY)
+        assert content.id == IDs.PROJECT_CONTENT_ID_SECONDARY
         assert content.relpath == Path("test.mo")
         assert content.content_type == ContentType.MODELICA
         assert content.name == "test"
@@ -54,7 +54,7 @@ class TestProject:
 
     def test_get_project_content_by_name(self, project):
         content = project.entity.get_content_by_name("MyPackage", ContentType.MODELICA)
-        assert content.id == IDs.PROJECT_CONTENT_PRIMARY
+        assert content.id == IDs.PROJECT_CONTENT_ID_PRIMARY
         assert content.relpath == Path("MyPackage")
         assert content.content_type == ContentType.MODELICA
         assert content.name == "MyPackage"
@@ -62,7 +62,7 @@ class TestProject:
 
     def test_get_modelica_library_by_name(self, project):
         content = project.entity.get_modelica_library_by_name("MyPackage")
-        assert content.id == IDs.PROJECT_CONTENT_PRIMARY
+        assert content.id == IDs.PROJECT_CONTENT_ID_PRIMARY
         assert content.relpath == Path("MyPackage")
         assert content.content_type == ContentType.MODELICA
         assert content.name == "MyPackage"
@@ -71,23 +71,23 @@ class TestProject:
     def test_delete_project_contents(self, project):
         service = project.service
         content = create_project_content_entity(
-            project_id=IDs.PROJECT_PRIMARY,
+            project_id=IDs.PROJECT_ID_PRIMARY,
             service=project.service,
         )
         content.delete()
         service.project.project_content_delete.assert_called_with(
-            IDs.PROJECT_PRIMARY,
-            IDs.PROJECT_CONTENT_PRIMARY,
+            IDs.PROJECT_ID_PRIMARY,
+            IDs.PROJECT_CONTENT_ID_PRIMARY,
         )
 
     def test_delete_project(self, project):
         service = project.service
         project = create_project_entity(
-            project_id=IDs.PROJECT_PRIMARY,
+            project_id=IDs.PROJECT_ID_PRIMARY,
             service=service,
         )
         project.delete()
-        service.project.project_delete.assert_called_with(IDs.PROJECT_PRIMARY)
+        service.project.project_delete.assert_called_with(IDs.PROJECT_ID_PRIMARY)
 
     def test_import_content(self, project):
         content_operation = project.entity.import_content(
@@ -96,7 +96,7 @@ class TestProject:
         assert content_operation.status == AsyncOperationStatus.READY
         content = content_operation.data()
 
-        assert content.id == IDs.PROJECT_CONTENT_SECONDARY
+        assert content.id == IDs.PROJECT_CONTENT_ID_SECONDARY
         assert content.relpath == Path("test.mo")
         assert content.content_type == ContentType.MODELICA
         assert content.name == "test"
@@ -109,7 +109,7 @@ class TestProject:
         assert content_operation.status == AsyncOperationStatus.READY
 
         content = content_operation.data()
-        assert content.id == IDs.PROJECT_CONTENT_SECONDARY
+        assert content.id == IDs.PROJECT_CONTENT_ID_SECONDARY
         assert content.relpath == Path("test.mo")
         assert content.content_type == ContentType.MODELICA
         assert content.name == "test"

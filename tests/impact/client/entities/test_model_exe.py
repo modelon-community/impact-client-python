@@ -11,7 +11,7 @@ from tests.impact.client.helpers import MODEL_DESCRIPTION_XML, IDs
 
 class TestModelExecutable:
     def test_compile_successful(self, fmu):
-        assert fmu.id == IDs.FMU_PRIMARY
+        assert fmu.id == IDs.FMU_ID_PRIMARY
         assert fmu.is_successful()
         assert fmu.get_settable_parameters() == ["h0", "v"]
         assert fmu.get_log() == "Successful Log"

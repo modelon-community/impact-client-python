@@ -13,24 +13,26 @@ class TestExternalResultService:
         )
         with mock.patch("builtins.open", mock.mock_open()) as mock_file:
             data = service.external_result.result_upload(
-                IDs.WORKSPACE_PRIMARY, "test.mat"
+                IDs.WORKSPACE_ID_PRIMARY, "test.mat"
             )
             mock_file.assert_called_with("test.mat", "rb")
 
-        assert data == {"data": {"location": f"api/uploads/results/{IDs.IMPORT}"}}
+        assert data == {"data": {"location": f"api/uploads/results/{IDs.IMPORT_ID}"}}
 
     def test_result_upload_status(self, upload_result_status_ready):
         uri = URI(upload_result_status_ready.url)
         service = modelon.impact.client.sal.service.Service(
             uri=uri, context=upload_result_status_ready.context
         )
-        resource_uri = f"api/uploads/results/{IDs.IMPORT}"
+        resource_uri = f"api/uploads/results/{IDs.IMPORT_ID}"
         data = service.imports.get_import_status(resource_uri)
         assert data == {
             "data": {
-                "id": IDs.IMPORT,
+                "id": IDs.IMPORT_ID,
                 "status": "ready",
-                "data": {"resourceUri": f"api/external-result/{IDs.EXTERNAL_RESULT}"},
+                "data": {
+                    "resourceUri": f"api/external-result/{IDs.EXTERNAL_RESULT_ID}"
+                },
             }
         }
 
@@ -39,15 +41,15 @@ class TestExternalResultService:
         service = modelon.impact.client.sal.service.Service(
             uri=uri, context=upload_result_meta.context
         )
-        data = service.external_result.get_uploaded_result(IDs.EXTERNAL_RESULT)
+        data = service.external_result.get_uploaded_result(IDs.EXTERNAL_RESULT_ID)
 
         assert data == {
             "data": {
-                "id": IDs.EXTERNAL_RESULT,
+                "id": IDs.EXTERNAL_RESULT_ID,
                 "createdAt": "2021-09-02T08:26:49.612000",
                 "name": "result_for_PID",
                 "description": "This is a result file for PID controller",
-                "workspaceId": IDs.WORKSPACE_PRIMARY,
+                "workspaceId": IDs.WORKSPACE_ID_PRIMARY,
             }
         }
 
@@ -56,5 +58,5 @@ class TestExternalResultService:
         service = modelon.impact.client.sal.service.Service(
             uri=uri, context=upload_result_delete.context
         )
-        service.external_result.delete_uploaded_result(IDs.EXTERNAL_RESULT)
+        service.external_result.delete_uploaded_result(IDs.EXTERNAL_RESULT_ID)
         assert upload_result_delete.adapter.called

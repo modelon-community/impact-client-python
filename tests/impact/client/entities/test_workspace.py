@@ -36,7 +36,7 @@ class TestPublishedWorkspace:
     def test_delete_published_workspace(self):
         service = mock.MagicMock()
         workspace = create_published_workspace_entity(
-            IDs.PUBLISHED_WORKSPACE_ID, IDs.WORKSPACE_PRIMARY, service=service
+            IDs.PUBLISHED_WORKSPACE_ID, IDs.WORKSPACE_ID_PRIMARY, service=service
         )
         workspace.delete()
         service.workspace.delete_published_workspace.assert_called_with(
@@ -47,7 +47,7 @@ class TestPublishedWorkspace:
     def test_revoke_user_access_for_published_workspace(self):
         service = mock.MagicMock()
         workspace = create_published_workspace_entity(
-            IDs.PUBLISHED_WORKSPACE_ID, IDs.WORKSPACE_PRIMARY, service=service
+            IDs.PUBLISHED_WORKSPACE_ID, IDs.WORKSPACE_ID_PRIMARY, service=service
         )
         workspace.revoke_user_access(IDs.USERNAME)
         service.workspace.revoke_user_access.assert_called_with(
@@ -58,7 +58,7 @@ class TestPublishedWorkspace:
     def test_grant_user_access_for_published_workspace(self):
         service = mock.MagicMock()
         workspace = create_published_workspace_entity(
-            IDs.PUBLISHED_WORKSPACE_ID, IDs.WORKSPACE_PRIMARY, service=service
+            IDs.PUBLISHED_WORKSPACE_ID, IDs.WORKSPACE_ID_PRIMARY, service=service
         )
         workspace.grant_user_access(IDs.USERNAME)
         service.workspace.grant_user_access.assert_called_with(
@@ -69,7 +69,7 @@ class TestPublishedWorkspace:
     def test_grant_community_access_for_published_workspace(self):
         service = mock.MagicMock()
         workspace = create_published_workspace_entity(
-            IDs.PUBLISHED_WORKSPACE_ID, IDs.WORKSPACE_PRIMARY, service=service
+            IDs.PUBLISHED_WORKSPACE_ID, IDs.WORKSPACE_ID_PRIMARY, service=service
         )
         workspace.grant_community_access()
         service.workspace.grant_community_access.assert_called_with(
@@ -80,7 +80,7 @@ class TestPublishedWorkspace:
     def test_revoke_community_access_for_published_workspace(self):
         service = mock.MagicMock()
         workspace = create_published_workspace_entity(
-            IDs.PUBLISHED_WORKSPACE_ID, IDs.WORKSPACE_PRIMARY, service=service
+            IDs.PUBLISHED_WORKSPACE_ID, IDs.WORKSPACE_ID_PRIMARY, service=service
         )
         workspace.revoke_community_access()
         service.workspace.revoke_community_access.assert_called_with(
@@ -91,7 +91,7 @@ class TestPublishedWorkspace:
     def test_grant_group_acess_for_published_workspace(self):
         service = mock.MagicMock()
         workspace = create_published_workspace_entity(
-            IDs.PUBLISHED_WORKSPACE_ID, IDs.WORKSPACE_PRIMARY, service=service
+            IDs.PUBLISHED_WORKSPACE_ID, IDs.WORKSPACE_ID_PRIMARY, service=service
         )
         workspace.grant_group_access()
         service.workspace.grant_group_access.assert_called_with(
@@ -106,7 +106,7 @@ class TestPublishedWorkspace:
     def test_revoke_group_access_for_published_workspace(self):
         service = mock.MagicMock()
         workspace = create_published_workspace_entity(
-            IDs.PUBLISHED_WORKSPACE_ID, IDs.WORKSPACE_PRIMARY, service=service
+            IDs.PUBLISHED_WORKSPACE_ID, IDs.WORKSPACE_ID_PRIMARY, service=service
         )
         workspace.revoke_group_access(IDs.GROUP_NAME)
         service.workspace.revoke_group_access.assert_called_with(
@@ -117,8 +117,8 @@ class TestPublishedWorkspace:
         workspace = publish_workspace.entity
         service = publish_workspace.service
 
-        new_workspace_name = IDs.WORKSPACE_SECONDARY
-        assert workspace.name == IDs.WORKSPACE_PRIMARY
+        new_workspace_name = IDs.WORKSPACE_ID_SECONDARY
+        assert workspace.name == IDs.WORKSPACE_ID_PRIMARY
         workspace.name = new_workspace_name
 
         service.workspace.rename_published_workspace.assert_called_with(
@@ -130,7 +130,7 @@ class TestPublishedWorkspace:
 
     def test_import_published_workspace(self, publish_workspace):
         workspace = publish_workspace.entity.import_to_userspace()
-        assert workspace.id == IDs.WORKSPACE_PRIMARY
+        assert workspace.id == IDs.WORKSPACE_ID_PRIMARY
 
     @pytest.mark.experimental
     def test_get_published_workspace_acl(self, publish_workspace):
@@ -147,16 +147,16 @@ class TestPublishedWorkspace:
 class TestWorkspace:
     @pytest.mark.vcr()
     def test_get_workspace_size(self, client_helper: ClientHelper):
-        assert client_helper.workspace.id == IDs.WORKSPACE_PRIMARY
+        assert client_helper.workspace.id == IDs.WORKSPACE_ID_PRIMARY
         assert isinstance(client_helper.workspace.size, int)
 
     @pytest.mark.vcr()
     def test_rename_workspace(self, client_helper: ClientHelper):
         workspace = client_helper.workspace
-        assert workspace.name == IDs.WORKSPACE_PRIMARY
-        workspace.rename(IDs.WORKSPACE_SECONDARY)
-        workspace = client_helper.client.get_workspace(IDs.WORKSPACE_PRIMARY)
-        assert workspace.name == IDs.WORKSPACE_SECONDARY
+        assert workspace.name == IDs.WORKSPACE_ID_PRIMARY
+        workspace.rename(IDs.WORKSPACE_ID_SECONDARY)
+        workspace = client_helper.client.get_workspace(IDs.WORKSPACE_ID_PRIMARY)
+        assert workspace.name == IDs.WORKSPACE_ID_SECONDARY
 
     @pytest.mark.vcr()
     def test_get_custom_function(self, client_helper: ClientHelper):
@@ -182,13 +182,13 @@ class TestWorkspace:
     def test_upload_result(self, external_result_sal_upload):
         external_result_service = external_result_sal_upload.external_result
         workspace = create_workspace_entity(
-            IDs.WORKSPACE_PRIMARY, service=external_result_sal_upload
+            IDs.WORKSPACE_ID_PRIMARY, service=external_result_sal_upload
         )
         upload_op = workspace.upload_result("test.mat", "Workspace")
         external_result_service.result_upload.assert_called_with(
-            IDs.WORKSPACE_PRIMARY, "test.mat", description=None, label="Workspace"
+            IDs.WORKSPACE_ID_PRIMARY, "test.mat", description=None, label="Workspace"
         )
-        assert upload_op.id == IDs.IMPORT
+        assert upload_op.id == IDs.IMPORT_ID
 
     @pytest.mark.vcr()
     def test_download_workspace(self, client_helper: ClientHelper):
@@ -215,7 +215,7 @@ class TestWorkspace:
         workspace_entity.export(publish=True, access=AccessSettings(group_names=[]))
         access_settings = {"groupNames": []}
         workspace_service.workspace_export_setup.assert_has_calls(
-            [mock.call(IDs.WORKSPACE_PRIMARY, True, None, access_settings)]
+            [mock.call(IDs.WORKSPACE_ID_PRIMARY, True, None, access_settings)]
         )
 
     @pytest.mark.vcr()
@@ -354,7 +354,7 @@ class TestWorkspace:
         assert not pub_ws
 
         pub_ws = client_helper.workspace.get_published_workspace(
-            model_name=IDs.MODELICA_CLASS_PATH
+            model_name=IDs.PID_MODELICA_CLASS_PATH
         )
         assert not pub_ws
 
@@ -366,7 +366,7 @@ class TestWorkspace:
         # Publish app mode workspace with PID controller
         pw_id_pid = (
             client_helper.workspace.export(
-                publish=True, class_path=IDs.MODELICA_CLASS_PATH
+                publish=True, class_path=IDs.PID_MODELICA_CLASS_PATH
             )
             .wait()
             .id
@@ -382,12 +382,12 @@ class TestWorkspace:
 
         # Fetch linked PID app mode workspace
         pub_ws_pid = client_helper.workspace.get_published_workspace(
-            model_name=IDs.MODELICA_CLASS_PATH
+            model_name=IDs.PID_MODELICA_CLASS_PATH
         )
         assert pub_ws_pid
         assert pub_ws_pid.id == pw_id_pid
         assert pub_ws_pid.definition.app_mode
-        assert pub_ws_pid.definition.app_mode.model == IDs.MODELICA_CLASS_PATH
+        assert pub_ws_pid.definition.app_mode.model == IDs.PID_MODELICA_CLASS_PATH
 
         # Fetch linked Filter app mode workspace
         pub_ws_filter = client_helper.workspace.get_published_workspace(
@@ -427,14 +427,14 @@ class TestWorkspace:
 
     @pytest.mark.vcr()
     def test_get_model(self, client_helper: ClientHelper):
-        model_name = IDs.MODELICA_CLASS_PATH
+        model_name = IDs.PID_MODELICA_CLASS_PATH
         model = client_helper.workspace.get_model(model_name)
         assert isinstance(model, Model)
         assert model.name == model_name
 
     @pytest.mark.vcr()
     def test_model_repr(self, client_helper: ClientHelper):
-        model_name = IDs.MODELICA_CLASS_PATH
+        model_name = IDs.PID_MODELICA_CLASS_PATH
         model = client_helper.workspace.get_model(model_name)
         assert f"Class name '{model_name}'" == model.__repr__()
 
@@ -482,7 +482,7 @@ class TestWorkspace:
     def test_experiment_def_as_dict(self, client_helper: ClientHelper):
         workspace = client_helper.workspace
         dynamic = workspace.get_custom_function("dynamic")
-        model = workspace.get_model(IDs.MODELICA_CLASS_PATH)
+        model = workspace.get_model(IDs.PID_MODELICA_CLASS_PATH)
         experiment_definition = SimpleModelicaExperimentDefinition(
             model, dynamic
         ).to_dict()
@@ -519,17 +519,17 @@ class TestWorkspace:
         project = workspace.entity.import_dependency_from_zip(
             TEST_WORKSPACE_PATH
         ).wait()
-        assert project.id == IDs.PROJECT_PRIMARY
+        assert project.id == IDs.PROJECT_ID_PRIMARY
 
     def test_import_project_from_zip(self, workspace):
         project = workspace.entity.import_project_from_zip(TEST_WORKSPACE_PATH).wait()
-        assert project.id == IDs.PROJECT_PRIMARY
+        assert project.id == IDs.PROJECT_ID_PRIMARY
 
     @pytest.mark.vcr()
     def test_get_model_experiments(self, client_helper: ClientHelper):
         workspace = client_helper.workspace
         client_helper.create_experiment()
-        experiments = workspace.get_experiments(IDs.MODELICA_CLASS_PATH)
+        experiments = workspace.get_experiments(IDs.PID_MODELICA_CLASS_PATH)
         assert len(experiments) == 1
 
     @pytest.mark.vcr()
@@ -538,7 +538,7 @@ class TestWorkspace:
     ):
         workspace = client_helper.workspace
         dynamic = workspace.get_custom_function("dynamic")
-        model = workspace.get_model(IDs.MODELICA_CLASS_PATH)
+        model = workspace.get_model(IDs.PID_MODELICA_CLASS_PATH)
         base_experiment_definition = SimpleModelicaExperimentDefinition(model, dynamic)
         _exp_for_init = workspace.create_experiment(base_experiment_definition)
         exp_for_init = _exp_for_init.execute().wait()
@@ -601,7 +601,7 @@ class TestWorkspace:
     ):
         workspace = client_helper.workspace
         dynamic = workspace.get_custom_function("dynamic")
-        model = workspace.get_model(IDs.MODELICA_CLASS_PATH)
+        model = workspace.get_model(IDs.PID_MODELICA_CLASS_PATH)
         compiler_options = dynamic.get_compiler_options().with_values(c_compiler="gcc")
         fmu = model.compile(compiler_options).wait()
         base_experiment_definition = SimpleFMUExperimentDefinition(fmu, dynamic)
