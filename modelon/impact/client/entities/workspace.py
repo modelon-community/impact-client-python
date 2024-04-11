@@ -125,6 +125,11 @@ class PublishedWorkspaceUploadStatus(enum.Enum):
 
 
 @dataclass
+class AppMode:
+    model: str
+
+
+@dataclass
 class PublishedWorkspaceDefinition:
     name: str
     tenant_id: str
@@ -132,6 +137,7 @@ class PublishedWorkspaceDefinition:
     status: PublishedWorkspaceUploadStatus
     owner_username: str
     created_at: int
+    app_mode: Optional[AppMode] = None
 
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> PublishedWorkspaceDefinition:
@@ -142,6 +148,7 @@ class PublishedWorkspaceDefinition:
             status=PublishedWorkspaceUploadStatus(data["status"]),
             owner_username=data["ownerUsername"],
             created_at=data["createdAt"],
+            app_mode=AppMode(data["appMode"]["model"]) if data.get("appMode") else None,
         )
 
 

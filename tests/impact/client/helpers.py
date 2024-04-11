@@ -203,6 +203,7 @@ class IDs:
     CUSTOM_ARTIFACT_ID = "ABCD"
     RESULT_MAT = "result.mat"
     MODELICA_CLASS_PATH = "Modelica.Blocks.Examples.PID_Controller"
+    FILTER_MODELICA_CLASS_PATH = "Modelica.Blocks.Examples.Filter"
     LOCAL_MODELICA_CLASS_PATH = "Test.PID"
     EXPERIMENT_LABEL = "EXPERIMENT_LABEL"
 

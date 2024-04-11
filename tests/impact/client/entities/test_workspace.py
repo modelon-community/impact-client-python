@@ -349,29 +349,65 @@ class TestWorkspace:
     def test_get_published_app_mode_workspace_corresponding_to_workspace(
         self, client_helper: ClientHelper
     ):
+        # Assert workspace not linked to any archieve or app mode published workspaces
+        pub_ws = client_helper.workspace.get_published_workspace()
+        assert not pub_ws
+
         pub_ws = client_helper.workspace.get_published_workspace(
             model_name=IDs.MODELICA_CLASS_PATH
         )
         assert not pub_ws
-        pw_id = (
+
+        pub_ws = client_helper.workspace.get_published_workspace(
+            model_name=IDs.FILTER_MODELICA_CLASS_PATH
+        )
+        assert not pub_ws
+
+        # Publish app mode workspace with PID controller
+        pw_id_pid = (
             client_helper.workspace.export(
                 publish=True, class_path=IDs.MODELICA_CLASS_PATH
             )
             .wait()
             .id
         )
+        # Publish app mode workspace with Filter
+        pw_id_filter = (
+            client_helper.workspace.export(
+                publish=True, class_path=IDs.FILTER_MODELICA_CLASS_PATH
+            )
+            .wait()
+            .id
+        )
 
-        pub_ws = client_helper.workspace.get_published_workspace(
+        # Fetch linked PID app mode workspace
+        pub_ws_pid = client_helper.workspace.get_published_workspace(
             model_name=IDs.MODELICA_CLASS_PATH
         )
-        assert pub_ws
-        assert pub_ws.id == pw_id
+        assert pub_ws_pid
+        assert pub_ws_pid.id == pw_id_pid
+        assert pub_ws_pid.definition.app_mode
+        assert pub_ws_pid.definition.app_mode.model == IDs.MODELICA_CLASS_PATH
+
+        # Fetch linked Filter app mode workspace
+        pub_ws_filter = client_helper.workspace.get_published_workspace(
+            model_name=IDs.FILTER_MODELICA_CLASS_PATH
+        )
+        assert pub_ws_filter
+        assert pub_ws_filter.id == pw_id_filter
+        assert pub_ws_filter.definition.app_mode
+        assert pub_ws_filter.definition.app_mode.model == IDs.FILTER_MODELICA_CLASS_PATH
+
+        # Fetch linked archive workspace
+        pub_ws = client_helper.workspace.get_published_workspace()
+        assert not pub_ws
 
         # Cleanup
         pwc = client_helper.client.get_published_workspaces_client()
-        pw = pwc.get_by_id(pw_id)
-        assert pw
-        pw.delete()
+        for id in [pw_id_pid, pw_id_filter]:
+            pw = pwc.get_by_id(id)
+            assert pw
+            pw.delete()
 
     @pytest.mark.vcr()
     def test_get_published_workspace_fails_for_remote_imported_workspace(
