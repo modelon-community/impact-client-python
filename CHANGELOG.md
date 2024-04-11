@@ -1,3 +1,17 @@
+# [3.15.0](https://github.com/modelon-community/impact-client-python/compare/v3.14.0...v3.15.0) (2024-04-11)
+
+
+### Bug Fixes
+
+* correct MODELON_IMPACT_CLIENT_URL in Makefile ([d954cf8](https://github.com/modelon-community/impact-client-python/commit/d954cf8b52878800fd8060f9da48d4f5bbf0f581))
+* remove experimental flag from tests that test non-experimental api ([ef8f49e](https://github.com/modelon-community/impact-client-python/commit/ef8f49ecc898c126c2e0d94a7c648323ba1980ad))
+
+
+### Features
+
+* added a utility method to get published workspaces if any corresponding to a local workspace ([47c519e](https://github.com/modelon-community/impact-client-python/commit/47c519e18a667fbc5e31d99d2e7dae02c211acd7))
+* added app_mode property to PublishedWorkspaceDefinition class ([7126f1b](https://github.com/modelon-community/impact-client-python/commit/7126f1bbb7016840aa8a676b160245f0096a983e))
+
 # [3.14.0](https://github.com/modelon-community/impact-client-python/compare/v3.13.1...v3.14.0) (2024-04-11)
 
 
