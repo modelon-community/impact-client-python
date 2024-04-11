@@ -118,7 +118,7 @@ def vcr_config():
                         body = insensitive_username.sub(IDs.MOCK_EMAIL, body)
                     response_body = json.loads(body)
                 except json.JSONDecodeError as e:
-                    #body = response["body"]["string"]
+                    # body = response["body"]["string"]
                     raise ValueError(body) from e
                 except UnicodeDecodeError:
                     # Handle case where response is not json
