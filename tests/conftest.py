@@ -111,7 +111,7 @@ def vcr_config():
             if response.get("body", {}).get("string"):
                 try:
                     body = response["body"]["string"].decode("utf-8")
-                    if username is not None:
+                    if username:
                         insensitive_username = re.compile(
                             re.escape(username), re.IGNORECASE
                         )
