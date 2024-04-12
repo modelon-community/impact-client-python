@@ -120,8 +120,11 @@ def vcr_config():
                 except UnicodeDecodeError:
                     # Handle case where response is not json
                     return response
+                # Return response as it is if its a list(To handle trajectories api)
+                if isinstance(response_body, list):
+                    return response
                 # Scrubbing off response from users/me
-                if response_body.get("data", {}).get("encryptionKey"):
+                elif response_body.get("data", {}).get("encryptionKey"):
                     response_body["data"] = keep_only_keys(
                         response_body["data"], ["license", "username"]
                     )
