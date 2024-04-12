@@ -1,9 +1,10 @@
+from typing import Union
 from unittest.mock import MagicMock
 
 from modelon.impact.client import Client, Range, SimpleModelicaExperimentDefinition
 from modelon.impact.client.entities.case import Case
 from modelon.impact.client.entities.custom_function import CustomFunction
-from modelon.impact.client.entities.experiment import Experiment
+from modelon.impact.client.entities.experiment import Experiment, _Workflow
 from modelon.impact.client.entities.external_result import ExternalResult
 from modelon.impact.client.entities.model import Model
 from modelon.impact.client.entities.model_executable import ModelExecutable
@@ -18,6 +19,9 @@ from modelon.impact.client.entities.workspace import (
     PublishedWorkspace,
     PublishedWorkspaceDefinition,
     Workspace,
+)
+from modelon.impact.client.experiment_definition.fmu_based import (
+    SimpleFMUExperimentDefinition,
 )
 from modelon.impact.client.operations.experiment import ExperimentOperation
 from modelon.impact.client.operations.model_executable import (
@@ -195,6 +199,7 @@ class IDs:
     EXPERIMENT_ID_PRIMARY = "pid_20090615_134"
     EXPERIMENT_ID_SECONDARY = "filter_20090615_135"
     CASE_ID_PRIMARY = "case_1"
+    CASE_ID_SECONDARY = "case_2"
     IMPORT_ID = "9a8fg798a7g"
     EXPORT_ID = "79sd8-3n2a4-e3t24"
     CONVERSION_ID = "t24e3-a43n2-d879s"
@@ -670,17 +675,38 @@ class ClientHelper:
         self.workspace = self.client.create_workspace(IDs.WORKSPACE_ID_PRIMARY)
 
     def create_and_execute_experiment(
-        self, model_path=IDs.PID_MODELICA_CLASS_PATH, modifiers=None, user_data=None
-    ):
-        exp = self.create_experiment(model_path, modifiers, user_data)
-        return exp.execute().wait()
+        self,
+        model_path=IDs.PID_MODELICA_CLASS_PATH,
+        workflow=_Workflow.CLASS_BASED,
+        modifiers=None,
+        user_data=None,
+        custom_function_params=None,
+        wait=True,
+    ) -> Union[Experiment, ExperimentOperation]:
+        exp = self.create_experiment(
+            model_path, workflow, modifiers, user_data, custom_function_params
+        ).execute()
+        if wait:
+            return exp.wait()
+        return exp
 
     def create_experiment(
-        self, model_path=IDs.PID_MODELICA_CLASS_PATH, modifiers=None, user_data=None
-    ):
+        self,
+        model_path=IDs.PID_MODELICA_CLASS_PATH,
+        workflow=_Workflow.CLASS_BASED,
+        modifiers=None,
+        user_data=None,
+        custom_function_params=None,
+    ) -> Experiment:
         dynamic = self.workspace.get_custom_function("dynamic")
+        if custom_function_params:
+            dynamic = dynamic.with_parameters(**custom_function_params)
         model = self.workspace.get_model(model_path)
-        experiment_definition = SimpleModelicaExperimentDefinition(model, dynamic)
+        if workflow == _Workflow.CLASS_BASED:
+            experiment_definition = SimpleModelicaExperimentDefinition(model, dynamic)
+        else:
+            fmu = model.compile(compiler_options=dynamic.get_compiler_options()).wait()
+            experiment_definition = SimpleFMUExperimentDefinition(fmu, dynamic)
         if modifiers is None:
             modifiers = {"PI.yMax": Range(12, 13, 2)}
         experiment_definition = experiment_definition.with_modifiers(modifiers)

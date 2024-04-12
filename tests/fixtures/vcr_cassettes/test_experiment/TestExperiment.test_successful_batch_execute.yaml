@@ -1,0 +1,2206 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+    method: GET
+    uri: /hub/api/
+  response:
+    body:
+      string: '{"version": "4.0.2"}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json
+      access-control-allow-headers:
+      - accept, content-type, authorization
+      x-jupyterhub-version:
+      - 4.0.2
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+    method: GET
+    uri: /hub/api/authorizations/token/dummy
+  response:
+    body:
+      string: '{"name": "test@dummy.com", "server": "/user/test@dummy.com/"}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json
+      access-control-allow-headers:
+      - accept, content-type, authorization
+      x-jupyterhub-version:
+      - 4.0.2
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+    method: GET
+    uri: /user/test@dummy.com/impact/api/
+  response:
+    body:
+      string: '{"version": "4.10.0"}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json; charset=utf-8
+      access-control-allow-headers:
+      - '*'
+      access-control-allow-methods:
+      - POST, PUT, GET, DELETE, OPTIONS
+      access-control-allow-origin:
+      - '*'
+      vary:
+      - Accept-Encoding
+      x-powered-by:
+      - Express
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '113'
+      Content-Type:
+      - application/json
+    method: POST
+    uri: /user/test@dummy.com/impact/api/login
+  response:
+    body:
+      string: '{}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json; charset=utf-8
+      access-control-allow-headers:
+      - '*'
+      access-control-allow-methods:
+      - POST, PUT, GET, DELETE, OPTIONS
+      access-control-allow-origin:
+      - '*'
+      vary:
+      - Accept-Encoding
+      x-powered-by:
+      - Express
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+    method: GET
+    uri: /user/test@dummy.com/impact/api/users/me
+  response:
+    body:
+      string: '{"data": {"license": "impact-pro", "username": "test@dummy.com"}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json; charset=utf-8
+      access-control-allow-headers:
+      - '*'
+      access-control-allow-methods:
+      - POST, PUT, GET, DELETE, OPTIONS
+      access-control-allow-origin:
+      - '*'
+      vary:
+      - Accept-Encoding
+      x-powered-by:
+      - Express
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+    method: GET
+    uri: /user/test@dummy.com/impact/api/users/me
+  response:
+    body:
+      string: '{"data": {"license": "impact-pro", "username": "test@dummy.com"}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json; charset=utf-8
+      access-control-allow-headers:
+      - '*'
+      access-control-allow-methods:
+      - POST, PUT, GET, DELETE, OPTIONS
+      access-control-allow-origin:
+      - '*'
+      vary:
+      - Accept-Encoding
+      x-powered-by:
+      - Express
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+    method: GET
+    uri: /user/test@dummy.com/impact/api/workspaces
+  response:
+    body:
+      string: '{"data": {"items": []}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json; charset=utf-8
+      access-control-allow-headers:
+      - '*'
+      access-control-allow-methods:
+      - POST, PUT, GET, DELETE, OPTIONS
+      access-control-allow-origin:
+      - '*'
+      vary:
+      - Accept-Encoding
+      x-powered-by:
+      - Express
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"new": {"name": "impact-python-client-workspace1"}}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '52'
+      Content-Type:
+      - application/json
+    method: POST
+    uri: /user/test@dummy.com/impact/api/workspaces
+  response:
+    body:
+      string: '{"definition": {"name": "impact-python-client-workspace1", "description":
+        "", "defaultProjectId": "8846294a20508e6aa118a9663cb8f0a41ccdc038", "projects":
+        [{"reference": {"id": "8846294a20508e6aa118a9663cb8f0a41ccdc038"}, "disabled":
+        false, "disabledContent": []}], "dependencies": [{"reference": {"id": "fec43f77925949bd7e7c0f10ac49ebc1189dc840",
+        "name": "Modelica", "version": "3.2.3"}, "disabled": true, "disabledContent":
+        []}, {"reference": {"id": "ac04a5da97bc2e11bffb7f41b2485da347846df6", "name":
+        "Modelica", "version": "4.0.0"}, "disabled": false, "disabledContent": []}],
+        "format": "1.0.0", "guid": "c66af6c9bad94d40ad5881520cd24e31", "createdBy":
+        "ce771b6a-56ea-464b-9ab7-f527a8a3c051", "createdAt": 1712905506359}, "id":
+        "impact-python-client-workspace1", "conversion": {"state": "UP_TO_DATE"}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json; charset=utf-8
+      access-control-allow-headers:
+      - '*'
+      access-control-allow-methods:
+      - POST, PUT, GET, DELETE, OPTIONS
+      access-control-allow-origin:
+      - '*'
+      vary:
+      - Accept-Encoding
+      x-powered-by:
+      - Express
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+    method: GET
+    uri: /user/test@dummy.com/impact/api/workspaces/impact-python-client-workspace1/custom-functions/dynamic
+  response:
+    body:
+      string: '{"name": "dynamic", "version": "0.0.1", "description": "Performs a
+        dynamic simulation", "can_initialize_from": false, "parameters": [{"name":
+        "start_time", "type": "Number", "description": "The start time of the simulation",
+        "optional": "false", "defaultValue": 0}, {"name": "final_time", "type": "Number",
+        "description": "The final time of the simulation", "optional": "false", "defaultValue":
+        1}, {"name": "interval", "type": "Number", "description": "The time resolution
+        for the result grid, default is based on solver settings", "optional": "true",
+        "defaultValue": 0}]}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json; charset=utf-8
+      access-control-allow-headers:
+      - '*'
+      access-control-allow-methods:
+      - POST, PUT, GET, DELETE, OPTIONS
+      access-control-allow-origin:
+      - '*'
+      vary:
+      - Accept-Encoding
+      x-powered-by:
+      - Express
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+    method: GET
+    uri: /user/test@dummy.com/impact/api/workspaces/impact-python-client-workspace1
+  response:
+    body:
+      string: '{"definition": {"name": "impact-python-client-workspace1", "description":
+        "", "defaultProjectId": "8846294a20508e6aa118a9663cb8f0a41ccdc038", "projects":
+        [{"reference": {"id": "8846294a20508e6aa118a9663cb8f0a41ccdc038"}, "disabled":
+        false, "disabledContent": []}], "dependencies": [{"reference": {"id": "fec43f77925949bd7e7c0f10ac49ebc1189dc840",
+        "name": "Modelica", "version": "3.2.3"}, "disabled": true, "disabledContent":
+        []}, {"reference": {"id": "ac04a5da97bc2e11bffb7f41b2485da347846df6", "name":
+        "Modelica", "version": "4.0.0"}, "disabled": false, "disabledContent": []}],
+        "format": "1.0.0", "guid": "c66af6c9bad94d40ad5881520cd24e31", "createdBy":
+        "ce771b6a-56ea-464b-9ab7-f527a8a3c051", "createdAt": 1712905506359}, "id":
+        "impact-python-client-workspace1", "conversion": {"state": "UP_TO_DATE"}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json; charset=utf-8
+      access-control-allow-headers:
+      - '*'
+      access-control-allow-methods:
+      - POST, PUT, GET, DELETE, OPTIONS
+      access-control-allow-origin:
+      - '*'
+      vary:
+      - Accept-Encoding
+      x-powered-by:
+      - Express
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+    method: GET
+    uri: /user/test@dummy.com/impact/api/projects/8846294a20508e6aa118a9663cb8f0a41ccdc038
+  response:
+    body:
+      string: '{"id": "8846294a20508e6aa118a9663cb8f0a41ccdc038", "definition": {"name":
+        "Project", "format": "1.0.0", "dependencies": [{"name": "Modelica", "versionSpecifier":
+        "4.0.0"}], "content": [{"relpath": "Resources/Views", "contentType": "VIEWS",
+        "defaultDisabled": false, "id": "9ef1e82176934808b62de833ef9e955e"}, {"relpath":
+        "Resources/Favorites", "contentType": "FAVORITES", "defaultDisabled": false,
+        "id": "1d7a82429d1d494ab2b555311944158d"}, {"relpath": "Resources/CustomFunctions",
+        "contentType": "CUSTOM_FUNCTIONS", "defaultDisabled": false, "id": "1edcd68ef25f45f7a11f3cbb3746ada4"},
+        {"relpath": "Resources/Custom", "contentType": "GENERIC", "defaultDisabled":
+        false, "id": "c9e2b65e64c74ef1b867a826f4e04263"}, {"relpath": "ReferenceResults",
+        "contentType": "REFERENCE_RESULTS", "defaultDisabled": false, "id": "ffad8f3663f149b88a031a1ab0903930"},
+        {"relpath": "Resources/ExperimentDefinitions", "contentType": "EXPERIMENT_DEFINITIONS",
+        "defaultDisabled": false, "id": "ee582c819b3a4850a6eb9cfd3667d2a7"}], "executionOptions":
+        []}, "projectType": "LOCAL", "storageLocation": "USERSPACE"}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json; charset=utf-8
+      access-control-allow-headers:
+      - '*'
+      access-control-allow-methods:
+      - POST, PUT, GET, DELETE, OPTIONS
+      access-control-allow-origin:
+      - '*'
+      vary:
+      - Accept-Encoding
+      x-powered-by:
+      - Express
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+    method: GET
+    uri: /user/test@dummy.com/impact/api/workspaces/impact-python-client-workspace1/custom-functions/dynamic/options
+  response:
+    body:
+      string: '{"compiler": {"c_compiler": "gcc", "generate_html_diagnostics": false,
+        "include_protected_variables": false}, "runtime": {}, "simulation": {"ncp":
+        500, "dynamic_diagnostics": false}, "solver": {}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json; charset=utf-8
+      access-control-allow-headers:
+      - '*'
+      access-control-allow-methods:
+      - POST, PUT, GET, DELETE, OPTIONS
+      access-control-allow-origin:
+      - '*'
+      vary:
+      - Accept-Encoding
+      x-powered-by:
+      - Express
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"input": {"class_name": "Modelica.Blocks.Examples.PID_Controller", "compiler_options":
+      {"c_compiler": "gcc", "generate_html_diagnostics": false, "include_protected_variables":
+      false}, "runtime_options": {}, "compiler_log_level": "warning", "fmi_target":
+      "me", "fmi_version": "2.0", "platform": "auto"}}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '303'
+      Content-Type:
+      - application/json
+    method: POST
+    uri: /user/test@dummy.com/impact/api/workspaces/impact-python-client-workspace1/model-executables
+  response:
+    body:
+      string: '{"id": null, "parameters": {}, "parametersMissing": []}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json; charset=utf-8
+      access-control-allow-headers:
+      - '*'
+      access-control-allow-methods:
+      - POST, PUT, GET, DELETE, OPTIONS
+      access-control-allow-origin:
+      - '*'
+      vary:
+      - Accept-Encoding
+      x-powered-by:
+      - Express
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"input": {"class_name": "Modelica.Blocks.Examples.PID_Controller", "compiler_options":
+      {"c_compiler": "gcc", "generate_html_diagnostics": false, "include_protected_variables":
+      false}, "runtime_options": {}, "compiler_log_level": "warning", "fmi_target":
+      "me", "fmi_version": "2.0", "platform": "auto"}}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '303'
+      Content-Type:
+      - application/json
+    method: POST
+    uri: /user/test@dummy.com/impact/api/workspaces/impact-python-client-workspace1/model-executables
+  response:
+    body:
+      string: '{"id": "modelica_blocks_examples_pid_controller_20240412_070507_197f86d",
+        "parameters": {}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json; charset=utf-8
+      access-control-allow-headers:
+      - '*'
+      access-control-allow-methods:
+      - POST, PUT, GET, DELETE, OPTIONS
+      access-control-allow-origin:
+      - '*'
+      vary:
+      - Accept-Encoding
+      x-powered-by:
+      - Express
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '0'
+    method: POST
+    uri: /user/test@dummy.com/impact/api/workspaces/impact-python-client-workspace1/model-executables/modelica_blocks_examples_pid_controller_20240412_070507_197f86d/compilation
+  response:
+    body:
+      string: ''
+    headers:
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json; charset=utf-8
+      access-control-allow-headers:
+      - '*'
+      access-control-allow-methods:
+      - POST, PUT, GET, DELETE, OPTIONS
+      access-control-allow-origin:
+      - '*'
+      vary:
+      - Accept-Encoding
+      x-powered-by:
+      - Express
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+    method: GET
+    uri: /user/test@dummy.com/impact/api/workspaces/impact-python-client-workspace1/model-executables/modelica_blocks_examples_pid_controller_20240412_070507_197f86d/compilation
+  response:
+    body:
+      string: '{"finished_executions": 0, "total_executions": 1, "status": "running",
+        "progresses": [{"message": "Simulating", "percentage": 0.0, "done": false,
+        "stage": "compilation"}]}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json; charset=utf-8
+      access-control-allow-headers:
+      - '*'
+      access-control-allow-methods:
+      - POST, PUT, GET, DELETE, OPTIONS
+      access-control-allow-origin:
+      - '*'
+      vary:
+      - Accept-Encoding
+      x-powered-by:
+      - Express
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+    method: GET
+    uri: /user/test@dummy.com/impact/api/workspaces/impact-python-client-workspace1/model-executables/modelica_blocks_examples_pid_controller_20240412_070507_197f86d/compilation
+  response:
+    body:
+      string: '{"finished_executions": 0, "total_executions": 1, "status": "running",
+        "progresses": [{"message": "Simulating", "percentage": 0.0, "done": false,
+        "stage": "compilation"}]}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json; charset=utf-8
+      access-control-allow-headers:
+      - '*'
+      access-control-allow-methods:
+      - POST, PUT, GET, DELETE, OPTIONS
+      access-control-allow-origin:
+      - '*'
+      vary:
+      - Accept-Encoding
+      x-powered-by:
+      - Express
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+    method: GET
+    uri: /user/test@dummy.com/impact/api/workspaces/impact-python-client-workspace1/model-executables/modelica_blocks_examples_pid_controller_20240412_070507_197f86d/compilation
+  response:
+    body:
+      string: '{"finished_executions": 0, "total_executions": 1, "status": "running",
+        "progresses": [{"message": "Simulating", "percentage": 0.0, "done": false,
+        "stage": "compilation"}]}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json; charset=utf-8
+      access-control-allow-headers:
+      - '*'
+      access-control-allow-methods:
+      - POST, PUT, GET, DELETE, OPTIONS
+      access-control-allow-origin:
+      - '*'
+      vary:
+      - Accept-Encoding
+      x-powered-by:
+      - Express
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+    method: GET
+    uri: /user/test@dummy.com/impact/api/workspaces/impact-python-client-workspace1/model-executables/modelica_blocks_examples_pid_controller_20240412_070507_197f86d/compilation
+  response:
+    body:
+      string: '{"finished_executions": 0, "total_executions": 1, "status": "running",
+        "progresses": [{"message": "Simulating", "percentage": 0.0, "done": false,
+        "stage": "compilation"}]}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json; charset=utf-8
+      access-control-allow-headers:
+      - '*'
+      access-control-allow-methods:
+      - POST, PUT, GET, DELETE, OPTIONS
+      access-control-allow-origin:
+      - '*'
+      vary:
+      - Accept-Encoding
+      x-powered-by:
+      - Express
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+    method: GET
+    uri: /user/test@dummy.com/impact/api/workspaces/impact-python-client-workspace1/model-executables/modelica_blocks_examples_pid_controller_20240412_070507_197f86d/compilation
+  response:
+    body:
+      string: '{"finished_executions": 0, "total_executions": 1, "status": "running",
+        "progresses": [{"message": "Simulating", "percentage": 0.0, "done": false,
+        "stage": "compilation"}]}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json; charset=utf-8
+      access-control-allow-headers:
+      - '*'
+      access-control-allow-methods:
+      - POST, PUT, GET, DELETE, OPTIONS
+      access-control-allow-origin:
+      - '*'
+      vary:
+      - Accept-Encoding
+      x-powered-by:
+      - Express
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+    method: GET
+    uri: /user/test@dummy.com/impact/api/workspaces/impact-python-client-workspace1/model-executables/modelica_blocks_examples_pid_controller_20240412_070507_197f86d/compilation
+  response:
+    body:
+      string: '{"finished_executions": 0, "total_executions": 1, "status": "running",
+        "progresses": [{"message": "Simulating", "percentage": 0.0, "done": false,
+        "stage": "compilation"}]}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json; charset=utf-8
+      access-control-allow-headers:
+      - '*'
+      access-control-allow-methods:
+      - POST, PUT, GET, DELETE, OPTIONS
+      access-control-allow-origin:
+      - '*'
+      vary:
+      - Accept-Encoding
+      x-powered-by:
+      - Express
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+    method: GET
+    uri: /user/test@dummy.com/impact/api/workspaces/impact-python-client-workspace1/model-executables/modelica_blocks_examples_pid_controller_20240412_070507_197f86d/compilation
+  response:
+    body:
+      string: '{"finished_executions": 1, "total_executions": 1, "status": "done",
+        "progresses": [{"message": "Simulating", "percentage": 0.0, "done": true,
+        "stage": "compilation"}]}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json; charset=utf-8
+      access-control-allow-headers:
+      - '*'
+      access-control-allow-methods:
+      - POST, PUT, GET, DELETE, OPTIONS
+      access-control-allow-origin:
+      - '*'
+      vary:
+      - Accept-Encoding
+      x-powered-by:
+      - Express
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+    method: GET
+    uri: /user/test@dummy.com/impact/api/workspaces/impact-python-client-workspace1/model-executables/modelica_blocks_examples_pid_controller_20240412_070507_197f86d/compilation
+  response:
+    body:
+      string: '{"finished_executions": 1, "total_executions": 1, "status": "done",
+        "progresses": [{"message": "Simulating", "percentage": 0.0, "done": true,
+        "stage": "compilation"}]}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json; charset=utf-8
+      access-control-allow-headers:
+      - '*'
+      access-control-allow-methods:
+      - POST, PUT, GET, DELETE, OPTIONS
+      access-control-allow-origin:
+      - '*'
+      vary:
+      - Accept-Encoding
+      x-powered-by:
+      - Express
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+    method: GET
+    uri: /user/test@dummy.com/impact/api/workspaces/impact-python-client-workspace1/model-executables/modelica_blocks_examples_pid_controller_20240412_070507_197f86d/compilation
+  response:
+    body:
+      string: '{"finished_executions": 1, "total_executions": 1, "status": "done",
+        "progresses": [{"message": "Simulating", "percentage": 0.0, "done": true,
+        "stage": "compilation"}]}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json; charset=utf-8
+      access-control-allow-headers:
+      - '*'
+      access-control-allow-methods:
+      - POST, PUT, GET, DELETE, OPTIONS
+      access-control-allow-origin:
+      - '*'
+      vary:
+      - Accept-Encoding
+      x-powered-by:
+      - Express
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+    method: GET
+    uri: /user/test@dummy.com/impact/api/workspaces/impact-python-client-workspace1/model-executables/modelica_blocks_examples_pid_controller_20240412_070507_197f86d
+  response:
+    body:
+      string: '{"id": "modelica_blocks_examples_pid_controller_20240412_070507_197f86d",
+        "input": {"class_name": "Modelica.Blocks.Examples.PID_Controller", "compiler_options":
+        {"c_compiler": "gcc", "generate_html_diagnostics": false, "include_protected_variables":
+        false}, "runtime_options": {}, "compiler_log_level": "warning", "fmi_target":
+        "me", "fmi_version": "2.0", "platform": "auto", "model_snapshot": "1712905507536",
+        "toolchain_version": "0.0.1", "compiled_on_sys": "linux"}, "run_info": {"status":
+        "successful", "datetime_started": 1712905507912, "datetime_finished": 1712905510331},
+        "meta": {"created_epoch": 1712905507, "input_hash": "d0198bf1ad723079495749cfdae95803",
+        "fmu_file": "model.fmu"}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json; charset=utf-8
+      access-control-allow-headers:
+      - '*'
+      access-control-allow-methods:
+      - POST, PUT, GET, DELETE, OPTIONS
+      access-control-allow-origin:
+      - '*'
+      vary:
+      - Accept-Encoding
+      x-powered-by:
+      - Express
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+    method: GET
+    uri: /user/test@dummy.com/impact/api/workspaces/impact-python-client-workspace1/custom-functions/dynamic/options
+  response:
+    body:
+      string: '{"compiler": {"c_compiler": "gcc", "generate_html_diagnostics": false,
+        "include_protected_variables": false}, "runtime": {}, "simulation": {"ncp":
+        500, "dynamic_diagnostics": false}, "solver": {}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json; charset=utf-8
+      access-control-allow-headers:
+      - '*'
+      access-control-allow-methods:
+      - POST, PUT, GET, DELETE, OPTIONS
+      access-control-allow-origin:
+      - '*'
+      vary:
+      - Accept-Encoding
+      x-powered-by:
+      - Express
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+    method: GET
+    uri: /user/test@dummy.com/impact/api/workspaces/impact-python-client-workspace1/custom-functions/dynamic/options
+  response:
+    body:
+      string: '{"compiler": {"c_compiler": "gcc", "generate_html_diagnostics": false,
+        "include_protected_variables": false}, "runtime": {}, "simulation": {"ncp":
+        500, "dynamic_diagnostics": false}, "solver": {}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json; charset=utf-8
+      access-control-allow-headers:
+      - '*'
+      access-control-allow-methods:
+      - POST, PUT, GET, DELETE, OPTIONS
+      access-control-allow-origin:
+      - '*'
+      vary:
+      - Accept-Encoding
+      x-powered-by:
+      - Express
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+    method: GET
+    uri: /user/test@dummy.com/impact/api/workspaces/impact-python-client-workspace1/model-executables/modelica_blocks_examples_pid_controller_20240412_070507_197f86d
+  response:
+    body:
+      string: '{"id": "modelica_blocks_examples_pid_controller_20240412_070507_197f86d",
+        "input": {"class_name": "Modelica.Blocks.Examples.PID_Controller", "compiler_options":
+        {"c_compiler": "gcc", "generate_html_diagnostics": false, "include_protected_variables":
+        false}, "runtime_options": {}, "compiler_log_level": "warning", "fmi_target":
+        "me", "fmi_version": "2.0", "platform": "auto", "model_snapshot": "1712905507536",
+        "toolchain_version": "0.0.1", "compiled_on_sys": "linux"}, "run_info": {"status":
+        "successful", "datetime_started": 1712905507912, "datetime_finished": 1712905510331},
+        "meta": {"created_epoch": 1712905507, "input_hash": "d0198bf1ad723079495749cfdae95803",
+        "fmu_file": "model.fmu"}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json; charset=utf-8
+      access-control-allow-headers:
+      - '*'
+      access-control-allow-methods:
+      - POST, PUT, GET, DELETE, OPTIONS
+      access-control-allow-origin:
+      - '*'
+      vary:
+      - Accept-Encoding
+      x-powered-by:
+      - Express
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"experiment": {"version": 2, "base": {"model": {"fmu": {"id": "modelica_blocks_examples_pid_controller_20240412_070507_197f86d"}},
+      "modifiers": {"variables": {"PI.k": "range(100,120,2)"}}, "analysis": {"type":
+      "dynamic", "parameters": {"start_time": 0, "final_time": 1, "interval": 0},
+      "simulationOptions": {"ncp": 500, "dynamic_diagnostics": false}, "solverOptions":
+      {}, "simulationLogLevel": "WARNING"}}, "extensions": []}}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '426'
+      Content-Type:
+      - application/json
+    method: POST
+    uri: /user/test@dummy.com/impact/api/workspaces/impact-python-client-workspace1/experiments
+  response:
+    body:
+      string: '{"experiment_id": "modelica_blocks_examples_pid_controller_20240412_070512_aff60ef"}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json; charset=utf-8
+      access-control-allow-headers:
+      - '*'
+      access-control-allow-methods:
+      - POST, PUT, GET, DELETE, OPTIONS
+      access-control-allow-origin:
+      - '*'
+      vary:
+      - Accept-Encoding
+      x-powered-by:
+      - Express
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '0'
+    method: POST
+    uri: /user/test@dummy.com/impact/api/workspaces/impact-python-client-workspace1/experiments/modelica_blocks_examples_pid_controller_20240412_070512_aff60ef/execution
+  response:
+    body:
+      string: ''
+    headers:
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json; charset=utf-8
+      access-control-allow-headers:
+      - '*'
+      access-control-allow-methods:
+      - POST, PUT, GET, DELETE, OPTIONS
+      access-control-allow-origin:
+      - '*'
+      vary:
+      - Accept-Encoding
+      x-powered-by:
+      - Express
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+    method: GET
+    uri: /user/test@dummy.com/impact/api/workspaces/impact-python-client-workspace1/experiments/modelica_blocks_examples_pid_controller_20240412_070512_aff60ef/execution
+  response:
+    body:
+      string: '{"finished_executions": 0, "total_executions": 2, "status": "running",
+        "progresses": [{"message": "Simulating", "percentage": 0.0, "done": false,
+        "stage": "simulation"}, {"message": "Simulating", "percentage": 0.0, "done":
+        false, "stage": "simulation"}]}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json; charset=utf-8
+      access-control-allow-headers:
+      - '*'
+      access-control-allow-methods:
+      - POST, PUT, GET, DELETE, OPTIONS
+      access-control-allow-origin:
+      - '*'
+      vary:
+      - Accept-Encoding
+      x-powered-by:
+      - Express
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+    method: GET
+    uri: /user/test@dummy.com/impact/api/workspaces/impact-python-client-workspace1/experiments/modelica_blocks_examples_pid_controller_20240412_070512_aff60ef/execution
+  response:
+    body:
+      string: '{"finished_executions": 0, "total_executions": 2, "status": "done",
+        "progresses": [{"message": "Simulating", "percentage": 0.0, "done": false,
+        "stage": "simulation"}, {"message": "Simulating", "percentage": 0.0, "done":
+        false, "stage": "simulation"}]}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json; charset=utf-8
+      access-control-allow-headers:
+      - '*'
+      access-control-allow-methods:
+      - POST, PUT, GET, DELETE, OPTIONS
+      access-control-allow-origin:
+      - '*'
+      vary:
+      - Accept-Encoding
+      x-powered-by:
+      - Express
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+    method: GET
+    uri: /user/test@dummy.com/impact/api/workspaces/impact-python-client-workspace1/experiments/modelica_blocks_examples_pid_controller_20240412_070512_aff60ef/execution
+  response:
+    body:
+      string: '{"finished_executions": 2, "total_executions": 2, "status": "done",
+        "progresses": [{"message": "Simulation at time 1", "percentage": 1.0, "done":
+        true, "stage": "simulation"}, {"message": "Simulation at time 1", "percentage":
+        1.0, "done": true, "stage": "simulation"}]}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json; charset=utf-8
+      access-control-allow-headers:
+      - '*'
+      access-control-allow-methods:
+      - POST, PUT, GET, DELETE, OPTIONS
+      access-control-allow-origin:
+      - '*'
+      vary:
+      - Accept-Encoding
+      x-powered-by:
+      - Express
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - application/vnd.impact.experiment.v2+json
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+    method: GET
+    uri: /user/test@dummy.com/impact/api/workspaces/impact-python-client-workspace1/experiments/modelica_blocks_examples_pid_controller_20240412_070512_aff60ef
+  response:
+    body:
+      string: '{"id": "modelica_blocks_examples_pid_controller_20240412_070512_aff60ef",
+        "experiment": {"version": 2, "base": {"model": {"fmu": {"id": "modelica_blocks_examples_pid_controller_20240412_070507_197f86d"}},
+        "analysis": {"parameters": {"start_time": 0, "final_time": 1, "interval":
+        0}, "simulationOptions": {"ncp": 500, "dynamic_diagnostics": false}, "solverOptions":
+        {}, "type": "dynamic", "simulationLogLevel": "WARNING"}, "modifiers": {"variables":
+        {"PI.k": "range(100,120,2)"}}}, "extensions": []}, "meta_data": {"created_epoch":
+        1712905512, "experiment_hash": "3c45cd12c044649df4b61c316ce7f815", "label":
+        "", "model_names": ["Modelica.Blocks.Examples.PID_Controller"]}, "run_info":
+        {"status": "done", "datetime_started": 1712905512225, "datetime_finished":
+        1712905512557, "failed": 0, "successful": 2, "cancelled": 0, "not_started":
+        0}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json; charset=utf-8
+      access-control-allow-headers:
+      - '*'
+      access-control-allow-methods:
+      - POST, PUT, GET, DELETE, OPTIONS
+      access-control-allow-origin:
+      - '*'
+      vary:
+      - Accept-Encoding
+      x-powered-by:
+      - Express
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - application/vnd.impact.experiment.v2+json
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+    method: GET
+    uri: /user/test@dummy.com/impact/api/workspaces/impact-python-client-workspace1/experiments/modelica_blocks_examples_pid_controller_20240412_070512_aff60ef
+  response:
+    body:
+      string: '{"id": "modelica_blocks_examples_pid_controller_20240412_070512_aff60ef",
+        "experiment": {"version": 2, "base": {"model": {"fmu": {"id": "modelica_blocks_examples_pid_controller_20240412_070507_197f86d"}},
+        "analysis": {"parameters": {"start_time": 0, "final_time": 1, "interval":
+        0}, "simulationOptions": {"ncp": 500, "dynamic_diagnostics": false}, "solverOptions":
+        {}, "type": "dynamic", "simulationLogLevel": "WARNING"}, "modifiers": {"variables":
+        {"PI.k": "range(100,120,2)"}}}, "extensions": []}, "meta_data": {"created_epoch":
+        1712905512, "experiment_hash": "3c45cd12c044649df4b61c316ce7f815", "label":
+        "", "model_names": ["Modelica.Blocks.Examples.PID_Controller"]}, "run_info":
+        {"status": "done", "datetime_started": 1712905512225, "datetime_finished":
+        1712905512557, "failed": 0, "successful": 2, "cancelled": 0, "not_started":
+        0}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json; charset=utf-8
+      access-control-allow-headers:
+      - '*'
+      access-control-allow-methods:
+      - POST, PUT, GET, DELETE, OPTIONS
+      access-control-allow-origin:
+      - '*'
+      vary:
+      - Accept-Encoding
+      x-powered-by:
+      - Express
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - application/vnd.impact.experiment.v2+json
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+    method: GET
+    uri: /user/test@dummy.com/impact/api/workspaces/impact-python-client-workspace1/experiments/modelica_blocks_examples_pid_controller_20240412_070512_aff60ef
+  response:
+    body:
+      string: '{"id": "modelica_blocks_examples_pid_controller_20240412_070512_aff60ef",
+        "experiment": {"version": 2, "base": {"model": {"fmu": {"id": "modelica_blocks_examples_pid_controller_20240412_070507_197f86d"}},
+        "analysis": {"parameters": {"start_time": 0, "final_time": 1, "interval":
+        0}, "simulationOptions": {"ncp": 500, "dynamic_diagnostics": false}, "solverOptions":
+        {}, "type": "dynamic", "simulationLogLevel": "WARNING"}, "modifiers": {"variables":
+        {"PI.k": "range(100,120,2)"}}}, "extensions": []}, "meta_data": {"created_epoch":
+        1712905512, "experiment_hash": "3c45cd12c044649df4b61c316ce7f815", "label":
+        "", "model_names": ["Modelica.Blocks.Examples.PID_Controller"]}, "run_info":
+        {"status": "done", "datetime_started": 1712905512225, "datetime_finished":
+        1712905512557, "failed": 0, "successful": 2, "cancelled": 0, "not_started":
+        0}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json; charset=utf-8
+      access-control-allow-headers:
+      - '*'
+      access-control-allow-methods:
+      - POST, PUT, GET, DELETE, OPTIONS
+      access-control-allow-origin:
+      - '*'
+      vary:
+      - Accept-Encoding
+      x-powered-by:
+      - Express
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - application/vnd.impact.experiment.v2+json
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+    method: GET
+    uri: /user/test@dummy.com/impact/api/workspaces/impact-python-client-workspace1/experiments/modelica_blocks_examples_pid_controller_20240412_070512_aff60ef
+  response:
+    body:
+      string: '{"id": "modelica_blocks_examples_pid_controller_20240412_070512_aff60ef",
+        "experiment": {"version": 2, "base": {"model": {"fmu": {"id": "modelica_blocks_examples_pid_controller_20240412_070507_197f86d"}},
+        "analysis": {"parameters": {"start_time": 0, "final_time": 1, "interval":
+        0}, "simulationOptions": {"ncp": 500, "dynamic_diagnostics": false}, "solverOptions":
+        {}, "type": "dynamic", "simulationLogLevel": "WARNING"}, "modifiers": {"variables":
+        {"PI.k": "range(100,120,2)"}}}, "extensions": []}, "meta_data": {"created_epoch":
+        1712905512, "experiment_hash": "3c45cd12c044649df4b61c316ce7f815", "label":
+        "", "model_names": ["Modelica.Blocks.Examples.PID_Controller"]}, "run_info":
+        {"status": "done", "datetime_started": 1712905512225, "datetime_finished":
+        1712905512557, "failed": 0, "successful": 2, "cancelled": 0, "not_started":
+        0}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json; charset=utf-8
+      access-control-allow-headers:
+      - '*'
+      access-control-allow-methods:
+      - POST, PUT, GET, DELETE, OPTIONS
+      access-control-allow-origin:
+      - '*'
+      vary:
+      - Accept-Encoding
+      x-powered-by:
+      - Express
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - application/vnd.impact.experiment.v2+json
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+    method: GET
+    uri: /user/test@dummy.com/impact/api/workspaces/impact-python-client-workspace1/experiments/modelica_blocks_examples_pid_controller_20240412_070512_aff60ef
+  response:
+    body:
+      string: '{"id": "modelica_blocks_examples_pid_controller_20240412_070512_aff60ef",
+        "experiment": {"version": 2, "base": {"model": {"fmu": {"id": "modelica_blocks_examples_pid_controller_20240412_070507_197f86d"}},
+        "analysis": {"parameters": {"start_time": 0, "final_time": 1, "interval":
+        0}, "simulationOptions": {"ncp": 500, "dynamic_diagnostics": false}, "solverOptions":
+        {}, "type": "dynamic", "simulationLogLevel": "WARNING"}, "modifiers": {"variables":
+        {"PI.k": "range(100,120,2)"}}}, "extensions": []}, "meta_data": {"created_epoch":
+        1712905512, "experiment_hash": "3c45cd12c044649df4b61c316ce7f815", "label":
+        "", "model_names": ["Modelica.Blocks.Examples.PID_Controller"]}, "run_info":
+        {"status": "done", "datetime_started": 1712905512225, "datetime_finished":
+        1712905512557, "failed": 0, "successful": 2, "cancelled": 0, "not_started":
+        0}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json; charset=utf-8
+      access-control-allow-headers:
+      - '*'
+      access-control-allow-methods:
+      - POST, PUT, GET, DELETE, OPTIONS
+      access-control-allow-origin:
+      - '*'
+      vary:
+      - Accept-Encoding
+      x-powered-by:
+      - Express
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - application/vnd.impact.experiment.v2+json
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+    method: GET
+    uri: /user/test@dummy.com/impact/api/workspaces/impact-python-client-workspace1/experiments/modelica_blocks_examples_pid_controller_20240412_070512_aff60ef
+  response:
+    body:
+      string: '{"id": "modelica_blocks_examples_pid_controller_20240412_070512_aff60ef",
+        "experiment": {"version": 2, "base": {"model": {"fmu": {"id": "modelica_blocks_examples_pid_controller_20240412_070507_197f86d"}},
+        "analysis": {"parameters": {"start_time": 0, "final_time": 1, "interval":
+        0}, "simulationOptions": {"ncp": 500, "dynamic_diagnostics": false}, "solverOptions":
+        {}, "type": "dynamic", "simulationLogLevel": "WARNING"}, "modifiers": {"variables":
+        {"PI.k": "range(100,120,2)"}}}, "extensions": []}, "meta_data": {"created_epoch":
+        1712905512, "experiment_hash": "3c45cd12c044649df4b61c316ce7f815", "label":
+        "", "model_names": ["Modelica.Blocks.Examples.PID_Controller"]}, "run_info":
+        {"status": "done", "datetime_started": 1712905512225, "datetime_finished":
+        1712905512557, "failed": 0, "successful": 2, "cancelled": 0, "not_started":
+        0}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json; charset=utf-8
+      access-control-allow-headers:
+      - '*'
+      access-control-allow-methods:
+      - POST, PUT, GET, DELETE, OPTIONS
+      access-control-allow-origin:
+      - '*'
+      vary:
+      - Accept-Encoding
+      x-powered-by:
+      - Express
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - application/vnd.impact.experiment.v2+json
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+    method: GET
+    uri: /user/test@dummy.com/impact/api/workspaces/impact-python-client-workspace1/experiments/modelica_blocks_examples_pid_controller_20240412_070512_aff60ef
+  response:
+    body:
+      string: '{"id": "modelica_blocks_examples_pid_controller_20240412_070512_aff60ef",
+        "experiment": {"version": 2, "base": {"model": {"fmu": {"id": "modelica_blocks_examples_pid_controller_20240412_070507_197f86d"}},
+        "analysis": {"parameters": {"start_time": 0, "final_time": 1, "interval":
+        0}, "simulationOptions": {"ncp": 500, "dynamic_diagnostics": false}, "solverOptions":
+        {}, "type": "dynamic", "simulationLogLevel": "WARNING"}, "modifiers": {"variables":
+        {"PI.k": "range(100,120,2)"}}}, "extensions": []}, "meta_data": {"created_epoch":
+        1712905512, "experiment_hash": "3c45cd12c044649df4b61c316ce7f815", "label":
+        "", "model_names": ["Modelica.Blocks.Examples.PID_Controller"]}, "run_info":
+        {"status": "done", "datetime_started": 1712905512225, "datetime_finished":
+        1712905512557, "failed": 0, "successful": 2, "cancelled": 0, "not_started":
+        0}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json; charset=utf-8
+      access-control-allow-headers:
+      - '*'
+      access-control-allow-methods:
+      - POST, PUT, GET, DELETE, OPTIONS
+      access-control-allow-origin:
+      - '*'
+      vary:
+      - Accept-Encoding
+      x-powered-by:
+      - Express
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - application/vnd.impact.experiment.v2+json
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+    method: GET
+    uri: /user/test@dummy.com/impact/api/workspaces/impact-python-client-workspace1/experiments/modelica_blocks_examples_pid_controller_20240412_070512_aff60ef
+  response:
+    body:
+      string: '{"id": "modelica_blocks_examples_pid_controller_20240412_070512_aff60ef",
+        "experiment": {"version": 2, "base": {"model": {"fmu": {"id": "modelica_blocks_examples_pid_controller_20240412_070507_197f86d"}},
+        "analysis": {"parameters": {"start_time": 0, "final_time": 1, "interval":
+        0}, "simulationOptions": {"ncp": 500, "dynamic_diagnostics": false}, "solverOptions":
+        {}, "type": "dynamic", "simulationLogLevel": "WARNING"}, "modifiers": {"variables":
+        {"PI.k": "range(100,120,2)"}}}, "extensions": []}, "meta_data": {"created_epoch":
+        1712905512, "experiment_hash": "3c45cd12c044649df4b61c316ce7f815", "label":
+        "", "model_names": ["Modelica.Blocks.Examples.PID_Controller"]}, "run_info":
+        {"status": "done", "datetime_started": 1712905512225, "datetime_finished":
+        1712905512557, "failed": 0, "successful": 2, "cancelled": 0, "not_started":
+        0}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json; charset=utf-8
+      access-control-allow-headers:
+      - '*'
+      access-control-allow-methods:
+      - POST, PUT, GET, DELETE, OPTIONS
+      access-control-allow-origin:
+      - '*'
+      vary:
+      - Accept-Encoding
+      x-powered-by:
+      - Express
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - application/vnd.impact.experiment.v2+json
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+    method: GET
+    uri: /user/test@dummy.com/impact/api/workspaces/impact-python-client-workspace1/experiments/modelica_blocks_examples_pid_controller_20240412_070512_aff60ef
+  response:
+    body:
+      string: '{"id": "modelica_blocks_examples_pid_controller_20240412_070512_aff60ef",
+        "experiment": {"version": 2, "base": {"model": {"fmu": {"id": "modelica_blocks_examples_pid_controller_20240412_070507_197f86d"}},
+        "analysis": {"parameters": {"start_time": 0, "final_time": 1, "interval":
+        0}, "simulationOptions": {"ncp": 500, "dynamic_diagnostics": false}, "solverOptions":
+        {}, "type": "dynamic", "simulationLogLevel": "WARNING"}, "modifiers": {"variables":
+        {"PI.k": "range(100,120,2)"}}}, "extensions": []}, "meta_data": {"created_epoch":
+        1712905512, "experiment_hash": "3c45cd12c044649df4b61c316ce7f815", "label":
+        "", "model_names": ["Modelica.Blocks.Examples.PID_Controller"]}, "run_info":
+        {"status": "done", "datetime_started": 1712905512225, "datetime_finished":
+        1712905512557, "failed": 0, "successful": 2, "cancelled": 0, "not_started":
+        0}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json; charset=utf-8
+      access-control-allow-headers:
+      - '*'
+      access-control-allow-methods:
+      - POST, PUT, GET, DELETE, OPTIONS
+      access-control-allow-origin:
+      - '*'
+      vary:
+      - Accept-Encoding
+      x-powered-by:
+      - Express
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+    method: GET
+    uri: /user/test@dummy.com/impact/api/workspaces/impact-python-client-workspace1/experiments/modelica_blocks_examples_pid_controller_20240412_070512_aff60ef/variables
+  response:
+    body:
+      string: '["time", "PI.y_start", "speedSensor.flange.tau", "driveAngle", "PI.k",
+        "PI.Ti", "PI.Td", "PI.wp", "PI.wd", "PI.Ni", "PI.Nd", "PI.kFF", "PI.xi_start",
+        "PI.xd_start", "PI.addP.k2", "PI.P.k", "PI.addPID.k1", "PI.addPID.k2", "PI.addPID.k3",
+        "PI.addI.k1", "PI.addI.k2", "PI.addI.k3", "PI.addSat.k1", "PI.addSat.k2",
+        "PI.Dzero.k", "PI.FFzero.k", "PI.addFF.k1", "inertia1.J", "spring.c", "spring.d",
+        "spring.phi_rel0", "spring.phi_nominal", "inertia2.J", "kinematicPTP.qd_max[1]",
+        "kinematicPTP.qdd_max[1]", "kinematicPTP.startTime", "integrator.k", "integrator.y_start",
+        "loadTorque.tau_constant", "PI.limiter.uMax", "PI.yMax", "PI.limiter.uMin",
+        "PI.yMin", "PI.addP.k1", "PI.I.k", "PI.I.y_start", "PI.gainPID.k", "PI.gainTrack.k",
+        "PI.addFF.k2", "kinematicPTP.deltaq[1]", "PI.Dzero.y", "PI.addPID.u2", "PI.FFzero.y",
+        "PI.addFF.u2", "inertia2.flange_b.tau", "loadTorque.tau", "der(spring.w_rel)",
+        "der(PI.I.y)", "der(inertia1.phi)", "der(spring.phi_rel)", "der(inertia2.w)",
+        "der(integrator.y)", "spring.w_rel", "PI.I.y", "PI.addPID.u3", "inertia1.flange_a.phi",
+        "inertia1.flange_b.phi", "inertia1.phi", "speedSensor.flange.phi", "spring.flange_a.phi",
+        "torque.flange.phi", "spring.phi_rel", "inertia2.w", "PI.addI.u1", "PI.addP.u1",
+        "PI.u_s", "integrator.y", "PI.controlError", "PI.P.u", "PI.addP.y", "PI.P.y",
+        "PI.addPID.u1", "PI.I.u", "PI.addI.y", "PI.addPID.y", "PI.gainPID.u", "PI.addI.u3",
+        "PI.gainTrack.y", "PI.addSat.y", "PI.gainTrack.u", "PI.addFF.y", "PI.addSat.u2",
+        "PI.limiter.u", "PI.addFF.u1", "PI.gainPID.y", "PI.addI.u2", "PI.addP.u2",
+        "PI.u_m", "speedSensor.w", "inertia1.w", "inertia1.a", "der(inertia1.phi,2)",
+        "der(inertia1.w)", "PI.addSat.u1", "PI.limiter.y", "PI.y", "inertia1.flange_a.tau",
+        "torque.tau", "spring.a_rel", "inertia1.flange_b.tau", "spring.flange_b.tau",
+        "spring.tau", "spring.lossPower", "inertia2.flange_a.phi", "inertia2.flange_b.phi",
+        "inertia2.phi", "loadTorque.flange.phi", "loadTorque.phi", "spring.flange_b.phi",
+        "inertia2.a", "integrator.u", "kinematicPTP.y[1]", "loadTorque.w", "der(inertia2.phi)",
+        "der(spring.phi_rel,2)", "der(inertia2.phi,2)", "loadTorque.flange.tau", "torque.flange.tau",
+        "inertia2.flange_a.tau", "spring.flange_a.tau", "kinematicPTP.nout", "PI.controllerType",
+        "PI.I.initType", "PI.initType", "PI.homotopyType", "PI.limiter.homotopyType",
+        "integrator.initType", "PI.limiter.strict", "PI.strict", "PI.withFeedForward"]'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json; charset=utf-8
+      access-control-allow-headers:
+      - '*'
+      access-control-allow-methods:
+      - POST, PUT, GET, DELETE, OPTIONS
+      access-control-allow-origin:
+      - '*'
+      content-length:
+      - '2380'
+      vary:
+      - Accept-Encoding
+      x-powered-by:
+      - Express
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+    method: GET
+    uri: /user/test@dummy.com/impact/api/workspaces/impact-python-client-workspace1/experiments/modelica_blocks_examples_pid_controller_20240412_070512_aff60ef/cases
+  response:
+    body:
+      string: '{"data": {"items": [{"id": "case_1", "input": {"fmu_id": "modelica_blocks_examples_pid_controller_20240412_070507_197f86d",
+        "analysis": {"analysis_function": "dynamic", "parameters": {"start_time":
+        0, "final_time": 1, "interval": 0}, "simulation_options": {"ncp": 500, "dynamic_diagnostics":
+        false}, "solver_options": {}, "simulation_log_level": "WARNING"}, "parametrization":
+        {"PI.k": 100}, "structural_parametrization": {}, "fmu_base_parametrization":
+        {}, "initialize_from_case": null, "initialize_from_external_result": null},
+        "meta": {"label": null}, "run_info": {"status": "successful", "datetime_started":
+        1712905512425, "consistent": true, "datetime_finished": 1712905512471}}, {"id":
+        "case_2", "input": {"fmu_id": "modelica_blocks_examples_pid_controller_20240412_070507_197f86d",
+        "analysis": {"analysis_function": "dynamic", "parameters": {"start_time":
+        0, "final_time": 1, "interval": 0}, "simulation_options": {"ncp": 500, "dynamic_diagnostics":
+        false}, "solver_options": {}, "simulation_log_level": "WARNING"}, "parametrization":
+        {"PI.k": 120}, "structural_parametrization": {}, "fmu_base_parametrization":
+        {}, "initialize_from_case": null, "initialize_from_external_result": null},
+        "meta": {"label": null}, "run_info": {"status": "successful", "datetime_started":
+        1712905512471, "consistent": true, "datetime_finished": 1712905512515}}]}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json; charset=utf-8
+      access-control-allow-headers:
+      - '*'
+      access-control-allow-methods:
+      - POST, PUT, GET, DELETE, OPTIONS
+      access-control-allow-origin:
+      - '*'
+      content-length:
+      - '1351'
+      vary:
+      - Accept-Encoding
+      x-powered-by:
+      - Express
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - application/vnd.impact.experiment.v2+json
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+    method: GET
+    uri: /user/test@dummy.com/impact/api/workspaces/impact-python-client-workspace1/experiments/modelica_blocks_examples_pid_controller_20240412_070512_aff60ef
+  response:
+    body:
+      string: '{"id": "modelica_blocks_examples_pid_controller_20240412_070512_aff60ef",
+        "experiment": {"version": 2, "base": {"model": {"fmu": {"id": "modelica_blocks_examples_pid_controller_20240412_070507_197f86d"}},
+        "analysis": {"parameters": {"start_time": 0, "final_time": 1, "interval":
+        0}, "simulationOptions": {"ncp": 500, "dynamic_diagnostics": false}, "solverOptions":
+        {}, "type": "dynamic", "simulationLogLevel": "WARNING"}, "modifiers": {"variables":
+        {"PI.k": "range(100,120,2)"}}}, "extensions": []}, "meta_data": {"created_epoch":
+        1712905512, "experiment_hash": "3c45cd12c044649df4b61c316ce7f815", "label":
+        "", "model_names": ["Modelica.Blocks.Examples.PID_Controller"]}, "run_info":
+        {"status": "done", "datetime_started": 1712905512225, "datetime_finished":
+        1712905512557, "failed": 0, "successful": 2, "cancelled": 0, "not_started":
+        0}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json; charset=utf-8
+      access-control-allow-headers:
+      - '*'
+      access-control-allow-methods:
+      - POST, PUT, GET, DELETE, OPTIONS
+      access-control-allow-origin:
+      - '*'
+      vary:
+      - Accept-Encoding
+      x-powered-by:
+      - Express
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - application/vnd.impact.experiment.v2+json
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+    method: GET
+    uri: /user/test@dummy.com/impact/api/workspaces/impact-python-client-workspace1/experiments/modelica_blocks_examples_pid_controller_20240412_070512_aff60ef
+  response:
+    body:
+      string: '{"id": "modelica_blocks_examples_pid_controller_20240412_070512_aff60ef",
+        "experiment": {"version": 2, "base": {"model": {"fmu": {"id": "modelica_blocks_examples_pid_controller_20240412_070507_197f86d"}},
+        "analysis": {"parameters": {"start_time": 0, "final_time": 1, "interval":
+        0}, "simulationOptions": {"ncp": 500, "dynamic_diagnostics": false}, "solverOptions":
+        {}, "type": "dynamic", "simulationLogLevel": "WARNING"}, "modifiers": {"variables":
+        {"PI.k": "range(100,120,2)"}}}, "extensions": []}, "meta_data": {"created_epoch":
+        1712905512, "experiment_hash": "3c45cd12c044649df4b61c316ce7f815", "label":
+        "", "model_names": ["Modelica.Blocks.Examples.PID_Controller"]}, "run_info":
+        {"status": "done", "datetime_started": 1712905512225, "datetime_finished":
+        1712905512557, "failed": 0, "successful": 2, "cancelled": 0, "not_started":
+        0}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json; charset=utf-8
+      access-control-allow-headers:
+      - '*'
+      access-control-allow-methods:
+      - POST, PUT, GET, DELETE, OPTIONS
+      access-control-allow-origin:
+      - '*'
+      vary:
+      - Accept-Encoding
+      x-powered-by:
+      - Express
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+    method: GET
+    uri: /user/test@dummy.com/impact/api/workspaces/impact-python-client-workspace1/experiments/modelica_blocks_examples_pid_controller_20240412_070512_aff60ef/variables
+  response:
+    body:
+      string: '["time", "PI.y_start", "speedSensor.flange.tau", "driveAngle", "PI.k",
+        "PI.Ti", "PI.Td", "PI.wp", "PI.wd", "PI.Ni", "PI.Nd", "PI.kFF", "PI.xi_start",
+        "PI.xd_start", "PI.addP.k2", "PI.P.k", "PI.addPID.k1", "PI.addPID.k2", "PI.addPID.k3",
+        "PI.addI.k1", "PI.addI.k2", "PI.addI.k3", "PI.addSat.k1", "PI.addSat.k2",
+        "PI.Dzero.k", "PI.FFzero.k", "PI.addFF.k1", "inertia1.J", "spring.c", "spring.d",
+        "spring.phi_rel0", "spring.phi_nominal", "inertia2.J", "kinematicPTP.qd_max[1]",
+        "kinematicPTP.qdd_max[1]", "kinematicPTP.startTime", "integrator.k", "integrator.y_start",
+        "loadTorque.tau_constant", "PI.limiter.uMax", "PI.yMax", "PI.limiter.uMin",
+        "PI.yMin", "PI.addP.k1", "PI.I.k", "PI.I.y_start", "PI.gainPID.k", "PI.gainTrack.k",
+        "PI.addFF.k2", "kinematicPTP.deltaq[1]", "PI.Dzero.y", "PI.addPID.u2", "PI.FFzero.y",
+        "PI.addFF.u2", "inertia2.flange_b.tau", "loadTorque.tau", "der(spring.w_rel)",
+        "der(PI.I.y)", "der(inertia1.phi)", "der(spring.phi_rel)", "der(inertia2.w)",
+        "der(integrator.y)", "spring.w_rel", "PI.I.y", "PI.addPID.u3", "inertia1.flange_a.phi",
+        "inertia1.flange_b.phi", "inertia1.phi", "speedSensor.flange.phi", "spring.flange_a.phi",
+        "torque.flange.phi", "spring.phi_rel", "inertia2.w", "PI.addI.u1", "PI.addP.u1",
+        "PI.u_s", "integrator.y", "PI.controlError", "PI.P.u", "PI.addP.y", "PI.P.y",
+        "PI.addPID.u1", "PI.I.u", "PI.addI.y", "PI.addPID.y", "PI.gainPID.u", "PI.addI.u3",
+        "PI.gainTrack.y", "PI.addSat.y", "PI.gainTrack.u", "PI.addFF.y", "PI.addSat.u2",
+        "PI.limiter.u", "PI.addFF.u1", "PI.gainPID.y", "PI.addI.u2", "PI.addP.u2",
+        "PI.u_m", "speedSensor.w", "inertia1.w", "inertia1.a", "der(inertia1.phi,2)",
+        "der(inertia1.w)", "PI.addSat.u1", "PI.limiter.y", "PI.y", "inertia1.flange_a.tau",
+        "torque.tau", "spring.a_rel", "inertia1.flange_b.tau", "spring.flange_b.tau",
+        "spring.tau", "spring.lossPower", "inertia2.flange_a.phi", "inertia2.flange_b.phi",
+        "inertia2.phi", "loadTorque.flange.phi", "loadTorque.phi", "spring.flange_b.phi",
+        "inertia2.a", "integrator.u", "kinematicPTP.y[1]", "loadTorque.w", "der(inertia2.phi)",
+        "der(spring.phi_rel,2)", "der(inertia2.phi,2)", "loadTorque.flange.tau", "torque.flange.tau",
+        "inertia2.flange_a.tau", "spring.flange_a.tau", "kinematicPTP.nout", "PI.controllerType",
+        "PI.I.initType", "PI.initType", "PI.homotopyType", "PI.limiter.homotopyType",
+        "integrator.initType", "PI.limiter.strict", "PI.strict", "PI.withFeedForward"]'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json; charset=utf-8
+      access-control-allow-headers:
+      - '*'
+      access-control-allow-methods:
+      - POST, PUT, GET, DELETE, OPTIONS
+      access-control-allow-origin:
+      - '*'
+      content-length:
+      - '2380'
+      vary:
+      - Accept-Encoding
+      x-powered-by:
+      - Express
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"variable_names": ["inertia1.w"], "filter": {"lastPointOnly": false}}'
+    headers:
+      Accept:
+      - application/vnd.impact.trajectories.v1+json
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '70'
+      Content-Type:
+      - application/json
+    method: POST
+    uri: /user/test@dummy.com/impact/api/workspaces/impact-python-client-workspace1/experiments/modelica_blocks_examples_pid_controller_20240412_070512_aff60ef/trajectories
+  response:
+    body:
+      string: '[[[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+        0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+        0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+        0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+        0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+        0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+        0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+        0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+        0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+        0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+        0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+        0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+        0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+        0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+        0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+        0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+        0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.00017620896808468787,
+        0.0006237860238632939, 0.0012572000065330063, 0.00201498268312036, 0.00285551379014086,
+        0.0037510670261399455, 0.004685783116721199, 0.005653965214664412, 0.006652024888488971,
+        0.007681492169290459, 0.00874357306034533, 0.00984259587385692, 0.01098170445846636,
+        0.012165059027998304, 0.013395425689845794, 0.014675604035159738, 0.01600720060657252,
+        0.017391550438510234, 0.018829090561985038, 0.020319936205040155, 0.02186356171407435,
+        0.023459160565460102, 0.025105490448955464, 0.026801101432588032, 0.028544246098245917,
+        0.030333114393197143, 0.03216565970426075, 0.034039861364374355, 0.03595352957365656,
+        0.03790456988274795, 0.0398907675133034, 0.041910053037464916, 0.043960266637288456,
+        0.04603942751874516, 0.04814548004431331, 0.05027656980290375, 0.052430773162599024,
+        0.054606382286981135, 0.0568016189578586, 0.05901493028957523, 0.06124468720740391,
+        0.06348949230135702, 0.06574786304731517, 0.06801855358971452, 0.07030024446121023,
+        0.07259175157667506, 0.07489196358964112, 0.07719982808591395, 0.07951434901930866,
+        0.08183458722678784, 0.08415965995872209, 0.08648873908666295, 0.08882104866702281,
+        0.09115586239731822, 0.09349250118100941, 0.0958303308310655, 0.09816875988649774,
+        0.10050723751836525, 0.10284525151493581, 0.10518232634367507, 0.10751802128997791,
+        0.10985192867212887, 0.11218367213106391, 0.11451290499288742, 0.11683930870182119,
+        0.11916259132117862, 0.12148248609995325, 0.12379875010263183, 0.12611116289987673,
+        0.12841952531776643, 0.1307236582433371, 0.1330234014842297, 0.13531861268031373,
+        0.13760916626522837, 0.13989495247585226, 0.1421758764077823, 0.1444518571149729,
+        0.1467228267517527, 0.14898872975550204, 0.15124952206833908, 0.15350517039622116,
+        0.15575565150393048, 0.15800095154446656, 0.16024106542142583, 0.1624759961829991,
+        0.16470575444626903, 0.16693035785053972, 0.1691498305384752, 0.1713642026638712,
+        0.1735735099249265, 0.17577779312192374, 0.17797709773826834, 0.18017147354387586,
+        0.18236097421993294, 0.1845456570040971, 0.18672558235523218, 0.18890081363681363,
+        0.1910714168181688, 0.1932374601927503, 0.1953990141126701, 0.19755615073875424,
+        0.199708943805403, 0.20185746839957402, 0.20400180075322727, 0.2061420180486023,
+        0.20827819823571828, 0.21041041986151576, 0.21253876191007942, 0.2146633036534051,
+        0.21678412451219634, 0.21890130392619575, 0.22101492123357802, 0.22312505555895015,
+        0.2252317857095239, 0.22733519007904296, 0.2294353465590661, 0.23153233245722352,
+        0.23362622442208, 0.2357170983742554, 0.23780502944346602, 0.2398900919111677,
+        0.24197235915849272, 0.24405190361918866, 0.24612879673727853, 0.24820310892917505,
+        0.2502749095499938, 0.25234426686382144, 0.2544112480177057, 0.2564759190191466,
+        0.2585383447168763, 0.26059858878472597, 0.2626567137083877, 0.2647127807748886,
+        0.266766850064602, 0.268818980445631, 0.2708692295704054, 0.27291765387434236,
+        0.27496430857642906, 0.2770092476815895, 0.2790525239847097, 0.28109418907619615,
+        0.28313429334895424, 0.28517288600667423, 0.2872100150733232, 0.2892457274037416,
+        0.29128006869525325, 0.2933130835001988, 0.2953448152393099, 0.29737530621584507,
+        0.2994045976304116, 0.30143272959640516, 0.30345974115599805, 0.3054856702966164,
+        0.3075105539678447, 0.30953442809870446, 0.31155732761525284, 0.3135792864584548,
+        0.3156003376022801, 0.3176205130719846, 0.31963984396253314, 0.3216583604571296,
+        0.32367609184581475, 0.3256930665441031, 0.3277093121116251, 0.3297248552707482,
+        0.3317397219251495, 0.33375393717831536, 0.3357675253519462, 0.3377805100042435,
+        0.33979291394806294, 0.34180475926891296, 0.3438160673427836, 0.34582685885379144,
+        0.34783715381162567, 0.34984697156878414, 0.35185633083758794, 0.353865249706964,
+        0.3558737456589875, 0.3578818355851757, 0.35988953580252614, 0.3618968620692929,
+        0.36390382960049655, 0.3659104530831615, 0.36791674669127844, 0.36992272410048843,
+        0.37192839850248516, 0.3739337826191344, 0.3759388887163097, 0.3779437286174417,
+        0.3799483137167827, 0.38195265499238573, 0.38395676301879816, 0.38596064797947155,
+        0.3879643196788889, 0.38996778755441025, 0.39197106068784004, 0.39397414781671636,
+        0.3959770573453259, 0.3979797973554477, 0.3999823756168275, 0.40198479959738614,
+        0.4039870764731659, 0.4059892131380175, 0.40799121621303197, 0.4099930920557204,
+        0.41199484676894665, 0.4139964862096154, 0.41599801599712105, 0.41799944152156043,
+        0.4200007679517146, 0.4220020002428027, 0.4240031431440138, 0.42600420120581883,
+        0.4280051787870699, 0.43000608006188806, 0.43200690902634664, 0.4340076695049529,
+        0.4360083651569331, 0.4380089994823249, 0.4400095758278821, 0.442010097392795,
+        0.4440105672342318, 0.44601098827270463, 0.4480113632972645, 0.45001169497052973,
+        0.4520119858335508, 0.4540122383105177, 0.45601245471331253, 0.4580126372459117,
+        0.46001278800864076, 0.46201290900228764, 0.46401300213207586, 0.46601306921150354,
+        0.46801311196605083, 0.47001313203675954, 0.4720131309836882, 0.47401311028924736,
+        0.4760130713614169, 0.4780130155368499, 0.48001294408386586, 0.48201285820533696,
+        0.4840127590414699, 0.4860126476724869, 0.4880125251212092, 0.4900123923555449,
+        0.4920122502908855, 0.4940120997924133, 0.49601194167732154, 0.4980117767169523,
+        0.5000116056397186], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+        0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+        0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+        0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+        0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+        0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+        0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+        0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+        0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+        0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+        0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+        0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+        0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+        0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+        0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+        0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+        0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+        0.0, 0.00020873964166985247, 0.0007313564445076509, 0.0014605978199289972,
+        0.002321740759649745, 0.003267383975310689, 0.00426797872219823, 0.005306897945263679,
+        0.006378663322393681, 0.007477960052392445, 0.008608440020593584, 0.00977057323507561,
+        0.010974147660513502, 0.012219808375628485, 0.013510153339653098, 0.014848070475861794,
+        0.0162358038441137, 0.01767590212823426, 0.019168932270450117, 0.0207158900903559,
+        0.02231535103182881, 0.023967559407108575, 0.025669731236294534, 0.027422238119728472,
+        0.029220912822503685, 0.03106728894684164, 0.03295645751102076, 0.03488605822546342,
+        0.03685326099534911, 0.0388567627120862, 0.040893769588875174, 0.042963260285511874,
+        0.04506125775982056, 0.04718743437364116, 0.04933596628764212, 0.05150744296152684,
+        0.05369989702290176, 0.05591180475715285, 0.058140198903046426, 0.06038362927614712,
+        0.062639080239952, 0.06490652883348902, 0.06718261259265533, 0.06946887043136515,
+        0.0717595866898001, 0.07405741643456523, 0.07636178757079536, 0.07867052740343665,
+        0.08098185775899776, 0.08329478101450653, 0.08560874145826684, 0.08792319588019644,
+        0.09023749699439035, 0.09255098323542799, 0.09486306637235967, 0.09717324339552179,
+        0.09948106903011815, 0.1017861348186346, 0.10408806598561153, 0.10638652538267993,
+        0.10868121475439929, 0.11097187201613261, 0.11325826740267345, 0.11554020051065036,
+        0.11781749829886247, 0.1200900133591341, 0.12235762207069356, 0.12462022268036917,
+        0.12687773347114095, 0.1291300910903743, 0.13137724901591355, 0.13361917612022586,
+        0.13585585531604716, 0.13808728228561248, 0.14031346429705913, 0.14253441910564735,
+        0.1447501739336919, 0.14696076452323373, 0.14916623425696077, 0.15136663334373268,
+        0.15356201806510134, 0.15575245007907038, 0.1579379957773733, 0.16011872569276342,
+        0.16229471395305067, 0.1644660377788127, 0.16663277702186371, 0.16879501374171565,
+        0.1709528318174188, 0.17310631659232803, 0.17525555454948932, 0.17740063301548217,
+        0.17954163989068683, 0.18167866340407235, 0.1838117918907222, 0.18594111359042775,
+        0.18806671646579104, 0.19018868803837755, 0.19230711524155839, 0.19442208428877059,
+        0.19653368055601117, 0.19864198847745948, 0.2007470914531992, 0.20284907176808195,
+        0.2049480105208392, 0.20704398756261472, 0.20913708144414522, 0.2112273693708722,
+        0.21331492716532036, 0.21539982923612364, 0.21748214855312595, 0.2195619566280252,
+        0.22163932350006663, 0.2237143177263306, 0.22578700637619054, 0.22785745502955068,
+        0.22992572777850206, 0.23199188723206124, 0.23405599452368434, 0.2361181093212698,
+        0.23817828983938824, 0.24023659285349552, 0.24229307371590664, 0.2443477863733243,
+        0.2464007833857331, 0.2484521159464857, 0.250501833903421, 0.2525499857808686,
+        0.2545966188024045, 0.25664177891423584, 0.2586855108091031, 0.26072785795059555,
+        0.262768862597788, 0.26480856583011353, 0.26684700757239455, 0.2688842266199617,
+        0.27092026066379826, 0.27295514631565154, 0.27498891913305984, 0.27702161364424865,
+        0.2790532633728543, 0.28108390086243723, 0.28311355770075264, 0.2851422645437484,
+        0.2871700511392642, 0.28919694635040955, 0.2912229781786007, 0.29324817378623874,
+        0.29527255951901493, 0.2972961609278303, 0.299319002790319, 0.30134110913196743,
+        0.3033625032468219, 0.30538320771777905, 0.307403244436457, 0.30942263462264197,
+        0.3114413988433117, 0.3134595570312336, 0.31547712850313947, 0.31749413197747645,
+        0.31951058559173934, 0.32152650691938484, 0.3235419129863318, 0.3255568202870536,
+        0.32757124480026395, 0.3295852020042043, 0.33159870689153637, 0.3336117739838467,
+        0.33562441734576937, 0.3376366505987312, 0.3396484869343292, 0.34165993912734466,
+        0.34367101954840124, 0.3456817401762742, 0.3476921126098585, 0.34970214807980093,
+        0.3517118574598058, 0.3537212512776198, 0.3557303397257036, 0.35773913267159707,
+        0.35974763966798645, 0.36175586996247877, 0.36376383250709204, 0.3657715359674674,
+        0.3677789887318106, 0.36978619891956865, 0.3717931743898503, 0.373799922749595,
+        0.3758064513614979, 0.37781276735169683, 0.379818877617229, 0.3818247888332612,
+        0.3838305074601017, 0.38583603974999925, 0.38784139175373417, 0.38984656932700934,
+        0.39185157813664373, 0.39385642366657747, 0.3958611112236904, 0.3978656459434424,
+        0.3998700327953388, 0.40187427658822594, 0.40387838197542314, 0.4058823534596943,
+        0.40788619539806487, 0.4098899120064883, 0.4118935073643665, 0.41389698541892844,
+        0.41590034998947206, 0.4179036047714714, 0.41990675334055627, 0.42190979915636495,
+        0.42391274556627595, 0.4259155958090218, 0.4279183530181883, 0.4299210202256031,
+        0.43192360036461636, 0.4339260962732776, 0.4359285106974118, 0.43793084629359674,
+        0.43993310563204635, 0.4419352911994016, 0.4439374054014326, 0.4459394505656542,
+        0.44794142894385797, 0.4499433427145634, 0.4519451939853902, 0.4539469847953552,
+        0.4559487171170948, 0.4579503928590165, 0.45995201386738155, 0.4619535819283205,
+        0.4639550987697835, 0.46595656606342856, 0.46795798542644856, 0.46995935842333963,
+        0.4719606865676125, 0.4739619713234484, 0.475963214107302, 0.47796441628945224,
+        0.4799655791955033, 0.4819667041078368, 0.48396779226701764, 0.4859688448731537,
+        0.4879698630872119, 0.4899708480322917, 0.49197180079485725, 0.49397272242592993,
+        0.49597361394224176, 0.497974476327352, 0.49997531053261374]]]'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json; charset=utf-8
+      access-control-allow-headers:
+      - '*'
+      access-control-allow-methods:
+      - POST, PUT, GET, DELETE, OPTIONS
+      access-control-allow-origin:
+      - '*'
+      content-length:
+      - '12881'
+      vary:
+      - Accept-Encoding
+      x-powered-by:
+      - Express
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+    method: GET
+    uri: /user/test@dummy.com/impact/api/workspaces
+  response:
+    body:
+      string: '{"data": {"items": [{"definition": {"name": "impact-python-client-workspace1",
+        "description": "", "defaultProjectId": "8846294a20508e6aa118a9663cb8f0a41ccdc038",
+        "projects": [{"reference": {"id": "8846294a20508e6aa118a9663cb8f0a41ccdc038"},
+        "disabled": false, "disabledContent": []}], "dependencies": [{"reference":
+        {"id": "fec43f77925949bd7e7c0f10ac49ebc1189dc840", "name": "Modelica", "version":
+        "3.2.3"}, "disabled": true, "disabledContent": []}, {"reference": {"id": "ac04a5da97bc2e11bffb7f41b2485da347846df6",
+        "name": "Modelica", "version": "4.0.0"}, "disabled": false, "disabledContent":
+        []}], "format": "1.0.0", "guid": "c66af6c9bad94d40ad5881520cd24e31", "createdBy":
+        "ce771b6a-56ea-464b-9ab7-f527a8a3c051", "createdAt": 1712905506359}, "id":
+        "impact-python-client-workspace1", "conversion": {"state": "UP_TO_DATE"}}]}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json; charset=utf-8
+      access-control-allow-headers:
+      - '*'
+      access-control-allow-methods:
+      - POST, PUT, GET, DELETE, OPTIONS
+      access-control-allow-origin:
+      - '*'
+      vary:
+      - Accept-Encoding
+      x-powered-by:
+      - Express
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+    method: GET
+    uri: /user/test@dummy.com/impact/api/workspaces/impact-python-client-workspace1
+  response:
+    body:
+      string: '{"definition": {"name": "impact-python-client-workspace1", "description":
+        "", "defaultProjectId": "8846294a20508e6aa118a9663cb8f0a41ccdc038", "projects":
+        [{"reference": {"id": "8846294a20508e6aa118a9663cb8f0a41ccdc038"}, "disabled":
+        false, "disabledContent": []}], "dependencies": [{"reference": {"id": "fec43f77925949bd7e7c0f10ac49ebc1189dc840",
+        "name": "Modelica", "version": "3.2.3"}, "disabled": true, "disabledContent":
+        []}, {"reference": {"id": "ac04a5da97bc2e11bffb7f41b2485da347846df6", "name":
+        "Modelica", "version": "4.0.0"}, "disabled": false, "disabledContent": []}],
+        "format": "1.0.0", "guid": "c66af6c9bad94d40ad5881520cd24e31", "createdBy":
+        "ce771b6a-56ea-464b-9ab7-f527a8a3c051", "createdAt": 1712905506359}, "id":
+        "impact-python-client-workspace1", "conversion": {"state": "UP_TO_DATE"}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json; charset=utf-8
+      access-control-allow-headers:
+      - '*'
+      access-control-allow-methods:
+      - POST, PUT, GET, DELETE, OPTIONS
+      access-control-allow-origin:
+      - '*'
+      vary:
+      - Accept-Encoding
+      x-powered-by:
+      - Express
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+    method: GET
+    uri: /user/test@dummy.com/impact/api/workspaces/impact-python-client-workspace1/projects
+  response:
+    body:
+      string: '{"data": {"items": [{"id": "8846294a20508e6aa118a9663cb8f0a41ccdc038",
+        "definition": {"name": "Project", "format": "1.0.0", "dependencies": [{"name":
+        "Modelica", "versionSpecifier": "4.0.0"}], "content": [{"relpath": "Resources/Views",
+        "contentType": "VIEWS", "defaultDisabled": false, "id": "9ef1e82176934808b62de833ef9e955e"},
+        {"relpath": "Resources/Favorites", "contentType": "FAVORITES", "defaultDisabled":
+        false, "id": "1d7a82429d1d494ab2b555311944158d"}, {"relpath": "Resources/CustomFunctions",
+        "contentType": "CUSTOM_FUNCTIONS", "defaultDisabled": false, "id": "1edcd68ef25f45f7a11f3cbb3746ada4"},
+        {"relpath": "Resources/Custom", "contentType": "GENERIC", "defaultDisabled":
+        false, "id": "c9e2b65e64c74ef1b867a826f4e04263"}, {"relpath": "ReferenceResults",
+        "contentType": "REFERENCE_RESULTS", "defaultDisabled": false, "id": "ffad8f3663f149b88a031a1ab0903930"},
+        {"relpath": "Resources/ExperimentDefinitions", "contentType": "EXPERIMENT_DEFINITIONS",
+        "defaultDisabled": false, "id": "ee582c819b3a4850a6eb9cfd3667d2a7"}], "executionOptions":
+        []}, "projectType": "LOCAL", "storageLocation": "USERSPACE"}]}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json; charset=utf-8
+      access-control-allow-headers:
+      - '*'
+      access-control-allow-methods:
+      - POST, PUT, GET, DELETE, OPTIONS
+      access-control-allow-origin:
+      - '*'
+      content-length:
+      - '1043'
+      vary:
+      - Accept-Encoding
+      x-powered-by:
+      - Express
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '0'
+    method: DELETE
+    uri: /user/test@dummy.com/impact/api/projects/8846294a20508e6aa118a9663cb8f0a41ccdc038
+  response:
+    body:
+      string: '{"id": "8846294a20508e6aa118a9663cb8f0a41ccdc038", "definition": {"name":
+        "Project", "format": "1.0.0", "dependencies": [{"name": "Modelica", "versionSpecifier":
+        "4.0.0"}], "content": [{"relpath": "Resources/Views", "contentType": "VIEWS",
+        "defaultDisabled": false, "id": "9ef1e82176934808b62de833ef9e955e"}, {"relpath":
+        "Resources/Favorites", "contentType": "FAVORITES", "defaultDisabled": false,
+        "id": "1d7a82429d1d494ab2b555311944158d"}, {"relpath": "Resources/CustomFunctions",
+        "contentType": "CUSTOM_FUNCTIONS", "defaultDisabled": false, "id": "1edcd68ef25f45f7a11f3cbb3746ada4"},
+        {"relpath": "Resources/Custom", "contentType": "GENERIC", "defaultDisabled":
+        false, "id": "c9e2b65e64c74ef1b867a826f4e04263"}, {"relpath": "ReferenceResults",
+        "contentType": "REFERENCE_RESULTS", "defaultDisabled": false, "id": "ffad8f3663f149b88a031a1ab0903930"},
+        {"relpath": "Resources/ExperimentDefinitions", "contentType": "EXPERIMENT_DEFINITIONS",
+        "defaultDisabled": false, "id": "ee582c819b3a4850a6eb9cfd3667d2a7"}], "executionOptions":
+        []}, "projectType": "LOCAL", "storageLocation": "USERSPACE"}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json; charset=utf-8
+      access-control-allow-headers:
+      - '*'
+      access-control-allow-methods:
+      - POST, PUT, GET, DELETE, OPTIONS
+      access-control-allow-origin:
+      - '*'
+      vary:
+      - Accept-Encoding
+      x-powered-by:
+      - Express
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '0'
+    method: DELETE
+    uri: /user/test@dummy.com/impact/api/workspaces/impact-python-client-workspace1
+  response:
+    body:
+      string: ''
+    headers:
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json; charset=utf-8
+      access-control-allow-headers:
+      - '*'
+      access-control-allow-methods:
+      - POST, PUT, GET, DELETE, OPTIONS
+      access-control-allow-origin:
+      - '*'
+      vary:
+      - Accept-Encoding
+      x-powered-by:
+      - Express
+    status:
+      code: 200
+      message: OK
+version: 1
