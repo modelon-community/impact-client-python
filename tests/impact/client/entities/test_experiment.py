@@ -260,7 +260,9 @@ class TestExperiment:
 
     @pytest.mark.vcr()
     def test_cancelled_execution(self, client_helper: ClientHelper):
-        cancelled_experiment = client_helper.create_and_execute_experiment(wait=False)
+        cancelled_experiment = client_helper.create_and_execute_experiment(
+            wait_for_completion=False
+        )
         cancelled_experiment.cancel()
         cancelled_experiment = cancelled_experiment.wait(status=Status.CANCELLED)
         assert cancelled_experiment.run_info.status == ExperimentStatus.CANCELLED

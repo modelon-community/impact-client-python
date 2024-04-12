@@ -120,6 +120,9 @@ def vcr_config():
                 except UnicodeDecodeError:
                     # Handle case where response is not json
                     return response
+                except json.JSONDecodeError:
+                    # Non json response
+                    return response
                 # Return response as it is if its a list(To handle trajectories api)
                 if isinstance(response_body, list):
                     return response

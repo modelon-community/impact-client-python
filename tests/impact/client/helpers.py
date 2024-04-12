@@ -6,7 +6,7 @@ from modelon.impact.client.entities.case import Case
 from modelon.impact.client.entities.custom_function import CustomFunction
 from modelon.impact.client.entities.experiment import Experiment, _Workflow
 from modelon.impact.client.entities.external_result import ExternalResult
-from modelon.impact.client.entities.model import Model
+from modelon.impact.client.entities.model import CompilationOperations, Model
 from modelon.impact.client.entities.model_executable import ModelExecutable
 from modelon.impact.client.entities.project import (
     Project,
@@ -681,14 +681,33 @@ class ClientHelper:
         modifiers=None,
         user_data=None,
         custom_function_params=None,
-        wait=True,
+        wait_for_completion=True,
     ) -> Union[Experiment, ExperimentOperation]:
         exp = self.create_experiment(
             model_path, workflow, modifiers, user_data, custom_function_params
         ).execute()
-        if wait:
+        if wait_for_completion:
             return exp.wait()
         return exp
+
+    def compile_fmu(
+        self,
+        model_path=IDs.PID_MODELICA_CLASS_PATH,
+        custom_function_name="dynamic",
+        custom_function_params=None,
+        wait_for_completion=True,
+    ):
+        custom_function = self.workspace.get_custom_function(custom_function_name)
+        if custom_function_params:
+            custom_function = custom_function.with_parameters(**custom_function_params)
+        model = self.workspace.get_model(model_path)
+        ops: CompilationOperations = model.compile(
+            compiler_options=custom_function.get_compiler_options()
+        )
+        if wait_for_completion:
+            fmu: ModelExecutable = ops.wait()
+            return fmu
+        return ops
 
     def create_experiment(
         self,
