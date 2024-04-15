@@ -208,6 +208,9 @@ class IDs:
     CUSTOM_ARTIFACT_ID = "ABCD"
     RESULT_MAT = "result.mat"
     PID_MODELICA_CLASS_PATH = "Modelica.Blocks.Examples.PID_Controller"
+    BATCH_PLANT_MODELICA_CLASS_PATH = (
+        "Modelica.Fluid.Examples.AST_BatchPlant.BatchPlant_StandardWater"
+    )
     FILTER_MODELICA_CLASS_PATH = "Modelica.Blocks.Examples.Filter"
     LOCAL_PROJECT_MODELICA_CLASS_PATH = "Test.PID"
     EXPERIMENT_LABEL = "EXPERIMENT_LABEL"

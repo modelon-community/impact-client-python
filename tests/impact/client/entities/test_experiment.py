@@ -6,10 +6,10 @@ from modelon.impact.client.entities.experiment import (
     ExperimentStatus,
     _Workflow,
 )
-from modelon.impact.client.experiment_definition.operators import Range
+from modelon.impact.client.experiment_definition.operators import Choices, Range
 from modelon.impact.client.operations.base import Status
 from modelon.impact.client.operations.experiment import ExperimentOperation
-from tests.impact.client.helpers import ClientHelper, IDs, create_case_entity
+from tests.impact.client.helpers import ClientHelper, IDs
 
 
 class TestExperiment:
@@ -194,29 +194,32 @@ class TestExperiment:
         assert exp[IDs.CASE_ID_PRIMARY]["inertia1.w"][-1] == 0.5000116056397186
         assert exp[IDs.CASE_ID_SECONDARY]["inertia1.w"][-1] == 0.49997531053261374
 
-    def test_some_successful_batch_execute(self, batch_experiment_some_successful):
+    @pytest.mark.vcr()
+    def test_some_successful_batch_execute(self, client_helper: ClientHelper):
+        batch_experiment_some_successful = client_helper.create_and_execute_experiment(
+            model_path=IDs.PID_MODELICA_CLASS_PATH,
+            workflow=_Workflow.CLASS_BASED,
+            modifiers={"inertia1.J": Choices(1, 0, 2)},
+        )
         assert not batch_experiment_some_successful.is_successful()
         assert batch_experiment_some_successful.run_info.status == ExperimentStatus.DONE
         assert batch_experiment_some_successful.run_info.failed == 1
         assert batch_experiment_some_successful.run_info.successful == 2
         assert batch_experiment_some_successful.run_info.cancelled == 0
-        assert batch_experiment_some_successful.run_info.not_started == 1
-        assert batch_experiment_some_successful.get_cases() == [
-            create_case_entity(
-                IDs.CASE_ID_PRIMARY, IDs.WORKSPACE_ID_PRIMARY, IDs.EXPERIMENT_ID_PRIMARY
-            ),
-            create_case_entity(
-                "case_2", IDs.WORKSPACE_ID_PRIMARY, IDs.EXPERIMENT_ID_PRIMARY
-            ),
-            create_case_entity(
-                "case_3", IDs.WORKSPACE_ID_PRIMARY, IDs.EXPERIMENT_ID_PRIMARY
-            ),
-            create_case_entity(
-                "case_4", IDs.WORKSPACE_ID_PRIMARY, IDs.EXPERIMENT_ID_PRIMARY
-            ),
-        ]
+        assert batch_experiment_some_successful.run_info.not_started == 0
+        assert len(batch_experiment_some_successful.get_cases()) == 3
 
-    def test_running_execution(self, running_experiment):
+    @pytest.mark.vcr()
+    def test_running_execution(self, client_helper: ClientHelper):
+        running_experiment_ops = client_helper.create_and_execute_experiment(
+            model_path=IDs.BATCH_PLANT_MODELICA_CLASS_PATH,
+            workflow=_Workflow.CLASS_BASED,
+            modifiers={},
+            wait_for_completion=False,
+        )
+        running_experiment = client_helper.workspace.get_experiment(
+            running_experiment_ops.id
+        )
         assert running_experiment.run_info.status == ExperimentStatus.NOTSTARTED
         assert not running_experiment.is_successful()
         pytest.raises(
@@ -225,7 +228,7 @@ class TestExperiment:
         pytest.raises(
             exceptions.OperationNotCompleteError,
             running_experiment.get_trajectories,
-            ["inertia.I"],
+            ["inertia1.w"],
         )
 
     @pytest.mark.vcr()
