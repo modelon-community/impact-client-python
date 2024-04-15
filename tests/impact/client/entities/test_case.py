@@ -1,216 +1,178 @@
 import os
 import tempfile
-import unittest.mock as mock
 from datetime import datetime
 
 import pytest
 
-from modelon.impact.client import exceptions
+from modelon.impact.client import Range, exceptions
 from modelon.impact.client.entities.case import CaseStatus
 from tests.impact.client.helpers import (
+    ClientHelper,
     IDs,
     create_case_entity,
     create_external_result_entity,
 )
 
 
-def get_case_put_json_input(mock_method_call):
-    (args, _) = tuple(mock_method_call)
-    (_, _, _, put_json_input) = args
-    return put_json_input
-
-
-def get_case_put_call_consistent_value(mock_method_call):
-    json = get_case_put_json_input(mock_method_call)
-    return json["run_info"]["consistent"]
-
-
 class TestCase:
-    def test_case(self, experiment):
-        case = experiment.entity.get_case(IDs.CASE_ID_PRIMARY)
+    @pytest.mark.vcr()
+    def test_case(self, client_helper: ClientHelper):
+        experiment = client_helper.create_and_execute_experiment(
+            model_path=IDs.PID_MODELICA_CLASS_PATH, modifiers={}
+        )
+        case = experiment.get_case(IDs.CASE_ID_PRIMARY)
         assert case.id == IDs.CASE_ID_PRIMARY
         assert case.run_info.status == CaseStatus.SUCCESSFUL
         assert case.run_info.consistent
-        assert case.run_info.started == datetime(2022, 9, 12, 6, 42, 36, 945000)
-        assert case.run_info.finished == datetime(2022, 9, 12, 6, 42, 37, 990000)
-        assert case.get_log() == "Successful Log"
+        assert isinstance(case.run_info.started, datetime)
+        assert isinstance(case.run_info.finished, datetime)
+        assert "Final Run Statistics:" in case.get_log()
         result, name = case.get_result()
-        assert (result, name) == (b"\x00\x00\x00\x00", IDs.RESULT_MAT)
+        assert name.startswith(IDs.PID_MODELICA_CLASS_PATH)
+        assert isinstance(result, bytes)
         assert case.is_successful()
-        assert case.get_trajectories()["inertia.I"] == [1, 2, 3, 4]
+        assert case.get_trajectories()["inertia1.w"][-1] == 0.5000116056397186
         fmu = case.get_fmu()
-        assert fmu.id == IDs.FMU_ID_PRIMARY
+        assert fmu.id
 
-    def test_multiple_cases(self, batch_experiment):
-        case = batch_experiment.get_case("case_2")
-        assert case.id == "case_2"
+    @pytest.mark.vcr()
+    def test_multiple_cases(self, client_helper: ClientHelper):
+        batch_experiment = client_helper.create_and_execute_experiment(
+            model_path=IDs.PID_MODELICA_CLASS_PATH,
+            modifiers={"PI.yMax": Range(12, 13, 2)},
+        )
+        case = batch_experiment.get_case(IDs.CASE_ID_SECONDARY)
+        assert case.id == IDs.CASE_ID_SECONDARY
         assert case.run_info.status == CaseStatus.SUCCESSFUL
-        assert case.get_log() == "Successful Log"
+        assert "Final Run Statistics:" in case.get_log()
         result, name = case.get_result()
-        assert (result, name) == (b"\x00\x00\x00\x00", IDs.RESULT_MAT)
+        assert name.startswith(IDs.PID_MODELICA_CLASS_PATH)
+        assert isinstance(result, bytes)
         assert case.is_successful()
         result = case.get_trajectories()
-        assert result.keys() == ["inertia.I", "time"]
-        assert result["inertia.I"] == [14, 4, 4, 74]
+        assert len(result.keys()) == 140
+        assert result["inertia1.w"][-1] == 0.5000116056397186
 
-    def test_failed_case(self, experiment_with_failed_case):
-        failed_case = experiment_with_failed_case.get_case("case_2")
+    @pytest.mark.vcr()
+    def test_failed_case(self, client_helper: ClientHelper):
+        experiment_with_failed_case = client_helper.create_and_execute_experiment(
+            model_path=IDs.PID_MODELICA_CLASS_PATH,
+            modifiers={"inertia1.J": 0},
+        )
+        failed_case = experiment_with_failed_case.get_case(IDs.CASE_ID_PRIMARY)
         assert failed_case.id == IDs.CASE_ID_PRIMARY
         assert failed_case.run_info.status == CaseStatus.FAILED
         assert not failed_case.is_successful()
         pytest.raises(exceptions.OperationFailureError, failed_case.get_result)
-        assert failed_case.get_trajectories()["inertia.I"] == [1, 2, 3, 4]
+        assert failed_case.get_trajectories()["inertia1.w"][-1] == 0.0
 
-    def test_failed_execution_result(self, experiment_with_failed_case):
+    @pytest.mark.vcr()
+    def test_failed_execution_result(self, client_helper: ClientHelper):
+        experiment_with_failed_case = client_helper.create_and_execute_experiment(
+            model_path=IDs.PID_MODELICA_CLASS_PATH,
+            modifiers={"inertia1.J": 0},
+        )
         pytest.raises(
             exceptions.OperationFailureError,
-            experiment_with_failed_case.get_case("case_2").get_result,
+            experiment_with_failed_case.get_case(IDs.CASE_ID_PRIMARY).get_result,
         )
 
-    def test_case_sync(self, experiment, batch_experiment):
-        exp = experiment.entity
-        service = experiment.service
-        exp_sal = service.experiment
-
-        case = exp.get_case(IDs.CASE_ID_PRIMARY)
+    @pytest.mark.vcr()
+    def test_case_execute_explicit_sync(self, client_helper: ClientHelper):
+        experiment = client_helper.create_and_execute_experiment(
+            model_path=IDs.PID_MODELICA_CLASS_PATH,
+            modifiers={},
+        )
+        case = experiment.get_case(IDs.CASE_ID_PRIMARY)
         case.input.parametrization = {"PI.k": 120}
         case.input.analysis.simulation_options = {"ncp": 600}
         case.input.analysis.solver_options = {"atol": 1e-8}
         case.input.analysis.simulation_log_level = "DEBUG"
         case.input.analysis.parameters = {"start_time": 1, "final_time": 2e5}
         case.meta.label = "Cruise operating condition"
-        case_2 = batch_experiment.get_case("case_2")
-        case.initialize_from_case = case_2
+
         case.sync()
-        exp_sal.case_put.assert_has_calls(
-            [
-                mock.call(
-                    IDs.WORKSPACE_ID_PRIMARY,
-                    IDs.EXPERIMENT_ID_PRIMARY,
-                    IDs.CASE_ID_PRIMARY,
-                    {
-                        "id": IDs.CASE_ID_PRIMARY,
-                        "run_info": {
-                            "status": "successful",
-                            "consistent": True,
-                            "datetime_started": 1662964956945,
-                            "datetime_finished": 1662964957990,
-                        },
-                        "input": {
-                            "fmu_id": IDs.FMU_ID_PRIMARY,
-                            "analysis": {
-                                "analysis_function": IDs.DYNAMIC_CF,
-                                "parameters": {"start_time": 1, "final_time": 200000.0},
-                                "simulation_options": {"ncp": 600},
-                                "solver_options": {"atol": 1e-08},
-                                "simulation_log_level": "DEBUG",
-                            },
-                            "parametrization": {"PI.k": 120},
-                            "structural_parametrization": {},
-                            "fmu_base_parametrization": {},
-                            "initialize_from_case": {
-                                "experimentId": IDs.EXPERIMENT_ID_PRIMARY,
-                                "caseId": "case_2",
-                            },
-                            "initialize_from_external_result": None,
-                        },
-                        "meta": {"label": "Cruise operating condition"},
-                    },
-                )
-            ]
+
+        result_case = case.execute(sync_case_changes=False).wait()
+        assert result_case.input.parametrization == {"PI.k": 120}
+        assert result_case.input.analysis.simulation_options == {"ncp": 600}
+        assert result_case.input.analysis.solver_options == {"atol": 1e-8}
+        assert result_case.input.analysis.simulation_log_level == "DEBUG"
+        assert result_case.input.analysis.parameters == {
+            "start_time": 1,
+            "final_time": 2e5,
+        }
+        assert result_case.meta.label == "Cruise operating condition"
+
+    @pytest.mark.vcr()
+    def test_case_execute_implicit_sync(self, client_helper: ClientHelper):
+        experiment = client_helper.create_and_execute_experiment(
+            model_path=IDs.PID_MODELICA_CLASS_PATH, modifiers={}
         )
-        result = case.execute().wait()
-        assert result == create_case_entity(
-            IDs.CASE_ID_PRIMARY, IDs.WORKSPACE_ID_PRIMARY, IDs.EXPERIMENT_ID_PRIMARY
-        )
-
-    def test_case_execute_with_no_sync(self, experiment):
-        exp = experiment.entity
-        service = experiment.service
-        exp_sal = service.experiment
-
-        case = exp.get_case(IDs.CASE_ID_PRIMARY)
-        result = case.execute(sync_case_changes=True).wait()
-        exp_sal.case_put.assert_called_once()
-        assert result == create_case_entity(
-            IDs.CASE_ID_PRIMARY, IDs.WORKSPACE_ID_PRIMARY, IDs.EXPERIMENT_ID_PRIMARY
-        )
-
-    def test_case_execute_with_auto_sync(self, experiment):
-        exp = experiment.entity
-        exp_sal = experiment.service
-
-        case = exp.get_case(IDs.CASE_ID_PRIMARY)
-        result = case.execute(sync_case_changes=False).wait()
-        exp_sal.case_put.assert_not_called()
-        assert result == create_case_entity(
-            IDs.CASE_ID_PRIMARY, IDs.WORKSPACE_ID_PRIMARY, IDs.EXPERIMENT_ID_PRIMARY
-        )
-
-    def test_case_sync_second_time_should_call_with_consistent_false(self, experiment):
-        exp = experiment.entity
-        service = experiment.service
-
-        case = exp.get_case(IDs.CASE_ID_PRIMARY)
+        case = experiment.get_case(IDs.CASE_ID_PRIMARY)
         case.input.parametrization = {"PI.k": 120}
-        case.sync()
-        case.sync()
-        case_put_calls = service.experiment.case_put.call_args_list
-        assert len(case_put_calls) == 2
-        assert get_case_put_call_consistent_value(case_put_calls[0])
-        assert not get_case_put_call_consistent_value(case_put_calls[1])
 
-    def test_case_initialize_from_external_result(self, experiment):
-        result = create_external_result_entity("upload_id")
-        case = experiment.entity.get_case(IDs.CASE_ID_PRIMARY)
+        result_case = case.execute(sync_case_changes=True).wait()
+
+        assert result_case.input.parametrization == {"PI.k": 120}
+
+    @pytest.mark.vcr()
+    def test_case_execute_with_auto_sync(self, client_helper: ClientHelper):
+        experiment = client_helper.create_and_execute_experiment(
+            model_path=IDs.PID_MODELICA_CLASS_PATH, modifiers={}
+        )
+        case = experiment.get_case(IDs.CASE_ID_PRIMARY)
+        case.input.parametrization = {"PI.k": 120}
+
+        result_case = case.execute(sync_case_changes=False).wait()
+
+        assert result_case.input.parametrization == {}
+
+    @pytest.mark.vcr()
+    def test_consistent_flag_set_to_false_when_calling_sync(
+        self, client_helper: ClientHelper
+    ):
+        experiment = client_helper.create_and_execute_experiment(
+            model_path=IDs.PID_MODELICA_CLASS_PATH, modifiers={}
+        )
+        case = experiment.get_case(IDs.CASE_ID_PRIMARY)
+        case.input.parametrization = {"PI.k": 120}
+
+        assert case.run_info.consistent
+
+        case.sync()
+
+        assert not case.run_info.consistent
+
+    @pytest.mark.vcr()
+    def test_case_initialize_from_external_result(self, client_helper: ClientHelper):
+        experiment = client_helper.create_and_execute_experiment(
+            model_path=IDs.PID_MODELICA_CLASS_PATH, modifiers={}
+        )
+        result = create_external_result_entity(IDs.EXTERNAL_RESULT_ID)
+        case = experiment.get_case(IDs.CASE_ID_PRIMARY)
         case.initialize_from_external_result = result
         assert case.initialize_from_external_result == result
+
         case.sync()
-        service = experiment.service
-        exp_sal = service.experiment
-        exp_sal.case_put.assert_has_calls(
-            [
-                mock.call(
-                    IDs.WORKSPACE_ID_PRIMARY,
-                    IDs.EXPERIMENT_ID_PRIMARY,
-                    IDs.CASE_ID_PRIMARY,
-                    {
-                        "id": IDs.CASE_ID_PRIMARY,
-                        "run_info": {
-                            "status": "successful",
-                            "consistent": True,
-                            "datetime_started": 1662964956945,
-                            "datetime_finished": 1662964957990,
-                        },
-                        "input": {
-                            "fmu_id": IDs.FMU_ID_PRIMARY,
-                            "analysis": {
-                                "analysis_function": IDs.DYNAMIC_CF,
-                                "parameters": {"start_time": 0, "final_time": 1},
-                                "simulation_options": {},
-                                "solver_options": {},
-                                "simulation_log_level": "NOTHING",
-                            },
-                            "parametrization": {},
-                            "structural_parametrization": {},
-                            "fmu_base_parametrization": {},
-                            "initialize_from_case": None,
-                            "initialize_from_external_result": {
-                                "uploadId": "upload_id"
-                            },
-                        },
-                        "meta": {"label": "Cruise operating point"},
-                    },
-                )
-            ]
+
+        assert (
+            case.info["input"]["initialize_from_external_result"]["uploadId"]
+            == IDs.EXTERNAL_RESULT_ID
         )
 
-    def test_reinitiazlizing_result_initialized_case_from_case(self, experiment):
+    @pytest.mark.vcr()
+    def test_reinitiazlizing_result_initialized_case_from_case(
+        self, client_helper: ClientHelper
+    ):
+        experiment = client_helper.create_and_execute_experiment(
+            model_path=IDs.PID_MODELICA_CLASS_PATH, modifiers={}
+        )
         result = create_external_result_entity("upload_id")
         case_to_init = create_case_entity(
-            "Case_2", IDs.WORKSPACE_ID_PRIMARY, IDs.EXPERIMENT_ID_PRIMARY
+            IDs.CASE_ID_SECONDARY, IDs.WORKSPACE_ID_PRIMARY, IDs.EXPERIMENT_ID_PRIMARY
         )
-        case = experiment.entity.get_case(IDs.CASE_ID_PRIMARY)
+        case = experiment.get_case(IDs.CASE_ID_PRIMARY)
         case.initialize_from_external_result = result
         with pytest.raises(Exception) as err:
             case.initialize_from_case = case_to_init
@@ -221,13 +183,21 @@ class TestCase:
             "to None and re-try."
         )
 
-    def test_reinitiazlizing_case_initialized_case_from_result(self, experiment):
-        result = create_external_result_entity("upload_id")
-        case_to_init = create_case_entity(
-            "Case_2", IDs.WORKSPACE_ID_PRIMARY, IDs.EXPERIMENT_ID_PRIMARY
+    @pytest.mark.vcr()
+    def test_reinitiazlizing_case_initialized_case_from_result(
+        self, client_helper: ClientHelper
+    ):
+        experiment = client_helper.create_and_execute_experiment(
+            model_path=IDs.PID_MODELICA_CLASS_PATH, modifiers={}
         )
-        case = experiment.entity.get_case(IDs.CASE_ID_PRIMARY)
+        result = create_external_result_entity(IDs.EXTERNAL_RESULT_ID)
+        case = experiment.get_case(IDs.CASE_ID_PRIMARY)
+
+        case_to_init = create_case_entity(
+            IDs.CASE_ID_SECONDARY, IDs.WORKSPACE_ID_PRIMARY, IDs.EXPERIMENT_ID_PRIMARY
+        )
         case.initialize_from_case = case_to_init
+
         with pytest.raises(Exception) as err:
             case.initialize_from_external_result = result
         assert (
@@ -237,10 +207,12 @@ class TestCase:
             "to None and re-try."
         )
 
-    def test_case_input(self, experiment):
-        exp = experiment.entity
-
-        case = exp.get_case(IDs.CASE_ID_PRIMARY)
+    @pytest.mark.vcr()
+    def test_case_input(self, client_helper: ClientHelper):
+        experiment = client_helper.create_and_execute_experiment(
+            model_path=IDs.PID_MODELICA_CLASS_PATH, modifiers={}
+        )
+        case = experiment.get_case(IDs.CASE_ID_PRIMARY)
         case.input.analysis.parameters = {"start_time": 0, "final_time": 90}
         case.input.analysis.simulation_options = {"ncp": 600}
         case.input.analysis.solver_options = {"atol": 1e-8}
@@ -252,8 +224,12 @@ class TestCase:
         assert case.input.analysis.solver_options == {"atol": 1e-8}
         assert case.input.parametrization == {"PI.k": 120}
 
-    def test_get_result_invalid_format(self, experiment):
-        case = experiment.entity.get_case(IDs.CASE_ID_PRIMARY)
+    @pytest.mark.vcr()
+    def test_get_result_invalid_format(self, client_helper: ClientHelper):
+        experiment = client_helper.create_and_execute_experiment(
+            model_path=IDs.PID_MODELICA_CLASS_PATH, modifiers={}
+        )
+        case = experiment.get_case(IDs.CASE_ID_PRIMARY)
         pytest.raises(ValueError, case.get_result, "ma")
 
     def test_get_custom_artifacts(self, experiment):
