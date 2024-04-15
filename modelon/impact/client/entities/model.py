@@ -347,7 +347,6 @@ class Model(ModelInterface):
         )
         project = Project(
             resp["id"],
-            resp["definition"],
             resp["projectType"],
             resp["storageLocation"],
             None,

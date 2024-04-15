@@ -1068,7 +1068,6 @@ class Workspace(WorkspaceInterface):
         projects = [
             Project(
                 item["id"],
-                item["definition"],
                 item["projectType"],
                 item["storageLocation"],
                 VcsUri.from_dict(item["vcsUri"]) if item.get("vcsUri") else None,
@@ -1103,7 +1102,6 @@ class Workspace(WorkspaceInterface):
         return [
             Project(
                 item["id"],
-                item["definition"],
                 item["projectType"],
                 item["storageLocation"],
                 VcsUri.from_dict(item["vcsUri"]) if item.get("vcsUri") else None,
@@ -1126,7 +1124,6 @@ class Workspace(WorkspaceInterface):
         resp = self._sal.workspace.project_create(self._workspace_id, name)
         return Project(
             resp["id"],
-            resp["definition"],
             resp["projectType"],
             resp["storageLocation"],
             VcsUri.from_dict(resp["vcsUri"]) if resp.get("vcsUri") else None,
@@ -1156,7 +1153,6 @@ class Workspace(WorkspaceInterface):
         )
         return Project(
             resp["id"],
-            resp["definition"],
             resp["projectType"],
             resp["storageLocation"],
             VcsUri.from_dict(resp["vcsUri"]) if resp.get("vcsUri") else None,
