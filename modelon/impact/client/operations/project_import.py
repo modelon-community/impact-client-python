@@ -63,7 +63,6 @@ class ProjectImportOperation(AsyncOperation[Entity]):
         return self._create_entity(
             self,
             project_id=resp["id"],
-            project_definition=resp["definition"],
             project_type=resp["projectType"],
             storage_location=resp["storageLocation"],
         )

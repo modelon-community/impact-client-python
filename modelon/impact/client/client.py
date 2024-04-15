@@ -420,7 +420,6 @@ class Client:
         )
         return Project(
             resp["id"],
-            resp["definition"],
             resp["projectType"],
             resp["storageLocation"],
             VcsUri.from_dict(resp["vcsUri"]) if resp.get("vcsUri") else None,
@@ -466,7 +465,6 @@ class Client:
         return [
             Project(
                 item["id"],
-                item["definition"],
                 item["projectType"],
                 item["storageLocation"],
                 VcsUri.from_dict(item["vcsUri"]) if item.get("vcsUri") else None,
@@ -628,7 +626,6 @@ class Client:
             projects = [
                 Project(
                     project["id"],
-                    project["definition"],
                     project["projectType"],
                     project["storageLocation"],
                     VcsUri.from_dict(project["vcsUri"]),

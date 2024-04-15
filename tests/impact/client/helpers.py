@@ -566,32 +566,13 @@ def create_experiment_entity(workspace_id, exp_id, service=None, info=None):
 
 def create_project_entity(
     project_id,
-    project_name="my_project",
-    definition=None,
     project_type=ProjectType.LOCAL,
     storage_location=StorageLocation.USERSPACE,
     vcs_uri=None,
     service=None,
 ):
-    if not definition:
-        definition = {
-            "name": project_name,
-            "format": "1.0",
-            "dependencies": [{"name": "MSL", "versionSpecifier": "4.0.0"}],
-            "content": [
-                {
-                    "id": IDs.PROJECT_CONTENT_ID_PRIMARY,
-                    "relpath": "MyPackage",
-                    "contentType": "MODELICA",
-                    "name": "MyPackage",
-                    "defaultDisabled": False,
-                }
-            ],
-            "executionOptions": [],
-        }
     return Project(
         project_id,
-        definition,
         project_type,
         storage_location,
         VcsUri.from_dict(vcs_uri) if vcs_uri else None,

@@ -218,18 +218,12 @@ class Project:
     def __init__(
         self,
         project_id: str,
-        project_definition: Union[ProjectDefinition, Dict[str, Any]],
         project_type: Union[ProjectType, str],
         storage_location: Union[StorageLocation, str],
         vcs_uri: Optional[VcsUri],
         service: Service,
     ):
         self._project_id = project_id
-        self._project_definition = (
-            ProjectDefinition(project_definition)
-            if isinstance(project_definition, dict)
-            else project_definition
-        )
         self._vcs_uri = vcs_uri or None
         self._project_type = (
             ProjectType(project_type) if isinstance(project_type, str) else project_type
@@ -266,7 +260,11 @@ class Project:
 
     @property
     def definition(self) -> ProjectDefinition:
-        return self._project_definition
+        """Project definition."""
+        definition = self._sal.project.project_get(
+            project_id=self.id, size_info=False, vcs_info=False
+        )["definition"]
+        return ProjectDefinition(definition)
 
     @property
     def vcs_uri(self) -> Optional[VcsUri]:
@@ -303,8 +301,7 @@ class Project:
 
         """
         return [
-            self._get_project_content(content)
-            for content in self._project_definition.content
+            self._get_project_content(content) for content in self.definition.content
         ]
 
     def get_content(self, content_id: str) -> ProjectContent:
