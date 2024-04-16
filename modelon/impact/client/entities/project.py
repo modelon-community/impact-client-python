@@ -279,6 +279,23 @@ class Project:
     def storage_location(self) -> StorageLocation:
         return self._storage_location
 
+    def rename(self, new_name: str) -> None:
+        """Renames a project.
+
+        Args:
+            name: The new name for the project.
+
+        Example::
+
+            project.rename('renamed project')
+
+        """
+        prj_data = self._sal.project.project_get(
+            project_id=self.id, vcs_info=False, size_info=False
+        )
+        prj_data["definition"]["name"] = new_name
+        self._sal.project.project_put(self.id, prj_data)
+
     def delete(self) -> None:
         """Deletes a project.
 

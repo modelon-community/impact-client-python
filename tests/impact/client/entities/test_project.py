@@ -15,6 +15,13 @@ class TestProject:
         assert project.size == 5308.0
 
     @pytest.mark.vcr()
+    def test_rename_project(self, client_helper: ClientHelper):
+        project = client_helper.workspace.get_default_project()
+        assert project.name == IDs.DEFAULT_PROJECT_NAME
+        project.rename(IDs.PROJECT_NAME_PRIMARY)
+        assert project.name == IDs.PROJECT_NAME_PRIMARY
+
+    @pytest.mark.vcr()
     def test_get_project_options(self, client_helper: ClientHelper):
         project = client_helper.workspace.get_default_project()
         dynamic = client_helper.workspace.get_custom_function("dynamic")
