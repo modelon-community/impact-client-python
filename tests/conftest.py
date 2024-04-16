@@ -10,6 +10,7 @@ from glob import glob
 import pytest
 import requests
 import requests_mock
+from vcr.filters import replace_post_data_parameters
 
 from tests.impact.client.helpers import IDs, with_json_route
 
@@ -92,6 +93,11 @@ def vcr_config():
         if extracted_emails:
             request.uri = request.path.replace(extracted_emails[0], IDs.MOCK_EMAIL)
 
+        # Manually perform filter_post_data_parameters=[('secretKey', None)]
+        try:
+            replace_post_data_parameters(request, {"secretKey": None})
+        except UnicodeDecodeError:
+            pass
         return request
 
     def scrub_content_before_response_record(response):
@@ -143,7 +149,6 @@ def vcr_config():
     return {
         "record_mode": "once",
         "filter_headers": ["authorization", "Cookie", "User-Agent"],  # Scrub off tokens
-        "filter_post_data_parameters": ["secretKey"],  # Scrub off MI API key
         "before_record_request": scrub_request,
         "before_record_response": scrub_content_before_response_record,
         "decode_compressed_response": True,
