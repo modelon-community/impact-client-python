@@ -9,7 +9,7 @@ from modelon.impact.client.entities.project import Project
 from modelon.impact.client.entities.workspace import Workspace, WorkspaceDefinition
 from modelon.impact.client.operations.experiment import ExperimentOperation
 from modelon.impact.client.operations.model_executable import ModelExecutableOperation
-from tests.files.paths import TEST_WORKSPACE_PATH
+from tests.files.paths import TEST_WORKSPACE_PATH, get_archived_workspace_path
 from tests.impact.client.helpers import (
     ClientHelper,
     IDs,
@@ -208,20 +208,14 @@ class TestClient:
             == IDs.VERSIONED_PROJECT_SECONDARY
         )
 
-    def test_import_workspace_from_zip(
-        self,
-        import_workspace,
-        get_successful_workspace_upload_status,
-        single_workspace,
-    ):
-        client = Client(
-            url=import_workspace.url,
-            context=import_workspace.context,
-        )
-        imported_workspace = client.import_workspace_from_zip(
-            TEST_WORKSPACE_PATH
+    @pytest.mark.vcr()
+    def test_import_workspace_from_zip(self, tmpdir, client_helper: ClientHelper):
+        archieve_ws_path = get_archived_workspace_path(tmpdir)
+        imported_workspace = client_helper.client.import_workspace_from_zip(
+            archieve_ws_path
         ).wait()
         assert isinstance(imported_workspace, Workspace)
+        assert imported_workspace.name == IDs.WORKSPACE_ID_SECONDARY
 
     def test_import_workspace_from_shared_definition(
         self,
