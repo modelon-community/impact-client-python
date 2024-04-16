@@ -147,9 +147,29 @@ def vcr_config():
                     return response
                 # Scrubbing off response from users/me
                 elif response_body.get("data", {}).get("encryptionKey"):
-                    response_body["data"] = keep_only_keys(
-                        response_body["data"], ["license", "username"]
-                    )
+                    response_body["data"] = {
+                        "id": IDs.USER_ID,
+                        "username": IDs.MOCK_EMAIL,
+                        "firstName": IDs.USERNAME,
+                        "lastName": "",
+                        "email": IDs.MOCK_EMAIL,
+                        "license": IDs.PRO_LICENSE_ROLE,
+                        "roles": [
+                            "impact-editor",
+                            "offline_access",
+                            "impact-viewer",
+                            "uma_authorization",
+                            "default-roles-modelon",
+                            IDs.PRO_LICENSE_ROLE,
+                            "impact-executor",
+                            "impact-workspace-publisher",
+                        ],
+                        "tenant": {
+                            "id": IDs.TENANT_ID,
+                            "groupName": IDs.GROUP_NAME,
+                        },
+                    }
+
                 # Scrub off response from /hub/api/authorizations/token/<token>
                 elif response_body.get("last_activity"):
                     response_body = keep_only_keys(response_body, ["name", "server"])

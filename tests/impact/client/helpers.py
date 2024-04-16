@@ -179,6 +179,16 @@ class IDs:
     TENANT_ID = "modelon"
     GROUP_NAME = "impact-tenant-org1"
     PRO_LICENSE_ROLE = "impact-pro"
+    LICENSE_ROLES = [
+        "impact-editor",
+        "offline_access",
+        "impact-viewer",
+        "uma_authorization",
+        "default-roles-modelon",
+        PRO_LICENSE_ROLE,
+        "impact-executor",
+        "impact-workspace-publisher",
+    ]
     UMA_ROLE = "impact-workspace-uma"
     PUBLISHED_WORKSPACE_ID = "ekdncjndjcndejncjsncsndcijdsnc"
     DEFAULT_PROJECT_NAME = "Project"
