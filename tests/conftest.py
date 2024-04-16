@@ -76,22 +76,35 @@ def keep_only_keys(dictionary, keys_to_keep):
     return {key: dictionary[key] for key in keys_to_keep if key in dictionary}
 
 
+def _scrub_impact_url_from_request_path(request):
+    url = os.environ.get("MODELON_IMPACT_CLIENT_URL")
+    if url is not None:
+        request.uri = request.path.replace(url, IDs.MOCK_IMPACT_URL)
+
+
+def _scrub_email_from_request_path(request):
+    extracted_emails = extract_email(request.path)
+    if extracted_emails:
+        request.uri = request.path.replace(extracted_emails[0], IDs.MOCK_EMAIL)
+
+
+def _scrub_auth_token_from_request_path(request):
+    if "/hub/api/authorizations/token" in request.path:
+        token = request.path.split("/")[-1]
+        request.uri = request.path.replace(token, "dummy")
+
+
 @pytest.fixture(scope="module")
 def vcr_config():
-    def scrub_request(request):
+    def scrub_request_before_record(request):
         # Scrub off JH token
-        if "/hub/api/authorizations/token" in request.path:
-            token = request.path.split("/")[-1]
-            request.uri = request.path.replace(token, "dummy")
-        extracted_emails = extract_email(request.path)
+        _scrub_auth_token_from_request_path(request)
 
-        url = os.environ.get("MODELON_IMPACT_CLIENT_URL")
-        if url is not None:
-            request.uri = request.path.replace(url, IDs.MOCK_IMPACT_URL)
+        # Scrub Impact url and replace with mock
+        _scrub_impact_url_from_request_path(request)
 
         # Scrub username assuming username is an email always
-        if extracted_emails:
-            request.uri = request.path.replace(extracted_emails[0], IDs.MOCK_EMAIL)
+        _scrub_email_from_request_path(request)
 
         # Manually perform filter_post_data_parameters=[('secretKey', None)]
         try:
@@ -149,7 +162,7 @@ def vcr_config():
     return {
         "record_mode": "once",
         "filter_headers": ["authorization", "Cookie", "User-Agent"],  # Scrub off tokens
-        "before_record_request": scrub_request,
+        "before_record_request": scrub_request_before_record,
         "before_record_response": scrub_content_before_response_record,
         "decode_compressed_response": True,
     }
