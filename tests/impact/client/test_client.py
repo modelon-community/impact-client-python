@@ -289,16 +289,15 @@ class TestClient:
         assert len(opeartions) == 1
         assert isinstance(opeartions[0], ExperimentOperation)
 
-    def test_get_me(self, user):
-        client = Client(url=user.url, context=user.context)
-        user = client.get_me()
+    @pytest.mark.vcr()
+    def test_get_me(self, client_helper: ClientHelper):
+        user = client_helper.client.get_me()
         assert user.tenant.id == IDs.TENANT_ID
         assert user.tenant.group_name == IDs.GROUP_NAME
-        assert len(user.roles) == 2
-        assert user.username == IDs.USERNAME
-        assert user.roles[0] == IDs.UMA_ROLE
+        assert len(user.roles) == 8
+        assert user.username == IDs.MOCK_EMAIL
+        assert IDs.PRO_LICENSE_ROLE in user.roles
         assert user.license == IDs.PRO_LICENSE_ROLE
-        assert user.username == IDs.USERNAME
         assert user.firstname == IDs.USERNAME
         assert user.last_name == ""
         assert user.email == IDs.MOCK_EMAIL
