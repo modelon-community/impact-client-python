@@ -268,26 +268,25 @@ class TestClient:
         imported_project = client.import_project_from_zip(TEST_WORKSPACE_PATH).wait()
         assert isinstance(imported_project, Project)
 
-    def test_get_executions(self, executions, model_compile, experiment_execute):
-        client = Client(
-            url=executions.url,
-            context=executions.context,
-        )
-        opeartions = list(client.get_executions())
-        assert len(opeartions) == 2
-        assert isinstance(opeartions[0], ModelExecutableOperation)
-        assert isinstance(opeartions[1], ExperimentOperation)
+    @pytest.mark.vcr()
+    def test_get_executions(self, client_helper: ClientHelper):
+        client_helper.create_and_execute_experiment(wait_for_completion=False)
+        client_helper.compile_fmu(wait_for_completion=False)
+        executions = client_helper.client.get_executions()
+        operations = list(executions)
+        assert len(operations) == 2
+        assert isinstance(operations[0], ExperimentOperation)
+        assert isinstance(operations[1], ModelExecutableOperation)
 
-    def test_get_executions_for_workspace(
-        self, executions, model_compile, experiment_execute
-    ):
-        client = Client(
-            url=executions.url,
-            context=executions.context,
+    @pytest.mark.vcr()
+    def test_get_executions_for_workspace(self, client_helper: ClientHelper):
+        client_helper.create_and_execute_experiment(wait_for_completion=False)
+        executions = client_helper.client.get_executions(
+            workspace_id=IDs.WORKSPACE_ID_PRIMARY
         )
-        opeartions = list(client.get_executions(IDs.WORKSPACE_ID_SECONDARY))
-        assert len(opeartions) == 1
-        assert isinstance(opeartions[0], ExperimentOperation)
+        operations = list(executions)
+        assert len(operations) == 1
+        assert isinstance(operations[0], ExperimentOperation)
 
     @pytest.mark.vcr()
     def test_get_me(self, client_helper: ClientHelper):
