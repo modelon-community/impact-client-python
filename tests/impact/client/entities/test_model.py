@@ -6,12 +6,17 @@ from modelon.impact.client.operations.model_executable import (
     CachedModelExecutableOperation,
     ModelExecutableOperation,
 )
+from tests.files.paths import get_archived_modelica_lib_path
 from tests.impact.client.helpers import ClientHelper, IDs
 
 
 class TestModel:
     def _compile_fmu(
-        self, client_helper, force_compilation=False, compiler_options_override=None
+        self,
+        client_helper: ClientHelper,
+        force_compilation=False,
+        compiler_options_override=None,
+        fmi_target="me",
     ):
         workspace = client_helper.workspace
         dynamic = workspace.get_custom_function("dynamic")
@@ -19,7 +24,9 @@ class TestModel:
         model = workspace.get_model(IDs.PID_MODELICA_CLASS_PATH)
         if compiler_options_override is not None:
             compiler_options = compiler_options_override
-        fmu_ops = model.compile(compiler_options, force_compilation=force_compilation)
+        fmu_ops = model.compile(
+            compiler_options, force_compilation=force_compilation, fmi_target=fmi_target
+        )
         return fmu_ops
 
     @pytest.mark.vcr()
@@ -89,21 +96,23 @@ class TestModel:
         }
         assert config["experiment"]["base"]["model"]["modelica"]["runtimeOptions"] == {}
 
-    def test_import_fmu(self, model):
-        entity = model.entity
-        project_service = model.service.project
-        model = entity.import_fmu("test.fmu").wait()
-        expected_fmu_class_path = IDs.LOCAL_PROJECT_MODELICA_CLASS_PATH + ".test"
-        project_service.fmu_import.assert_called_with(
-            IDs.PROJECT_ID_PRIMARY,
-            IDs.PROJECT_CONTENT_ID_PRIMARY,
-            "test.fmu",
-            expected_fmu_class_path,
-            False,
-            None,
-            None,
-            None,
-            step_size=0.0,
+    @pytest.mark.vcr()
+    def test_import_fmu(self, tmpdir, client_helper: ClientHelper):
+        fmu = self._compile_fmu(
+            client_helper,
+            compiler_options_override={"c_compiler": "gcc"},
+            fmi_target="cs",
+        ).wait()
+        fmu_path = fmu.download(tmpdir)
+
+        prj = client_helper.workspace.get_default_project()
+        library_path = get_archived_modelica_lib_path(tmpdir)
+        prj.import_modelica_library(library_path).wait()
+
+        package = client_helper.workspace.get_model("Dynamic")
+        expected_fmu_class_path = "Dynamic." + IDs.PID_MODELICA_CLASS_PATH.replace(
+            ".", "_"
         )
+        model = package.import_fmu(fmu_path, expected_fmu_class_path).wait()
         assert isinstance(model, Model)
         assert model.name == expected_fmu_class_path
