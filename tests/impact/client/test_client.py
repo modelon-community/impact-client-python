@@ -9,7 +9,7 @@ from modelon.impact.client.entities.project import Project
 from modelon.impact.client.entities.workspace import Workspace, WorkspaceDefinition
 from modelon.impact.client.operations.experiment import ExperimentOperation
 from modelon.impact.client.operations.model_executable import ModelExecutableOperation
-from tests.files.paths import TEST_WORKSPACE_PATH, get_archived_workspace_path
+from tests.files.paths import get_archived_project_path, get_archived_workspace_path
 from tests.impact.client.helpers import (
     ClientHelper,
     IDs,
@@ -255,18 +255,14 @@ class TestClient:
             IDs.CONVERSION_ID
         )
 
-    def test_import_project_from_zip(
-        self,
-        import_project,
-        get_project_upload_status,
-        single_project,
-    ):
-        client = Client(
-            url=import_project.url,
-            context=import_project.context,
-        )
-        imported_project = client.import_project_from_zip(TEST_WORKSPACE_PATH).wait()
+    @pytest.mark.vcr()
+    def test_import_project_from_zip(self, tmpdir, client_helper: ClientHelper):
+        archieve_prj_path = get_archived_project_path(tmpdir)
+        imported_project = client_helper.client.import_project_from_zip(
+            archieve_prj_path
+        ).wait()
         assert isinstance(imported_project, Project)
+        assert imported_project.name == IDs.PROJECT_NAME_PRIMARY
 
     @pytest.mark.vcr()
     def test_get_executions(self, client_helper: ClientHelper):

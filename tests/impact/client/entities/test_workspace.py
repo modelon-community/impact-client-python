@@ -23,7 +23,7 @@ from modelon.impact.client.experiment_definition.extension import (
 )
 from modelon.impact.client.experiment_definition.operators import Uniform
 from modelon.impact.client.operations.workspace.exports import WorkspaceExportOperation
-from tests.files.paths import TEST_WORKSPACE_PATH
+from tests.files.paths import get_archived_project_path
 from tests.impact.client.helpers import (
     ClientHelper,
     IDs,
@@ -515,15 +515,27 @@ class TestWorkspace:
         project = workspace.create_project(IDs.PROJECT_NAME_PRIMARY)
         assert project.name == IDs.PROJECT_NAME_PRIMARY
 
-    def test_import_dependency_from_zip(self, workspace):
-        project = workspace.entity.import_dependency_from_zip(
-            TEST_WORKSPACE_PATH
+    @pytest.mark.vcr()
+    def test_import_dependency_from_zip(self, tmpdir, client_helper: ClientHelper):
+        archieve_prj_path = get_archived_project_path(tmpdir)
+        imported_dependency = client_helper.workspace.import_dependency_from_zip(
+            archieve_prj_path
         ).wait()
-        assert project.id == IDs.PROJECT_ID_PRIMARY
+        assert imported_dependency.name == IDs.PROJECT_NAME_PRIMARY
+        ws_prjs = client_helper.workspace.get_dependencies()
+        assert len(ws_prjs) == 2
+        assert ws_prjs[1].name == IDs.PROJECT_NAME_PRIMARY
 
-    def test_import_project_from_zip(self, workspace):
-        project = workspace.entity.import_project_from_zip(TEST_WORKSPACE_PATH).wait()
-        assert project.id == IDs.PROJECT_ID_PRIMARY
+    @pytest.mark.vcr()
+    def test_import_project_from_zip(self, tmpdir, client_helper: ClientHelper):
+        archieve_prj_path = get_archived_project_path(tmpdir)
+        imported_project = client_helper.workspace.import_project_from_zip(
+            archieve_prj_path
+        ).wait()
+        assert imported_project.name == IDs.PROJECT_NAME_PRIMARY
+        ws_prjs = client_helper.workspace.get_projects()
+        assert len(ws_prjs) == 2
+        assert ws_prjs[1].name == IDs.PROJECT_NAME_PRIMARY
 
     @pytest.mark.vcr()
     def test_get_model_experiments(self, client_helper: ClientHelper):
