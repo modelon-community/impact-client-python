@@ -4,7 +4,7 @@ import pytest
 
 import modelon.impact.client.exceptions as exceptions
 import modelon.impact.client.sal.exceptions as sal_exceptions
-from modelon.impact.client import Client
+from modelon.impact.client import Client, ProjectType, StorageLocation
 from modelon.impact.client.entities.project import Project
 from modelon.impact.client.entities.workspace import Workspace, WorkspaceDefinition
 from modelon.impact.client.operations.experiment import ExperimentOperation
@@ -263,6 +263,20 @@ class TestClient:
         ).wait()
         assert isinstance(imported_project, Project)
         assert imported_project.name == IDs.PROJECT_NAME_PRIMARY
+        prjs = client_helper.client.get_projects(
+            project_type=ProjectType.LOCAL, storage_location=StorageLocation.USERSPACE
+        )
+        prj_ids = [prj.id for prj in prjs]
+        assert prjs[0].id in prj_ids
+
+    @pytest.mark.vcr()
+    def test_get_system_projects(self, client_helper: ClientHelper):
+        prjs = client_helper.client.get_projects(
+            project_type=ProjectType.SYSTEM, storage_location=StorageLocation.SYSTEM
+        )
+        assert len(prjs) == 2
+        assert prjs[0].name == "Modelica"
+        assert prjs[1].name == "Modelica"
 
     @pytest.mark.vcr()
     def test_get_executions(self, client_helper: ClientHelper):
