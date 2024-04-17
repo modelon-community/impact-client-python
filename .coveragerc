@@ -1,6 +1,8 @@
 [report]
 exclude_lines =
     pragma: no cover
+    # Don't complain for import within TYPE_CHECKING
+    if TYPE_CHECKING:
 
     # Don't complain if tests don't hit defensive assertion code:
     raise NotImplementedError
