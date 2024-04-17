@@ -1,4 +1,4 @@
-.PHONY: build build-docker shell poetry unit-test test test-watch test-with-coverage lint commitlint wheel publish format regenerate-cassette
+.PHONY: build build-docker shell poetry unit-test test test-watch test-with-coverage lint commitlint wheel publish format regenerate-cassette vcr-test all-test experimental-test
 USER_ID := $(shell id -u)
 GROUP_ID := $(shell id -g)
 IN_DOCKER_IMG := $(shell ( test -f /.dockerenv && echo 1 ) || ( test -f /opt/impact/notebook_manifest.json && echo 1 ) || echo 0)
@@ -57,9 +57,17 @@ unit-test:
 
 experimental-test: export IMPACT_PYTHON_CLIENT_EXPERIMENTAL=1
 experimental-test:
+	$(call _run_bare, poetry run -- pytest -vv -m '(experimental)' ${EXTRA_PYTEST_FLAGS})
+
+vcr-test:
+	$(call _run_bare, poetry run -- pytest -vv -m '(vcr)' ${EXTRA_PYTEST_FLAGS})
+
+all-test: export IMPACT_PYTHON_CLIENT_EXPERIMENTAL=1
+all-test:
 	$(call _run_bare, poetry run -- pytest -vv ${EXTRA_PYTEST_FLAGS})
 
-test: build lint unit-test experimental-test
+
+test: build lint all-test
 
 check_environment_variables:
 	@echo "Checking for environmental variables..."
@@ -84,7 +92,7 @@ check_environment_variables:
 	fi
 
 regenerate-cassette: check_environment_variables
-	IMPACT_PYTHON_CLIENT_EXPERIMENTAL=1 UPDATE_CASSETTE=1 $(MAKE) experimental-test
+	IMPACT_PYTHON_CLIENT_EXPERIMENTAL=1 UPDATE_CASSETTE=1 $(MAKE) vcr-test
 
 test-with-coverage:
 	$(MAKE) WITH_COVERAGE=YES test
