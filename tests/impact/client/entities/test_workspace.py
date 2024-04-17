@@ -7,6 +7,7 @@ import pytest
 import modelon.impact.client.sal.exceptions as sal_exceptions
 from modelon.impact.client import (
     AccessSettings,
+    Choices,
     SimpleFMUExperimentDefinition,
     SimpleModelicaExperimentDefinition,
 )
@@ -683,4 +684,32 @@ class TestWorkspace:
             experiment.id
         ).to_dict()
         expected_definition_dict = experiment_definition.to_dict()
+        assert definition_dict == expected_definition_dict
+
+    @pytest.mark.vcr()
+    def test_create_class_based_experiment_definition_from_case_result(
+        self, client_helper: ClientHelper
+    ):
+        workspace = client_helper.workspace
+        dynamic = workspace.get_custom_function("dynamic").with_parameters(
+            start_time=0.0, final_time=2.5
+        )
+        model = workspace.get_model(IDs.PID_MODELICA_CLASS_PATH)
+        base_experiment_definition = SimpleModelicaExperimentDefinition(model, dynamic)
+        exp_for_init = workspace.execute(base_experiment_definition).wait()
+        case_for_init = exp_for_init.get_case(IDs.CASE_ID_PRIMARY)
+
+        experiment_definition = base_experiment_definition.with_modifiers(
+            {"PI.yMax": Choices(100, 200)}
+        ).with_initialize_from(case_for_init)
+        experiment = workspace.execute(experiment_definition).wait()
+        case = experiment.get_case(IDs.CASE_ID_PRIMARY)
+
+        definition_dict = workspace.create_experiment_definition_from_case_result(
+            experiment.id, case.id
+        ).to_dict()
+        expected_definition_dict = experiment_definition.to_dict()
+        expected_definition_dict["experiment"]["base"]["modifiers"]["variables"][
+            "PI.yMax"
+        ] = 100
         assert definition_dict == expected_definition_dict

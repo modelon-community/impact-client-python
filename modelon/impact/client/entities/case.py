@@ -8,9 +8,14 @@ from typing import TYPE_CHECKING, Any, Dict, List, Optional, Text, Tuple, Union
 
 from modelon.impact.client import exceptions
 from modelon.impact.client.entities.asserts import assert_successful_operation
+from modelon.impact.client.entities.custom_function import CustomFunction
 from modelon.impact.client.entities.external_result import ExternalResult
 from modelon.impact.client.entities.interfaces.case import CaseInterface
 from modelon.impact.client.entities.log import Log
+from modelon.impact.client.entities.model import (
+    Model,
+    SimpleModelicaExperimentDefinition,
+)
 from modelon.impact.client.entities.model_executable import ModelExecutable
 from modelon.impact.client.entities.result import Result
 from modelon.impact.client.entities.status import CaseStatus
@@ -21,6 +26,7 @@ from modelon.impact.client.sal.experiment import ResultFormat
 if TYPE_CHECKING:
     from modelon.impact.client.sal.experiment import ExperimentService
     from modelon.impact.client.sal.service import Service
+
 logger = logging.getLogger(__name__)
 
 
@@ -781,6 +787,59 @@ class Case(CaseInterface):
             self._sal,
             Case.from_operation,
         )
+
+    def _get_custom_function(self) -> CustomFunction:
+        custom_function = self._sal.custom_function.custom_function_get(
+            self._workspace_id, self.input.analysis.analysis_function
+        )
+        custom_function_params = self.input.analysis.parameters
+        return CustomFunction(
+            self._workspace_id,
+            custom_function["name"],
+            custom_function["parameters"],
+            self._sal,
+        ).with_parameters(**custom_function_params)
+
+    def get_definition(self) -> SimpleModelicaExperimentDefinition:
+        """Get an experiment definition that can be used to reproduce this case result.
+
+        Returns:
+            An instance of SimpleModelicaExperimentDefinition class.
+
+        Example::
+
+            definition = case.get_definition()
+
+        """
+        custom_function = self._get_custom_function()
+        fmu = self.get_fmu()
+        model = Model(
+            fmu.input.class_name,
+            workspace_id=self._workspace_id,
+            project_id="",
+            service=self._sal,
+        )
+        definition = SimpleModelicaExperimentDefinition(
+            model=model,
+            custom_function=custom_function,
+            compiler_options=fmu.input.compiler_options,
+            fmi_target=fmu.input.fmi_target,
+            fmi_version=fmu.input.fmi_version,
+            platform=fmu.input.platform,
+            compiler_log_level=fmu.input.compiler_log_level,
+            runtime_options=fmu.input.runtime_options,
+            solver_options=self.input.analysis.solver_options,
+            simulation_options=self.input.analysis.simulation_options,
+            simulation_log_level=self.input.analysis.simulation_log_level,
+            initialize_from=self.initialize_from_case
+            or self.initialize_from_external_result,
+        )
+        modifiers = {
+            **self.input.structural_parametrization,
+            **self.input.parametrization,
+        }
+        definition = definition.with_modifiers(modifiers=modifiers)
+        return definition
 
     def _assert_unique_case_initialization(self, unsupported_init: str) -> None:
         if self._info["input"][unsupported_init]:

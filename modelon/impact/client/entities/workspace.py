@@ -1007,6 +1007,28 @@ class Workspace(WorkspaceInterface):
         experiment = self.get_experiment(experiment_id)
         return experiment.get_definition()
 
+    def create_experiment_definition_from_case_result(
+        self, experiment_id: str, case_id: str
+    ) -> ValidExperimentDefinitions:
+        """Creates an experiment definition that can be used to reproduce the results
+        for a case.
+
+        Args:
+            experiment_id: The ID of the experiment.
+            case_id: The ID of the case.
+
+        Returns:
+            An instance of SimpleModelicaExperimentDefinition class.
+
+        Example::
+
+            definition = workspace.create_experiment_definition_from_case_result(
+                experiment_id, case_id)
+
+        """
+        case = self.get_experiment(experiment_id).get_case(case_id)
+        return case.get_definition()
+
     def execute(
         self,
         definition: ExperimentDefinition,
