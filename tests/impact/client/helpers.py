@@ -8,13 +8,6 @@ from modelon.impact.client.entities.experiment import Experiment, _Workflow
 from modelon.impact.client.entities.external_result import ExternalResult
 from modelon.impact.client.entities.model import CompilationOperations, Model
 from modelon.impact.client.entities.model_executable import ModelExecutable
-from modelon.impact.client.entities.project import (
-    Project,
-    ProjectContent,
-    ProjectType,
-    StorageLocation,
-    VcsUri,
-)
 from modelon.impact.client.entities.workspace import (
     PublishedWorkspace,
     PublishedWorkspaceDefinition,
@@ -30,10 +23,6 @@ from modelon.impact.client.operations.model_executable import (
 )
 from modelon.impact.client.operations.workspace.conversion import (
     WorkspaceConversionOperation,
-)
-from modelon.impact.client.operations.workspace.exports import (
-    Export,
-    WorkspaceExportOperation,
 )
 
 
@@ -306,49 +295,6 @@ VERSIONED_PROJECT_BRANCH = {
         "subdir": ".",
     },
 }
-MODEL_DESCRIPTION_XML = """<?xml version="1.0" encoding="UTF-8"?>
-<fmiModelDescription fmiVersion="2.0" modelName="Dynamic.BouncingBall" guid="3cf47fe7f8c4242085384d3bb524d5f1" generationTool="Optimica Compiler Toolkit" generationDateAndTime="2023-05-08T19:07:40" variableNamingConvention="structured" numberOfEventIndicators="2">
-	<CoSimulation modelIdentifier="Dynamic_BouncingBall" needsExecutionTool="false" canHandleVariableCommunicationStepSize="true" canInterpolateInputs="true" maxOutputDerivativeOrder="0" canRunAsynchronuously="false" canBeInstantiatedOnlyOncePerProcess="true" canNotUseMemoryManagementFunctions="false" canGetAndSetFMUstate="true" canSerializeFMUstate="true" providesDirectionalDerivative="false" />
-	<ModelVariables>
-		<!-- Variable with index #1 -->
-		<ScalarVariable name="_block_jacobian_check" valueReference="536870945" causality="parameter" variability="fixed" initial="exact">
-			<Boolean start="false" />
-		</ScalarVariable>
-		<!-- Variable with index #2 -->
-		<ScalarVariable name="_block_jacobian_check_tol" valueReference="4" causality="parameter" variability="fixed" initial="exact">
-			<Real relativeQuantity="false" start="1.0E-6" />
-		</ScalarVariable>
-	</ModelVariables>
-</fmiModelDescription>
-"""  # noqa
-
-LAST_POINT_TRAJECTORY = {
-    "data": {
-        "items": [
-            {
-                "caseId": "case_1",
-                "items": [
-                    {"fixed": True, "trajectory": [1.0]},
-                    {"fixed": False, "trajectory": [1.0]},
-                ],
-            },
-            {
-                "caseId": "case_2",
-                "items": [
-                    {"fixed": True, "trajectory": [1.0]},
-                    {"fixed": False, "trajectory": [2.0]},
-                ],
-            },
-            {
-                "caseId": "case_3",
-                "items": [
-                    {"fixed": True, "trajectory": [1.0]},
-                    None,
-                ],
-            },
-        ]
-    }
-}
 
 
 def get_test_get_fmu():
@@ -476,24 +422,6 @@ def get_test_published_workspace_definition(name=None):
     }
 
 
-def get_test_get_user():
-    return {
-        "data": {
-            "id": IDs.USER_ID,
-            "username": IDs.USERNAME,
-            "firstName": IDs.USERNAME,
-            "lastName": "",
-            "email": IDs.MOCK_EMAIL,
-            "license": IDs.PRO_LICENSE_ROLE,
-            "roles": [
-                IDs.UMA_ROLE,
-                IDs.PRO_LICENSE_ROLE,
-            ],
-            "tenant": {"id": IDs.TENANT_ID, "groupName": IDs.GROUP_NAME},
-        }
-    }
-
-
 def get_test_workspace_definition(name=None):
     git_url = "https://github.com/project/test"
     vcs_uri = f"git+{git_url}.git@main:da6abb188a089527df1b54b27ace84274b819e4a"
@@ -574,36 +502,6 @@ def create_experiment_entity(workspace_id, exp_id, service=None, info=None):
     return Experiment(workspace_id, exp_id, service or MagicMock(), info)
 
 
-def create_project_entity(
-    project_id,
-    project_type=ProjectType.LOCAL,
-    storage_location=StorageLocation.USERSPACE,
-    vcs_uri=None,
-    service=None,
-):
-    return Project(
-        project_id,
-        project_type,
-        storage_location,
-        VcsUri.from_dict(vcs_uri) if vcs_uri else None,
-        service or MagicMock(),
-    )
-
-
-def create_project_content_entity(
-    project_id, content_id=IDs.PROJECT_CONTENT_ID_PRIMARY, content=None, service=None
-):
-    if not content:
-        content = {
-            "id": content_id,
-            "relpath": "MyPackage",
-            "contentType": "MODELICA",
-            "name": "MyPackage",
-            "defaultDisabled": False,
-        }
-    return ProjectContent(content, project_id, service or MagicMock())
-
-
 def create_case_entity(case_id, workspace_id, exp_id, service=None, info=None):
     return Case(
         case_id, workspace_id, exp_id, service or MagicMock(), info or MagicMock()
@@ -644,14 +542,6 @@ def create_cached_model_exe_operation(
 def create_model_exe_operation(workspace_id, fmu_id, service=None):
     return ModelExecutableOperation[ModelExecutable](
         workspace_id, fmu_id, service or MagicMock(), ModelExecutable.from_operation
-    )
-
-
-def create_workspace_export_operation(ws_export_id, service=None):
-    return WorkspaceExportOperation[Workspace](
-        f"api/workspace-exports/{ws_export_id}",
-        service or MagicMock(),
-        Export.from_operation,
     )
 
 
