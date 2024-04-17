@@ -43,7 +43,8 @@ To extract Sobol points, we can execute the experiment by calling the the execut
 the experiment object with the with_cases argument set to an empty list.This generate all the cases 
 for a given experiment definition and compiles all FMUs needed for running the cases. 
 
-Note: No cases are executed when the execute method is called with an empty list argument.
+**Note:** No cases are executed when the execute method is called with an empty list argument 
+as shown below::
 
    experiment_expand = exp.execute(with_cases=[]).wait()
 
