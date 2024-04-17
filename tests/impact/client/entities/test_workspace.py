@@ -560,7 +560,9 @@ class TestWorkspace:
         self, client_helper: ClientHelper
     ):
         workspace = client_helper.workspace
-        dynamic = workspace.get_custom_function("dynamic")
+        dynamic = workspace.get_custom_function("dynamic").with_parameters(
+            start_time=0.0, final_time=2.5
+        )
         model = workspace.get_model(IDs.PID_MODELICA_CLASS_PATH)
         base_experiment_definition = SimpleModelicaExperimentDefinition(model, dynamic)
         _exp_for_init = workspace.create_experiment(base_experiment_definition)
@@ -623,7 +625,9 @@ class TestWorkspace:
         self, client_helper: ClientHelper
     ):
         workspace = client_helper.workspace
-        dynamic = workspace.get_custom_function("dynamic")
+        dynamic = workspace.get_custom_function("dynamic").with_parameters(
+            start_time=0.0, final_time=2.5
+        )
         model = workspace.get_model(IDs.PID_MODELICA_CLASS_PATH)
         compiler_options = dynamic.get_compiler_options().with_values(c_compiler="gcc")
         fmu = model.compile(compiler_options).wait()
