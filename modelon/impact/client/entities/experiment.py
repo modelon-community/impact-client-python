@@ -650,9 +650,9 @@ class Experiment(ExperimentInterface):
             definition = experiment.get_definition()
 
         """
-        custom_function = self._get_custom_function()
-        base = self._get_info()["experiment"]["base"]
+        base = self._get_info(cached=False)["experiment"]["base"]
         analysis = base["analysis"]
+        custom_function = self._get_custom_function(analysis)
         if self._get_workflow() == _Workflow.CLASS_BASED:
             model = Model(
                 self.get_class_name(),
@@ -720,16 +720,17 @@ class Experiment(ExperimentInterface):
             definition = definition.with_extensions(sim_exts)
         return definition
 
-    def _get_custom_function(self) -> CustomFunction:
+    def _get_custom_function(self, analysis: Dict[str, Any]) -> CustomFunction:
         custom_function = self._sal.custom_function.custom_function_get(
             self._workspace_id, self.custom_function
         )
+        custom_function_params = analysis["parameters"]
         return CustomFunction(
             self._workspace_id,
             custom_function["name"],
             custom_function["parameters"],
             self._sal,
-        )
+        ).with_parameters(**custom_function_params)
 
     def _get_expansion_algorithm(
         self, algorithm: str, parameters: Dict[str, Any]
