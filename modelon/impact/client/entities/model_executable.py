@@ -112,6 +112,50 @@ class ModelExecutableRunInfo:
         return self._errors
 
 
+class ModelExecutableInput:
+    """Class containing ModelExecutable input."""
+
+    __slots__ = ["_data"]
+
+    def __init__(self, data: Dict[str, Any]):
+        self._data = data
+
+    @property
+    def class_name(self) -> str:
+        """Returns the model class name."""
+        return self._data["class_name"]
+
+    @property
+    def compiler_log_level(self) -> str:
+        """Returns the compiler log level."""
+        return self._data["compiler_log_level"]
+
+    @property
+    def compiler_options(self) -> Dict[str, Any]:
+        """Returns the compiler options dict."""
+        return self._data["compiler_options"]
+
+    @property
+    def runtime_options(self) -> Dict[str, Any]:
+        """Returns the runtime options dict."""
+        return self._data["runtime_options"]
+
+    @property
+    def fmi_target(self) -> str:
+        """Returns the FMI target."""
+        return self._data["fmi_target"]
+
+    @property
+    def fmi_version(self) -> str:
+        """Returns the FMI version."""
+        return self._data["fmi_version"]
+
+    @property
+    def platform(self) -> str:
+        """Returns the platform the FMU was compiled for."""
+        return self._data["platform"]
+
+
 class ModelExecutable(ModelExecutableInterface):
     """Class containing ModelExecutable functionalities."""
 
@@ -179,6 +223,20 @@ class ModelExecutable(ModelExecutableInterface):
         return self._sal.model_executable.ss_fmu_metadata_get(
             self._workspace_id, self._fmu_id, parameter_state
         )
+
+    @property
+    def input(self) -> ModelExecutableInput:
+        """ModelExecutable input attributes.
+
+        Example::
+
+            compiled_platform = fmu.input.platform
+
+            help(fmu.input.platform) # See help for attribute
+            dir(fmu.input) # See nested attributes
+
+        """
+        return ModelExecutableInput(self._get_info()["input"])
 
     def get_class_name(self) -> str:
         """Return the model class name."""
