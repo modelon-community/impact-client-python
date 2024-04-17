@@ -9,7 +9,7 @@ computations with the FMUs in a notebook environment(i.e., no experimentation/co
 Impact server).
 
 **Note:** Since the user works with the compiled FMUs in the workflow, modifiers added during the
-experimentation step should contain only non-structural parameter modifiers. Any non-structural parameter change
+experimentation step should contain only non-structural parameter modifiers. Any structural parameter change
 would require a recompilation of the model.
 
 Workflow
