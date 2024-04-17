@@ -1,3 +1,15 @@
+# [3.16.0](https://github.com/modelon-community/impact-client-python/compare/v3.15.0...v3.16.0) (2024-04-17)
+
+
+### Bug Fixes
+
+* fetch project definition on demand when calling project.definition. Updated project entity tests to use vcr ([1abd5c9](https://github.com/modelon-community/impact-client-python/commit/1abd5c90de60b3e145aace621402e2187f817e29))
+
+
+### Features
+
+* added support for renaming project ([c2e0d73](https://github.com/modelon-community/impact-client-python/commit/c2e0d73fd2970a4ab654e707dbbb672899f51060))
+
 # [3.15.0](https://github.com/modelon-community/impact-client-python/compare/v3.14.0...v3.15.0) (2024-04-11)
 
 
