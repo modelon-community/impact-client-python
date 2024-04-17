@@ -22,6 +22,7 @@ class TestCase:
         )
         case = experiment.get_case(IDs.CASE_ID_PRIMARY)
         assert case.id == IDs.CASE_ID_PRIMARY
+        assert str(case) == f"Case with id '{IDs.CASE_ID_PRIMARY}'"
         assert case.run_info.status == CaseStatus.SUCCESSFUL
         assert case.run_info.consistent
         assert isinstance(case.run_info.started, datetime)
@@ -34,6 +35,8 @@ class TestCase:
         assert case.get_trajectories()["inertia1.w"][-1] == 0.5000116056397186
         fmu = case.get_fmu()
         assert fmu.id
+        analysis_function = case.input.analysis.analysis_function
+        assert analysis_function == "dynamic"
 
     @pytest.mark.vcr()
     def test_multiple_cases(self, client_helper: ClientHelper):
@@ -41,17 +44,19 @@ class TestCase:
             model_path=IDs.PID_MODELICA_CLASS_PATH,
             modifiers={"PI.yMax": Range(12, 13, 2)},
         )
-        case = batch_experiment.get_case(IDs.CASE_ID_SECONDARY)
-        assert case.id == IDs.CASE_ID_SECONDARY
-        assert case.run_info.status == CaseStatus.SUCCESSFUL
-        assert "Final Run Statistics:" in case.get_log()
-        result, name = case.get_result()
+        case_2 = batch_experiment.get_case(IDs.CASE_ID_SECONDARY)
+        assert case_2.id == IDs.CASE_ID_SECONDARY
+        assert case_2.run_info.status == CaseStatus.SUCCESSFUL
+        assert "Final Run Statistics:" in case_2.get_log()
+        result, name = case_2.get_result()
         assert name.startswith(IDs.PID_MODELICA_CLASS_PATH)
         assert isinstance(result, bytes)
-        assert case.is_successful()
-        result = case.get_trajectories()
+        assert case_2.is_successful()
+        result = case_2.get_trajectories()
         assert len(result.keys()) == 140
         assert result["inertia1.w"][-1] == 0.5000116056397186
+        assert case_2.input.structural_parametrization == {"PI.yMax": 13}
+        assert case_2.input.fmu_base_parametrization == {}
 
     @pytest.mark.vcr()
     def test_failed_case(self, client_helper: ClientHelper):
@@ -265,3 +270,15 @@ class TestCase:
         assert resp == t
         artifact_stream = artifact.get_data()
         assert artifact_stream == b"\x00\x00\x00\x00"
+
+    @pytest.mark.vcr()
+    def test_get_csv_result(self, client_helper: ClientHelper):
+        batch_experiment = client_helper.create_and_execute_experiment(
+            model_path=IDs.PID_MODELICA_CLASS_PATH,
+            modifiers={},
+        )
+        case = batch_experiment.get_case(IDs.CASE_ID_PRIMARY)
+        assert case.run_info.status == CaseStatus.SUCCESSFUL
+        result, name = case.get_result(format="csv")
+        assert name.startswith(IDs.PID_MODELICA_CLASS_PATH)
+        assert isinstance(result, str)

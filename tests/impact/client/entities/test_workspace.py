@@ -11,6 +11,7 @@ from modelon.impact.client import (
     SimpleModelicaExperimentDefinition,
 )
 from modelon.impact.client.entities.experiment import Experiment
+from modelon.impact.client.entities.external_result import ExternalResult
 from modelon.impact.client.entities.model import Model
 from modelon.impact.client.entities.model_executable import ModelExecutable
 from modelon.impact.client.exceptions import (
@@ -28,7 +29,6 @@ from tests.impact.client.helpers import (
     ClientHelper,
     IDs,
     create_published_workspace_entity,
-    create_workspace_entity,
 )
 
 
@@ -179,16 +179,27 @@ class TestWorkspace:
             client_helper.client.get_workspace(workspace.id)
         assert str(err.value) == f"The workspace '{workspace.id}' does not exist"
 
-    def test_upload_result(self, external_result_sal_upload):
-        external_result_service = external_result_sal_upload.external_result
-        workspace = create_workspace_entity(
-            IDs.WORKSPACE_ID_PRIMARY, service=external_result_sal_upload
-        )
-        upload_op = workspace.upload_result("test.mat", "Workspace")
-        external_result_service.result_upload.assert_called_with(
-            IDs.WORKSPACE_ID_PRIMARY, "test.mat", description=None, label="Workspace"
-        )
-        assert upload_op.id == IDs.IMPORT_ID
+    @pytest.mark.vcr()
+    def test_upload_result(self, tmpdir, client_helper: ClientHelper):
+        exp = client_helper.create_and_execute_experiment(modifiers={})
+        assert isinstance(exp, Experiment)
+        case = exp.get_case(IDs.CASE_ID_PRIMARY)
+        result, file_name = case.get_result()
+        result_path = os.path.join(tmpdir, file_name)
+        with open(result_path, "wb") as f:
+            f.write(result)
+
+        external_result_label = "Cruise result"
+        external_result_description = "An external_result"
+        external_result = client_helper.workspace.upload_result(
+            result_path, external_result_label, external_result_description
+        ).wait()
+        assert isinstance(external_result, ExternalResult)
+        assert external_result.id
+        assert external_result.metadata.description == external_result_description
+        assert external_result.metadata.name == external_result_label
+
+        external_result.delete()
 
     @pytest.mark.vcr()
     def test_download_workspace(self, client_helper: ClientHelper):

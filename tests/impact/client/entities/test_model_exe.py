@@ -15,7 +15,7 @@ from tests.impact.client.helpers import ClientHelper, IDs
 
 class TestModelExecutable:
     @pytest.mark.vcr()
-    def test_compile_successful(self, client_helper: ClientHelper):
+    def test_compile_successful(self, capfd, client_helper: ClientHelper):
         fmu = client_helper.compile_fmu(
             model_path=IDs.FILTER_MODELICA_CLASS_PATH,
             custom_function_name="steady state",
@@ -26,7 +26,11 @@ class TestModelExecutable:
         settable_params = fmu.get_settable_parameters()
         assert len(settable_params) == 76
         assert "Bessel.gain" in settable_params
-        assert fmu.get_log() == "\n"
+        log = fmu.get_log()
+        assert log == "\n"
+        log.show()
+        out, err = capfd.readouterr()
+        assert out == "\n\n"
         assert fmu.metadata == {
             "steady_state": {
                 "residual_variable_count": 0,
@@ -35,6 +39,22 @@ class TestModelExecutable:
         }
         assert fmu.run_info.status == ModelExecutableStatus.SUCCESSFUL
         assert fmu.run_info.errors == []
+
+    @pytest.mark.vcr()
+    def test_delete_fmu(self, client_helper: ClientHelper):
+        fmu = client_helper.compile_fmu(
+            model_path=IDs.FILTER_MODELICA_CLASS_PATH,
+            custom_function_name="steady state",
+        )
+        assert isinstance(fmu, ModelExecutable)
+        fmus = client_helper.workspace.get_fmus()
+        assert len(fmus) == 1
+        assert fmus[0].id == fmu.id
+
+        fmu.delete()
+
+        fmus = client_helper.workspace.get_fmus()
+        assert len(fmus) == 0
 
     @pytest.mark.vcr()
     def test_parse_model_description(self, client_helper: ClientHelper):

@@ -16,16 +16,23 @@ class TestModel:
         client_helper: ClientHelper,
         force_compilation=False,
         compiler_options_override=None,
+        runtime_options_override=None,
         fmi_target="me",
     ):
         workspace = client_helper.workspace
         dynamic = workspace.get_custom_function("dynamic")
         compiler_options = dynamic.get_compiler_options().with_values(c_compiler="gcc")
+        runtime_options = None
         model = workspace.get_model(IDs.PID_MODELICA_CLASS_PATH)
         if compiler_options_override is not None:
             compiler_options = compiler_options_override
+        if runtime_options_override is not None:
+            runtime_options = runtime_options_override
         fmu_ops = model.compile(
-            compiler_options, force_compilation=force_compilation, fmi_target=fmi_target
+            compiler_options,
+            runtime_options=runtime_options,
+            force_compilation=force_compilation,
+            fmi_target=fmi_target,
         )
         return fmu_ops
 
@@ -69,9 +76,14 @@ class TestModel:
         assert isinstance(fmu, ModelExecutable)
 
     @pytest.mark.vcr()
-    def test_compile_invalid_type_options(self, client_helper: ClientHelper):
+    def test_compile_invalid_compiler_options_type(self, client_helper: ClientHelper):
         with pytest.raises(TypeError):
             self._compile_fmu(client_helper, compiler_options_override=[]).wait()
+
+    @pytest.mark.vcr()
+    def test_compile_invalid_runtime_options_type(self, client_helper: ClientHelper):
+        with pytest.raises(TypeError):
+            self._compile_fmu(client_helper, runtime_options_override=[]).wait()
 
     @pytest.mark.vcr()
     def test_experiment_definition_default_execution_options(

@@ -44,36 +44,6 @@ ProjectMock = collections.namedtuple("ProjectMock", ["entity", "service"])
 ModelMock = collections.namedtuple("ModelMock", ["entity", "service"])
 
 
-def get_model_exes_url(workspace_id):
-    return f"api/workspaces/{workspace_id}/model-executables"
-
-
-def get_model_exe_url(workspace_id, fmu_id):
-    return f"{get_model_exes_url(workspace_id)}/{fmu_id}"
-
-
-def get_experiment_url(workspace_id, experiment_id):
-    return f"api/workspaces/{workspace_id}/experiments/{experiment_id}"
-
-
-def get_case_url(workspace_id, experiment_id, case_id):
-    return f"{get_experiment_url(workspace_id, experiment_id)}/cases/{case_id}"
-
-
-def get_content_header(content_type, filename):
-    return {
-        "X-Powered-By": "Express",
-        "content-type": content_type,
-        "content-disposition": f'attachment; filename="{filename}"',
-        "connection": "close",
-        "date": "Thu, 22 Oct 2020 06:03:46 GMT",
-        "server": "127.0.0.1",
-        "Content-Length": "540",
-        "ETag": 'W/"21c-YYNaLhSng67+inxuWx+DHndUdno"',
-        "Vary": "Accept-Encoding",
-    }
-
-
 @pytest.fixture
 def sem_ver_check(mock_server_base):
     json = {"version": "4.0.0"}

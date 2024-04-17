@@ -53,6 +53,14 @@ class TestClient:
         assert IDs.WORKSPACE_ID_PRIMARY in workspace_ids
         assert IDs.WORKSPACE_ID_SECONDARY in workspace_ids
 
+    @pytest.mark.vcr()
+    def test_get_workspace_filtered_by_name(self, client_helper: ClientHelper):
+        client = client_helper.client
+        client.create_workspace(IDs.WORKSPACE_ID_SECONDARY)
+        workspaces = client.get_workspaces(name=IDs.WORKSPACE_ID_PRIMARY)
+        assert len(workspaces) == 1
+        assert workspaces[0].name == IDs.WORKSPACE_ID_PRIMARY
+
     def test_semantic_version_error(self, semantic_version_error):
         with pytest.raises(exceptions.UnsupportedSemanticVersionError) as excinfo:
             Client(
@@ -217,6 +225,13 @@ class TestClient:
         assert isinstance(imported_workspace, Workspace)
         assert imported_workspace.name == IDs.WORKSPACE_ID_SECONDARY
 
+    @pytest.mark.vcr()
+    def test_upload_workspace(self, tmpdir, client_helper: ClientHelper):
+        archieve_ws_path = get_archived_workspace_path(tmpdir)
+        uploaded_workspace = client_helper.client.upload_workspace(archieve_ws_path)
+        assert isinstance(uploaded_workspace, Workspace)
+        assert uploaded_workspace.name == IDs.WORKSPACE_ID_SECONDARY
+
     def test_import_workspace_from_shared_definition(
         self,
         import_workspace,
@@ -279,6 +294,13 @@ class TestClient:
         assert prjs[1].name == "Modelica"
 
     @pytest.mark.vcr()
+    def test_get_project(self, client_helper: ClientHelper):
+        default_project_id = client_helper.workspace.get_default_project().id
+        prj = client_helper.client.get_project(default_project_id)
+        assert prj.id == default_project_id
+        assert prj.name == IDs.DEFAULT_PROJECT_NAME
+
+    @pytest.mark.vcr()
     def test_get_executions(self, client_helper: ClientHelper):
         client_helper.create_and_execute_experiment(wait_for_completion=False)
         client_helper.compile_fmu(wait_for_completion=False)
@@ -297,6 +319,12 @@ class TestClient:
         operations = list(executions)
         assert len(operations) == 1
         assert isinstance(operations[0], ExperimentOperation)
+
+        executions = client_helper.client.get_executions(
+            workspace_id=IDs.WORKSPACE_ID_SECONDARY
+        )
+        operations = list(executions)
+        assert len(operations) == 0
 
     @pytest.mark.vcr()
     def test_get_me(self, client_helper: ClientHelper):
