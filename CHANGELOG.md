@@ -1,3 +1,11 @@
+## [3.16.1](https://github.com/modelon-community/impact-client-python/compare/v3.16.0...v3.16.1) (2024-04-18)
+
+
+### Bug Fixes
+
+* minor correction to docs in FMU based workflow section ([04af5bc](https://github.com/modelon-community/impact-client-python/commit/04af5bc5931b4a74adba3b4074279140919f2bac))
+* minor typo fix for Sobol space coverage ([f268e48](https://github.com/modelon-community/impact-client-python/commit/f268e48128a06878d7acd60d3c8b5a045c72c255))
+
 # [3.16.0](https://github.com/modelon-community/impact-client-python/compare/v3.15.0...v3.16.0) (2024-04-17)
 
 
