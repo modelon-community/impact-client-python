@@ -985,6 +985,7 @@ class Workspace(WorkspaceInterface):
         )
         return Experiment(self._workspace_id, resp["experiment_id"], self._sal)
 
+    @Experimental
     def create_experiment_definition_from_experiment_result(
         self, experiment_id: str
     ) -> ValidExperimentDefinitions:
@@ -1007,6 +1008,7 @@ class Workspace(WorkspaceInterface):
         experiment = self.get_experiment(experiment_id)
         return experiment.get_definition()
 
+    @Experimental
     def create_experiment_definition_from_case_result(
         self, experiment_id: str, case_id: str
     ) -> ValidExperimentDefinitions:
