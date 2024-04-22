@@ -1,3 +1,16 @@
+# [3.17.0](https://github.com/modelon-community/impact-client-python/compare/v3.16.1...v3.17.0) (2024-04-22)
+
+
+### Bug Fixes
+
+* add experimental flag for create_experiment_definition_from_experiment_result and create_experiment_definition_from_case_result methods ([2812f83](https://github.com/modelon-community/impact-client-python/commit/2812f83b2b804cc52abd88a50eccef35ff6abb04))
+* the create_experiment_definition_from_experiment_result method should ensure the custom function parametrization is preserved as well ([d526fb7](https://github.com/modelon-community/impact-client-python/commit/d526fb715719b701f8f9e259721741d9c873eb35))
+
+
+### Features
+
+* added support to create_experiment_definition_from_case_result ([3be9cf9](https://github.com/modelon-community/impact-client-python/commit/3be9cf9372ee85b90ae5852106417f4acdeccc6e))
+
 ## [3.16.1](https://github.com/modelon-community/impact-client-python/compare/v3.16.0...v3.16.1) (2024-04-18)
 
 
