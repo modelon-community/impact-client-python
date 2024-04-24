@@ -600,9 +600,9 @@ class TestWorkspace:
         )
         experiment = workspace.create_experiment(experiment_definition)
 
-        definition_dict = workspace.create_experiment_definition_from_experiment_result(
-            experiment.id
-        ).to_dict()
+        definition_dict = (
+            workspace.get_experiment(experiment.id).get_definition().to_dict()
+        )
         expected_definition_dict = experiment_definition.to_dict()
         assert definition_dict == expected_definition_dict
 
@@ -615,9 +615,9 @@ class TestWorkspace:
             .with_initialize_from(case_for_init)
         )
         experiment = workspace.create_experiment(experiment_definition)
-        definition_dict = workspace.create_experiment_definition_from_experiment_result(
-            experiment.id
-        ).to_dict()
+        definition_dict = (
+            workspace.get_experiment(experiment.id).get_definition().to_dict()
+        )
         expected_definition_dict = experiment_definition.to_dict()
         assert definition_dict == expected_definition_dict
 
@@ -666,9 +666,9 @@ class TestWorkspace:
         )
         experiment = workspace.create_experiment(experiment_definition)
 
-        definition_dict = workspace.create_experiment_definition_from_experiment_result(
-            experiment.id
-        ).to_dict()
+        definition_dict = (
+            workspace.get_experiment(experiment.id).get_definition().to_dict()
+        )
         expected_definition_dict = experiment_definition.to_dict()
         assert definition_dict == expected_definition_dict
 
@@ -680,9 +680,9 @@ class TestWorkspace:
             .with_initialize_from(case_for_init)
         )
         experiment = workspace.create_experiment(experiment_definition)
-        definition_dict = workspace.create_experiment_definition_from_experiment_result(
-            experiment.id
-        ).to_dict()
+        definition_dict = (
+            workspace.get_experiment(experiment.id).get_definition().to_dict()
+        )
         expected_definition_dict = experiment_definition.to_dict()
         assert definition_dict == expected_definition_dict
 
@@ -705,9 +705,11 @@ class TestWorkspace:
         experiment = workspace.execute(experiment_definition).wait()
         case = experiment.get_case(IDs.CASE_ID_PRIMARY)
 
-        definition_dict = workspace.create_experiment_definition_from_case_result(
-            experiment.id, case.id
-        ).to_dict()
+        definition = (
+            workspace.get_experiment(experiment.id).get_case(case.id).get_definition()
+        )
+        definition_dict = definition.to_dict()
+
         expected_definition_dict = experiment_definition.to_dict()
         expected_definition_dict["experiment"]["base"]["modifiers"]["variables"][
             "PI.yMax"
