@@ -129,6 +129,11 @@ class SimpleExperimentExtension(BaseExperimentExtension):
         "Returns the case label if any set."
         return self._case_label
 
+    @property
+    def initialize_from(self) -> Optional[CaseOrExperiment]:
+        "Returns the case or experiment the experiment extension was initialized from."
+        return self._initialize_from
+
     def with_modifiers(
         self, modifiers: Optional[Dict[str, Any]] = None, **modifiers_kwargs: Any
     ) -> SimpleExperimentExtension:
@@ -206,10 +211,6 @@ class SimpleExperimentExtension(BaseExperimentExtension):
         new._case_label = case_label
 
         return new
-
-    @property
-    def initialize_from(self) -> Optional[CaseOrExperiment]:
-        return self._initialize_from
 
     def with_initialize_from(
         self, entity: Optional[CaseOrExperiment] = None

@@ -111,38 +111,44 @@ class SimpleFMUExperimentDefinition(BaseExperimentDefinition):
 
     @property
     def fmu(self) -> ModelExecutable:
-        "Returns the ModelExecutable class."
+        """Returns the ModelExecutable class."""
         return self._fmu
 
     @property
     def modifiers(self) -> Dict[str, Any]:
-        "Returns the variable modifiers dict."
+        """Returns the variable modifiers dict."""
         return self._variable_modifiers
 
     @property
     def simulation_options(self) -> Dict[str, Any]:
-        "Returns the simulation options as a dict."
+        """Returns the simulation options as a dict."""
         return self._simulation_options
 
     @property
     def solver_options(self) -> Dict[str, Any]:
-        "Returns the solver options as a dict."
+        """Returns the solver options as a dict."""
         return self._solver_options
 
     @property
     def simulation_log_level(self) -> str:
-        "Returns the simulation log level."
+        """Returns the simulation log level."""
         return self._simulation_log_level
 
     @property
     def custom_function(self) -> CustomFunction:
-        "Returns the custom function class."
+        """Returns the custom function class."""
         return self._custom_function
 
     @property
     def extensions(self) -> List[SimpleExperimentExtension]:
-        "Returns the list of experiment extensions."
+        """Returns the list of experiment extensions."""
         return self._extensions
+
+    @property
+    def initialize_from(self) -> Optional[CaseOrExperimentOrExternalResult]:
+        """Returns the case, experiment or result the experiment definition was
+        initialized from."""
+        return self._initialize_from
 
     def validate(self) -> None:
         add = set(self._variable_modifiers.keys()) - set(
@@ -317,10 +323,6 @@ class SimpleFMUExperimentDefinition(BaseExperimentDefinition):
                 "initializeFromExternalResult"
             ] = self.initialize_from.id
         return exp_dict
-
-    @property
-    def initialize_from(self) -> Optional[CaseOrExperimentOrExternalResult]:
-        return self._initialize_from
 
     def with_initialize_from(
         self, entity: Optional[CaseOrExperimentOrExternalResult] = None
