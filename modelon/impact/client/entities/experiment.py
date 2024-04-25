@@ -37,8 +37,6 @@ from modelon.impact.client.options import (
 )
 
 if TYPE_CHECKING:
-    from modelon.impact.client.entities.model import CaseOrExperimentOrExternalResult
-    from modelon.impact.client.experiment_definition.extension import CaseOrExperiment
     from modelon.impact.client.operations.base import BaseOperation
     from modelon.impact.client.sal.service import Service
 
@@ -612,7 +610,7 @@ class Experiment(ExperimentInterface):
 
     def _get_initialize_from(
         self, modifiers: Dict[str, Any]
-    ) -> Optional[CaseOrExperimentOrExternalResult]:
+    ) -> Optional[Union[Case, Experiment, ExternalResult]]:
         if "initializeFrom" in modifiers:
             exp_id = modifiers["initializeFrom"]
             return self._get_initialize_from_experiment(exp_id)
@@ -627,7 +625,7 @@ class Experiment(ExperimentInterface):
 
     def _get_extension_initialize_from(
         self, modifiers: Dict[str, Any]
-    ) -> Optional[CaseOrExperiment]:
+    ) -> Optional[Union[Case, Experiment]]:
         if "initializeFrom" in modifiers:
             exp_id = modifiers["initializeFrom"]
             return self._get_initialize_from_experiment(exp_id)
