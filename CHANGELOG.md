@@ -1,3 +1,15 @@
+# [3.18.0](https://github.com/modelon-community/impact-client-python/compare/v3.17.0...v3.18.0) (2024-04-25)
+
+
+### Bug Fixes
+
+* remove experimental convinience methods used to retrieve definition from experiemnt and case results ([d15a292](https://github.com/modelon-community/impact-client-python/commit/d15a2929aa87db5826778135ca5f23e24bf964eb))
+
+
+### Features
+
+* added convinience properties to Experiment definition classes ([fb0518e](https://github.com/modelon-community/impact-client-python/commit/fb0518e8572bedcf4cbda39d901e45e018bbb5b0))
+
 # [3.17.0](https://github.com/modelon-community/impact-client-python/compare/v3.16.1...v3.17.0) (2024-04-22)
 
 
