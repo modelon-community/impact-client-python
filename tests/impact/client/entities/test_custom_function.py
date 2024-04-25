@@ -17,7 +17,13 @@ class TestCustomFunction:
 
     def test_custom_function_with_parameters_ok(self, custom_function):
         new = custom_function.with_parameters(
-            p1=3.4, p2=False, p3="då", p4="new string", p5=4
+            p1=3.4,
+            p2=False,
+            p3="då",
+            p4="new string",
+            p5=4,
+            p6="experiment_id",
+            p7="experiment_id/case_id",
         )
         assert new.parameter_values == {
             "p1": 3.4,
@@ -25,6 +31,8 @@ class TestCustomFunction:
             "p3": "då",
             "p4": "new string",
             "p5": 4.0,
+            "p6": "experiment_id",
+            "p7": "experiment_id/case_id",
         }
 
     def test_custom_function_with_parameters_no_such_parameter(self, custom_function):

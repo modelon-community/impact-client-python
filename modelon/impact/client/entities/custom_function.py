@@ -31,6 +31,8 @@ class _Parameter:
         "String": (str,),
         "Boolean": (bool,),
         "Enumeration": (str,),
+        "CaseResult": (str,),
+        "ExperimentResult": (str,),
     }
 
     def __init__(self, name: str, value: Any, value_type: str, valid_values: List[Any]):
