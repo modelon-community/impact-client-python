@@ -109,6 +109,41 @@ class SimpleFMUExperimentDefinition(BaseExperimentDefinition):
         self._variable_modifiers = fmu._variable_modifiers()
         self._extensions: List[SimpleExperimentExtension] = []
 
+    @property
+    def fmu(self) -> ModelExecutable:
+        "Returns the ModelExecutable class."
+        return self._fmu
+
+    @property
+    def modifiers(self) -> Dict[str, Any]:
+        "Returns the variable modifiers dict."
+        return self._variable_modifiers
+
+    @property
+    def simulation_options(self) -> Dict[str, Any]:
+        "Returns the simulation options as a dict."
+        return self._simulation_options
+
+    @property
+    def solver_options(self) -> Dict[str, Any]:
+        "Returns the solver options as a dict."
+        return self._solver_options
+
+    @property
+    def simulation_log_level(self) -> str:
+        "Returns the simulation log level."
+        return self._simulation_log_level
+
+    @property
+    def custom_function(self) -> CustomFunction:
+        "Returns the custom function class."
+        return self._custom_function
+
+    @property
+    def extensions(self) -> List[SimpleExperimentExtension]:
+        "Returns the list of experiment extensions."
+        return self._extensions
+
     def validate(self) -> None:
         add = set(self._variable_modifiers.keys()) - set(
             self._fmu.get_settable_parameters()

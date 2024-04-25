@@ -158,6 +158,76 @@ class SimpleModelicaExperimentDefinition(BaseExperimentDefinition):
         self._extensions: List[SimpleExperimentExtension] = []
         self._expansion: ExpansionAlgorithm = FullFactorial()
 
+    @property
+    def modifiers(self) -> Dict[str, Any]:
+        "Returns the variable modifiers dict."
+        return self._variable_modifiers
+
+    @property
+    def model(self) -> Model:
+        "Returns the Model class."
+        return self._model
+
+    @property
+    def fmi_target(self) -> str:
+        "Returns the FMI target."
+        return self._fmi_target
+
+    @property
+    def fmi_version(self) -> str:
+        "Returns the FMI version."
+        return self._fmi_version
+
+    @property
+    def platform(self) -> str:
+        "Returns the platform to compile FMU for."
+        return self._platform
+
+    @property
+    def compiler_log_level(self) -> str:
+        "Returns the compiler log level."
+        return self._compiler_log_level
+
+    @property
+    def compiler_options(self) -> Dict[str, Any]:
+        "Returns the compiler options as a dict."
+        return self._compiler_options
+
+    @property
+    def runtime_options(self) -> Dict[str, Any]:
+        "Returns the runtime options as a dict."
+        return self._runtime_options
+
+    @property
+    def simulation_options(self) -> Dict[str, Any]:
+        "Returns the simulation options as a dict."
+        return self._simulation_options
+
+    @property
+    def solver_options(self) -> Dict[str, Any]:
+        "Returns the solver options as a dict."
+        return self._solver_options
+
+    @property
+    def simulation_log_level(self) -> str:
+        "Returns the simulation log level."
+        return self._simulation_log_level
+
+    @property
+    def custom_function(self) -> CustomFunction:
+        "Returns the custom function class."
+        return self._custom_function
+
+    @property
+    def extensions(self) -> List[SimpleExperimentExtension]:
+        "Returns the list of experiment extensions."
+        return self._extensions
+
+    @property
+    def expansion(self) -> ExpansionAlgorithm:
+        "Returns the expansion algorithm class."
+        return self._expansion
+
     def validate(self) -> None:
         raise NotImplementedError(
             "Validation is not supported for SimpleModelicaExperimentDefinition class"
