@@ -15,18 +15,18 @@ import sys
 
 import sphinx_rtd_theme
 
-sys.path.insert(0, os.path.abspath('../..'))
+sys.path.insert(0, os.path.abspath("../.."))
 
 # -- Project information -----------------------------------------------------
 
-project = 'Modelon-impact-client'
-copyright = '2020, Modelon'
-author = 'Modelon'
+project = "Modelon-impact-client"
+copyright = "2020, Modelon"
+author = "Modelon"
 
 # The full version, including alpha/beta/rc tags
 # TODO : Need to ensure version number is set correctly with the release bot.
-release = '1.0.0'
-master_doc = 'index'
+release = "1.0.0"
+master_doc = "index"
 
 # -- General configuration ---------------------------------------------------
 
@@ -34,21 +34,21 @@ master_doc = 'index'
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-    'sphinx.ext.autodoc',
-    'sphinx.ext.autosummary',
+    "sphinx.ext.autodoc",
+    "sphinx.ext.autosummary",
     "sphinx_rtd_theme",
-    'sphinx_copybutton',
-    'sphinx.ext.autosectionlabel',
-    'sphinx.ext.napoleon',
-    'sphinxcontrib.spelling',
-    'sphinx_search.extension',
-    'sphinx_autodoc_typehints',
+    "sphinx_copybutton",
+    "sphinx.ext.autosectionlabel",
+    "sphinx.ext.napoleon",
+    "sphinxcontrib.spelling",
+    "sphinx_search.extension",
+    "sphinx_autodoc_typehints",
 ]
 
 add_module_names = False
 
 # Add any paths that contain templates here, relative to this directory.
-templates_path = ['_templates']
+templates_path = ["_templates"]
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
@@ -61,17 +61,17 @@ exclude_patterns = []
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = 'sphinx_rtd_theme'
+html_theme = "sphinx_rtd_theme"
 
 html_theme_options = {
-    'style_nav_header_background': '#fb8c00',
+    "style_nav_header_background": "#fb8c00",
 }
 
 # The wordlist with known words, like Jupyterlab
 spelling_word_list_filename = "spelling_wordlist.txt"
 spelling_show_suggestions = True
 spelling_ignore_acronyms = True
-spelling_exclude_patterns = ['modelon.*']
+spelling_exclude_patterns = ["modelon.*"]
 
 # Enable google style docstrings
 napoleon_google_docstring = True
@@ -80,8 +80,9 @@ napoleon_google_docstring = True
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = []
+html_static_path = ["_static"]
+html_css_files = ["custom.css"]
 
 suppress_warnings = [
-    'autosectionlabel.*'
+    "autosectionlabel.*"
 ]  # See https://github.com/sphinx-doc/sphinx/issues/7697
