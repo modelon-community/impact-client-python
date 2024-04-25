@@ -104,6 +104,31 @@ class SimpleExperimentExtension(BaseExperimentExtension):
         self._initialize_from = initialize_from
         self._case_label: Optional[str] = None
 
+    @property
+    def simulation_options(self) -> Dict[str, Any]:
+        "Returns the simulation options as a dict."
+        return self._simulation_options
+
+    @property
+    def solver_options(self) -> Dict[str, Any]:
+        "Returns the solver options as a dict."
+        return self._solver_options
+
+    @property
+    def simulation_log_level(self) -> Optional[str]:
+        "Returns the simulation log level, if set."
+        return self._simulation_log_level
+
+    @property
+    def modifiers(self) -> Dict[str, Any]:
+        "Returns the variable modifiers dict."
+        return self._variable_modifiers
+
+    @property
+    def case_label(self) -> Optional[str]:
+        "Returns the case label if any set."
+        return self._case_label
+
     def with_modifiers(
         self, modifiers: Optional[Dict[str, Any]] = None, **modifiers_kwargs: Any
     ) -> SimpleExperimentExtension:

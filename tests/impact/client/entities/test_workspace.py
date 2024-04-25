@@ -589,22 +589,51 @@ class TestWorkspace:
             .with_case_label("Cruise condition 2")
             .with_initialize_from(exp_for_init)
         )
+        extensions = [simulate_ext_1, simulate_ext_2]
 
         # Initializing with experiment and expanding with Sobol
         experiment_definition = (
             base_experiment_definition.with_modifiers({"PI.k": Uniform(100, 200)})
             .with_expansion(Sobol(5))
-            .with_extensions([simulate_ext_1, simulate_ext_2])
+            .with_extensions(extensions)
             .with_cases([{"inertia1.J": 3}])
             .with_initialize_from(exp_for_init)
         )
         experiment = workspace.create_experiment(experiment_definition)
-
-        definition_dict = (
-            workspace.get_experiment(experiment.id).get_definition().to_dict()
-        )
+        definition = workspace.get_experiment(experiment.id).get_definition()
+        definition_dict = definition.to_dict()
         expected_definition_dict = experiment_definition.to_dict()
         assert definition_dict == expected_definition_dict
+        assert isinstance(definition, SimpleModelicaExperimentDefinition)
+        assert len(definition.modifiers) == 1 and "PI.k" in definition.modifiers
+        assert definition.model.name == IDs.PID_MODELICA_CLASS_PATH
+        assert definition.fmi_target == "me"
+        assert definition.fmi_version == "2.0"
+        assert definition.platform == "auto"
+        assert definition.compiler_log_level == "warning"
+        assert definition.simulation_log_level == "WARNING"
+        assert definition.simulation_options == {
+            "dynamic_diagnostics": False,
+            "ncp": 500,
+        }
+        assert definition.solver_options == {}
+        assert definition.runtime_options == {}
+        assert definition.compiler_options == {
+            "c_compiler": "gcc",
+            "generate_html_diagnostics": False,
+            "include_protected_variables": False,
+        }
+        assert definition.custom_function.name == "dynamic"
+        assert definition.expansion == Sobol(samples=5)
+        expected_extensions = extensions + [
+            SimpleExperimentExtension().with_modifiers({"inertia1.J": 3})
+        ]
+        expected_extensions_as_list_dict = [
+            extension.to_dict() for extension in expected_extensions
+        ]
+        assert [
+            extension.to_dict() for extension in definition.extensions
+        ] == expected_extensions_as_list_dict
 
         # Initializing with case and expanding with Latinhypercube
         experiment_definition = (
@@ -656,11 +685,12 @@ class TestWorkspace:
             .with_case_label("Cruise condition 2")
             .with_initialize_from(exp_for_init)
         )
+        extensions = [simulate_ext_1, simulate_ext_2]
 
         # Initializing with experiment
         experiment_definition = (
             base_experiment_definition.with_modifiers({"PI.k": Uniform(100, 200)})
-            .with_extensions([simulate_ext_1, simulate_ext_2])
+            .with_extensions(extensions)
             .with_cases([{"inertia1.J": 3}])
             .with_initialize_from(exp_for_init)
         )
@@ -675,16 +705,35 @@ class TestWorkspace:
         # Initializing with case
         experiment_definition = (
             base_experiment_definition.with_modifiers({"PI.k": Uniform(100, 200)})
-            .with_extensions([simulate_ext_1, simulate_ext_2])
+            .with_extensions(extensions)
             .with_cases([{"inertia1.J": 3}])
             .with_initialize_from(case_for_init)
         )
         experiment = workspace.create_experiment(experiment_definition)
-        definition_dict = (
-            workspace.get_experiment(experiment.id).get_definition().to_dict()
-        )
+        definition = workspace.get_experiment(experiment.id).get_definition()
+        definition_dict = definition.to_dict()
         expected_definition_dict = experiment_definition.to_dict()
         assert definition_dict == expected_definition_dict
+
+        assert isinstance(definition, SimpleFMUExperimentDefinition)
+        assert len(definition.modifiers) == 1 and "PI.k" in definition.modifiers
+        assert definition.fmu.id
+        assert definition.simulation_log_level == "WARNING"
+        assert definition.simulation_options == {
+            "dynamic_diagnostics": False,
+            "ncp": 500,
+        }
+        assert definition.solver_options == {}
+        assert definition.custom_function.name == "dynamic"
+        expected_extensions = extensions + [
+            SimpleExperimentExtension().with_modifiers({"inertia1.J": 3})
+        ]
+        expected_extensions_as_list_dict = [
+            extension.to_dict() for extension in expected_extensions
+        ]
+        assert [
+            extension.to_dict() for extension in definition.extensions
+        ] == expected_extensions_as_list_dict
 
     @pytest.mark.vcr()
     def test_create_class_based_experiment_definition_from_case_result(
