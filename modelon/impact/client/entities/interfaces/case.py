@@ -7,3 +7,8 @@ class CaseInterface(ABC):
     def id(self) -> str:
         """Case id."""
         raise NotImplementedError
+
+    @property
+    def experiment_id(self) -> str:
+        """Experiment id."""
+        raise NotImplementedError
