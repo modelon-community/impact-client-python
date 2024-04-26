@@ -6,7 +6,12 @@ from modelon.impact.client.options import (
     SimulationOptions,
     SolverOptions,
 )
-from tests.impact.client.helpers import ClientHelper, IDs
+from tests.impact.client.helpers import (
+    ClientHelper,
+    IDs,
+    create_case_entity,
+    create_experiment_entity,
+)
 
 
 class TestCustomFunction:
@@ -16,14 +21,20 @@ class TestCustomFunction:
         return dynamic
 
     def test_custom_function_with_parameters_ok(self, custom_function):
+        experiment = create_experiment_entity(
+            IDs.WORKSPACE_ID_PRIMARY, IDs.EXPERIMENT_ID_PRIMARY
+        )
+        case = create_case_entity(
+            IDs.CASE_ID_PRIMARY, IDs.WORKSPACE_ID_PRIMARY, IDs.EXPERIMENT_ID_PRIMARY
+        )
         new = custom_function.with_parameters(
             p1=3.4,
             p2=False,
             p3="då",
             p4="new string",
             p5=4,
-            p6="experiment_id",
-            p7="experiment_id/case_id",
+            p6=experiment,
+            p7=case,
         )
         assert new.parameter_values == {
             "p1": 3.4,
@@ -31,8 +42,8 @@ class TestCustomFunction:
             "p3": "då",
             "p4": "new string",
             "p5": 4.0,
-            "p6": "experiment_id",
-            "p7": "experiment_id/case_id",
+            "p6": experiment.id,
+            "p7": f"{case.experiment_id}/{case.id}",
         }
 
     def test_custom_function_with_parameters_no_such_parameter(self, custom_function):
@@ -57,6 +68,18 @@ class TestCustomFunction:
         self, custom_function
     ):
         pytest.raises(ValueError, custom_function.with_parameters, p4=4.6)
+
+    def test_custom_function_with_parameters_cannot_set_experiment_result_type(
+        self, custom_function
+    ):
+        pytest.raises(
+            ValueError, custom_function.with_parameters, p6="not an experiment"
+        )
+
+    def test_custom_function_with_parameters_cannot_set_case_result_type(
+        self, custom_function
+    ):
+        pytest.raises(ValueError, custom_function.with_parameters, p7="not a case")
 
     def test_custom_function_with_parameters_cannot_set_enumeration_value(
         self, custom_function

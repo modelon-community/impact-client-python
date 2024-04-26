@@ -3,9 +3,11 @@ from __future__ import annotations
 import logging
 from typing import TYPE_CHECKING, Any, Dict, List, Optional
 
+from modelon.impact.client.entities.interfaces.case import CaseInterface
 from modelon.impact.client.entities.interfaces.custom_function import (
     CustomFunctionInterface,
 )
+from modelon.impact.client.entities.interfaces.experiment import ExperimentInterface
 from modelon.impact.client.options import ProjectExecutionOptions
 from modelon.impact.client.sal.service import Service
 
@@ -31,8 +33,8 @@ class _Parameter:
         "String": (str,),
         "Boolean": (bool,),
         "Enumeration": (str,),
-        "CaseResult": (str,),
-        "ExperimentResult": (str,),
+        "CaseResult": (CaseInterface,),
+        "ExperimentResult": (ExperimentInterface,),
     }
 
     def __init__(self, name: str, value: Any, value_type: str, valid_values: List[Any]):
@@ -61,8 +63,12 @@ class _Parameter:
                 f"Cannot set enumeration '{self._name}' to '{value}', "
                 f"must be one of {self._valid_values}"
             )
-
-        self._value = value
+        if self._value_type == "ExperimentResult":
+            self._value = value.id
+        elif self._value_type == "CaseResult":
+            self._value = f"{value.experiment_id}/{value.id}"
+        else:
+            self._value = value
 
 
 class CustomFunction(CustomFunctionInterface):
