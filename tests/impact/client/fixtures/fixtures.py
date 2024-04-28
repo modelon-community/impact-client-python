@@ -5,6 +5,7 @@ from unittest.mock import MagicMock
 
 import pytest
 import requests
+import requests_mock
 
 from modelon.impact.client import Client
 from modelon.impact.client.options import (
@@ -42,6 +43,31 @@ PublishedWorkspaceMock = collections.namedtuple(
 )
 ProjectMock = collections.namedtuple("ProjectMock", ["entity", "service"])
 ModelMock = collections.namedtuple("ModelMock", ["entity", "service"])
+MockedServer = collections.namedtuple("MockedServer", ["url", "context", "adapter"])
+
+
+class MockContex:
+    def __init__(self, session):
+        self.session = session
+
+
+@pytest.fixture
+def mock_server_base():
+    session = requests.Session()
+    adapter = requests_mock.Adapter()
+    session.mount("http://", adapter)
+    mock_url = "http://mock-impact.com"
+
+    mock_server_base = MockedServer(mock_url, MockContex(session), adapter)
+    mock_server = with_json_route(mock_server_base, "POST", "api/login", {})
+    mock_server = with_json_route(
+        mock_server,
+        "GET",
+        "hub/api/",
+        {},
+        extra_headers={},
+    )
+    return mock_server
 
 
 @pytest.fixture
@@ -1034,7 +1060,7 @@ def setup_client():
     assert client._sal.users.get_me()["data"]["username"].lower() in [
         os.environ.get("MODELON_IMPACT_USERNAME", "").lower(),
         IDs.MOCK_EMAIL,
-        'impact'
+        "impact",
     ]
     _clean_workspace_and_its_projects(client)
     yield ClientHelper(client)

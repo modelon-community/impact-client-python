@@ -1,20 +1,15 @@
 """
 conftest.py
 """
-import collections
 import json
 import os
 import re
 from glob import glob
 
 import pytest
-import requests
-import requests_mock
 from vcr.filters import replace_post_data_parameters
 
-from tests.impact.client.helpers import IDs, with_json_route
-
-MockedServer = collections.namedtuple("MockedServer", ["url", "context", "adapter"])
+from tests.impact.client.helpers import IDs
 
 
 def py_file_path_to_module_path(string: str) -> str:
@@ -36,30 +31,6 @@ def extract_email(input_string):
     emails = re.findall(email_pattern, input_string)
 
     return emails
-
-
-class MockContex:
-    def __init__(self, session):
-        self.session = session
-
-
-@pytest.fixture
-def mock_server_base():
-    session = requests.Session()
-    adapter = requests_mock.Adapter()
-    session.mount("http://", adapter)
-    mock_url = "http://mock-impact.com"
-
-    mock_server_base = MockedServer(mock_url, MockContex(session), adapter)
-    mock_server = with_json_route(mock_server_base, "POST", "api/login", {})
-    mock_server = with_json_route(
-        mock_server,
-        "GET",
-        "hub/api/",
-        {},
-        extra_headers={},
-    )
-    return mock_server
 
 
 def keep_only_keys(dictionary, keys_to_keep):
