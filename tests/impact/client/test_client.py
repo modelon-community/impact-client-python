@@ -310,6 +310,10 @@ class TestClient:
         assert isinstance(operations[0], ExperimentOperation)
         assert isinstance(operations[1], ModelExecutableOperation)
 
+        # Cleanup
+        for operation in operations:
+            operation.wait()
+
     @pytest.mark.vcr()
     def test_get_executions_for_workspace(self, client_helper: ClientHelper):
         client_helper.create_and_execute_experiment(wait_for_completion=False)
@@ -319,6 +323,10 @@ class TestClient:
         operations = list(executions)
         assert len(operations) == 1
         assert isinstance(operations[0], ExperimentOperation)
+
+        # Cleanup
+        for operation in operations:
+            operation.wait()
 
         executions = client_helper.client.get_executions(
             workspace_id=IDs.WORKSPACE_ID_SECONDARY
