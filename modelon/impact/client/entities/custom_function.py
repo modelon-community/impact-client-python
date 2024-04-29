@@ -64,8 +64,10 @@ class _Parameter:
                 f"must be one of {self._valid_values}"
             )
         if self._value_type == "ExperimentResult":
+            assert isinstance(value, ExperimentInterface)
             self._value = value.id
         elif self._value_type == "CaseResult":
+            assert isinstance(value, CaseInterface)
             self._value = f"{value.experiment_id}/{value.id}"
         else:
             self._value = value
