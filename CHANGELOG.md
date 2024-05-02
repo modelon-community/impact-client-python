@@ -1,3 +1,10 @@
+## [3.18.1](https://github.com/modelon-community/impact-client-python/compare/v3.18.0...v3.18.1) (2024-05-02)
+
+
+### Bug Fixes
+
+* add another mock user for tests ([5fcf1bc](https://github.com/modelon-community/impact-client-python/commit/5fcf1bc82d70d680d32602b025c4ff556d341e90))
+
 # [3.18.0](https://github.com/modelon-community/impact-client-python/compare/v3.17.0...v3.18.0) (2024-04-25)
 
 
