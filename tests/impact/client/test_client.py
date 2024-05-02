@@ -340,9 +340,9 @@ class TestClient:
         assert user.tenant.id == IDs.TENANT_ID
         assert user.tenant.group_name == IDs.GROUP_NAME
         assert len(user.roles) == 8
-        assert user.username == IDs.MOCK_EMAIL
+        assert user.username == IDs.USERNAME
         assert IDs.PRO_LICENSE_ROLE in user.roles
         assert user.license == IDs.PRO_LICENSE_ROLE
-        assert user.firstname == IDs.USERNAME
-        assert user.last_name == ""
+        assert user.firstname is None
+        assert user.last_name is None
         assert user.email == IDs.MOCK_EMAIL

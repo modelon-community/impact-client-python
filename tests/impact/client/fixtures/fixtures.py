@@ -1055,12 +1055,11 @@ def setup_client():
     if os.environ.get("UPDATE_CASSETTE", "False") not in ["True", "1"]:
         os.environ["MODELON_IMPACT_CLIENT_API_KEY"] = "dummy"
         os.environ["JUPYTERHUB_API_TOKEN"] = "dummy"
-        os.environ["MODELON_IMPACT_USERNAME"] = IDs.MOCK_EMAIL
+        os.environ["MODELON_IMPACT_USERNAME"] = IDs.USERNAME
     client = Client()
     assert client._sal.users.get_me()["data"]["username"].lower() in [
         os.environ.get("MODELON_IMPACT_USERNAME", "").lower(),
-        IDs.MOCK_EMAIL,
-        "impact",
+        IDs.USERNAME,
     ]
     _clean_workspace_and_its_projects(client)
     yield ClientHelper(client)
