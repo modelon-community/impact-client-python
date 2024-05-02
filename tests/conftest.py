@@ -56,7 +56,7 @@ def _scrub_impact_url_from_request_path(request):
 def _scrub_email_from_request_path(request):
     extracted_emails = extract_email(request.path)
     if extracted_emails:
-        request.uri = request.path.replace(extracted_emails[0], IDs.MOCK_EMAIL)
+        request.uri = request.path.replace(extracted_emails[0], IDs.USERNAME)
 
 
 def _scrub_auth_token_from_request_path(request):
@@ -105,7 +105,7 @@ def vcr_config():
                         insensitive_username = re.compile(
                             re.escape(username), re.IGNORECASE
                         )
-                        body = insensitive_username.sub(IDs.MOCK_EMAIL, body)
+                        body = insensitive_username.sub(IDs.USERNAME, body)
                     response_body = json.loads(body)
                 except UnicodeDecodeError:
                     # Handle case where response is not json
@@ -120,9 +120,9 @@ def vcr_config():
                 elif response_body.get("data", {}).get("encryptionKey"):
                     response_body["data"] = {
                         "id": IDs.USER_ID,
-                        "username": IDs.MOCK_EMAIL,
-                        "firstName": IDs.USERNAME,
-                        "lastName": "",
+                        "username": IDs.USERNAME,
+                        "firstName": None,
+                        "lastName": None,
                         "email": IDs.MOCK_EMAIL,
                         "license": IDs.PRO_LICENSE_ROLE,
                         "roles": [

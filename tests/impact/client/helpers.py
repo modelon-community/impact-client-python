@@ -156,7 +156,7 @@ def with_octet_stream_route(
 
 
 class IDs:
-    MOCK_EMAIL = "test@dummy.com"
+    MOCK_EMAIL = "test-user@modelon.com"
     MOCK_IMPACT_URL = "https://modelon-test.com/"
     _WORKSPACE_ID_PREFIX = "impact-python-client-"
     WORKSPACE_ID_PRIMARY = _WORKSPACE_ID_PREFIX + "workspace1"
@@ -164,8 +164,8 @@ class IDs:
     WORKSPACE_IDS = [WORKSPACE_ID_PRIMARY, WORKSPACE_ID_SECONDARY]
     WORKSPACE_NAMES = WORKSPACE_IDS
     USER_ID = "njcswjcjnscksnckjsnckndsk"
-    USERNAME = "alice"
-    TENANT_ID = "modelon"
+    USERNAME = "test-user"
+    TENANT_ID = "org1"
     GROUP_NAME = "impact-tenant-org1"
     PRO_LICENSE_ROLE = "impact-pro"
     LICENSE_ROLES = [

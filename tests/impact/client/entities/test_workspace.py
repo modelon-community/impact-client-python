@@ -593,7 +593,7 @@ class TestWorkspace:
 
         # Initializing with experiment and expanding with Sobol
         experiment_definition = (
-            base_experiment_definition.with_modifiers({"PI.k": Uniform(100, 200)})
+            base_experiment_definition.with_modifiers({"PI.k": Uniform(100.0, 200.0)})
             .with_expansion(Sobol(5))
             .with_extensions(extensions)
             .with_cases([{"inertia1.J": 3}])
@@ -637,7 +637,7 @@ class TestWorkspace:
 
         # Initializing with case and expanding with Latinhypercube
         experiment_definition = (
-            base_experiment_definition.with_modifiers({"PI.k": Uniform(100, 200)})
+            base_experiment_definition.with_modifiers({"PI.k": Uniform(100.0, 200.0)})
             .with_expansion(LatinHypercube(5, 2))
             .with_extensions([simulate_ext_1, simulate_ext_2])
             .with_cases([{"inertia1.J": 3}])
@@ -689,7 +689,7 @@ class TestWorkspace:
 
         # Initializing with experiment
         experiment_definition = (
-            base_experiment_definition.with_modifiers({"PI.k": Uniform(100, 200)})
+            base_experiment_definition.with_modifiers({"PI.k": Uniform(100.0, 200.0)})
             .with_extensions(extensions)
             .with_cases([{"inertia1.J": 3}])
             .with_initialize_from(exp_for_init)
@@ -704,7 +704,7 @@ class TestWorkspace:
 
         # Initializing with case
         experiment_definition = (
-            base_experiment_definition.with_modifiers({"PI.k": Uniform(100, 200)})
+            base_experiment_definition.with_modifiers({"PI.k": Uniform(100.0, 200.0)})
             .with_extensions(extensions)
             .with_cases([{"inertia1.J": 3}])
             .with_initialize_from(case_for_init)
