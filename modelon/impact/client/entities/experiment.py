@@ -521,12 +521,19 @@ class Experiment(ExperimentInterface):
         """
         self._sal.experiment.experiment_delete(self._workspace_id, self._exp_id)
 
+    @property
+    def label(self) -> Optional[str]:
+        """Returns the experiment label if it exists."""
+        return self.metadata.label
+
     def set_label(self, label: str) -> None:
-        """Sets a label (string) for an experiment to distinguish it.
+        """Sets a label (string) for an experiment to distinguish it. To get the label,
+        you could call the experiment.label property.
 
         Example::
 
             experiment.set_label("Engine run with Oil type B")
+            label = experiment.label
 
         """
         self._sal.experiment.experiment_set_label(

@@ -299,4 +299,4 @@ class TestExperiment:
     def test_set_experiment_label(self, client_helper: ClientHelper):
         experiment = client_helper.create_and_execute_experiment()
         experiment.set_label(IDs.EXPERIMENT_LABEL)
-        assert experiment.metadata.label == IDs.EXPERIMENT_LABEL
+        assert experiment.label == IDs.EXPERIMENT_LABEL
