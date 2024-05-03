@@ -63,14 +63,20 @@ class _Parameter:
                 f"Cannot set enumeration '{self._name}' to '{value}', "
                 f"must be one of {self._valid_values}"
             )
-        if self._value_type == "ExperimentResult":
-            assert isinstance(value, ExperimentInterface)
-            self._value = value.id
-        elif self._value_type == "CaseResult":
-            assert isinstance(value, CaseInterface)
-            self._value = f"{value.experiment_id}/{value.id}"
-        else:
-            self._value = value
+        self._value = value
+
+
+class ParameterDict(dict):
+    def as_raw_dict(self) -> Dict[str, Any]:
+        new_dict = {}
+        for key, value in self.items():
+            if isinstance(value, ExperimentInterface):
+                new_dict[key] = value.id
+            elif isinstance(value, CaseInterface):
+                new_dict[key] = f"{value.experiment_id}/{value.id}"
+            else:
+                new_dict[key] = value
+        return new_dict
 
 
 class CustomFunction(CustomFunctionInterface):
@@ -136,9 +142,9 @@ class CustomFunction(CustomFunctionInterface):
         return new
 
     @property
-    def parameter_values(self) -> Dict[str, Any]:
+    def parameter_values(self) -> ParameterDict:
         """Custom_function parameters and value as a dictionary."""
-        return {p.name: p.value for p in self._param_by_name.values()}
+        return ParameterDict({p.name: p.value for p in self._param_by_name.values()})
 
     def get_options(
         self, use_defaults: Optional[bool] = False
