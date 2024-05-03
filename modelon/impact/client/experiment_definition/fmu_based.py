@@ -293,6 +293,9 @@ class SimpleFMUExperimentDefinition(BaseExperimentDefinition):
             simulate_def.to_dict()
 
         """
+        custom_function_parameters = (
+            self._custom_function.parameter_values.as_raw_dict()
+        )
         exp_dict: Dict[str, Any] = {
             "experiment": {
                 "version": 2,
@@ -301,7 +304,7 @@ class SimpleFMUExperimentDefinition(BaseExperimentDefinition):
                     "modifiers": {"variables": self._variable_modifiers},
                     "analysis": {
                         "type": self._custom_function.name,
-                        "parameters": self._custom_function.parameter_values,
+                        "parameters": custom_function_parameters,
                         "simulationOptions": self._simulation_options,
                         "solverOptions": self._solver_options,
                         "simulationLogLevel": self._simulation_log_level,

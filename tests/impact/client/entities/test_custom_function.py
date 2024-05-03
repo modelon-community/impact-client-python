@@ -42,6 +42,15 @@ class TestCustomFunction:
             "p3": "då",
             "p4": "new string",
             "p5": 4.0,
+            "p6": experiment,
+            "p7": case,
+        }
+        assert new.parameter_values.as_raw_dict() == {
+            "p1": 3.4,
+            "p2": False,
+            "p3": "då",
+            "p4": "new string",
+            "p5": 4.0,
             "p6": experiment.id,
             "p7": f"{case.experiment_id}/{case.id}",
         }

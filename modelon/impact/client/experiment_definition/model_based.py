@@ -477,7 +477,7 @@ class SimpleModelicaExperimentDefinition(BaseExperimentDefinition):
 
         version = 3 if get_client_experiments_v3_experimental() else 2
         custom_function_parameters = custom_function_parameters_to_dict(
-            self._custom_function.parameter_values
+            self._custom_function.parameter_values.as_raw_dict()
         )
         variable_modifiers = modifiers_to_dict(self._variable_modifiers)
         exp_dict: Dict[str, Any] = {
