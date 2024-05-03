@@ -1,3 +1,10 @@
+# [3.19.0](https://github.com/modelon-community/impact-client-python/compare/v3.18.1...v3.19.0) (2024-05-03)
+
+
+### Features
+
+* add convinience label property to the Experiment entity ([9c69ab4](https://github.com/modelon-community/impact-client-python/commit/9c69ab4111285964a9b4bc3ac016e730fd10a309))
+
 ## [3.18.1](https://github.com/modelon-community/impact-client-python/compare/v3.18.0...v3.18.1) (2024-05-02)
 
 
