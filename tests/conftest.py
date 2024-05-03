@@ -4,23 +4,11 @@ conftest.py
 import json
 import os
 import re
-from glob import glob
 
 import pytest
 from vcr.filters import replace_post_data_parameters
 
 from tests.impact.client.helpers import IDs
-
-
-def py_file_path_to_module_path(string: str) -> str:
-    return string.replace("/", ".").replace("\\", ".").replace(".py", "")
-
-
-pytest_plugins = [
-    py_file_path_to_module_path(fixture)
-    for fixture in glob("tests/impact/client/fixtures/*.py")
-    if "__" not in fixture
-]
 
 
 def extract_email(input_string):
