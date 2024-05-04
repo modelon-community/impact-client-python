@@ -1060,6 +1060,7 @@ def setup_client():
     assert client._sal.users.get_me()["data"]["username"].lower() in [
         os.environ.get("MODELON_IMPACT_USERNAME", "").lower(),
         IDs.USERNAME,
+        os.environ.get("JUPYTERHUB_USER"),
     ]
     _clean_workspace_and_its_projects(client)
     yield ClientHelper(client)
