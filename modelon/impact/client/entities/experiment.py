@@ -726,16 +726,38 @@ class Experiment(ExperimentInterface):
         return definition
 
     def _get_custom_function(self, analysis: Dict[str, Any]) -> CustomFunction:
-        custom_function = self._sal.custom_function.custom_function_get(
+        custom_function_meta = self._sal.custom_function.custom_function_get(
             self._workspace_id, self.custom_function
         )
-        custom_function_params = analysis["parameters"]
-        return CustomFunction(
+        custom_function = CustomFunction(
             self._workspace_id,
-            custom_function["name"],
-            custom_function["parameters"],
+            custom_function_meta["name"],
+            custom_function_meta["parameters"],
             self._sal,
-        ).with_parameters(**custom_function_params)
+        )
+        custom_function_params_override = analysis["parameters"]
+        self._update_overide_for_special_cf_types(custom_function, custom_function_params_override)
+        return custom_function.with_parameters(**custom_function_params_override)
+
+    def _update_overide_for_special_cf_types(self, custom_function, custom_function_params_override):
+        for param in custom_function._param_by_name.values():
+            param_override = custom_function_params_override.get(param.name)
+            if param_override:
+                if param.type == "ExperimentResult":
+                    exp_info = self._sal.workspace.experiment_get(
+                        self._workspace_id, param_override
+                    )
+                    custom_function_params_override[param.name] = Experiment(
+                        self._workspace_id, param_override, self._sal, exp_info
+                    )
+                elif param.type == "CaseResult":
+                    experiment_id, case_id = param_override.split("/")
+                    case_info = self._sal.experiment.case_get(
+                        self._workspace_id, experiment_id, case_id
+                    )
+                    custom_function_params_override[param.name] = Case(
+                        case_id, self._workspace_id, experiment_id, self._sal, case_info
+                    )
 
     def _get_expansion_algorithm(
         self, algorithm: str, parameters: Dict[str, Any]
