@@ -11,6 +11,7 @@ from modelon.impact.client.entities.asserts import assert_successful_operation
 from modelon.impact.client.entities.custom_function import CustomFunction
 from modelon.impact.client.entities.external_result import ExternalResult
 from modelon.impact.client.entities.interfaces.case import CaseInterface
+from modelon.impact.client.entities.interfaces.experiment import ExperimentReference
 from modelon.impact.client.entities.log import Log
 from modelon.impact.client.entities.model import (
     Model,
@@ -789,16 +790,44 @@ class Case(CaseInterface):
         )
 
     def _get_custom_function(self) -> CustomFunction:
-        custom_function = self._sal.custom_function.custom_function_get(
+        custom_function_meta = self._sal.custom_function.custom_function_get(
             self._workspace_id, self.input.analysis.analysis_function
         )
-        custom_function_params = self.input.analysis.parameters
-        return CustomFunction(
+        custom_function = CustomFunction(
             self._workspace_id,
-            custom_function["name"],
-            custom_function["parameters"],
+            custom_function_meta["name"],
+            custom_function_meta["parameters"],
             self._sal,
-        ).with_parameters(**custom_function_params)
+        )
+        custom_function_params_override = self.input.analysis.parameters.copy()
+        self._update_overide_for_special_cf_types(
+            custom_function, custom_function_params_override
+        )
+        return custom_function.with_parameters(**custom_function_params_override)
+
+    def _update_overide_for_special_cf_types(
+        self,
+        custom_function: CustomFunction,
+        custom_function_params_override: Dict[str, Any],
+    ) -> None:
+        for param in custom_function._param_by_name.values():
+            param_override = custom_function_params_override.get(param.name)
+            if param_override:
+                if param.type == "ExperimentResult":
+                    exp_info = self._sal.workspace.experiment_get(
+                        self._workspace_id, param_override
+                    )
+                    custom_function_params_override[param.name] = ExperimentReference(
+                        self._workspace_id, param_override, self._sal, exp_info
+                    )
+                elif param.type == "CaseResult":
+                    experiment_id, case_id = param_override.split("/")
+                    case_info = self._sal.experiment.case_get(
+                        self._workspace_id, experiment_id, case_id
+                    )
+                    custom_function_params_override[param.name] = Case(
+                        case_id, self._workspace_id, experiment_id, self._sal, case_info
+                    )
 
     def get_definition(self) -> SimpleModelicaExperimentDefinition:
         """Get an experiment definition that can be used to reproduce this case result.
@@ -812,7 +841,12 @@ class Case(CaseInterface):
 
         """
         custom_function = self._get_custom_function()
-        fmu = self.get_fmu()
+        if self.input.fmu_id:
+            fmu = self.get_fmu()
+        else:
+            for param in custom_function.parameter_values.values():
+                if isinstance(param, Case):
+                    fmu = param.get_fmu()
         model = Model(
             fmu.input.class_name,
             workspace_id=self._workspace_id,
