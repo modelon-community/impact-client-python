@@ -99,7 +99,7 @@ class CustomFunction(CustomFunctionInterface):
         self._param_by_name = {
             p["name"]: _Parameter(
                 p["name"],
-                p["defaultValue"],
+                p.get("defaultValue", ""),
                 p["type"],
                 p.get("values", []),
             )
