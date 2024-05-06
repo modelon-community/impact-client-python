@@ -9,7 +9,7 @@ from modelon.impact.client.entities.asserts import assert_variable_in_result
 from modelon.impact.client.entities.case import Case
 from modelon.impact.client.entities.custom_function import CustomFunction
 from modelon.impact.client.entities.external_result import ExternalResult
-from modelon.impact.client.entities.interfaces.experiment import ExperimentInterface
+from modelon.impact.client.entities.interfaces.experiment import ExperimentReference
 from modelon.impact.client.entities.model import (
     Model,
     SimpleModelicaExperimentDefinition,
@@ -194,7 +194,7 @@ class ExperimentMetaData:
         return self._meta_data.get("label")
 
 
-class Experiment(ExperimentInterface):
+class Experiment(ExperimentReference):
     """Class containing Experiment functionalities."""
 
     def __init__(
@@ -204,10 +204,7 @@ class Experiment(ExperimentInterface):
         service: Service,
         info: Optional[Dict[str, Any]] = None,
     ):
-        self._exp_id = exp_id
-        self._workspace_id = workspace_id
-        self._sal = service
-        self._info = info
+        super().__init__(workspace_id, exp_id, service, info)
         self._fmu_info: Optional[Dict[str, Any]] = None
 
     def __eq__(self, obj: object) -> bool:
@@ -215,11 +212,6 @@ class Experiment(ExperimentInterface):
 
     def __repr__(self) -> str:
         return f"Experiment with id '{self._exp_id}'"
-
-    @property
-    def id(self) -> str:
-        """Experiment id."""
-        return self._exp_id
 
     def _get_info(self, cached: bool = True) -> Dict[str, Any]:
         if not cached or self._info is None:
@@ -735,11 +727,17 @@ class Experiment(ExperimentInterface):
             custom_function_meta["parameters"],
             self._sal,
         )
-        custom_function_params_override = analysis["parameters"]
-        self._update_overide_for_special_cf_types(custom_function, custom_function_params_override)
+        custom_function_params_override = analysis["parameters"].copy()
+        self._update_overide_for_special_cf_types(
+            custom_function, custom_function_params_override
+        )
         return custom_function.with_parameters(**custom_function_params_override)
 
-    def _update_overide_for_special_cf_types(self, custom_function, custom_function_params_override):
+    def _update_overide_for_special_cf_types(
+        self,
+        custom_function: CustomFunction,
+        custom_function_params_override: Dict[str, Any],
+    ) -> None:
         for param in custom_function._param_by_name.values():
             param_override = custom_function_params_override.get(param.name)
             if param_override:
