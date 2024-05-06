@@ -48,6 +48,10 @@ class _Parameter:
         return self._name
 
     @property
+    def type(self) -> str:
+        return self._value_type
+
+    @property
     def value(self) -> Any:
         return self._value
 
