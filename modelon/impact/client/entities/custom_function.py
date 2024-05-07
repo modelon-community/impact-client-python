@@ -3,11 +3,14 @@ from __future__ import annotations
 import logging
 from typing import TYPE_CHECKING, Any, Dict, List, Optional
 
-from modelon.impact.client.entities.interfaces.case import CaseInterface
+from modelon.impact.client.entities.interfaces.case import CaseInterface, CaseReference
 from modelon.impact.client.entities.interfaces.custom_function import (
     CustomFunctionInterface,
 )
-from modelon.impact.client.entities.interfaces.experiment import ExperimentInterface
+from modelon.impact.client.entities.interfaces.experiment import (
+    ExperimentInterface,
+    ExperimentReference,
+)
 from modelon.impact.client.options import ProjectExecutionOptions
 from modelon.impact.client.sal.service import Service
 
@@ -141,7 +144,21 @@ class CustomFunction(CustomFunctionInterface):
                 )
 
             parameter = new._param_by_name[name]
-            parameter.value = value
+            if parameter.type == "ExperimentResult" and isinstance(value, str):
+                exp_info = self._sal.workspace.experiment_get(self._workspace_id, value)
+                parameter.value = ExperimentReference(
+                    self._workspace_id, value, self._sal, exp_info
+                )
+            elif parameter.type == "CaseResult" and isinstance(value, str):
+                experiment_id, case_id = value.split("/")
+                case_info = self._sal.experiment.case_get(
+                    self._workspace_id, experiment_id, case_id
+                )
+                parameter.value = CaseReference(
+                    case_id, self._workspace_id, experiment_id, self._sal, case_info
+                )
+            else:
+                parameter.value = value
 
         return new
 

@@ -14,7 +14,10 @@ import modelon.impact.client.sal.service
 from modelon.impact.client import exceptions
 from modelon.impact.client.configuration import get_client_interactive, get_client_url
 from modelon.impact.client.credential_manager import CredentialManager
+from modelon.impact.client.entities.case import Case
 from modelon.impact.client.entities.experiment import Experiment
+from modelon.impact.client.entities.interfaces.case import CaseReference
+from modelon.impact.client.entities.interfaces.experiment import ExperimentReference
 from modelon.impact.client.entities.model_executable import ModelExecutable
 from modelon.impact.client.entities.project import (
     Project,
@@ -734,6 +737,16 @@ class Client:
         """
         user = self._sal.users.get_me()["data"]
         return User.from_dict(user)
+
+    def create_entity_from_reference(
+        self, reference: Union[ExperimentReference, CaseReference]
+    ) -> Union[Experiment, Case]:
+        if isinstance(reference, ExperimentReference):
+            return Experiment.from_reference(reference)
+        elif isinstance(reference, CaseReference):
+            return Case.from_reference(reference)
+        else:
+            raise ValueError(f"Unsupported value type for reference: {type(reference)}")
 
 
 @dataclass

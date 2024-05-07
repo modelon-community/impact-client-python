@@ -10,8 +10,7 @@ from modelon.impact.client import exceptions
 from modelon.impact.client.entities.asserts import assert_successful_operation
 from modelon.impact.client.entities.custom_function import CustomFunction
 from modelon.impact.client.entities.external_result import ExternalResult
-from modelon.impact.client.entities.interfaces.case import CaseInterface
-from modelon.impact.client.entities.interfaces.experiment import ExperimentReference
+from modelon.impact.client.entities.interfaces.case import CaseReference
 from modelon.impact.client.entities.log import Log
 from modelon.impact.client.entities.model import (
     Model,
@@ -377,7 +376,7 @@ class CaseInput:
         return self._data["fmu_base_parametrization"]
 
 
-class Case(CaseInterface):
+class Case(CaseReference):
     """Class containing Case functionalities."""
 
     __slots__ = ["_case_id", "_workspace_id", "_exp_id", "_sal", "_info"]
@@ -409,16 +408,6 @@ class Case(CaseInterface):
             )
 
         return self._info
-
-    @property
-    def id(self) -> str:
-        """Case id."""
-        return self._case_id
-
-    @property
-    def experiment_id(self) -> str:
-        """Experiment id."""
-        return self._exp_id
 
     @property
     def info(self) -> Dict[str, Any]:
@@ -738,7 +727,12 @@ class Case(CaseInterface):
 
         """
         fmu_id = self.input.fmu_id
-
+        if not fmu_id:
+            custom_function = self._get_custom_function()
+            for param in custom_function.parameter_values.values():
+                if isinstance(param, CaseReference):
+                    case = self.from_reference(param)
+                    fmu_id = case.input.fmu_id
         return ModelExecutable(self._workspace_id, fmu_id, self._sal)
 
     def sync(self) -> None:
@@ -793,41 +787,13 @@ class Case(CaseInterface):
         custom_function_meta = self._sal.custom_function.custom_function_get(
             self._workspace_id, self.input.analysis.analysis_function
         )
-        custom_function = CustomFunction(
+        custom_function_params = self.input.analysis.parameters
+        return CustomFunction(
             self._workspace_id,
             custom_function_meta["name"],
             custom_function_meta["parameters"],
             self._sal,
-        )
-        custom_function_params_override = self.input.analysis.parameters.copy()
-        self._update_overide_for_special_cf_types(
-            custom_function, custom_function_params_override
-        )
-        return custom_function.with_parameters(**custom_function_params_override)
-
-    def _update_overide_for_special_cf_types(
-        self,
-        custom_function: CustomFunction,
-        custom_function_params_override: Dict[str, Any],
-    ) -> None:
-        for param in custom_function._param_by_name.values():
-            param_override = custom_function_params_override.get(param.name)
-            if param_override:
-                if param.type == "ExperimentResult":
-                    exp_info = self._sal.workspace.experiment_get(
-                        self._workspace_id, param_override
-                    )
-                    custom_function_params_override[param.name] = ExperimentReference(
-                        self._workspace_id, param_override, self._sal, exp_info
-                    )
-                elif param.type == "CaseResult":
-                    experiment_id, case_id = param_override.split("/")
-                    case_info = self._sal.experiment.case_get(
-                        self._workspace_id, experiment_id, case_id
-                    )
-                    custom_function_params_override[param.name] = Case(
-                        case_id, self._workspace_id, experiment_id, self._sal, case_info
-                    )
+        ).with_parameters(**custom_function_params)
 
     def get_definition(self) -> SimpleModelicaExperimentDefinition:
         """Get an experiment definition that can be used to reproduce this case result.
@@ -841,12 +807,7 @@ class Case(CaseInterface):
 
         """
         custom_function = self._get_custom_function()
-        if self.input.fmu_id:
-            fmu = self.get_fmu()
-        else:
-            for param in custom_function.parameter_values.values():
-                if isinstance(param, Case):
-                    fmu = param.get_fmu()
+        fmu = self.get_fmu()
         model = Model(
             fmu.input.class_name,
             workspace_id=self._workspace_id,
@@ -888,3 +849,13 @@ class Case(CaseInterface):
     def from_operation(cls, operation: BaseOperation[Case], **kwargs: Any) -> Case:
         assert isinstance(operation, CaseOperation)
         return cls(**kwargs, service=operation._sal)
+
+    @classmethod
+    def from_reference(cls, reference: CaseReference) -> Case:
+        return cls(
+            case_id=reference._case_id,
+            workspace_id=reference._workspace_id,
+            exp_id=reference._exp_id,
+            service=reference._sal,
+            info=reference._info,
+        )

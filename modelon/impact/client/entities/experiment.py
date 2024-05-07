@@ -721,41 +721,13 @@ class Experiment(ExperimentReference):
         custom_function_meta = self._sal.custom_function.custom_function_get(
             self._workspace_id, self.custom_function
         )
-        custom_function = CustomFunction(
+        custom_function_params = analysis["parameters"]
+        return CustomFunction(
             self._workspace_id,
             custom_function_meta["name"],
             custom_function_meta["parameters"],
             self._sal,
-        )
-        custom_function_params_override = analysis["parameters"].copy()
-        self._update_overide_for_special_cf_types(
-            custom_function, custom_function_params_override
-        )
-        return custom_function.with_parameters(**custom_function_params_override)
-
-    def _update_overide_for_special_cf_types(
-        self,
-        custom_function: CustomFunction,
-        custom_function_params_override: Dict[str, Any],
-    ) -> None:
-        for param in custom_function._param_by_name.values():
-            param_override = custom_function_params_override.get(param.name)
-            if param_override:
-                if param.type == "ExperimentResult":
-                    exp_info = self._sal.workspace.experiment_get(
-                        self._workspace_id, param_override
-                    )
-                    custom_function_params_override[param.name] = Experiment(
-                        self._workspace_id, param_override, self._sal, exp_info
-                    )
-                elif param.type == "CaseResult":
-                    experiment_id, case_id = param_override.split("/")
-                    case_info = self._sal.experiment.case_get(
-                        self._workspace_id, experiment_id, case_id
-                    )
-                    custom_function_params_override[param.name] = Case(
-                        case_id, self._workspace_id, experiment_id, self._sal, case_info
-                    )
+        ).with_parameters(**custom_function_params)
 
     def _get_expansion_algorithm(
         self, algorithm: str, parameters: Dict[str, Any]
@@ -768,3 +740,12 @@ class Experiment(ExperimentReference):
             )
         else:
             return FullFactorial()
+
+    @classmethod
+    def from_reference(cls, reference: ExperimentReference) -> Experiment:
+        return cls(
+            workspace_id=reference._workspace_id,
+            exp_id=reference._exp_id,
+            service=reference._sal,
+            info=reference._info,
+        )

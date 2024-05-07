@@ -5,6 +5,8 @@ import pytest
 import modelon.impact.client.exceptions as exceptions
 import modelon.impact.client.sal.exceptions as sal_exceptions
 from modelon.impact.client import Client, ProjectType, StorageLocation
+from modelon.impact.client.entities.case import Case
+from modelon.impact.client.entities.experiment import Experiment
 from modelon.impact.client.entities.project import Project
 from modelon.impact.client.entities.workspace import Workspace, WorkspaceDefinition
 from modelon.impact.client.operations.experiment import ExperimentOperation
@@ -13,6 +15,8 @@ from tests.files.paths import get_archived_project_path, get_archived_workspace_
 from tests.impact.client.helpers import (
     ClientHelper,
     IDs,
+    create_case_reference,
+    create_experiment_reference,
     create_workspace_conversion_operation,
     get_test_workspace_definition,
 )
@@ -346,3 +350,19 @@ class TestClient:
         assert user.firstname is None
         assert user.last_name is None
         assert user.email == IDs.MOCK_EMAIL
+
+    @pytest.mark.vcr()
+    def test_create_entity_from_reference(self, client_helper: ClientHelper):
+        case_ref = create_case_reference(
+            workspace_id=IDs.WORKSPACE_ID_PRIMARY,
+            case_id=IDs.CASE_ID_PRIMARY,
+            exp_id=IDs.EXPERIMENT_ID_PRIMARY,
+        )
+        case = client_helper.client.create_entity_from_reference(case_ref)
+        assert isinstance(case, Case)
+
+        experiment_ref = create_experiment_reference(
+            workspace_id=IDs.WORKSPACE_ID_PRIMARY, exp_id=IDs.EXPERIMENT_ID_PRIMARY
+        )
+        experiment = client_helper.client.create_entity_from_reference(experiment_ref)
+        assert isinstance(experiment, Experiment)
