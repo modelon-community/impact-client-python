@@ -6,6 +6,8 @@ from modelon.impact.client.entities.case import Case
 from modelon.impact.client.entities.custom_function import CustomFunction
 from modelon.impact.client.entities.experiment import Experiment, _Workflow
 from modelon.impact.client.entities.external_result import ExternalResult
+from modelon.impact.client.entities.interfaces.case import CaseReference
+from modelon.impact.client.entities.interfaces.experiment import ExperimentReference
 from modelon.impact.client.entities.model import CompilationOperations, Model
 from modelon.impact.client.entities.model_executable import ModelExecutable
 from modelon.impact.client.entities.workspace import (
@@ -500,6 +502,14 @@ def create_model_exe_entity(
 
 def create_experiment_entity(workspace_id, exp_id, service=None, info=None):
     return Experiment(workspace_id, exp_id, service or MagicMock(), info)
+
+
+def create_experiment_reference(workspace_id, exp_id, service=None, info=None):
+    return ExperimentReference(workspace_id, exp_id, service or MagicMock(), info)
+
+
+def create_case_reference(workspace_id, case_id, exp_id, service=None, info=None):
+    return CaseReference(case_id, workspace_id, exp_id, service or MagicMock(), info)
 
 
 def create_case_entity(case_id, workspace_id, exp_id, service=None, info=None):

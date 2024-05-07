@@ -81,9 +81,7 @@ class TestCustomFunction:
     def test_custom_function_with_parameters_cannot_set_experiment_result_type(
         self, custom_function
     ):
-        pytest.raises(
-            ValueError, custom_function.with_parameters, p6="not an experiment"
-        )
+        pytest.raises(ValueError, custom_function.with_parameters, p6=True)
 
     def test_custom_function_with_parameters_cannot_set_case_result_type(
         self, custom_function
