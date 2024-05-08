@@ -351,18 +351,22 @@ class TestClient:
         assert user.last_name is None
         assert user.email == IDs.MOCK_EMAIL
 
+    @pytest.mark.experimental
     @pytest.mark.vcr()
-    def test_create_entity_from_reference(self, client_helper: ClientHelper):
+    def test_get_case_by_reference(self, client_helper: ClientHelper):
         case_ref = create_case_reference(
             workspace_id=IDs.WORKSPACE_ID_PRIMARY,
             case_id=IDs.CASE_ID_PRIMARY,
             exp_id=IDs.EXPERIMENT_ID_PRIMARY,
         )
-        case = client_helper.client.create_entity_from_reference(case_ref)
+        case = client_helper.client.get_case_by_reference(case_ref)
         assert isinstance(case, Case)
 
+    @pytest.mark.experimental
+    @pytest.mark.vcr()
+    def test_get_experiment_by_reference(self, client_helper: ClientHelper):
         experiment_ref = create_experiment_reference(
             workspace_id=IDs.WORKSPACE_ID_PRIMARY, exp_id=IDs.EXPERIMENT_ID_PRIMARY
         )
-        experiment = client_helper.client.create_entity_from_reference(experiment_ref)
+        experiment = client_helper.client.get_experiment_by_reference(experiment_ref)
         assert isinstance(experiment, Experiment)
