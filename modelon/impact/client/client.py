@@ -741,6 +741,22 @@ class Client:
     def create_entity_from_reference(
         self, reference: Union[ExperimentReference, CaseReference]
     ) -> Union[Experiment, Case]:
+        """Return the Experiment or Case entity given a reference class.
+
+        Args:
+            reference: An ExperimentReference or a CaseReference class object.
+
+        Returns:
+            An Experiment or a Case entity class object.
+
+        Example::
+
+            case_def = case.get_definition()
+            baseline_case_ref = case_def.custom_function.parameter_values[
+                "baseline_case"]
+            case = client.create_entity_from_reference(baseline_case_ref)
+
+        """
         if isinstance(reference, ExperimentReference):
             return Experiment.from_reference(reference)
         elif isinstance(reference, CaseReference):
