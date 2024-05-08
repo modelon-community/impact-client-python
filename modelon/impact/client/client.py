@@ -12,7 +12,11 @@ import modelon.impact.client.jupyterhub
 import modelon.impact.client.sal.exceptions
 import modelon.impact.client.sal.service
 from modelon.impact.client import exceptions
-from modelon.impact.client.configuration import get_client_interactive, get_client_url
+from modelon.impact.client.configuration import (
+    Experimental,
+    get_client_interactive,
+    get_client_url,
+)
 from modelon.impact.client.credential_manager import CredentialManager
 from modelon.impact.client.entities.case import Case
 from modelon.impact.client.entities.experiment import Experiment
@@ -738,31 +742,45 @@ class Client:
         user = self._sal.users.get_me()["data"]
         return User.from_dict(user)
 
-    def create_entity_from_reference(
-        self, reference: Union[ExperimentReference, CaseReference]
-    ) -> Union[Experiment, Case]:
-        """Return the Experiment or Case entity given a reference class.
+    @Experimental
+    def get_case_by_reference(self, reference: CaseReference) -> Case:
+        """Return the Case class object given a CaseReference class.
 
         Args:
-            reference: An ExperimentReference or a CaseReference class object.
+            reference: A CaseReference class object.
 
         Returns:
-            An Experiment or a Case entity class object.
+            A Case class object.
 
         Example::
 
             case_def = case.get_definition()
             baseline_case_ref = case_def.custom_function.parameter_values[
                 "baseline_case"]
-            case = client.create_entity_from_reference(baseline_case_ref)
+            case = client.get_case_by_reference(baseline_case_ref)
 
         """
-        if isinstance(reference, ExperimentReference):
-            return Experiment.from_reference(reference)
-        elif isinstance(reference, CaseReference):
-            return Case.from_reference(reference)
-        else:
-            raise ValueError(f"Unsupported value type for reference: {type(reference)}")
+        return Case.from_reference(reference)
+
+    @Experimental
+    def get_experiment_by_reference(self, reference: ExperimentReference) -> Experiment:
+        """Return the Experiment class object given a ExperimentReference class.
+
+        Args:
+            reference: An ExperimentReference class object.
+
+        Returns:
+            An Experiment class object.
+
+        Example::
+
+            exp_def = experiment.get_definition()
+            experiment_ref = exp_def.custom_function.parameter_values[
+                "reference_experiment"]
+            exp = client.get_experiment_by_reference(experiment_ref)
+
+        """
+        return Experiment.from_reference(reference)
 
 
 @dataclass
