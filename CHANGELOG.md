@@ -1,3 +1,21 @@
+# [3.20.0](https://github.com/modelon-community/impact-client-python/compare/v3.19.0...v3.20.0) (2024-05-08)
+
+
+### Bug Fixes
+
+* added a ParameterDict class for custom function parameters that has a special method to convert to raw dict ([9c8699c](https://github.com/modelon-community/impact-client-python/commit/9c8699c8691bbea6afbfc286190ef10509ea93c1))
+* added support for fetching param values as objects from Case definition ([39f63cf](https://github.com/modelon-community/impact-client-python/commit/39f63cfbdf9d70c68776ff032180e433aed53818))
+* added support to retrieve ExperimentResult object when fetching definition from experiment ([942c406](https://github.com/modelon-community/impact-client-python/commit/942c4061378911d39ba17af3f7d3010e9ac612d6))
+* assert for types in parameter values ([d3ba36f](https://github.com/modelon-community/impact-client-python/commit/d3ba36f9709b77821117d719410874a995f4ff49))
+* created a reference class for experiment and case entities and a method to regenerate entities from references ([694fd39](https://github.com/modelon-community/impact-client-python/commit/694fd3989b0c66df77aee416605b29640232865a))
+* defaultValue should be an optional value in Custom functions ([459787e](https://github.com/modelon-community/impact-client-python/commit/459787e90d311cf5843cd1b860a80be5b618fc41))
+* split entity from ref into seperate methods and made them experimental ([d982b17](https://github.com/modelon-community/impact-client-python/commit/d982b17b57d70e77ff655c3dbd1b77f15da8a4c9))
+
+
+### Features
+
+* added support for new custom function parameter data types ([0fc8a62](https://github.com/modelon-community/impact-client-python/commit/0fc8a62d9f2a252949d489622d0dfa2712f4e828))
+
 # [3.19.0](https://github.com/modelon-community/impact-client-python/compare/v3.18.1...v3.19.0) (2024-05-03)
 
 
