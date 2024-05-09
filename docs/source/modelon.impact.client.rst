@@ -9,7 +9,6 @@ Subpackages
 
    modelon.impact.client.entities
    modelon.impact.client.experiment_definition
-   modelon.impact.client.jupyterhub
    modelon.impact.client.operations
    modelon.impact.client.sal
 
