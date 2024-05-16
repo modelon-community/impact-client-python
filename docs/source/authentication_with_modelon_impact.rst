@@ -5,28 +5,34 @@ This page explains how to authenticate and login to the Modelon Impact server fr
 in various environments.
 
 The cloud/on-premise architecture for Modelon Impact uses an API key to authenticate against the Modelon 
-Impact server operating inside the JupyterHub environment. If the client library is used within the
-JupyterHub environment, this is likewise handled automatically based on the key stored in the environmental
-variable ``MODELON_IMPACT_CLIENT_API_KEY``.
+Impact server. In order to work with Modelon Impact REST API, a non-browser code needs to pass 
+``impact-api-key: <api key>`` header with all requests. The Python Client() constructor will set this 
+header using the value of API key looked up in the following preference order:
+
+1. API key stored in environment variable - ``MODELON_IMPACT_CLIENT_API_KEY``
+2. API key saved in file - ``~/.impact/api.key`` file
+3. API key set via interactive prompt(if interactive is set to True)
+
+The ``MODELON_IMPACT_CLIENT_API_KEY`` environment variable is automatically set with a temporary user 
+specific API key inside the Modelon Impact environment. Therefore explicit user input is not necessary 
+when the Python client is used in a script, notebook or custom function running within the Modelon Impact 
+by a logged in user.
 
 The python client could be easily initialized as follows for a user accessing the client library 
-in the JupyterHub environment:
+from inside Modelon Impact:
 
 .. code-block:: pycon
 
     >>>> from modelon.impact.client import Client
     >>>> client = Client()
 
+**Note**:- This section is **ONLY** applicable for users using the client library outside of
+the Modelon Impact.
 
-Authentication outside JupyterHub environment
-*********************************************
-
-**Note**:- This section is **ONLY** applicable for users using the client library used outside of
-the JupyterHub environment.
-
-If this client library is used outside of the environment, such as from your desktop, the Modelon Impact API 
-must be provided either interactively or in the environment variable ``MODELON_IMPACT_CLIENT_API_KEY``. The 
-below sections will cover details to generate an API key to log in to the client.
+When using Python client from outside Modelon Impact, e.g., from a desktop, the API key needs to be generated 
+via user interface.The Modelon Impact API must then be provided either interactively or in the 
+environment variable ``MODELON_IMPACT_CLIENT_API_KEY``. The below sections will cover details to generate 
+an API key to log in to the client.
 
 
 Modelon Impact API key generation
