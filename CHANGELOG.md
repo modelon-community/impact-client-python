@@ -1,3 +1,16 @@
+# [4.0.0](https://github.com/modelon-community/impact-client-python/compare/v3.20.0...v4.0.0) (2024-05-17)
+
+
+### Features
+
+* update Modelon Impact compatibility version range ([b27c8a8](https://github.com/modelon-community/impact-client-python/commit/b27c8a8eda08c15d91d786f8b9842e6b0092bd30))
+* updated the python client to use the new api key based workflow ([dec6145](https://github.com/modelon-community/impact-client-python/commit/dec6145fa60e2e8722d8a340c088330b9f71b24b))
+
+
+### BREAKING CHANGES
+
+* updated the minimum api compatibility to 4.11.0
+
 # [3.20.0](https://github.com/modelon-community/impact-client-python/compare/v3.19.0...v3.20.0) (2024-05-08)
 
 
