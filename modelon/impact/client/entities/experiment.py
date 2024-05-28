@@ -343,7 +343,6 @@ class Experiment(ExperimentReference):
             experiment.get_variables()
 
         """
-        _assert_experiment_is_complete(self.run_info.status, "Simulation")
         return self._sal.experiment.result_variables_get(
             self._workspace_id, self._exp_id
         )
@@ -413,7 +412,6 @@ class Experiment(ExperimentReference):
                 "Please specify the list of result keys for the trajectories of "
                 "intrest!"
             )
-        _assert_experiment_is_complete(self.run_info.status, "Simulation")
         assert_variable_in_result(variables, self.get_variables())
 
         return self._sal.experiment.trajectories_get(
