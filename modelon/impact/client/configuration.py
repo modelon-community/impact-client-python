@@ -1,6 +1,7 @@
 import logging
 import os
 from typing import Any, Callable
+from functools import lru_cache
 
 logger = logging.getLogger(__name__)
 
@@ -27,7 +28,7 @@ def get_client_interactive() -> bool:
     interactive_env = os.environ.get("MODELON_IMPACT_CLIENT_INTERACTIVE", "false")
     return interactive_env.lower() in ("1", "true")
 
-
+@lru_cache(maxsize=1)
 def get_client_experimental() -> bool:
     """Returns the default for if experimental client methods should be enabled or not.
 

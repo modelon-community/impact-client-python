@@ -5,8 +5,12 @@ import enum
 import logging
 from dataclasses import dataclass
 from typing import Any, Dict, Iterable, List, Optional, Union
+from urllib.parse import urlparse
+import uuid
 
 from semantic_version import SimpleSpec, Version  # type: ignore
+
+from paho.mqtt import client as mqtt_client_module
 
 import modelon.impact.client.sal.exceptions
 from modelon.impact.client import exceptions
@@ -14,6 +18,7 @@ from modelon.impact.client.configuration import (
     Experimental,
     get_client_interactive,
     get_client_url,
+    get_client_experimental
 )
 from modelon.impact.client.credential_manager import CredentialManager
 from modelon.impact.client.entities.case import Case
@@ -266,6 +271,55 @@ class Client:
 
         # TODO Update to use the unprotected API route https://impact.modelon.cloud/api
         self._validate_compatible_api_version()
+
+        if get_client_experimental():
+            try:
+
+                self._mqtt_id = "python-client-" + str(uuid.uuid4())
+                self._mqtt_id = "python-client"
+                sal = self._sal
+                _mqtt_uri =  urlparse(str(sal._base_uri).removesuffix("impact") + "proxy/11111/mqtt")
+                _mqtt_headers = {'impact-api-key': sal._http_client._context.session.headers['impact-api-key']}
+
+                _mqtt_client = mqtt_client_module.Client(self._mqtt_id, transport="websockets")
+                self._mqtt_callback = None
+                def on_message(client, userdata, msg, this_client=self):
+                    if self._mqtt_callback:
+                        self._mqtt_callback(client, userdata, msg)
+
+                _mqtt_client.on_message = on_message
+
+                def on_disconnect(client, userdata, rc):
+                    print(f"MQTT disconnect with rc {str(rc)}")
+
+                def on_connect(mqttc, userdata, flags, rc=0):
+                    print(f"on_connect called with flags {str(flags)} and rc: {str(rc)}")
+                    qos = 1
+                    topic = "progress/#"
+                    mqttc.subscribe(topic, qos)
+
+                _mqtt_client.on_connect = on_connect
+                _mqtt_client.on_disconnect = on_disconnect
+
+                if _mqtt_uri.scheme == 'https':
+                    _mqtt_client.tls_set()
+                    _mqtt_port = 443
+                    _mqtt_host = _mqtt_uri.netloc
+                else:
+                    _mqtt_host = _mqtt_uri.netloc.split(':')[0]
+                    _mqtt_port = 11111
+            
+                _mqtt_client.ws_set_options(path=_mqtt_uri.path, headers=_mqtt_headers)
+            
+                _mqtt_client.connect(_mqtt_host, port=_mqtt_port)
+                qos = 1
+                topic = "progress/#"
+                _mqtt_client.subscribe(topic, qos)
+
+                self._mqtt_client = _mqtt_client
+            except Exception as e:
+                logger.warning( "Could not connect to mqtt broker [%s]", str(e))
+                self._mqtt_client = None
 
     def _validate_compatible_api_version(self) -> None:
         try:

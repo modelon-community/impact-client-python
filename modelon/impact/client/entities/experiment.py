@@ -5,6 +5,7 @@ import logging
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Union
 
 from modelon.impact.client import exceptions
+from modelon.impact.client.configuration import get_client_experimental
 from modelon.impact.client.entities.asserts import assert_variable_in_result
 from modelon.impact.client.entities.case import Case
 from modelon.impact.client.entities.custom_function import CustomFunction
@@ -343,6 +344,8 @@ class Experiment(ExperimentReference):
             experiment.get_variables()
 
         """
+        if not get_client_experimental():
+            _assert_experiment_is_complete(self.run_info.status, "Simulation")
         return self._sal.experiment.result_variables_get(
             self._workspace_id, self._exp_id
         )
@@ -412,6 +415,8 @@ class Experiment(ExperimentReference):
                 "Please specify the list of result keys for the trajectories of "
                 "intrest!"
             )
+        if not get_client_experimental():
+            _assert_experiment_is_complete(self.run_info.status, "Simulation")
         assert_variable_in_result(variables, self.get_variables())
 
         return self._sal.experiment.trajectories_get(

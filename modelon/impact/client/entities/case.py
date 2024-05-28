@@ -7,6 +7,7 @@ from datetime import datetime
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Text, Tuple, Union
 
 from modelon.impact.client import exceptions
+from modelon.impact.client.configuration import get_client_experimental
 from modelon.impact.client.entities.asserts import assert_successful_operation
 from modelon.impact.client.entities.custom_function import CustomFunction
 from modelon.impact.client.entities.external_result import ExternalResult
@@ -628,6 +629,8 @@ class Case(CaseReference):
             time = res['time']
 
         """
+        if not get_client_experimental():
+            _assert_case_is_complete(self.run_info.status, "Simulation")
         return Result(
             self._sal.experiment.result_variables_get(self._workspace_id, self._exp_id),
             self._case_id,
