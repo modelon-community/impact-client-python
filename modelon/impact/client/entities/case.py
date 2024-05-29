@@ -394,6 +394,7 @@ class Case(CaseReference):
         self._exp_id = exp_id
         self._sal = service
         self._info = info
+        super().__init__(case_id, workspace_id, exp_id, service, info)
 
     def __eq__(self, obj: object) -> bool:
         return isinstance(obj, Case) and obj._case_id == self._case_id
