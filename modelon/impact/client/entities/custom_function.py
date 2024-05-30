@@ -3,6 +3,10 @@ from __future__ import annotations
 import logging
 from typing import TYPE_CHECKING, Any, Dict, List, Optional
 
+from modelon.impact.client.entities.file_uri import (
+    FileURI,
+    get_resource_reference_from_str,
+)
 from modelon.impact.client.entities.interfaces.case import CaseInterface, CaseReference
 from modelon.impact.client.entities.interfaces.custom_function import (
     CustomFunctionInterface,
@@ -38,6 +42,7 @@ class _Parameter:
         "Enumeration": (str,),
         "CaseResult": (CaseInterface,),
         "ExperimentResult": (ExperimentInterface,),
+        "FileURI": (FileURI,),
     }
 
     def __init__(self, name: str, value: Any, value_type: str, valid_values: List[Any]):
@@ -81,6 +86,8 @@ class ParameterDict(dict):
                 new_dict[key] = value.id
             elif isinstance(value, CaseInterface):
                 new_dict[key] = f"{value.experiment_id}/{value.id}"
+            elif isinstance(value, FileURI):
+                new_dict[key] = str(value)
             else:
                 new_dict[key] = value
         return new_dict
@@ -157,6 +164,8 @@ class CustomFunction(CustomFunctionInterface):
                 parameter.value = CaseReference(
                     case_id, self._workspace_id, experiment_id, self._sal, case_info
                 )
+            elif parameter.type == "FileURI" and isinstance(value, str):
+                parameter.value = get_resource_reference_from_str(value)
             else:
                 parameter.value = value
 

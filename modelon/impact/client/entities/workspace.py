@@ -11,6 +11,7 @@ from modelon.impact.client.configuration import Experimental
 from modelon.impact.client.entities.custom_function import CustomFunction
 from modelon.impact.client.entities.experiment import Experiment
 from modelon.impact.client.entities.external_result import ExternalResult
+from modelon.impact.client.entities.file_uri import ModelicaResourceReference
 from modelon.impact.client.entities.interfaces.workspace import WorkspaceInterface
 from modelon.impact.client.entities.model import Model
 from modelon.impact.client.entities.model_executable import ModelExecutable
@@ -1273,3 +1274,22 @@ class Workspace(WorkspaceInterface):
             definition=PublishedWorkspaceDefinition.from_dict(published_workspaces[0]),
             service=self._sal,
         )
+
+    @Experimental
+    def get_modelica_resource_reference(
+        self, library: str, resource_path: str
+    ) -> ModelicaResourceReference:
+        """Returns a ModelicaResourceReference class.
+
+        Returns:
+            The ModelicaResourceReference class object.
+
+        Example::
+
+            modelica_resource_ref = workspace.get_modelica_resource_reference(
+                library,
+                resource_path
+            )
+
+        """
+        return ModelicaResourceReference(library=library, resource_path=resource_path)
