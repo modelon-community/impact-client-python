@@ -10,7 +10,9 @@ from tests.impact.client.helpers import (
     ClientHelper,
     IDs,
     create_case_entity,
+    create_custom_artifact_entity,
     create_experiment_entity,
+    create_workspace_entity,
 )
 
 
@@ -20,12 +22,26 @@ class TestCustomFunction:
         dynamic = workspace.get_custom_function("dynamic")
         return dynamic
 
+    @pytest.mark.experimental
     def test_custom_function_with_parameters_ok(self, custom_function):
+        workspace = create_workspace_entity(IDs.WORKSPACE_ID_PRIMARY)
         experiment = create_experiment_entity(
             IDs.WORKSPACE_ID_PRIMARY, IDs.EXPERIMENT_ID_PRIMARY
         )
         case = create_case_entity(
             IDs.CASE_ID_PRIMARY, IDs.WORKSPACE_ID_PRIMARY, IDs.EXPERIMENT_ID_PRIMARY
+        )
+        custom_artifact_uri = create_custom_artifact_entity(
+            IDs.CASE_ID_PRIMARY,
+            IDs.WORKSPACE_ID_PRIMARY,
+            IDs.EXPERIMENT_ID_PRIMARY,
+            IDs.CUSTOM_ARTIFACT_ID,
+            IDs.CUSTOM_ARTIFACT_ID + ".mat",
+        ).get_uri()
+        library = "Modelica"
+        resource_path = IDs.MODELICA_RESOURCE_PATH
+        modelica_resource_uri = workspace.get_modelica_resource_uri(
+            library, resource_path
         )
         new = custom_function.with_parameters(
             p1=3.4,
@@ -35,6 +51,8 @@ class TestCustomFunction:
             p5=4,
             p6=experiment,
             p7=case,
+            p8=custom_artifact_uri,
+            p9=modelica_resource_uri,
         )
         assert new.parameter_values == {
             "p1": 3.4,
@@ -44,6 +62,8 @@ class TestCustomFunction:
             "p5": 4.0,
             "p6": experiment,
             "p7": case,
+            "p8": custom_artifact_uri,
+            "p9": modelica_resource_uri,
         }
         assert new.parameter_values.as_raw_dict() == {
             "p1": 3.4,
@@ -53,6 +73,8 @@ class TestCustomFunction:
             "p5": 4.0,
             "p6": experiment.id,
             "p7": f"{case.experiment_id}/{case.id}",
+            "p8": str(custom_artifact_uri),
+            "p9": str(modelica_resource_uri),
         }
 
     def test_custom_function_with_parameters_no_such_parameter(self, custom_function):
@@ -87,6 +109,11 @@ class TestCustomFunction:
         self, custom_function
     ):
         pytest.raises(ValueError, custom_function.with_parameters, p7="not a case")
+
+    def test_custom_function_with_parameters_cannot_set_file_uri_type(
+        self, custom_function
+    ):
+        pytest.raises(ValueError, custom_function.with_parameters, p8="not a file uri")
 
     def test_custom_function_with_parameters_cannot_set_enumeration_value(
         self, custom_function
