@@ -1,3 +1,17 @@
+# [4.1.0](https://github.com/modelon-community/impact-client-python/compare/v4.0.0...v4.1.0) (2024-05-31)
+
+
+### Bug Fixes
+
+* added super function to Case entity to pass attribues to base class ([04181e0](https://github.com/modelon-community/impact-client-python/commit/04181e034ad8333c1c11b27c4d78569b0d97cd97))
+* move CustomArtifact class from case entity and added a reference base entity for it ([85e982a](https://github.com/modelon-community/impact-client-python/commit/85e982ae9a6633a0a49bb010e8dcc3018523392c))
+* rename CustomArtifactReference -> CustomArtifactURI and ModelicaResourceReference -> ModelicaResourceURI ([ca38950](https://github.com/modelon-community/impact-client-python/commit/ca3895061ba0c25346466f6f436c2d8239fd9ad5))
+
+
+### Features
+
+* support for FileURI data type in custom function ([f5bafa2](https://github.com/modelon-community/impact-client-python/commit/f5bafa2909ff0e97ae782ec7e13c758d602c25e6))
+
 # [4.0.0](https://github.com/modelon-community/impact-client-python/compare/v3.20.0...v4.0.0) (2024-05-17)
 
 
