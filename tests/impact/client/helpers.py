@@ -3,6 +3,7 @@ from unittest.mock import MagicMock
 
 from modelon.impact.client import Client, Range, SimpleModelicaExperimentDefinition
 from modelon.impact.client.entities.case import Case
+from modelon.impact.client.entities.custom_artifact import CustomArtifact
 from modelon.impact.client.entities.custom_function import CustomFunction
 from modelon.impact.client.entities.experiment import Experiment, _Workflow
 from modelon.impact.client.entities.external_result import ExternalResult
@@ -215,6 +216,12 @@ class IDs:
     FILTER_MODELICA_CLASS_PATH = "Modelica.Blocks.Examples.Filter"
     LOCAL_PROJECT_MODELICA_CLASS_PATH = "Test.PID"
     EXPERIMENT_LABEL = "EXPERIMENT_LABEL"
+    ARTIFACT_RESOURCE_URI = (
+        f"impact-artifact://workspace/{EXPERIMENT_ID_PRIMARY}/"
+        f"{CASE_ID_PRIMARY}/{CUSTOM_ARTIFACT_ID}"
+    )
+    MODELICA_RESOURCE_PATH = "Resources/Data/Electrical/Digital/Memory_Matrix.txt"
+    MODELICA_RESOURCE_URI = f"modelica://Modelica/{MODELICA_RESOURCE_PATH}"
 
 
 UNVERSIONED_PROJECT = {
@@ -515,6 +522,14 @@ def create_case_reference(workspace_id, case_id, exp_id, service=None, info=None
 def create_case_entity(case_id, workspace_id, exp_id, service=None, info=None):
     return Case(
         case_id, workspace_id, exp_id, service or MagicMock(), info or MagicMock()
+    )
+
+
+def create_custom_artifact_entity(
+    case_id, workspace_id, exp_id, artifact_id, download_as
+):
+    return CustomArtifact(
+        workspace_id, exp_id, case_id, artifact_id, download_as, exp_sal=MagicMock()
     )
 
 

@@ -6,6 +6,7 @@ import pytest
 
 from modelon.impact.client import Range, exceptions
 from modelon.impact.client.entities.case import CaseStatus
+from modelon.impact.client.entities.file_uri import CustomArtifactURI
 from tests.impact.client.helpers import (
     ClientHelper,
     IDs,
@@ -259,6 +260,14 @@ class TestCase:
         assert resp == t
         artifact_stream = artifact.get_data()
         assert artifact_stream == b"\x00\x00\x00\x00"
+
+    @pytest.mark.experimental
+    def test_get_custom_artifact_uri(self, experiment):
+        case = experiment.entity.get_case(IDs.CASE_ID_PRIMARY)
+        artifact = case.get_artifact(IDs.CUSTOM_ARTIFACT_ID)
+        artifact_uri = artifact.get_uri()
+        assert isinstance(artifact_uri, CustomArtifactURI)
+        assert str(artifact_uri) == IDs.ARTIFACT_RESOURCE_URI
 
     def test_get_custom_artifact_with_download_as(self, experiment):
         case = experiment.entity.get_case(IDs.CASE_ID_PRIMARY)

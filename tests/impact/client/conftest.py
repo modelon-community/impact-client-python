@@ -288,6 +288,8 @@ def _custom_function_parameter_list():
         {"name": "p5", "defaultValue": 0.0, "type": "Number"},
         {"name": "p6", "defaultValue": "", "type": "ExperimentResult"},
         {"name": "p7", "defaultValue": "", "type": "CaseResult"},
+        {"name": "p8", "defaultValue": "", "type": "FileURI"},
+        {"name": "p9", "defaultValue": "", "type": "FileURI"},
     ]
 
 

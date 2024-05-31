@@ -30,6 +30,7 @@ from tests.impact.client.helpers import (
     ClientHelper,
     IDs,
     create_published_workspace_entity,
+    create_workspace_entity,
 )
 
 
@@ -113,6 +114,15 @@ class TestPublishedWorkspace:
         service.workspace.revoke_group_access.assert_called_with(
             IDs.PUBLISHED_WORKSPACE_ID, IDs.GROUP_NAME
         )
+
+    @pytest.mark.experimental
+    def test_get_modelica_resource_uri(self):
+        service = mock.MagicMock()
+        workspace = create_workspace_entity(IDs.WORKSPACE_ID_PRIMARY, service=service)
+        uri = workspace.get_modelica_resource_uri(
+            library="Modelica", resource_path=IDs.MODELICA_RESOURCE_PATH
+        )
+        assert str(uri) == IDs.MODELICA_RESOURCE_URI
 
     def test_rename_published_workspace(self, publish_workspace):
         workspace = publish_workspace.entity
