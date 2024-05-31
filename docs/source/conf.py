@@ -11,6 +11,7 @@
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
 import os
+import subprocess
 import sys
 
 import sphinx_rtd_theme
@@ -20,12 +21,11 @@ sys.path.insert(0, os.path.abspath("../.."))
 # -- Project information -----------------------------------------------------
 
 project = "Modelon-impact-client"
-copyright = "2020, Modelon"
+copyright = "2020-2024, Modelon"
 author = "Modelon"
 
 # The full version, including alpha/beta/rc tags
-# TODO : Need to ensure version number is set correctly with the release bot.
-release = "1.0.0"
+release = subprocess.check_output(["poetry", "version", "-s"])[:-1].decode()
 master_doc = "index"
 
 # -- General configuration ---------------------------------------------------
