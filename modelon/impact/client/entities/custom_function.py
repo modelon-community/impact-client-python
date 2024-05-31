@@ -3,10 +3,7 @@ from __future__ import annotations
 import logging
 from typing import TYPE_CHECKING, Any, Dict, List, Optional
 
-from modelon.impact.client.entities.file_uri import (
-    FileURI,
-    get_resource_reference_from_str,
-)
+from modelon.impact.client.entities.file_uri import FileURI, get_resource_URI_from_str
 from modelon.impact.client.entities.interfaces.case import CaseInterface, CaseReference
 from modelon.impact.client.entities.interfaces.custom_function import (
     CustomFunctionInterface,
@@ -165,7 +162,7 @@ class CustomFunction(CustomFunctionInterface):
                     case_id, self._workspace_id, experiment_id, self._sal, case_info
                 )
             elif parameter.type == "FileURI" and isinstance(value, str):
-                parameter.value = get_resource_reference_from_str(value)
+                parameter.value = get_resource_URI_from_str(value)
             else:
                 parameter.value = value
 

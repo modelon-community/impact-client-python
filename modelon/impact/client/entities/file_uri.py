@@ -63,7 +63,7 @@ class FileURI(ABC):
         raise NotImplementedError
 
 
-class ModelicaResourceReference(FileURI):
+class ModelicaResourceURI(FileURI):
     def __init__(self, library: str, resource_path: str) -> None:
         self._library = library
         self._resource_path = resource_path
@@ -73,11 +73,11 @@ class ModelicaResourceReference(FileURI):
         return URI.from_str(f"modelica://{self._library}/{self._resource_path}")
 
     @classmethod
-    def from_uri(cls, uri: URI) -> ModelicaResourceReference:
+    def from_uri(cls, uri: URI) -> ModelicaResourceURI:
         return cls(uri.netloc, uri.path)
 
 
-class CustomArtifactReference(FileURI):
+class CustomArtifactURI(FileURI):
     def __init__(self, experiment_id: str, case_id: str, artifact_id: str) -> None:
         self._experiment_id = experiment_id
         self._case_id = case_id
@@ -91,18 +91,18 @@ class CustomArtifactReference(FileURI):
         )
 
     @classmethod
-    def from_uri(cls, uri: URI) -> CustomArtifactReference:
+    def from_uri(cls, uri: URI) -> CustomArtifactURI:
         experiment_id, case_id, artifact_id = uri.path.split("/")
         return cls(experiment_id, case_id, artifact_id)
 
 
-def get_resource_reference_from_str(
+def get_resource_URI_from_str(
     uri_str: str,
-) -> Union[ModelicaResourceReference, CustomArtifactReference]:
+) -> Union[ModelicaResourceURI, CustomArtifactURI]:
     file_uri = URI.from_str(uri_str)
     if file_uri.schema == URISchema.MODELICA:
-        return ModelicaResourceReference.from_uri(file_uri)
+        return ModelicaResourceURI.from_uri(file_uri)
     elif file_uri.schema == URISchema.IMPACT_ARTIFACT:
-        return CustomArtifactReference.from_uri(file_uri)
+        return CustomArtifactURI.from_uri(file_uri)
     else:
         assert_never(file_uri.schema)

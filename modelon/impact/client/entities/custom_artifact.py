@@ -3,7 +3,7 @@ import tempfile
 from typing import Optional, Text, Union
 
 from modelon.impact.client.configuration import Experimental
-from modelon.impact.client.entities.file_uri import CustomArtifactReference
+from modelon.impact.client.entities.file_uri import CustomArtifactURI
 from modelon.impact.client.entities.interfaces.custom_artifact import (
     CustomArtifactInterface,
 )
@@ -92,15 +92,15 @@ class CustomArtifact(CustomArtifactInterface):
         return result_stream
 
     @Experimental
-    def get_uri(self) -> CustomArtifactReference:
-        """Returns a CustomArtifactReference class.
+    def get_uri(self) -> CustomArtifactURI:
+        """Returns a CustomArtifactURI class.
 
         Returns:
-            The CustomArtifactReference class object.
+            The CustomArtifactURI class object.
 
         Example::
 
             artifact_file_uri = artifact.get_uri()
 
         """
-        return CustomArtifactReference(self._exp_id, self._case_id, self._artifact_id)
+        return CustomArtifactURI(self._exp_id, self._case_id, self._artifact_id)
