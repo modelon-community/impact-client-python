@@ -3,10 +3,10 @@ from unittest.mock import MagicMock
 
 from modelon.impact.client import Client, Range, SimpleModelicaExperimentDefinition
 from modelon.impact.client.entities.case import Case
-from modelon.impact.client.entities.custom_artifact import CustomArtifact
 from modelon.impact.client.entities.custom_function import CustomFunction
 from modelon.impact.client.entities.experiment import Experiment, _Workflow
 from modelon.impact.client.entities.external_result import ExternalResult
+from modelon.impact.client.entities.file_uri import CustomArtifactURI
 from modelon.impact.client.entities.interfaces.case import CaseReference
 from modelon.impact.client.entities.interfaces.experiment import ExperimentReference
 from modelon.impact.client.entities.model import CompilationOperations, Model
@@ -525,12 +525,8 @@ def create_case_entity(case_id, workspace_id, exp_id, service=None, info=None):
     )
 
 
-def create_custom_artifact_entity(
-    case_id, workspace_id, exp_id, artifact_id, download_as
-):
-    return CustomArtifact(
-        workspace_id, exp_id, case_id, artifact_id, download_as, exp_sal=MagicMock()
-    )
+def create_custom_artifact_uri_entity(case_id, exp_id, artifact_id):
+    return CustomArtifactURI(exp_id, case_id, artifact_id)
 
 
 def create_external_result_entity(result_id, service=None):

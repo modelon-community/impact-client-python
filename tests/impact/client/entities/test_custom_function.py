@@ -10,7 +10,7 @@ from tests.impact.client.helpers import (
     ClientHelper,
     IDs,
     create_case_entity,
-    create_custom_artifact_entity,
+    create_custom_artifact_uri_entity,
     create_experiment_entity,
     create_workspace_entity,
 )
@@ -31,13 +31,11 @@ class TestCustomFunction:
         case = create_case_entity(
             IDs.CASE_ID_PRIMARY, IDs.WORKSPACE_ID_PRIMARY, IDs.EXPERIMENT_ID_PRIMARY
         )
-        custom_artifact_uri = create_custom_artifact_entity(
+        custom_artifact_uri = create_custom_artifact_uri_entity(
             IDs.CASE_ID_PRIMARY,
-            IDs.WORKSPACE_ID_PRIMARY,
             IDs.EXPERIMENT_ID_PRIMARY,
             IDs.CUSTOM_ARTIFACT_ID,
-            IDs.CUSTOM_ARTIFACT_ID + ".mat",
-        ).get_uri()
+        )
         library = "Modelica"
         resource_path = IDs.MODELICA_RESOURCE_PATH
         modelica_resource_uri = workspace.get_modelica_resource_uri(
