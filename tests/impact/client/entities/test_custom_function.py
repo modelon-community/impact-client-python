@@ -41,6 +41,7 @@ class TestCustomFunction:
         modelica_resource_uri = workspace.get_modelica_resource_uri(
             library, resource_path
         )
+        variable_names = ["var1", "var2"]
         new = custom_function.with_parameters(
             p1=3.4,
             p2=False,
@@ -51,6 +52,7 @@ class TestCustomFunction:
             p7=case,
             p8=custom_artifact_uri,
             p9=modelica_resource_uri,
+            p10=variable_names,
         )
         assert new.parameter_values == {
             "p1": 3.4,
@@ -62,6 +64,7 @@ class TestCustomFunction:
             "p7": case,
             "p8": custom_artifact_uri,
             "p9": modelica_resource_uri,
+            "p10": variable_names,
         }
         assert new.parameter_values.as_raw_dict() == {
             "p1": 3.4,
@@ -73,6 +76,7 @@ class TestCustomFunction:
             "p7": f"{case.experiment_id}/{case.id}",
             "p8": str(custom_artifact_uri),
             "p9": str(modelica_resource_uri),
+            "p10": variable_names,
         }
 
     def test_custom_function_with_parameters_no_such_parameter(self, custom_function):
@@ -117,6 +121,11 @@ class TestCustomFunction:
         self, custom_function
     ):
         pytest.raises(ValueError, custom_function.with_parameters, p3="not in values")
+
+    def test_custom_function_with_parameters_cannot_set_variable_names_value(
+        self, custom_function
+    ):
+        pytest.raises(ValueError, custom_function.with_parameters, p10="not in values")
 
     @pytest.mark.vcr()
     def test_compiler_options(self, client_helper: ClientHelper):
