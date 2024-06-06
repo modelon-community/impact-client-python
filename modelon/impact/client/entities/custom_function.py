@@ -40,6 +40,7 @@ class _Parameter:
         "CaseResult": (CaseInterface,),
         "ExperimentResult": (ExperimentInterface,),
         "FileURI": (FileURI,),
+        "VariableNames": (list,),
     }
 
     def __init__(self, name: str, value: Any, value_type: str, valid_values: List[Any]):
