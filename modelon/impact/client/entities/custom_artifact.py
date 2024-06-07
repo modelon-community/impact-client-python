@@ -1,11 +1,17 @@
+from __future__ import annotations
+
 import os
 import tempfile
-from typing import Optional, Text, Union
+from typing import Any, Optional, Text, Union
 
 from modelon.impact.client.configuration import Experimental
 from modelon.impact.client.entities.file_uri import CustomArtifactURI
 from modelon.impact.client.entities.interfaces.custom_artifact import (
     CustomArtifactInterface,
+)
+from modelon.impact.client.operations.base import BaseOperation
+from modelon.impact.client.operations.custom_artifact import (
+    CustomArtifactImportOperation,
 )
 from modelon.impact.client.sal.experiment import ExperimentService
 
@@ -104,3 +110,10 @@ class CustomArtifact(CustomArtifactInterface):
 
         """
         return CustomArtifactURI(self._exp_id, self._case_id, self._artifact_id)
+
+    @classmethod
+    def from_operation(
+        cls, operation: BaseOperation[CustomArtifact], **kwargs: Any
+    ) -> CustomArtifact:
+        assert isinstance(operation, CustomArtifactImportOperation)
+        return cls(**kwargs, exp_sal=operation._sal.experiment)
