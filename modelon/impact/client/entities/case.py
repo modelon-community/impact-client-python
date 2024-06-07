@@ -20,6 +20,9 @@ from modelon.impact.client.entities.result import Result
 from modelon.impact.client.entities.status import CaseStatus
 from modelon.impact.client.operations.base import BaseOperation
 from modelon.impact.client.operations.case import CaseOperation
+from modelon.impact.client.operations.custom_artifact import (
+    CustomArtifactImportOperation,
+)
 from modelon.impact.client.sal.experiment import ResultFormat
 
 if TYPE_CHECKING:
@@ -778,4 +781,35 @@ class Case(CaseReference):
             exp_id=reference._exp_id,
             service=reference._sal,
             info=reference._info,
+        )
+
+    def import_custom_artifact(
+        self, path_to_artifact: str, artifact_id: str
+    ) -> CustomArtifactImportOperation:
+        """Upload custom artifact to a case.
+
+        Args:
+
+            path_to_artifact: The path for the artifact to be imported.
+            artifact_id: ID of the artifact to be imported.
+
+        Example::
+
+            case.import_custom_artifact('/home/test.csv', artifact_id).wait()
+
+        """
+        resp = self._sal.experiment.custom_artifact_upload(
+            path_to_artifact,
+            self._workspace_id,
+            self._exp_id,
+            self._case_id,
+            artifact_id,
+        )
+        return CustomArtifactImportOperation[CustomArtifact](
+            resp["data"]["location"],
+            self._workspace_id,
+            self._exp_id,
+            self._case_id,
+            self._sal,
+            CustomArtifact.from_operation,
         )

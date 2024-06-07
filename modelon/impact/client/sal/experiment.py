@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import enum
+import json
 from typing import Any, Dict, List, Optional, Text, Tuple, Union
 
 from modelon.impact.client.sal.http import HTTPClient
@@ -191,3 +192,23 @@ class ExperimentService:
             f"{case_id}/custom-artifacts"
         ).resolve()
         return self._http_client.get_json(url)
+
+    def custom_artifact_upload(
+        self,
+        path_to_artifact: str,
+        workspace_id: str,
+        experiment_id: str,
+        case_id: str,
+        artifact_id: str,
+    ) -> Dict[str, Any]:
+        url = (
+            self._base_uri
+            / f"api/workspaces/{workspace_id}/experiments/{experiment_id}/cases/"
+            f"{case_id}/custom-artifacts-imports"
+        ).resolve()
+        with open(path_to_artifact, "rb") as f:
+            multipart_form_data = {
+                "file": f,
+                "options": json.dumps({"artifactId": artifact_id}),
+            }
+            return self._http_client.post_json(url, files=multipart_form_data)
