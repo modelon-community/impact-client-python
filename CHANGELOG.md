@@ -1,3 +1,10 @@
+# [4.2.0](https://github.com/modelon-community/impact-client-python/compare/v4.1.1...v4.2.0) (2024-06-10)
+
+
+### Features
+
+* added support for VariableNames data type for custom function ([14b5d51](https://github.com/modelon-community/impact-client-python/commit/14b5d514154a2f58e3ebedbaeafa00335626ff11))
+
 ## [4.1.1](https://github.com/modelon-community/impact-client-python/compare/v4.1.0...v4.1.1) (2024-06-10)
 
 
