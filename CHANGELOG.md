@@ -1,3 +1,10 @@
+## [4.1.1](https://github.com/modelon-community/impact-client-python/compare/v4.1.0...v4.1.1) (2024-06-10)
+
+
+### Bug Fixes
+
+* added typing-extensions as a dependency to the client ([73f45a2](https://github.com/modelon-community/impact-client-python/commit/73f45a25a32c0689c073294c5cd23045d5767f6d))
+
 # [4.1.0](https://github.com/modelon-community/impact-client-python/compare/v4.0.0...v4.1.0) (2024-05-31)
 
 
