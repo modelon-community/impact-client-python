@@ -786,7 +786,10 @@ class Case(CaseReference):
 
     @Experimental
     def import_custom_artifact(
-        self, path_to_artifact: str, artifact_id: str
+        self,
+        path_to_artifact: str,
+        artifact_id: Optional[str] = None,
+        overwrite: bool = False,
     ) -> CustomArtifactImportOperation:
         """Upload custom artifact to a case.
 
@@ -794,6 +797,9 @@ class Case(CaseReference):
 
             path_to_artifact: The path for the artifact to be imported.
             artifact_id: ID of the artifact to be imported.
+            overwrite: Overwrite, if any already existing artifact exists
+                        with the same ID. Default: False.
+
 
         Example::
 
@@ -806,6 +812,7 @@ class Case(CaseReference):
             self._exp_id,
             self._case_id,
             artifact_id,
+            overwrite,
         )
         return CustomArtifactImportOperation[CustomArtifact](
             resp["data"]["location"],
