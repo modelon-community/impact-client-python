@@ -5,6 +5,7 @@ from datetime import datetime
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Text, Tuple, Union
 
 from modelon.impact.client import exceptions
+from modelon.impact.client.configuration import Experimental
 from modelon.impact.client.entities.asserts import assert_successful_operation
 from modelon.impact.client.entities.custom_artifact import CustomArtifact
 from modelon.impact.client.entities.custom_function import CustomFunction
@@ -783,6 +784,7 @@ class Case(CaseReference):
             info=reference._info,
         )
 
+    @Experimental
     def import_custom_artifact(
         self, path_to_artifact: str, artifact_id: str
     ) -> CustomArtifactImportOperation:
