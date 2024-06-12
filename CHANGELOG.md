@@ -1,3 +1,16 @@
+# [4.3.0](https://github.com/modelon-community/impact-client-python/compare/v4.2.0...v4.3.0) (2024-06-12)
+
+
+### Bug Fixes
+
+* made artifact ID optional and added overwrite flag ([fd2dbbc](https://github.com/modelon-community/impact-client-python/commit/fd2dbbcaf6bed054d1ccdbdefe689662e0ab80a5))
+* made import_custom_artifact api experimental ([5ab0201](https://github.com/modelon-community/impact-client-python/commit/5ab0201866c8fd80c9d1507d8675604d43be9f17))
+
+
+### Features
+
+* added support for custom artifact import for a case ([fb16b87](https://github.com/modelon-community/impact-client-python/commit/fb16b878f32d796bc36811b25f255cfb060c99e0))
+
 # [4.2.0](https://github.com/modelon-community/impact-client-python/compare/v4.1.1...v4.2.0) (2024-06-10)
 
 
