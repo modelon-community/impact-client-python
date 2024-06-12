@@ -199,16 +199,20 @@ class ExperimentService:
         workspace_id: str,
         experiment_id: str,
         case_id: str,
-        artifact_id: str,
+        artifact_id: Optional[str] = None,
+        overwrite: bool = False,
     ) -> Dict[str, Any]:
         url = (
             self._base_uri
             / f"api/workspaces/{workspace_id}/experiments/{experiment_id}/cases/"
             f"{case_id}/custom-artifacts-imports"
         ).resolve()
+        options: Dict[str, Any] = {"overwrite": overwrite}
+        if artifact_id:
+            options["artifactId"] = artifact_id
         with open(path_to_artifact, "rb") as f:
             multipart_form_data = {
                 "file": f,
-                "options": json.dumps({"artifactId": artifact_id}),
+                "options": json.dumps(options),
             }
             return self._http_client.post_json(url, files=multipart_form_data)
