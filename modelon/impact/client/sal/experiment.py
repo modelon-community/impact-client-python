@@ -216,3 +216,24 @@ class ExperimentService:
                 "options": json.dumps(options),
             }
             return self._http_client.post_json(url, files=multipart_form_data)
+
+    def case_result_upload(
+        self,
+        path_to_result: str,
+        workspace_id: str,
+        experiment_id: str,
+        case_id: str,
+        overwrite: bool = False,
+    ) -> Dict[str, Any]:
+        url = (
+            self._base_uri
+            / f"api/workspaces/{workspace_id}/experiments/{experiment_id}/cases/"
+            f"{case_id}/result-imports"
+        ).resolve()
+        options: Dict[str, Any] = {"overwrite": overwrite}
+        with open(path_to_result, "rb") as f:
+            multipart_form_data = {
+                "file": f,
+                "options": json.dumps(options),
+            }
+            return self._http_client.post_json(url, files=multipart_form_data)

@@ -21,6 +21,7 @@ from modelon.impact.client.entities.result import Result
 from modelon.impact.client.entities.status import CaseStatus
 from modelon.impact.client.operations.base import BaseOperation
 from modelon.impact.client.operations.case import CaseOperation
+from modelon.impact.client.operations.case_result import CaseResultImportOperation
 from modelon.impact.client.operations.custom_artifact import (
     CustomArtifactImportOperation,
 )
@@ -821,4 +822,41 @@ class Case(CaseReference):
             self._case_id,
             self._sal,
             CustomArtifact.from_operation,
+        )
+
+    @Experimental
+    def import_result(
+        self,
+        path_to_result: str,
+        overwrite: bool = False,
+    ) -> CaseResultImportOperation:
+        """Upload result to a case.
+
+        Args:
+
+            path_to_result: The path for the result to be imported. Only mat or csv
+                result file format is supported for import.
+            overwrite: Overwrite, if a result already exists
+                for the case. Default: False.
+
+
+        Example::
+
+            case.import_result('/home/test.csv').wait()
+
+        """
+        resp = self._sal.experiment.case_result_upload(
+            path_to_result,
+            self._workspace_id,
+            self._exp_id,
+            self._case_id,
+            overwrite,
+        )
+        return CaseResultImportOperation[Result](
+            resp["data"]["location"],
+            self._workspace_id,
+            self._exp_id,
+            self._case_id,
+            self._sal,
+            Result.from_operation,
         )

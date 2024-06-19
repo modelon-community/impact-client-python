@@ -4,6 +4,8 @@ from collections.abc import Mapping
 from typing import TYPE_CHECKING, Any, Dict, Iterator, List
 
 from modelon.impact.client.entities.asserts import assert_variable_in_result
+from modelon.impact.client.operations.base import BaseOperation
+from modelon.impact.client.operations.case_result import CaseResultImportOperation
 
 if TYPE_CHECKING:
     from modelon.impact.client.sal.experiment import ExperimentService
@@ -69,3 +71,8 @@ class Result(Mapping):
 
     def keys(self):  # type: ignore
         return self._variables
+
+    @classmethod
+    def from_operation(cls, operation: BaseOperation[Result], **kwargs: Any) -> Result:
+        assert isinstance(operation, CaseResultImportOperation)
+        return cls(**kwargs, service=operation._sal)
