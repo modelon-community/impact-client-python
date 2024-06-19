@@ -1,3 +1,10 @@
+# [4.4.0-beta.1](https://github.com/modelon-community/impact-client-python/compare/v4.3.0...v4.4.0-beta.1) (2024-06-19)
+
+
+### Features
+
+* added support for result import to case behind experimental flag ([ed5bbb1](https://github.com/modelon-community/impact-client-python/commit/ed5bbb14738116cc6af8fb25ba769cf078c383f4))
+
 # [4.3.0](https://github.com/modelon-community/impact-client-python/compare/v4.2.0...v4.3.0) (2024-06-12)
 
 
