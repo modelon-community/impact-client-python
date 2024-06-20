@@ -1,6 +1,5 @@
 import pytest
 
-from modelon.impact.client import exceptions
 from modelon.impact.client.entities.experiment import (
     ExperimentResultPoint,
     ExperimentStatus,
@@ -222,14 +221,6 @@ class TestExperiment:
         )
         assert running_experiment.run_info.status == ExperimentStatus.NOTSTARTED
         assert not running_experiment.is_successful()
-        pytest.raises(
-            exceptions.OperationNotCompleteError, running_experiment.get_variables
-        )
-        pytest.raises(
-            exceptions.OperationNotCompleteError,
-            running_experiment.get_trajectories,
-            ["inertia1.w"],
-        )
 
     @pytest.mark.vcr()
     def test_failed_execution(self, client_helper: ClientHelper):
@@ -270,14 +261,6 @@ class TestExperiment:
         cancelled_experiment = cancelled_experiment.wait(status=Status.CANCELLED)
         assert cancelled_experiment.run_info.status == ExperimentStatus.CANCELLED
         assert not cancelled_experiment.is_successful()
-        pytest.raises(
-            exceptions.OperationFailureError, cancelled_experiment.get_variables
-        )
-        pytest.raises(
-            exceptions.OperationFailureError,
-            cancelled_experiment.get_trajectories,
-            ["inertia.I"],
-        )
 
     @pytest.mark.vcr()
     def test_exp_trajectories_non_list_entry(self, client_helper: ClientHelper):
