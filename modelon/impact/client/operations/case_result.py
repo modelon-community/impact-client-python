@@ -68,7 +68,7 @@ class CaseResultImportOperation(AsyncOperation[Entity]):
             raise exceptions.IllegalContentImport(
                 f"Result import failed! Cause: {info['error'].get('message')}"
             )
-        variables = self._sal.experiment.result_variables_get(
+        variables = self._sal.experiment.experiment_result_variables_get(
             self._workspace_id, self._exp_id
         )
         return self._create_entity(
