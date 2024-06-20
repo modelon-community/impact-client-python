@@ -555,7 +555,7 @@ class Case(CaseReference):
         """
         _assert_case_is_complete(self.run_info.status, "Simulation")
         return Result(
-            self._sal.experiment.result_variables_get(self._workspace_id, self._exp_id),
+            self._sal.experiment.experiment_result_variables_get(self._workspace_id, self._exp_id),
             self._case_id,
             self._workspace_id,
             self._exp_id,
