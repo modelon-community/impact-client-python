@@ -68,10 +68,22 @@ class ExperimentService:
         ).resolve()
         return self._http_client.delete_json(url)
 
-    def experiment_result_variables_get(self, workspace_id: str, experiment_id: str) -> List[str]:
+    def experiment_result_variables_get(
+        self, workspace_id: str, experiment_id: str
+    ) -> List[str]:
         url = (
             self._base_uri
             / f"api/workspaces/{workspace_id}/experiments/{experiment_id}/variables"
+        ).resolve()
+        return self._http_client.get_json(url)
+
+    def case_result_variables_get(
+        self, workspace_id: str, experiment_id: str, case_id: str
+    ) -> List[str]:
+        url = (
+            self._base_uri
+            / f"api/workspaces/{workspace_id}/experiments/{experiment_id}/cases/"
+            f"{case_id}/variables"
         ).resolve()
         return self._http_client.get_json(url)
 
