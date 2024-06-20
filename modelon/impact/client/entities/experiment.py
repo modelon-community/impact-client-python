@@ -4,7 +4,6 @@ import enum
 import logging
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Union
 
-from modelon.impact.client import exceptions
 from modelon.impact.client.entities.asserts import assert_variable_in_result
 from modelon.impact.client.entities.case import Case
 from modelon.impact.client.entities.custom_function import CustomFunction
@@ -96,15 +95,6 @@ class _Workflow(enum.Enum):
 
     FMU_BASED = "FMU_BASED"
     CLASS_BASED = "CLASS_BASED"
-
-
-def _assert_experiment_is_complete(
-    status: ExperimentStatus, operation_name: str = "Operation"
-) -> None:
-    if status == ExperimentStatus.NOTSTARTED:
-        raise exceptions.OperationNotCompleteError.for_operation(operation_name, status)
-    elif status == ExperimentStatus.CANCELLED:
-        raise exceptions.OperationFailureError.for_operation(operation_name)
 
 
 class ExperimentRunInfo:
@@ -343,7 +333,6 @@ class Experiment(ExperimentReference):
             experiment.get_variables()
 
         """
-        _assert_experiment_is_complete(self.run_info.status, "Simulation")
         return self._sal.experiment.experiment_result_variables_get(
             self._workspace_id, self._exp_id
         )
@@ -413,7 +402,6 @@ class Experiment(ExperimentReference):
                 "Please specify the list of result keys for the trajectories of "
                 "intrest!"
             )
-        _assert_experiment_is_complete(self.run_info.status, "Simulation")
         assert_variable_in_result(variables, self.get_variables())
 
         return self._sal.experiment.trajectories_get(
@@ -431,8 +419,6 @@ class Experiment(ExperimentReference):
             A dictionary object containing the result trajectories for all cases.
 
         Raises:
-            OperationNotCompleteError if simulation process is in progress.
-            OperationFailureError if simulation process was cancelled.
             TypeError if the variable is not a list object.
             ValueError if trajectory variable is not present in the result.
 
@@ -472,8 +458,6 @@ class Experiment(ExperimentReference):
             An ExperimentResultPoint class object.
 
         Raises:
-            OperationNotCompleteError if simulation process is in progress.
-            OperationFailureError if simulation process was cancelled.
             TypeError if the variable is not a list object.
             ValueError if trajectory variable is not present in the result.
 
