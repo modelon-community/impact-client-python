@@ -555,11 +555,34 @@ class Case(CaseReference):
         """
         _assert_case_is_complete(self.run_info.status, "Simulation")
         return Result(
-            self._sal.experiment.experiment_result_variables_get(self._workspace_id, self._exp_id),
+            self._sal.experiment.case_result_variables_get(
+                self._workspace_id, self._exp_id, self._case_id
+            ),
             self._case_id,
             self._workspace_id,
             self._exp_id,
             self._sal,
+        )
+
+    @Experimental
+    def get_variables(self) -> List[str]:
+        """Returns a list of variables available in the result.
+
+        Returns:
+            An list of result variables.
+
+        Raises:
+            OperationNotCompleteError if simulation process is in progress.
+            OperationFailureError if simulation process has failed or was cancelled.
+
+        Example::
+
+            case.get_variables()
+
+        """
+        _assert_case_is_complete(self.run_info.status, "Simulation")
+        return self._sal.experiment.case_result_variables_get(
+            self._workspace_id, self._exp_id, self._case_id
         )
 
     def get_artifact(
