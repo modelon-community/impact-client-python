@@ -1,3 +1,16 @@
+# [4.4.0-beta.2](https://github.com/modelon-community/impact-client-python/compare/v4.4.0-beta.1...v4.4.0-beta.2) (2024-06-21)
+
+
+### Bug Fixes
+
+* bump lower api compatibility version ([11a0ce1](https://github.com/modelon-community/impact-client-python/commit/11a0ce1a6ee9e9ee98a2d88efb2e1c13e2ac0b35))
+* renamed of internal SAL method to fetch retsult variables for experiment ([9f73809](https://github.com/modelon-community/impact-client-python/commit/9f73809a6d4f128faca1a52b9c6be9d59b07bad3))
+
+
+### Features
+
+* add api support for fetching single case result variables and updated relevant code to use this api ([f30a717](https://github.com/modelon-community/impact-client-python/commit/f30a7175cd76022080fed2289c2cdd08d8b807a5))
+
 # [4.4.0-beta.1](https://github.com/modelon-community/impact-client-python/compare/v4.3.0...v4.4.0-beta.1) (2024-06-19)
 
 
