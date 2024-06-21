@@ -65,7 +65,7 @@ class TestClient:
             )
         assert (
             "Version '1.0.0' of the HTTP REST API is not supported, must be in the "
-            "range '>=4.11.0,<5.0.0'! Updgrade or downgrade this package to a "
+            "range '>=4.16.0,<5.0.0'! Updgrade or downgrade this package to a "
             "version that supports version '1.0.0' of the HTTP REST API."
             in str(excinfo.value)
         )
