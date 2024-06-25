@@ -64,6 +64,14 @@ class IllegalContentImport(Error):
     pass
 
 
+class IllegalCustomArtifactImport(Error):
+    pass
+
+
+class IllegalCaseResultImport(Error):
+    pass
+
+
 class IllegalFMUImport(Error):
     pass
 

@@ -79,7 +79,7 @@ class CustomArtifactImportOperation(AsyncOperation[Entity]):
         """
         info = self._info()
         if info["status"] == AsyncOperationStatus.ERROR.value:
-            raise exceptions.IllegalContentImport(
+            raise exceptions.IllegalCustomArtifactImport(
                 f"CustomArtifact import failed! Cause: {info['error'].get('message')}"
             )
         artifact_id = info["data"]["artifactId"]

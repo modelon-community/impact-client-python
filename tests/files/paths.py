@@ -9,10 +9,12 @@ _SCRIPT_PATH = os.path.dirname(os.path.realpath(__file__))
 _TEST_LIBRARIES_PATH = os.path.join(_SCRIPT_PATH, "test_libraries")
 _TEST_WORKSPACES_PATH = os.path.join(_SCRIPT_PATH, "test_workspaces")
 _TEST_PROJECTS_PATH = os.path.join(_SCRIPT_PATH, "test_projects")
+_TEST_RESULTS_PATH = os.path.join(_SCRIPT_PATH, "test_results")
 
 # Paths for library files
 SINGLE_FILE_LIBRARY_PATH = os.path.join(_TEST_LIBRARIES_PATH, "Single.mo")
 TEST_WORKSPACE_PATH = os.path.join(_TEST_WORKSPACES_PATH, "Test.zip")
+TEST_CSV_RESULT_PATH = os.path.join(_TEST_RESULTS_PATH, "test_data.csv")
 
 
 def get_archived_modelica_lib_path(base_path: str):

@@ -7,6 +7,7 @@ import pytest
 from modelon.impact.client import Range, exceptions
 from modelon.impact.client.entities.case import CaseStatus
 from modelon.impact.client.entities.file_uri import CustomArtifactURI
+from tests.files.paths import TEST_CSV_RESULT_PATH
 from tests.impact.client.helpers import (
     ClientHelper,
     IDs,
@@ -291,3 +292,71 @@ class TestCase:
         result, name = case.get_result(format="csv")
         assert name.startswith(IDs.PID_MODELICA_CLASS_PATH)
         assert isinstance(result, str)
+
+    @pytest.mark.vcr()
+    def test_case_get_variables(self, client_helper: ClientHelper):
+        experiment = client_helper.create_and_execute_experiment(
+            model_path=IDs.PID_MODELICA_CLASS_PATH, modifiers={}
+        )
+        case = experiment.get_case(IDs.CASE_ID_PRIMARY)
+        case_vars = case.get_variables()
+        assert len(case_vars) == 140
+
+    @pytest.mark.vcr()
+    def test_case_import_custom_artifact(self, client_helper: ClientHelper):
+        experiment = client_helper.create_and_execute_experiment(
+            model_path=IDs.PID_MODELICA_CLASS_PATH, modifiers={}
+        )
+        case = experiment.get_case(IDs.CASE_ID_PRIMARY)
+        custom_artifact = case.import_custom_artifact(
+            path_to_artifact=TEST_CSV_RESULT_PATH, artifact_id=IDs.CUSTOM_ARTIFACT_ID
+        ).wait()
+
+        # Attempt reimport with same ID fails
+        assert custom_artifact.id == IDs.CUSTOM_ARTIFACT_ID
+        with pytest.raises(exceptions.IllegalCustomArtifactImport):
+            custom_artifact = case.import_custom_artifact(
+                path_to_artifact=TEST_CSV_RESULT_PATH,
+                artifact_id=IDs.CUSTOM_ARTIFACT_ID,
+            ).wait()
+
+        # Overwrite artifact with same ID
+        custom_artifact = case.import_custom_artifact(
+            path_to_artifact=TEST_CSV_RESULT_PATH,
+            artifact_id=IDs.CUSTOM_ARTIFACT_ID,
+            overwrite=True,
+        ).wait()
+        assert custom_artifact.id == IDs.CUSTOM_ARTIFACT_ID
+
+    @pytest.mark.vcr()
+    def test_case_import_custom_artifact_default_artifact_id(
+        self, client_helper: ClientHelper
+    ):
+        experiment = client_helper.create_and_execute_experiment(
+            model_path=IDs.PID_MODELICA_CLASS_PATH, modifiers={}
+        )
+        case = experiment.get_case(IDs.CASE_ID_PRIMARY)
+        custom_artifact = case.import_custom_artifact(
+            path_to_artifact=TEST_CSV_RESULT_PATH
+        ).wait()
+        assert custom_artifact.id == "imported_1"
+
+    @pytest.mark.vcr()
+    def test_case_import_result(self, client_helper: ClientHelper):
+        experiment = client_helper.create_and_execute_experiment(
+            model_path=IDs.PID_MODELICA_CLASS_PATH, modifiers={}
+        )
+        case = experiment.get_case(IDs.CASE_ID_PRIMARY)
+
+        # Attempt import with existing result fails
+        with pytest.raises(exceptions.IllegalCaseResultImport):
+            result = case.import_result(path_to_result=TEST_CSV_RESULT_PATH).wait()
+
+        # Overwrite result
+        result = case.import_result(
+            path_to_result=TEST_CSV_RESULT_PATH, overwrite=True
+        ).wait()
+        assert result["J1.w"] == [1.0]
+
+        case = experiment.get_case(IDs.CASE_ID_PRIMARY)
+        assert not case.run_info.consistent
