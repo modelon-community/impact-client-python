@@ -65,7 +65,7 @@ class CaseResultImportOperation(AsyncOperation[Entity]):
         """
         info = self._info()
         if info["status"] == AsyncOperationStatus.ERROR.value:
-            raise exceptions.IllegalContentImport(
+            raise exceptions.IllegalCaseResultImport(
                 f"Result import failed! Cause: {info['error'].get('message')}"
             )
         variables = self._sal.experiment.case_result_variables_get(
