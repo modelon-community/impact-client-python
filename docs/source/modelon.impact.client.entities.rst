@@ -36,6 +36,14 @@ modelon.impact.client.entities.content module
    :undoc-members:
    :show-inheritance:
 
+modelon.impact.client.entities.custom\_artifact module
+------------------------------------------------------
+
+.. automodule:: modelon.impact.client.entities.custom_artifact
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 modelon.impact.client.entities.custom\_function module
 ------------------------------------------------------
 
@@ -56,6 +64,14 @@ modelon.impact.client.entities.external\_result module
 ------------------------------------------------------
 
 .. automodule:: modelon.impact.client.entities.external_result
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+modelon.impact.client.entities.file\_uri module
+-----------------------------------------------
+
+.. automodule:: modelon.impact.client.entities.file_uri
    :members:
    :undoc-members:
    :show-inheritance:

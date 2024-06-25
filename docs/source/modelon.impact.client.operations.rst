@@ -28,10 +28,26 @@ modelon.impact.client.operations.case module
    :undoc-members:
    :show-inheritance:
 
+modelon.impact.client.operations.case\_result module
+----------------------------------------------------
+
+.. automodule:: modelon.impact.client.operations.case_result
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 modelon.impact.client.operations.content\_import module
 -------------------------------------------------------
 
 .. automodule:: modelon.impact.client.operations.content_import
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+modelon.impact.client.operations.custom\_artifact module
+--------------------------------------------------------
+
+.. automodule:: modelon.impact.client.operations.custom_artifact
    :members:
    :undoc-members:
    :show-inheritance:
