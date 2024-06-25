@@ -12,6 +12,14 @@ modelon.impact.client.entities.interfaces.case module
    :undoc-members:
    :show-inheritance:
 
+modelon.impact.client.entities.interfaces.custom\_artifact module
+-----------------------------------------------------------------
+
+.. automodule:: modelon.impact.client.entities.interfaces.custom_artifact
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 modelon.impact.client.entities.interfaces.custom\_function module
 -----------------------------------------------------------------
 
