@@ -1,3 +1,10 @@
+## [4.4.2](https://github.com/modelon-community/impact-client-python/compare/v4.4.1...v4.4.2) (2024-06-26)
+
+
+### Bug Fixes
+
+* remove assertion for simulation completion from experiment entity api's calls ([1084637](https://github.com/modelon-community/impact-client-python/commit/108463769bdfdb6d73ec761e4592bf9b95ee774e))
+
 ## [4.4.1](https://github.com/modelon-community/impact-client-python/compare/v4.4.0...v4.4.1) (2024-06-26)
 
 
