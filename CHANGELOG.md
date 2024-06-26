@@ -1,3 +1,11 @@
+## [4.4.1](https://github.com/modelon-community/impact-client-python/compare/v4.4.0...v4.4.1) (2024-06-26)
+
+
+### Bug Fixes
+
+* make case result import, custom artifact import and get result variable import api's non-experimental ([013e12c](https://github.com/modelon-community/impact-client-python/commit/013e12c130e53a5a61ac8e22f43fdb65087e84ed))
+* raise specific exceptions for failed case result and custom artfact import. Also added tests for custom artifact import, case result import and case result variables fetch apis ([3937df7](https://github.com/modelon-community/impact-client-python/commit/3937df71d49f46cec2b00e36517179dc0aaa9867))
+
 # [4.4.0](https://github.com/modelon-community/impact-client-python/compare/v4.3.0...v4.4.0) (2024-06-25)
 
 
