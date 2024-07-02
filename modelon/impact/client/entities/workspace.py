@@ -1275,7 +1275,6 @@ class Workspace(WorkspaceInterface):
             service=self._sal,
         )
 
-    @Experimental
     def get_modelica_resource_uri(
         self, library: str, resource_path: str
     ) -> ModelicaResourceURI:
