@@ -97,7 +97,6 @@ class CustomArtifact(CustomArtifactInterface):
 
         return result_stream
 
-    @Experimental
     def get_uri(self) -> CustomArtifactURI:
         """Returns a CustomArtifactURI class.
 

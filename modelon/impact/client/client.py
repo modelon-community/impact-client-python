@@ -732,7 +732,6 @@ class Client:
         user = self._sal.users.get_me()["data"]
         return User.from_dict(user)
 
-    @Experimental
     def get_case_by_reference(self, reference: CaseReference) -> Case:
         """Return the Case class object given a CaseReference class.
 
@@ -752,7 +751,6 @@ class Client:
         """
         return Case.from_reference(reference)
 
-    @Experimental
     def get_experiment_by_reference(self, reference: ExperimentReference) -> Experiment:
         """Return the Experiment class object given a ExperimentReference class.
 
