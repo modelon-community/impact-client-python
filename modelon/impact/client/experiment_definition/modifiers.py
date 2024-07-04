@@ -2,8 +2,6 @@ import abc
 import enum
 from typing import Any, Union
 
-from modelon.impact.client.configuration import get_client_experiments_v3_experimental
-
 Scalar = Union[bool, int, float, str]
 
 
@@ -69,7 +67,4 @@ def ensure_as_modifier(value: Union[Scalar, Modifier]) -> Modifier:
 
 
 def modifiers_to_dict(variable_modifiers: dict[str, Modifier]) -> Any:
-    if get_client_experiments_v3_experimental():
-        return [m.to_dict(name) for name, m in variable_modifiers.items()]
-    else:
-        return {name: m.to_value() for name, m in variable_modifiers.items()}
+    return [m.to_dict(name) for name, m in variable_modifiers.items()]

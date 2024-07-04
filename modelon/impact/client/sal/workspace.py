@@ -1,7 +1,6 @@
 """Workspace service module."""
 from typing import Any, Dict, List, Optional
 
-from modelon.impact.client.configuration import get_client_experiments_v3_experimental
 from modelon.impact.client.sal.http import HTTPClient
 from modelon.impact.client.sal.uri import URI
 
@@ -10,10 +9,7 @@ class WorkspaceService:
     def __init__(self, uri: URI, http_client: HTTPClient):
         self._base_uri = uri
         self._http_client = http_client
-        if get_client_experiments_v3_experimental():
-            self._experiment_schema = "application/vnd.impact.experiment.v3+json"
-        else:
-            self._experiment_schema = "application/vnd.impact.experiment.v2+json"
+        self._experiment_schema = "application/vnd.impact.experiment.v3+json"
 
     def workspace_create(self, name: str) -> Dict[str, Any]:
         url = (self._base_uri / "api/workspaces").resolve()

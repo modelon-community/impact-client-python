@@ -38,16 +38,6 @@ def get_client_experimental() -> bool:
     return experimental_env.lower() in ("1", "true")
 
 
-def get_client_experiments_v3_experimental() -> bool:
-    """If the client should use the new experimental V3 schema for experiments.
-
-    Can be overridden by the environment variable IMPACT_PYTHON_CLIENT_V3_EXPERIMENTS.
-
-    """
-    experimental_env = os.environ.get("IMPACT_PYTHON_CLIENT_V3_EXPERIMENTS", "false")
-    return experimental_env.lower() in ("1", "true")
-
-
 class Experimental:
     def __init__(self, fn: Callable):
         self.fn = fn
