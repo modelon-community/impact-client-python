@@ -3,7 +3,6 @@ from __future__ import annotations
 import logging
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Union
 
-from modelon.impact.client.configuration import get_client_experiments_v3_experimental
 from modelon.impact.client.entities.interfaces.case import CaseInterface
 from modelon.impact.client.entities.interfaces.experiment import ExperimentInterface
 from modelon.impact.client.entities.interfaces.external_result import (
@@ -474,15 +473,13 @@ class SimpleModelicaExperimentDefinition(BaseExperimentDefinition):
             simulate_def.to_dict()
 
         """
-
-        version = 3 if get_client_experiments_v3_experimental() else 2
         custom_function_parameters = custom_function_parameters_to_dict(
             self._custom_function.parameter_values.as_raw_dict()
         )
         variable_modifiers = modifiers_to_dict(self._variable_modifiers)
         exp_dict: Dict[str, Any] = {
             "experiment": {
-                "version": version,
+                "version": 3,
                 "base": {
                     "model": {
                         "modelica": {
