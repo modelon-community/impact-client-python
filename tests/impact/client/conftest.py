@@ -27,7 +27,6 @@ from tests.impact.client.helpers import (
     create_published_workspace_entity,
     create_workspace_entity,
     get_test_get_fmu,
-    get_test_modelica_experiment_definition,
     get_test_published_workspace_definition,
     get_test_workspace_definition,
     with_exception,
@@ -795,9 +794,7 @@ def fmu_compile_cancelled():
 @pytest.fixture
 def experiment():
     service = MagicMock()
-    ws_service = service.workspace
     exp_service = service.experiment
-    ws_service.experiment_get.return_value = get_test_modelica_experiment_definition()
     exp_service.experiment_execute.return_value = IDs.EXPERIMENT_ID_PRIMARY
     exp_service.execute_status.return_value = {"status": "done"}
     exp_service.result_variables_get.return_value = ["inertia.I", "time"]

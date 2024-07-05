@@ -772,7 +772,13 @@ class TestWorkspace:
         definition_dict = definition.to_dict()
 
         expected_definition_dict = experiment_definition.to_dict()
-        expected_definition_dict["experiment"]["base"]["modifiers"]["variables"][
-            "PI.yMax"
-        ] = 100
+        variables = expected_definition_dict["experiment"]["base"]["modifiers"][
+            "variables"
+        ]
+        index = next(
+            (index for (index, var) in enumerate(variables) if var["name"] == "PI.yMax")
+        )
+        variables[index]["kind"] = "value"
+        del variables[index]["values"]
+        variables[index]["value"] = 100
         assert definition_dict == expected_definition_dict
