@@ -253,7 +253,7 @@ class Normal(Operator):
 
     def to_dict(self, name: str) -> dict[str, Any]:
         return {
-            "kind": "beta",
+            "kind": "normal",
             "name": name,
             "mean": self.mean,
             "variable": self.variance,
