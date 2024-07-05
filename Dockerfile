@@ -16,7 +16,7 @@ RUN apt-get update && apt-get install -y ca-certificates curl gnupg && mkdir -p 
 # Install enchant c libs for spell check
 RUN apt-get install -y libenchant-2-2 aspell aspell-en
 
-ENV SHELL /bin/bash
+ENV SHELL=/bin/bash
 
 # RUN npm init
 RUN npm i -g semantic-release @semantic-release/commit-analyzer @semantic-release/git @semantic-release/exec \
@@ -26,11 +26,11 @@ RUN npm i -g semantic-release @semantic-release/commit-analyzer @semantic-releas
 USER dev
 
 # install poetry to container
-ENV POETRY_HOME /home/dev/.local
-ENV POETRY_VIRTUALENVS_IN_PROJECT true
-ENV POETRY_CACHE_DIR /home/dev/.poetry-cache
+ENV POETRY_HOME=/home/dev/.local
+ENV POETRY_VIRTUALENVS_IN_PROJECT=true
+ENV POETRY_CACHE_DIR=/home/dev/.poetry-cache
 ARG POETRY_VERSION=1.6.1
 RUN curl -sSL https://install.python-poetry.org  | POETRY_VERSION=$POETRY_VERSION python -
-ENV PATH $POETRY_HOME/bin:$PATH
+ENV PATH=$POETRY_HOME/bin:$PATH
 
 WORKDIR /src
