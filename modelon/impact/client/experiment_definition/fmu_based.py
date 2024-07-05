@@ -21,9 +21,13 @@ from modelon.impact.client.experiment_definition.extension import (
 from modelon.impact.client.experiment_definition.interfaces.definition import (
     BaseExperimentDefinition,
 )
-from modelon.impact.client.experiment_definition.operators import Operator
+from modelon.impact.client.experiment_definition.modifiers import (
+    ensure_as_modifier,
+    modifiers_to_dict,
+)
 from modelon.impact.client.experiment_definition.util import (
     case_to_identifier_dict,
+    custom_function_parameters_to_dict,
     get_options,
 )
 
@@ -197,10 +201,8 @@ class SimpleFMUExperimentDefinition(BaseExperimentDefinition):
         )
         new._extensions = self._extensions
         new._variable_modifiers = self._variable_modifiers
-        for variable, value in modifiers_aggregate.items():
-            new._variable_modifiers[variable] = (
-                str(value) if isinstance(value, Operator) else value
-            )
+        for name, value in modifiers_aggregate.items():
+            new._variable_modifiers[name] = ensure_as_modifier(value)
         return new
 
     def with_extensions(
@@ -293,15 +295,19 @@ class SimpleFMUExperimentDefinition(BaseExperimentDefinition):
             simulate_def.to_dict()
 
         """
-        custom_function_parameters = (
+        custom_function_parameters = custom_function_parameters_to_dict(
             self._custom_function.parameter_values.as_raw_dict()
         )
+        variable_modifiers = {
+            name: ensure_as_modifier(value)
+            for name, value in self._variable_modifiers.items()
+        }
         exp_dict: Dict[str, Any] = {
             "experiment": {
-                "version": 2,
+                "version": 3,
                 "base": {
                     "model": {"fmu": {"id": self._fmu.id}},
-                    "modifiers": {"variables": self._variable_modifiers},
+                    "modifiers": {"variables": modifiers_to_dict(variable_modifiers)},
                     "analysis": {
                         "type": self._custom_function.name,
                         "parameters": custom_function_parameters,
