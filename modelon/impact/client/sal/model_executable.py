@@ -18,7 +18,11 @@ class ModelExecutableService:
             f"?getCached={'true' if get_cached else 'false'}"
         ).resolve()
         resp = self._http_client.post_json(url, body=options)
-        return resp["id"], resp["parameters"]
+        modifiers = {
+            modifier["name"]: modifier["value"]
+            for modifier in resp["parametersResolved"]
+        }
+        return resp["id"], modifiers
 
     def compile_model(self, workspace_id: str, fmu_id: str) -> str:
         url = (
