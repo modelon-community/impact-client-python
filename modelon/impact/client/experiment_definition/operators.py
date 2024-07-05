@@ -1,7 +1,9 @@
 """This module contains operators for parametrizing batch runs."""
+from __future__ import annotations
+
 from abc import abstractmethod
 from dataclasses import dataclass
-from typing import Any, Optional
+from typing import Any, Optional, Union
 
 from modelon.impact.client.experiment_definition.modifiers import (
     DataType,
@@ -60,6 +62,12 @@ class Range(Operator):
             "end": self.end_value,
             "steps": self.no_of_steps,
         }
+
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> "Range":
+        return Range(
+            start_value=data["start"], end_value=data["end"], no_of_steps=data["steps"]
+        )
 
 
 class Choices(Operator):
@@ -141,6 +149,10 @@ class Choices(Operator):
             "dataType": self.data_type.value,
         }
 
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> Choices:
+        return Choices(values=data["values"], data_type=DataType(data["dataType"]))
+
 
 @dataclass
 class Uniform(Operator):
@@ -176,6 +188,10 @@ class Uniform(Operator):
             "start": self.start,
             "end": self.end,
         }
+
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> Uniform:
+        return Uniform(start=data["start"], end=data["end"])
 
 
 @dataclass
@@ -213,6 +229,10 @@ class Beta(Operator):
             "alpha": self.alpha,
             "beta": self.beta,
         }
+
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> Beta:
+        return Beta(alpha=data["alpha"], beta=data["beta"])
 
 
 @dataclass
@@ -260,3 +280,29 @@ class Normal(Operator):
             "start": self.start,
             "end": self.end,
         }
+
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> Normal:
+        return Normal(
+            mean=data["mean"],
+            variance=data["variance"],
+            start=data["start"],
+            end=data["end"],
+        )
+
+
+def get_operator_from_dict(
+    data: dict[str, Any]
+) -> Optional[Union[Range, Choices, Uniform, Beta, Normal]]:
+    kind = data["kind"]
+    if kind == "range":
+        return Range.from_dict(data)
+    elif kind == "choices":
+        return Choices.from_dict(data)
+    elif kind == "uniform":
+        return Uniform.from_dict(data)
+    elif kind == "beta":
+        return Beta.from_dict(data)
+    elif kind == "normal":
+        return Normal.from_dict(data)
+    raise ValueError(f"Unsupported operator kind: {kind}!")
