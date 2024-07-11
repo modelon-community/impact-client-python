@@ -54,7 +54,7 @@ class Service:
         self._http_client = HTTPClient(api_key, context)
         self._base_uri = (
             _get_impact_base_uri(uri, self._http_client)
-            if is_jupyterhub_url(uri)
+            if is_jupyterhub_url(uri, context)
             else uri
         )
         self.workspace = WorkspaceService(self._base_uri, self._http_client)

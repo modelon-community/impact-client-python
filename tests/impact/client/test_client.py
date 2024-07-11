@@ -255,7 +255,7 @@ class TestClient:
 
 
 def assert_key_validate_called(*, adapter, key):
-    login_call = adapter.request_history[0]
+    login_call = adapter.request_history[1]
     assert "http://mock-impact.com/api/users/me" == login_call.url
     assert "GET" == login_call.method
     assert key == login_call.headers["impact-api-key"]
