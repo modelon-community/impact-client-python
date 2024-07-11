@@ -25,12 +25,12 @@ def _get_impact_base_uri(uri: URI, http_client: HTTPClient) -> URI:
     return uri / f"{server_url}/impact"
 
 
-def is_jupyterhub_url(uri: URI) -> bool:
+def is_jupyterhub_url(uri: URI, context: Optional[Context] = None) -> bool:
     _JUPYTERHUB_VERSION_HEADER = "x-jupyterhub-version"
     url = (uri / "hub/api/").resolve()
 
     try:
-        http_client = HTTPClient()
+        http_client = HTTPClient(context=context)
         response = http_client.get_json_response(url)
     except (
         exceptions.CommunicationError,

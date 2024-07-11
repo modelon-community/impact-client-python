@@ -241,7 +241,7 @@ class Client:
         if credential_manager is None:
             uri = (
                 self._uri / "user-redirect/impact"
-                if is_jupyterhub_url(self._uri)
+                if is_jupyterhub_url(self._uri, context)
                 else self._uri
             )
             help_hint = f"can be generated at {uri / 'admin/keys'}"
