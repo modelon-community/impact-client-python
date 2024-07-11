@@ -1,3 +1,10 @@
+## [4.4.4](https://github.com/modelon-community/impact-client-python/compare/v4.4.3...v4.4.4) (2024-07-11)
+
+
+### Bug Fixes
+
+* propagate context to is_jupyterhub_url method calls ([113b1a5](https://github.com/modelon-community/impact-client-python/commit/113b1a539d747c320a5be52e756eba88f0af17b7))
+
 ## [4.4.3](https://github.com/modelon-community/impact-client-python/compare/v4.4.2...v4.4.3) (2024-07-11)
 
 
