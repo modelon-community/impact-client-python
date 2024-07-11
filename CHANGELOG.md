@@ -1,3 +1,10 @@
+## [4.4.3](https://github.com/modelon-community/impact-client-python/compare/v4.4.2...v4.4.3) (2024-07-11)
+
+
+### Bug Fixes
+
+* pass user defined context to unauthenticated HTTPClient ([9622de6](https://github.com/modelon-community/impact-client-python/commit/9622de6146d9fc288c0e769272c35f33bb7fc9bf))
+
 ## [4.4.2](https://github.com/modelon-community/impact-client-python/compare/v4.4.1...v4.4.2) (2024-06-26)
 
 
