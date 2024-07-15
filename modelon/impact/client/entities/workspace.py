@@ -52,7 +52,7 @@ ExperimentDefinition = Union[
 
 @dataclass
 class AccessSettings:
-    group_names: Optional[List[str]] = None
+    share_with_own_tenant: bool = True
 
 
 @dataclass
@@ -810,17 +810,17 @@ class Workspace(WorkspaceInterface):
             workspace.export(publish=True,
                 class_path='Modelica.Blocks.Examples.PID_Controller').wait()
 
-            # Publish a workspace without sharing with group
+            # Publish a workspace without sharing with tenant
             from modelon.impact.client import AccessSettings
 
             workspace.export(publish=True,
                 class_path='Modelica.Blocks.Examples.PID_Controller',
-                access=AccessSettings(group_names=[]).wait()
+                access=AccessSettings(share_with_own_tenant=False)).wait()
             )
 
         """
         if access:
-            access_settings = {"groupNames": access.group_names}
+            access_settings = {"shareWithOwnTenant": access.share_with_own_tenant}
         else:
             access_settings = None
         resp = self._sal.workspace.workspace_export_setup(
