@@ -234,8 +234,10 @@ class TestWorkspace:
         workspace_entity = workspace.entity
         service = workspace.service
         workspace_service = service.workspace
-        workspace_entity.export(publish=True, access=AccessSettings(group_names=[]))
-        access_settings = {"groupNames": []}
+        workspace_entity.export(
+            publish=True, access=AccessSettings(share_with_own_tenant=False)
+        )
+        access_settings = {"shareWithOwnTenant": False}
         workspace_service.workspace_export_setup.assert_has_calls(
             [mock.call(IDs.WORKSPACE_ID_PRIMARY, True, None, access_settings)]
         )
