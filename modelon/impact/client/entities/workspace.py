@@ -240,6 +240,16 @@ class PublishedWorkspace:
         """Published Workspace timestamp."""
         return self._definition.created_at
 
+    @property
+    def group_name(self) -> str:
+        """Published Workspace creator group name."""
+        return f"impact-tenant-{self._definition.tenant_id}"
+
+    @property
+    def owner_username(self) -> str:
+        """Published Workspace creator username."""
+        return self._definition.owner_username
+
     def delete(self) -> None:
         """Deletes the published workspace.
 
@@ -348,12 +358,18 @@ class PublishedWorkspace:
             )[-1]
         return workspaces[0]
 
-    def import_to_userspace(self, update_if_available: bool = False) -> Workspace:
+    def import_to_userspace(
+        self,
+        update_if_available: bool = False,
+        add_publisher_to_whitelist: bool = False,
+    ) -> Workspace:
         """Imports a published workspace to userspace.
 
         Args:
             update_if_available: If true, the workspace is updated with the
             latest copy from the cloud. Default is False.
+            add_publisher_to_whitelist: If True, adds the publisher of the workspace
+            being imported to whitelist.
 
         Returns:
             The workspace class object.
@@ -381,7 +397,8 @@ class PublishedWorkspace:
                     return local_workspace
                 logger.info("Updating the workspace to the latest published workspace.")
                 updated_workspace = self._import_to_userspace(
-                    overwrite_workspace_id=local_workspace.id
+                    overwrite_workspace_id=local_workspace.id,
+                    add_publisher_to_whitelist=add_publisher_to_whitelist,
                 )
                 return updated_workspace
             else:
@@ -394,11 +411,17 @@ class PublishedWorkspace:
             f"No local imports of workspace with sharing ID {self._id} exist."
             "Importing the published workspace to userspace."
         )
-        return self._import_to_userspace()
+        return self._import_to_userspace(
+            add_publisher_to_whitelist=add_publisher_to_whitelist
+        )
 
     def _import_to_userspace(
-        self, overwrite_workspace_id: Optional[str] = None
+        self,
+        overwrite_workspace_id: Optional[str] = None,
+        add_publisher_to_whitelist: bool = False,
     ) -> Workspace:
+        if add_publisher_to_whitelist:
+            self._sal.whitelist.whitelist_append(users=[self.owner_username], groups=[])
         resp = self._sal.workspace.import_from_cloud(self._id, overwrite_workspace_id)
         return WorkspaceImportOperation[Workspace](
             resp["data"]["location"], self._sal, Workspace.from_import_operation

@@ -27,6 +27,7 @@ from modelon.impact.client.entities.project import (
     StorageLocation,
     VcsUri,
 )
+from modelon.impact.client.entities.whitelist import Whitelist
 from modelon.impact.client.entities.workspace import Workspace, WorkspaceDefinition
 from modelon.impact.client.operations.experiment import ExperimentOperation
 from modelon.impact.client.operations.model_executable import ModelExecutableOperation
@@ -771,6 +772,9 @@ class Client:
 
         """
         return Experiment.from_reference(reference)
+
+    def get_whitelist(self) -> Whitelist:
+        return Whitelist(service=self._sal.whitelist)
 
 
 @dataclass

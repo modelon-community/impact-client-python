@@ -14,6 +14,7 @@ from modelon.impact.client.sal.model_executable import ModelExecutableService
 from modelon.impact.client.sal.project import ProjectService
 from modelon.impact.client.sal.uri import URI
 from modelon.impact.client.sal.users import UsersService
+from modelon.impact.client.sal.whitelist import WhitelistService
 from modelon.impact.client.sal.workspace import WorkspaceService
 
 logger = logging.getLogger(__name__)
@@ -58,6 +59,7 @@ class Service:
             else uri
         )
         self.workspace = WorkspaceService(self._base_uri, self._http_client)
+        self.whitelist = WhitelistService(self._base_uri, self._http_client)
         self.project = ProjectService(self._base_uri, self._http_client)
         self.model_executable = ModelExecutableService(
             self._base_uri, self._http_client
