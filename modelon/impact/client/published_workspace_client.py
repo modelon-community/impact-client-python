@@ -11,6 +11,7 @@ from modelon.impact.client.entities.workspace import (
     PublishedWorkspaceDefinition,
     PublishedWorkspaceType,
 )
+from modelon.impact.client.operations.orphan_cleanup import OrphanCleanupOperation
 
 if TYPE_CHECKING:
     from modelon.impact.client.sal.service import Service
@@ -170,3 +171,16 @@ class PublishedWorkspacesClient:
             )
             for item in data
         ]
+
+    @Experimental
+    def cleanup_orphans(self) -> OrphanCleanupOperation:
+        """Cleans up orphaned published workspaces.
+
+        Example::
+
+            pw_client = client.get_published_workspaces_client()
+            status = pw_client.cleanup_orphans().wait()
+
+        """
+        resp = self._sal.workspace.cleanup_orphans()
+        return OrphanCleanupOperation(resp["data"]["location"], self._sal)
