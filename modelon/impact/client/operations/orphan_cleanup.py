@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import logging
 import time
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
 
 from modelon.impact.client import exceptions
 from modelon.impact.client.operations.base import AsyncOperationStatus
@@ -39,7 +39,7 @@ class OrphanCleanupOperation:
     def _info(self) -> Dict[str, Any]:
         return self._sal.imports.get_import_status(self._location)["data"]
 
-    def data(self) -> None:
+    def data(self) -> List[str]:
         """Returns a new Project class instance.
 
         Returns:
@@ -51,7 +51,7 @@ class OrphanCleanupOperation:
             raise exceptions.FailedOrphanCleanup(
                 f"Orphan cleanup failed! Cause: {info['error'].get('message')}"
             )
-        return None
+        return info["data"]["orphans"]
 
     @property
     def status(self) -> AsyncOperationStatus:
@@ -70,7 +70,7 @@ class OrphanCleanupOperation:
         """
         return AsyncOperationStatus(self._info()["status"])
 
-    def wait(self, timeout: Optional[float] = None) -> None:
+    def wait(self, timeout: Optional[float] = None) -> List[str]:
         """Waits until the operation completes. Returns the operation class instance if
         operation completes.
 

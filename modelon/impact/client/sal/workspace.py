@@ -164,9 +164,11 @@ class WorkspaceService:
         with open(path_to_workspace, "rb") as f:
             return self._http_client.post_json(url, files={"file": f})
 
-    def cleanup_orphans(self) -> Dict[str, Any]:
+    def cleanup_orphans(self, only_list_orphans: bool = False) -> Dict[str, Any]:
         url = (self._base_uri / "api/published-workspaces/orphans/cleanup").resolve()
-        return self._http_client.post_json(url)
+        return self._http_client.post_json(
+            url, body={"onlyListOrphans": only_list_orphans}
+        )
 
     def import_from_shared_definition(
         self,

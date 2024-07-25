@@ -184,3 +184,16 @@ class PublishedWorkspacesClient:
         """
         resp = self._sal.workspace.cleanup_orphans()
         return OrphanCleanupOperation(resp["data"]["location"], self._sal)
+
+    @Experimental
+    def list_orphans(self) -> OrphanCleanupOperation:
+        """Lists all orphaned published workspaces.
+
+        Example::
+
+            pw_client = client.get_published_workspaces_client()
+            status = pw_client.list_orphans().wait()
+
+        """
+        resp = self._sal.workspace.cleanup_orphans(only_list_orphans=True)
+        return OrphanCleanupOperation(resp["data"]["location"], self._sal)
