@@ -11,11 +11,21 @@ from modelon.impact.client.entities.workspace import (
     PublishedWorkspaceDefinition,
     PublishedWorkspaceType,
 )
+from modelon.impact.client.operations.orphan_cleanup import (
+    OrphanPublishedWorkspaceOperation,
+)
 
 if TYPE_CHECKING:
     from modelon.impact.client.sal.service import Service
 
 logger = logging.getLogger(__name__)
+
+
+@dataclass
+class OrphanPublishedWorkspaceOwner:
+    id: str
+    username: str
+    group_name: str
 
 
 @enum.unique
@@ -170,3 +180,63 @@ class PublishedWorkspacesClient:
             )
             for item in data
         ]
+
+    @Experimental
+    def wipe_orphans(
+        self, user: Optional[OrphanPublishedWorkspaceOwner] = None
+    ) -> OrphanPublishedWorkspaceOperation:
+        """Cleans up orphaned published workspaces.
+
+        Args:
+            user: User data for the creator of the orphaned published workspaces.
+            Only a user with 'impact-workspace-auditor' role can specify a user data
+            other than his own. Defaults to logged in user's data.
+
+        Example::
+
+            from modelon.impact.client import OrphanPublishedWorkspaceOwner
+
+            pw_client = client.get_published_workspaces_client()
+            orphans = pw_client.wipe_orphans().wait()
+
+            user = OrphanPublishedWorkspaceOwner(
+                id="8143248a-49ee-4473-a2ba-c721b9aafb42",
+                username="user_1", group_name="impact-tenant-mycompany"
+            )
+            orphans = pwc.wipe_orphans(user=user).wait()
+
+        """
+        resp = self._sal.workspace.cleanup_orphans(user, only_list_orphans=False)
+        return OrphanPublishedWorkspaceOperation(
+            resp["data"]["location"], self._sal, "Orphan cleanup"
+        )
+
+    @Experimental
+    def list_orphans(
+        self, user: Optional[OrphanPublishedWorkspaceOwner] = None
+    ) -> OrphanPublishedWorkspaceOperation:
+        """Lists all orphaned published workspaces.
+
+        Args:
+            user: User data for the creator of the orphaned published workspaces.
+            Only a user with 'impact-workspace-auditor' role can specify a user data
+            other than his own. Defaults to logged in user's data.
+
+        Example::
+
+            from modelon.impact.client import OrphanPublishedWorkspaceOwner
+
+            pw_client = client.get_published_workspaces_client()
+            orphans = pw_client.list_orphans().wait()
+
+            user = OrphanPublishedWorkspaceOwner(
+                id="8143248a-49ee-4473-a2ba-c721b9aafb42",
+                username="user_1", group_name="impact-tenant-mycompany"
+            )
+            orphans = pwc.list_orphans(user=user).wait()
+
+        """
+        resp = self._sal.workspace.cleanup_orphans(user, only_list_orphans=True)
+        return OrphanPublishedWorkspaceOperation(
+            resp["data"]["location"], self._sal, "Orphan listing"
+        )
