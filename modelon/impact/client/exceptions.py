@@ -44,6 +44,10 @@ class OperationCompleteError(Error):
     pass
 
 
+class FailedOrphanCleanup(Error):
+    pass
+
+
 class IllegalProjectImport(Error):
     pass
 
