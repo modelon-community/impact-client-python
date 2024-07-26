@@ -4,7 +4,6 @@ import os
 import tempfile
 from typing import Any, Optional, Text, Union
 
-from modelon.impact.client.configuration import Experimental
 from modelon.impact.client.entities.file_uri import CustomArtifactURI
 from modelon.impact.client.entities.interfaces.custom_artifact import (
     CustomArtifactInterface,
@@ -97,7 +96,6 @@ class CustomArtifact(CustomArtifactInterface):
 
         return result_stream
 
-    @Experimental
     def get_uri(self) -> CustomArtifactURI:
         """Returns a CustomArtifactURI class.
 

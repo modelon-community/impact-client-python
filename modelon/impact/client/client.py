@@ -10,11 +10,7 @@ from semantic_version import SimpleSpec, Version  # type: ignore
 
 import modelon.impact.client.sal.exceptions
 from modelon.impact.client import exceptions
-from modelon.impact.client.configuration import (
-    Experimental,
-    get_client_interactive,
-    get_client_url,
-)
+from modelon.impact.client.configuration import get_client_interactive, get_client_url
 from modelon.impact.client.credential_manager import CredentialManager
 from modelon.impact.client.entities.case import Case
 from modelon.impact.client.entities.experiment import Experiment
@@ -732,7 +728,6 @@ class Client:
         user = self._sal.users.get_me()["data"]
         return User.from_dict(user)
 
-    @Experimental
     def get_case_by_reference(self, reference: CaseReference) -> Case:
         """Return the Case class object given a CaseReference class.
 
@@ -752,7 +747,6 @@ class Client:
         """
         return Case.from_reference(reference)
 
-    @Experimental
     def get_experiment_by_reference(self, reference: ExperimentReference) -> Experiment:
         """Return the Experiment class object given a ExperimentReference class.
 
