@@ -1,3 +1,16 @@
+# [4.5.0-beta.1](https://github.com/modelon-community/impact-client-python/compare/v4.4.4...v4.5.0-beta.1) (2024-07-26)
+
+
+### Bug Fixes
+
+* updated the AccessSettings object with updated protocol for workspace publish ([2f4887c](https://github.com/modelon-community/impact-client-python/commit/2f4887c397a63f39a17b5cca09580b46e474eabb))
+
+
+### Features
+
+* add api support for cleaning orphaned published ws ([78b710c](https://github.com/modelon-community/impact-client-python/commit/78b710cfb25b98e8247a2164e6f20c324098a93b))
+* added api to list orphaned published workspaces ([2dd07de](https://github.com/modelon-community/impact-client-python/commit/2dd07deedff9e62c60a2ad253d242a9c68bb1058))
+
 ## [4.4.4](https://github.com/modelon-community/impact-client-python/compare/v4.4.3...v4.4.4) (2024-07-11)
 
 
