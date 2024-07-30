@@ -1,3 +1,10 @@
+# [4.5.0-dev.2](https://github.com/modelon-community/impact-client-python/compare/v4.5.0-dev.1...v4.5.0-dev.2) (2024-07-30)
+
+
+### Bug Fixes
+
+* use params argument in request.get to pass query strings instead of passing them in url ([f2142c7](https://github.com/modelon-community/impact-client-python/commit/f2142c7e012c59cc2175237c1ee7215188485bed))
+
 # [4.5.0-dev.1](https://github.com/modelon-community/impact-client-python/compare/v4.4.4...v4.5.0-dev.1) (2024-07-30)
 
 
