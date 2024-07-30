@@ -1,3 +1,16 @@
+# [4.5.0-dev.1](https://github.com/modelon-community/impact-client-python/compare/v4.4.4...v4.5.0-dev.1) (2024-07-30)
+
+
+### Bug Fixes
+
+* change default to True for has_default in find method ([5bbafd0](https://github.com/modelon-community/impact-client-python/commit/5bbafd02fa975ff9535123ce50d79b056e30805c))
+* updated the AccessSettings object with updated protocol for workspace publish ([a08e9c0](https://github.com/modelon-community/impact-client-python/commit/a08e9c09e4856e8d6c40a84f10085a744d90c0a5))
+
+
+### Features
+
+* add api support for listing and cleaning orphaned published ws ([55ae97c](https://github.com/modelon-community/impact-client-python/commit/55ae97c01cb8e3fd71654e17cd3851888bcc0532))
+
 ## [4.4.4](https://github.com/modelon-community/impact-client-python/compare/v4.4.3...v4.4.4) (2024-07-11)
 
 
