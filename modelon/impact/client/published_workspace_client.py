@@ -54,7 +54,7 @@ class PublishedWorkspacesClient:
         name: str = "",
         first: int = 0,
         maximum: int = 20,
-        has_data: bool = False,
+        has_data: bool = True,
         owner_username: str = "",
         type: Optional[PublishedWorkspaceType] = None,
         group_name: Optional[str] = None,
