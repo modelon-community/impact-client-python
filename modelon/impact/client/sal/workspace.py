@@ -20,10 +20,9 @@ class WorkspaceService:
         self._http_client.delete_json(url)
 
     def workspace_get(self, workspace_id: str, size_info: bool) -> Dict[str, Any]:
-        url = (
-            self._base_uri / f"api/workspaces/{workspace_id}?sizeInfo={size_info}"
-        ).resolve()
-        return self._http_client.get_json(url)
+        query = {"sizeInfo": size_info}
+        url = (self._base_uri / f"api/workspaces/{workspace_id}").resolve()
+        return self._http_client.get_json(url, params=query)
 
     def workspaces_get(
         self,
@@ -31,26 +30,16 @@ class WorkspaceService:
         name: Optional[str] = None,
         sharing_id: Optional[str] = None,
     ) -> Dict[str, Any]:
-        query = {}
-        if name:
-            query["name"] = name
-        if sharing_id:
-            query["sharingId"] = sharing_id
-        if only_app_mode:
-            query["onlyAppMode"] = str(only_app_mode)
-        query_args = "&".join(f"{key}={value}" for key, value in query.items())
-        url = (self._base_uri / f"api/workspaces?{query_args}").resolve()
-        return self._http_client.get_json(url)
+        query = {"name": name, "sharingId": sharing_id, "onlyAppMode": only_app_mode}
+        url = (self._base_uri / "api/workspaces").resolve()
+        return self._http_client.get_json(url, params=query)
 
     def projects_get(
         self, workspace_id: str, vcs_info: bool, include_disabled: bool
     ) -> Dict[str, Any]:
-        url = (
-            self._base_uri
-            / f"api/workspaces/{workspace_id}/projects?vcsInfo={vcs_info}"
-            f"&includeDisabled={include_disabled}"
-        ).resolve()
-        return self._http_client.get_json(url)
+        query = {"vcsInfo": vcs_info, "includeDisabled": include_disabled}
+        url = (self._base_uri / f"api/workspaces/{workspace_id}/projects").resolve()
+        return self._http_client.get_json(url, params=query)
 
     def project_create(self, workspace_id: str, name: str) -> Dict[str, Any]:
         url = (self._base_uri / f"api/workspaces/{workspace_id}/projects").resolve()
@@ -59,12 +48,9 @@ class WorkspaceService:
     def dependencies_get(
         self, workspace_id: str, vcs_info: bool, include_disabled: bool
     ) -> Dict[str, Any]:
-        url = (
-            self._base_uri
-            / f"api/workspaces/{workspace_id}/dependencies?vcsInfo={vcs_info}"
-            f"&includeDisabled={include_disabled}"
-        ).resolve()
-        return self._http_client.get_json(url)
+        query = {"vcsInfo": vcs_info, "includeDisabled": include_disabled}
+        url = (self._base_uri / f"api/workspaces/{workspace_id}/dependencies").resolve()
+        return self._http_client.get_json(url, params=query)
 
     def workspace_export_setup(
         self,
@@ -115,13 +101,10 @@ class WorkspaceService:
     def experiments_get(
         self, workspace_id: str, class_path: Optional[str] = None
     ) -> Dict[str, Any]:
-        class_path_query = f"?classPath={class_path}" if class_path else ""
-        url = (
-            self._base_uri
-            / f"api/workspaces/{workspace_id}/experiments{class_path_query}"
-        ).resolve()
+        class_path_query = {"classPath": class_path}
+        url = (self._base_uri / f"api/workspaces/{workspace_id}/experiments").resolve()
         return self._http_client.get_json(
-            url, headers={"Accept": self._experiment_schema}
+            url, headers={"Accept": self._experiment_schema}, params=class_path_query
         )
 
     def experiment_get(self, workspace_id: str, experiment_id: str) -> Dict[str, Any]:
@@ -151,11 +134,11 @@ class WorkspaceService:
     def shared_definition_get(
         self, workspace_id: str, strict: bool = False
     ) -> Dict[str, Any]:
+        query = {"strict": strict}
         url = (
-            self._base_uri / f"api/workspaces/{workspace_id}/"
-            f"sharing-definition?strict={'true' if strict else 'false'}"
+            self._base_uri / f"api/workspaces/{workspace_id}/sharing-definition"
         ).resolve()
-        return self._http_client.get_json(url)
+        return self._http_client.get_json(url, params=query)
 
     def import_from_zip(self, path_to_workspace: str) -> Dict[str, Any]:
         url = (self._base_uri / "api/workspace-imports").resolve()
@@ -224,24 +207,20 @@ class WorkspaceService:
         type: Optional[str] = None,
         group_name: Optional[str] = None,
     ) -> Dict[str, Any]:
-        query = {}
-        if name:
-            query["workspaceName"] = name
-        if has_data:
-            query["hasData"] = str(has_data)
+        query = {
+            "workspaceName": name,
+            "hasData": has_data,
+            "ownerUsername": owner_username,
+            "type": type,
+            "groupName": group_name,
+        }
         if first > 0:
-            query["first"] = str(first)
+            query["first"] = first
         if maximum >= 0:
-            query["max"] = str(maximum)
-        if owner_username:
-            query["ownerUsername"] = owner_username
-        if type:
-            query["type"] = type
-        if group_name:
-            query["groupName"] = group_name
-        query_args = "&".join(f"{key}={value}" for key, value in query.items())
-        url = (self._base_uri / f"api/published-workspaces?{query_args}").resolve()
-        resp = self._http_client.get_json_response(url)
+            query["max"] = maximum
+
+        url = (self._base_uri / "api/published-workspaces").resolve()
+        resp = self._http_client.get_json_response(url, params=query)
         return resp.data
 
     def get_published_workspaces_by_kind(
@@ -250,18 +229,13 @@ class WorkspaceService:
         first: int = 0,
         maximum: int = 20,
     ) -> Dict[str, Any]:
-        query = {}
-        if kind:
-            query["kind"] = kind
+        query = {"kind": kind}
         if first > 0:
             query["first"] = str(first)
         if maximum >= 0:
             query["max"] = str(maximum)
-        query_args = "&".join(f"{key}={value}" for key, value in query.items())
-        url = (
-            self._base_uri / f"/api/published-workspaces/access/users?{query_args}"
-        ).resolve()
-        resp = self._http_client.get_json_response(url)
+        url = (self._base_uri / "/api/published-workspaces/access/users").resolve()
+        resp = self._http_client.get_json_response(url, params=query)
         return resp.data
 
     def get_published_workspace(self, sharing_id: str) -> Dict[str, Any]:
