@@ -816,7 +816,6 @@ class Workspace(WorkspaceInterface):
             workspace.export(publish=True,
                 class_path='Modelica.Blocks.Examples.PID_Controller',
                 access=AccessSettings(share_with_own_tenant=False)).wait()
-            )
 
         """
         if access:
