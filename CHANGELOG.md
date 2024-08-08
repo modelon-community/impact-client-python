@@ -1,3 +1,10 @@
+# [4.5.0-dev.3](https://github.com/modelon-community/impact-client-python/compare/v4.5.0-dev.2...v4.5.0-dev.3) (2024-08-08)
+
+
+### Bug Fixes
+
+* fix typo in docstring example ([1c99c68](https://github.com/modelon-community/impact-client-python/commit/1c99c6855b61aa2163abf3bd5976d9b8c48c3048))
+
 # [4.5.0-dev.2](https://github.com/modelon-community/impact-client-python/compare/v4.5.0-dev.1...v4.5.0-dev.2) (2024-07-30)
 
 
