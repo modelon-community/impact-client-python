@@ -26,16 +26,24 @@ from tests.impact.client.helpers import (
 
 _EXPECTED_FMU_EXP = {
     "experiment": {
-        "version": 2,
+        "version": 3,
         "base": {
             "model": {"fmu": {"id": IDs.FMU_ID_PRIMARY}},
             "modifiers": {
-                "variables": {"h0": "range(0.1,0.5,3)"},
+                "variables": [
+                    {
+                        "kind": "range",
+                        "name": "h0",
+                        "start": 0.1,
+                        "end": 0.5,
+                        "steps": 3,
+                    }
+                ],
                 "initializeFrom": IDs.EXPERIMENT_ID_PRIMARY,
             },
             "analysis": {
                 "type": "dynamic",
-                "parameters": {},
+                "parameters": [],
                 "simulationOptions": {"ncp": 500},
                 "solverOptions": {},
                 "simulationLogLevel": "WARNING",
@@ -46,7 +54,7 @@ _EXPECTED_FMU_EXP = {
 }
 _EXPECTED_MODELICA_EXP = {
     "experiment": {
-        "version": 2,
+        "version": 3,
         "base": {
             "model": {
                 "modelica": {
@@ -60,12 +68,20 @@ _EXPECTED_MODELICA_EXP = {
                 }
             },
             "modifiers": {
-                "variables": {"h0": "range(0.1,0.5,3)"},
+                "variables": [
+                    {
+                        "kind": "range",
+                        "name": "h0",
+                        "start": 0.1,
+                        "end": 0.5,
+                        "steps": 3,
+                    },
+                ],
                 "initializeFrom": IDs.EXPERIMENT_ID_PRIMARY,
             },
             "analysis": {
                 "type": "dynamic",
-                "parameters": {},
+                "parameters": [],
                 "simulationOptions": {"ncp": 500},
                 "solverOptions": {},
                 "simulationLogLevel": "WARNING",
@@ -80,14 +96,18 @@ _EXPECTED_MODELICA_EXP = {
 def get_experiment_extension_with_case_label_init_modifier():
     return {
         "analysis": {
-            "parameters": {"stop_time": 5},
+            "parameters": [{"name": "stop_time", "value": 5}],
             "simulationOptions": {"ncp": 2000, "rtol": 0.0001},
             "solverOptions": {"a": 1},
             "simulationLogLevel": "Warning",
         },
         "modifiers": {
             "initializeFrom": IDs.EXPERIMENT_ID_PRIMARY,
-            "variables": {"PI.k": 10, "P": 5, "d": 15},
+            "variables": [
+                {"kind": "value", "name": "PI.k", "value": 10, "dataType": "INTEGER"},
+                {"kind": "value", "name": "P", "value": 5, "dataType": "INTEGER"},
+                {"kind": "value", "name": "d", "value": 15, "dataType": "INTEGER"},
+            ],
         },
         "caseData": [{"label": "Cruise condition"}],
     }
@@ -107,8 +127,20 @@ def get_base_ext(custom_function_no_param):
 def get_expected_with_ext_first(experiment_body):
     expected = copy.deepcopy(experiment_body)
     expected["experiment"]["extensions"] = [
-        {"modifiers": {"variables": {"t": 2}}},
-        {"modifiers": {"variables": {"p": 3}}},
+        {
+            "modifiers": {
+                "variables": [
+                    {"kind": "value", "name": "t", "value": 2, "dataType": "INTEGER"}
+                ]
+            }
+        },
+        {
+            "modifiers": {
+                "variables": [
+                    {"kind": "value", "name": "p", "value": 3, "dataType": "INTEGER"}
+                ]
+            }
+        },
     ]
     return expected
 
@@ -116,8 +148,20 @@ def get_expected_with_ext_first(experiment_body):
 def get_expected_with_cases_first(experiment_body):
     expected = copy.deepcopy(experiment_body)
     expected["experiment"]["extensions"] = [
-        {"modifiers": {"variables": {"p": 3}}},
-        {"modifiers": {"variables": {"t": 2}}},
+        {
+            "modifiers": {
+                "variables": [
+                    {"kind": "value", "name": "p", "value": 3, "dataType": "INTEGER"}
+                ]
+            }
+        },
+        {
+            "modifiers": {
+                "variables": [
+                    {"kind": "value", "name": "t", "value": 2, "dataType": "INTEGER"}
+                ]
+            }
+        },
     ]
     return expected
 
@@ -125,7 +169,7 @@ def get_expected_with_cases_first(experiment_body):
 def get_expected_with_sobol_expansion(experiment_body):
     expected = copy.deepcopy(experiment_body)
     expected["experiment"]["base"]["modifiers"] = {
-        "variables": {"h0": "uniform(0.1,0.5)"}
+        "variables": [{"kind": "uniform", "name": "h0", "start": 0.1, "end": 0.5}]
     }
     expected["experiment"]["base"]["expansion"] = {
         "algorithm": "SOBOL",
@@ -137,7 +181,16 @@ def get_expected_with_sobol_expansion(experiment_body):
 def get_expected_with_lhs_expansion(experiment_body):
     expected = copy.deepcopy(experiment_body)
     expected["experiment"]["base"]["modifiers"] = {
-        "variables": {"h0": "normal(0.1,0.5,-inf,inf)"}
+        "variables": [
+            {
+                "kind": "normal",
+                "name": "h0",
+                "mean": 0.1,
+                "variable": 0.5,
+                "start": None,
+                "end": None,
+            }
+        ]
     }
     expected["experiment"]["base"]["expansion"] = {
         "algorithm": "LATINHYPERCUBE",
@@ -154,13 +207,13 @@ class TestSimpleFMUExperimentDefinition:
         config = definition.to_dict()
         assert config == {
             "experiment": {
-                "version": 2,
+                "version": 3,
                 "base": {
                     "model": {"fmu": {"id": IDs.FMU_ID_PRIMARY}},
-                    "modifiers": {"variables": {}},
+                    "modifiers": {"variables": []},
                     "analysis": {
                         "type": "dynamic",
-                        "parameters": {},
+                        "parameters": [],
                         "simulationOptions": {"ncp": 500},
                         "solverOptions": {},
                         "simulationLogLevel": "WARNING",
@@ -448,10 +501,15 @@ class TestSimpleFMUExperimentDefinition:
             fmu, custom_function=custom_function_no_param
         ).with_modifiers({"h0": Range(0.1, 0.5, 3)}, v=Choices(0.1, 0.5, 3))
         config = definition.to_dict()
-        assert config["experiment"]["base"]["modifiers"]["variables"] == {
-            "h0": "range(0.1,0.5,3)",
-            "v": "choices(0.1, 0.5, 3)",
-        }
+        assert config["experiment"]["base"]["modifiers"]["variables"] == [
+            {"kind": "range", "name": "h0", "start": 0.1, "end": 0.5, "steps": 3},
+            {
+                "kind": "choices",
+                "name": "v",
+                "values": [0.1, 0.5, 3],
+                "dataType": "REAL",
+            },
+        ]
 
     def test_experiment_definition_with_choices_1_input_modifier(
         self, fmu, custom_function_no_param
@@ -460,9 +518,9 @@ class TestSimpleFMUExperimentDefinition:
             fmu, custom_function=custom_function_no_param
         ).with_modifiers(v=Choices(0.1))
         config = definition.to_dict()
-        assert config["experiment"]["base"]["modifiers"]["variables"] == {
-            "v": "choices(0.1)",
-        }
+        assert config["experiment"]["base"]["modifiers"]["variables"] == [
+            {"dataType": "REAL", "kind": "choices", "name": "v", "values": [0.1]}
+        ]
 
     def test_experiment_definition_with_fmu_modifiers(
         self, fmu_with_modifiers, custom_function_no_param
@@ -471,7 +529,9 @@ class TestSimpleFMUExperimentDefinition:
             fmu_with_modifiers, custom_function=custom_function_no_param
         )
         config = definition.to_dict()
-        assert config["experiment"]["base"]["modifiers"]["variables"] == {"PI.K": 20}
+        assert config["experiment"]["base"]["modifiers"]["variables"] == [
+            {"kind": "value", "name": "PI.K", "value": 20, "dataType": "INTEGER"}
+        ]
 
     def test_experiment_definition_with_extensions(self, fmu, custom_function_no_param):
         ext1 = SimpleExperimentExtension().with_modifiers(p=2)
@@ -481,10 +541,30 @@ class TestSimpleFMUExperimentDefinition:
         ).with_extensions([ext1, ext2])
         config = definition.to_dict()
         assert config["experiment"]["extensions"] == [
-            {"modifiers": {"variables": {"p": 2}}},
             {
-                "modifiers": {"variables": {"p": 3}},
-                "analysis": {"parameters": {"final_time": 10}},
+                "modifiers": {
+                    "variables": [
+                        {
+                            "kind": "value",
+                            "name": "p",
+                            "value": 2,
+                            "dataType": "INTEGER",
+                        }
+                    ]
+                }
+            },
+            {
+                "modifiers": {
+                    "variables": [
+                        {
+                            "kind": "value",
+                            "name": "p",
+                            "value": 3,
+                            "dataType": "INTEGER",
+                        }
+                    ]
+                },
+                "analysis": {"parameters": [{"name": "final_time", "value": 10}]},
             },
         ]
 
@@ -495,8 +575,30 @@ class TestSimpleFMUExperimentDefinition:
         ).with_cases([{"p": 2}, {"p": 3}])
         config = definition.to_dict()
         assert config["experiment"]["extensions"] == [
-            {"modifiers": {"variables": {"p": 2}}},
-            {"modifiers": {"variables": {"p": 3}}},
+            {
+                "modifiers": {
+                    "variables": [
+                        {
+                            "kind": "value",
+                            "name": "p",
+                            "value": 2,
+                            "dataType": "INTEGER",
+                        }
+                    ]
+                }
+            },
+            {
+                "modifiers": {
+                    "variables": [
+                        {
+                            "kind": "value",
+                            "name": "p",
+                            "value": 3,
+                            "dataType": "INTEGER",
+                        }
+                    ]
+                }
+            },
         ]
 
     def test_failed_compile_exp_def(
@@ -568,7 +670,7 @@ class TestSimpleExperimentExtension:
         config = ext.to_dict()
         assert config == {
             "analysis": {
-                "parameters": {"stop_time": 5},
+                "parameters": [{"name": "stop_time", "value": 5}],
                 "simulationOptions": {"ncp": 2000, "rtol": 0.0001},
                 "solverOptions": {"a": 1},
             },
@@ -578,7 +680,18 @@ class TestSimpleExperimentExtension:
         ext = SimpleExperimentExtension().with_modifiers({"PI.k": 10}, P=5, d=15)
         config = ext.to_dict()
         assert config == {
-            "modifiers": {"variables": {"PI.k": 10, "P": 5, "d": 15}},
+            "modifiers": {
+                "variables": [
+                    {
+                        "kind": "value",
+                        "name": "PI.k",
+                        "value": 10,
+                        "dataType": "INTEGER",
+                    },
+                    {"kind": "value", "name": "P", "value": 5, "dataType": "INTEGER"},
+                    {"kind": "value", "name": "d", "value": 15, "dataType": "INTEGER"},
+                ]
+            }
         }
 
     def test_experiment_extension_with_case_label(self):
@@ -698,7 +811,7 @@ class TestSimpleModelicaExperimentDefinition:
         config = definition.to_dict()
         assert config == {
             "experiment": {
-                "version": 2,
+                "version": 3,
                 "base": {
                     "model": {
                         "modelica": {
@@ -711,10 +824,10 @@ class TestSimpleModelicaExperimentDefinition:
                             "platform": "auto",
                         }
                     },
-                    "modifiers": {"variables": {}},
+                    "modifiers": {"variables": []},
                     "analysis": {
                         "type": "dynamic",
-                        "parameters": {},
+                        "parameters": [],
                         "simulationOptions": {"ncp": 500},
                         "solverOptions": {},
                         "simulationLogLevel": "WARNING",
@@ -1081,10 +1194,15 @@ class TestSimpleModelicaExperimentDefinition:
             model.entity, custom_function=custom_function_no_param
         ).with_modifiers({"h0": Range(0.1, 0.5, 3), "v": Choices(0.1, 0.5, 3)})
         config = definition.to_dict()
-        assert config["experiment"]["base"]["modifiers"]["variables"] == {
-            "h0": "range(0.1,0.5,3)",
-            "v": "choices(0.1, 0.5, 3)",
-        }
+        assert config["experiment"]["base"]["modifiers"]["variables"] == [
+            {"kind": "range", "name": "h0", "start": 0.1, "end": 0.5, "steps": 3},
+            {
+                "kind": "choices",
+                "name": "v",
+                "values": [0.1, 0.5, 3],
+                "dataType": "REAL",
+            },
+        ]
 
     def test_given_str_and_bool_when_choices_then_type_error(self):
         with pytest.raises(ValueError):
@@ -1120,11 +1238,18 @@ class TestSimpleModelicaExperimentDefinition:
             {"h0": Uniform(0.1, 0.5), "v": Beta(0.1, 0.5), "t": Normal(0.1, 0.5, -5)}
         )
         config = definition.to_dict()
-        assert config["experiment"]["base"]["modifiers"]["variables"] == {
-            "h0": "uniform(0.1,0.5)",
-            "v": "beta(0.1,0.5)",
-            "t": "normal(0.1,0.5,-5,inf)",
-        }
+        assert config["experiment"]["base"]["modifiers"]["variables"] == [
+            {"kind": "uniform", "name": "h0", "start": 0.1, "end": 0.5},
+            {"kind": "beta", "name": "v", "alpha": 0.1, "beta": 0.5},
+            {
+                "kind": "normal",
+                "name": "t",
+                "mean": 0.1,
+                "variable": 0.5,
+                "start": -5,
+                "end": None,
+            },
+        ]
 
     def test_experiment_definition_initialize_from_result(
         self,
@@ -1214,10 +1339,30 @@ class TestSimpleModelicaExperimentDefinition:
         ).with_extensions([ext1, ext2])
         config = definition.to_dict()
         assert config["experiment"]["extensions"] == [
-            {"modifiers": {"variables": {"p": 2}}},
             {
-                "modifiers": {"variables": {"p": 3}},
-                "analysis": {"parameters": {"final_time": 10}},
+                "modifiers": {
+                    "variables": [
+                        {
+                            "dataType": "INTEGER",
+                            "kind": "value",
+                            "value": 2,
+                            "name": "p",
+                        }
+                    ]
+                }
+            },
+            {
+                "modifiers": {
+                    "variables": [
+                        {
+                            "dataType": "INTEGER",
+                            "kind": "value",
+                            "value": 3,
+                            "name": "p",
+                        }
+                    ]
+                },
+                "analysis": {"parameters": [{"name": "final_time", "value": 10}]},
             },
         ]
 
@@ -1232,7 +1377,10 @@ class TestSimpleModelicaExperimentDefinition:
             .with_modifiers({"p2": 2})
         )
         modifiers_dict = definition.to_dict()["experiment"]["base"]["modifiers"]
-        assert modifiers_dict["variables"] == {"p1": 1, "p2": 2}
+        assert modifiers_dict["variables"] == [
+            {"kind": "value", "name": "p1", "value": 1, "dataType": "INTEGER"},
+            {"kind": "value", "name": "p2", "value": 2, "dataType": "INTEGER"},
+        ]
 
     def test_fmu_experiment_definition_with_many_modifiers(
         self, fmu, custom_function_no_param
@@ -1243,7 +1391,20 @@ class TestSimpleModelicaExperimentDefinition:
             .with_modifiers({"p2": 2})
         )
         modifiers_dict = definition.to_dict()["experiment"]["base"]["modifiers"]
-        assert modifiers_dict["variables"] == {"p1": 1, "p2": 2}
+        assert modifiers_dict["variables"] == [
+            {
+                "dataType": "INTEGER",
+                "kind": "value",
+                "value": 1,
+                "name": "p1",
+            },
+            {
+                "dataType": "INTEGER",
+                "kind": "value",
+                "value": 2,
+                "name": "p2",
+            },
+        ]
 
     def test_experiment_definition_with_extensions_initialize_from_result(self):
         ext = SimpleExperimentExtension()
@@ -1261,10 +1422,31 @@ class TestSimpleModelicaExperimentDefinition:
         ).with_extensions([ext1, ext2])
         config = definition.to_dict()
         assert config["experiment"]["extensions"] == [
-            {"modifiers": {"variables": {"p": 2}}},
             {
-                "modifiers": {"initializeFrom": experiment.id, "variables": {"p": 3}},
-                "analysis": {"parameters": {"final_time": 10}},
+                "modifiers": {
+                    "variables": [
+                        {
+                            "dataType": "INTEGER",
+                            "kind": "value",
+                            "value": 2,
+                            "name": "p",
+                        }
+                    ]
+                }
+            },
+            {
+                "modifiers": {
+                    "initializeFrom": experiment.id,
+                    "variables": [
+                        {
+                            "dataType": "INTEGER",
+                            "kind": "value",
+                            "value": 3,
+                            "name": "p",
+                        }
+                    ],
+                },
+                "analysis": {"parameters": [{"name": "final_time", "value": 10}]},
             },
         ]
 
@@ -1283,16 +1465,34 @@ class TestSimpleModelicaExperimentDefinition:
         ).with_extensions([ext1, ext2])
         config = definition.to_dict()
         assert config["experiment"]["extensions"] == [
-            {"modifiers": {"variables": {"p": 2}}},
+            {
+                "modifiers": {
+                    "variables": [
+                        {
+                            "kind": "value",
+                            "name": "p",
+                            "value": 2,
+                            "dataType": "INTEGER",
+                        }
+                    ]
+                }
+            },
             {
                 "modifiers": {
                     "initializeFromCase": {
                         "experimentId": case_1.experiment_id,
                         "caseId": case_1.id,
                     },
-                    "variables": {"p": 3},
+                    "variables": [
+                        {
+                            "kind": "value",
+                            "name": "p",
+                            "value": 3,
+                            "dataType": "INTEGER",
+                        }
+                    ],
                 },
-                "analysis": {"parameters": {"final_time": 10}},
+                "analysis": {"parameters": [{"name": "final_time", "value": 10}]},
             },
         ]
 
@@ -1322,8 +1522,30 @@ class TestSimpleModelicaExperimentDefinition:
         ).with_cases([{"p": 2}, {"p": 3}])
         config = definition.to_dict()
         assert config["experiment"]["extensions"] == [
-            {"modifiers": {"variables": {"p": 2}}},
-            {"modifiers": {"variables": {"p": 3}}},
+            {
+                "modifiers": {
+                    "variables": [
+                        {
+                            "dataType": "INTEGER",
+                            "kind": "value",
+                            "value": 2,
+                            "name": "p",
+                        }
+                    ]
+                }
+            },
+            {
+                "modifiers": {
+                    "variables": [
+                        {
+                            "dataType": "INTEGER",
+                            "kind": "value",
+                            "value": 3,
+                            "name": "p",
+                        }
+                    ]
+                }
+            },
         ]
 
     def test_invalid_option_input(self, custom_function, custom_function_no_param):

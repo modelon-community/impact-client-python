@@ -27,6 +27,7 @@ from modelon.impact.client.experiment_definition.expansion import (
 from modelon.impact.client.experiment_definition.extension import (
     SimpleExperimentExtension,
 )
+from modelon.impact.client.experiment_definition.operators import get_operator_from_dict
 from modelon.impact.client.operations import experiment
 from modelon.impact.client.options import (
     CompilerOptions,
@@ -671,15 +672,22 @@ class Experiment(ExperimentReference):
                 simulation_log_level=analysis["simulationLogLevel"],
                 initialize_from=self._get_initialize_from(base["modifiers"]),
             )  # type: ignore
-        modifiers = base["modifiers"]["variables"]
+        modifiers = {
+            mod["name"]: get_operator_from_dict(mod)
+            for mod in base["modifiers"]["variables"]
+        }
         definition = definition.with_modifiers(modifiers=modifiers)
         extensions = self._get_info()["experiment"].get("extensions")
         if extensions:
             sim_exts = []
             for extension in extensions:
                 analysis = extension.get("analysis", {})
+                ext_custom_function_params = {
+                    param["name"]: param["value"]
+                    for param in analysis.get("parameters", [])
+                }
                 sim_ext = SimpleExperimentExtension(
-                    parameter_modifiers=analysis.get("parameters"),
+                    parameter_modifiers=ext_custom_function_params,
                     solver_options=analysis.get("solverOptions"),
                     simulation_options=analysis.get("simulationOptions"),
                     simulation_log_level=analysis.get("simulationLogLevel"),
@@ -689,9 +697,11 @@ class Experiment(ExperimentReference):
                     if extension.get("modifiers")
                     else None,
                 )
-                sim_ext = sim_ext.with_modifiers(
-                    modifiers=extension.get("modifiers", {}).get("variables")
-                )
+                ext_modifiers = {
+                    mod["name"]: mod["value"]
+                    for mod in extension.get("modifiers", {}).get("variables", [])
+                }
+                sim_ext = sim_ext.with_modifiers(modifiers=ext_modifiers)
                 case_data = extension.get("caseData", [])
                 case_labels = [data.get("label") for data in case_data]
                 if case_labels:
@@ -705,7 +715,9 @@ class Experiment(ExperimentReference):
         custom_function_meta = self._sal.custom_function.custom_function_get(
             self._workspace_id, self.custom_function
         )
-        custom_function_params = analysis["parameters"]
+        custom_function_params = {
+            param["name"]: param["value"] for param in analysis["parameters"]
+        }
         return CustomFunction(
             self._workspace_id,
             custom_function_meta["name"],
