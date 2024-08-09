@@ -28,6 +28,7 @@ class Request:
         body: Optional[Dict[str, Any]] = None,
         files: Optional[Dict[str, Any]] = None,
         headers: Optional[Dict[str, Any]] = None,
+        params: Optional[Dict[str, Any]] = None,
     ):
         self.context = context
         self.method = method
@@ -36,6 +37,7 @@ class Request:
         self.files = files
         self.request_type = request_type
         self.headers = headers
+        self.params = params
 
     def execute(self, check_return: bool = True) -> Any:
         try:
@@ -50,7 +52,11 @@ class Request:
                     headers=headers,
                 )
             elif self.method == "GET":
-                resp = self.context.session.get(self.url, headers=headers)
+                resp = self.context.session.get(
+                    self.url,
+                    headers=headers,
+                    params=self.params,
+                )
             elif self.method == "PUT":
                 resp = self.context.session.put(
                     self.url,
@@ -95,8 +101,11 @@ class RequestJSON(Request):
         body: Optional[Dict[str, Any]] = None,
         files: Optional[Dict[str, Any]] = None,
         headers: Optional[Dict[str, Any]] = None,
+        params: Optional[Dict[str, Any]] = None,
     ):
-        super().__init__(context, method, url, JSONResponse, body, files, headers)
+        super().__init__(
+            context, method, url, JSONResponse, body, files, headers, params
+        )
 
 
 class RequestZip(Request):

@@ -22,23 +22,20 @@ class ProjectService:
         project_type: Optional[ProjectType] = None,
         storage_location: Optional[StorageLocation] = None,
     ) -> Dict[str, Any]:
-        prj_type = "&type=" + project_type.value if project_type else ""
-        stg_loc = (
-            "&storageLocation=" + storage_location.value if storage_location else ""
-        )
-        url = (
-            self._base_uri / f"api/projects?vcsInfo={vcs_info}{prj_type}{stg_loc}"
-        ).resolve()
-        return self._http_client.get_json(url)
+        query = {
+            "vcsInfo": vcs_info,
+            "type": project_type.value if project_type else "",
+            "storageLocation": storage_location.value if storage_location else "",
+        }
+        url = (self._base_uri / "api/projects").resolve()
+        return self._http_client.get_json(url, params=query)
 
     def project_get(
         self, project_id: str, vcs_info: bool, size_info: bool
     ) -> Dict[str, Any]:
-        url = (
-            self._base_uri
-            / f"api/projects/{project_id}?vcsInfo={vcs_info}&sizeInfo={size_info}"
-        ).resolve()
-        return self._http_client.get_json(url)
+        query = {"vcsInfo": vcs_info, "sizeInfo": size_info}
+        url = (self._base_uri / f"api/projects/{project_id}").resolve()
+        return self._http_client.get_json(url, params=query)
 
     def project_delete(self, project_id: str) -> None:
         url = (self._base_uri / f"api/projects/{project_id}").resolve()

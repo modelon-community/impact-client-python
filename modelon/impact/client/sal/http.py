@@ -27,13 +27,21 @@ class HTTPClient:
         if api_key:
             self._context.session.headers["impact-api-key"] = api_key
 
-    def get_json(self, url: str, headers: Optional[Dict[str, Any]] = None) -> Any:
-        return self.get_json_response(url, headers=headers).data
+    def get_json(
+        self,
+        url: str,
+        headers: Optional[Dict[str, Any]] = None,
+        params: Optional[Dict[str, Any]] = None,
+    ) -> Any:
+        return self.get_json_response(url, headers=headers, params=params).data
 
     def get_json_response(
-        self, url: str, headers: Optional[Dict[str, Any]] = None
+        self,
+        url: str,
+        headers: Optional[Dict[str, Any]] = None,
+        params: Optional[Dict[str, Any]] = None,
     ) -> JSONResponse:
-        request = RequestJSON(self._context, "GET", url, headers=headers)
+        request = RequestJSON(self._context, "GET", url, headers=headers, params=params)
         return request.execute()
 
     def get_text(self, url: str) -> str:
