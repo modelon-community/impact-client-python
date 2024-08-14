@@ -1,3 +1,10 @@
+## [4.4.5](https://github.com/modelon-community/impact-client-python/compare/v4.4.4...v4.4.5) (2024-08-14)
+
+
+### Bug Fixes
+
+* updated the AccessSettings object with updated protocol for workspace publish ([0e15cf1](https://github.com/modelon-community/impact-client-python/commit/0e15cf1529d95996173bec5556fe838102198dbd))
+
 ## [4.4.4](https://github.com/modelon-community/impact-client-python/compare/v4.4.3...v4.4.4) (2024-07-11)
 
 
