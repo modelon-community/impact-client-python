@@ -164,7 +164,7 @@ class TestCase:
         case.sync()
 
         assert (
-            case.info["input"]["initialize_from_external_result"]["uploadId"]
+            case.info["input"]["initializeFromExternalResult"]["uploadId"]
             == IDs.EXTERNAL_RESULT_ID
         )
 

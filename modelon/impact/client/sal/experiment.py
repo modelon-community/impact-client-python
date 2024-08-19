@@ -30,6 +30,7 @@ class ExperimentService:
     def __init__(self, uri: URI, http_client: HTTPClient):
         self._base_uri = uri
         self._http_client = http_client
+        self._case_schema = "application/vnd.impact.cases.v2+json"
 
     def experiment_execute(
         self, workspace_id: str, exp_id: str, case_ids: Optional[List[str]] = None
@@ -111,7 +112,7 @@ class ExperimentService:
             self._base_uri
             / f"api/workspaces/{workspace_id}/experiments/{experiment_id}/cases"
         ).resolve()
-        return self._http_client.get_json(url)
+        return self._http_client.get_json(url, headers={"Accept": self._case_schema})
 
     def case_get(
         self, workspace_id: str, experiment_id: str, case_id: str
@@ -121,7 +122,7 @@ class ExperimentService:
             / f"api/workspaces/{workspace_id}/experiments/{experiment_id}/cases/"
             f"{case_id}"
         ).resolve()
-        return self._http_client.get_json(url)
+        return self._http_client.get_json(url, headers={"Accept": self._case_schema})
 
     def case_put(
         self,
@@ -135,7 +136,9 @@ class ExperimentService:
             / f"api/workspaces/{workspace_id}/experiments/{experiment_id}/cases/"
             f"{case_id}"
         ).resolve()
-        return self._http_client.put_json(url, body=case_data)
+        return self._http_client.put_json(
+            url, body=case_data, headers={"Accept": self._case_schema}
+        )
 
     def case_get_log(self, workspace_id: str, experiment_id: str, case_id: str) -> str:
         url = (

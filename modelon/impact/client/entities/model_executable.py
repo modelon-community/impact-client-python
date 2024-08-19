@@ -15,6 +15,7 @@ from modelon.impact.client.entities.status import ModelExecutableStatus
 from modelon.impact.client.experiment_definition.fmu_based import (
     SimpleFMUExperimentDefinition,
 )
+from modelon.impact.client.experiment_definition.modifiers import Enumeration
 from modelon.impact.client.operations.model_executable import (
     CachedModelExecutableOperation,
     ModelExecutableOperation,
@@ -182,8 +183,21 @@ class ModelExecutable(ModelExecutableInterface):
     def __hash__(self) -> int:
         return self._fmu_id.__hash__()
 
+    def _convert_enum_to_string(
+        self, param: Union[str, int, float, bool, Enumeration]
+    ) -> Union[str, int, float, bool]:
+        return param.to_value() if isinstance(param, Enumeration) else param
+
     def _variable_modifiers(self) -> Dict[str, Any]:
-        return {} if self._modifiers is None else self._modifiers
+        if self._modifiers is None:
+            return {}
+        # Enum is converted to string as POST workspaces
+        # /{workspace_id}/model-executables/{fmu_id}/steady-state-metadata
+        # doesn't supports Enum yet.
+        return {
+            key: self._convert_enum_to_string(value)
+            for key, value in self._modifiers.items()
+        }
 
     def _get_info(self, cached: bool = True) -> Dict[str, Any]:
         if not cached or self._info is None:

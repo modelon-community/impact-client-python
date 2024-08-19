@@ -27,6 +27,7 @@ from modelon.impact.client.experiment_definition.expansion import (
 from modelon.impact.client.experiment_definition.extension import (
     SimpleExperimentExtension,
 )
+from modelon.impact.client.experiment_definition.modifiers import Enumeration
 from modelon.impact.client.experiment_definition.operators import get_operator_from_dict
 from modelon.impact.client.operations import experiment
 from modelon.impact.client.options import (
@@ -619,6 +620,15 @@ class Experiment(ExperimentReference):
             return self._get_initialize_from_case(exp_id, case_id)
         return None
 
+    def _convert_to_enum_if_enum_value(
+        self, param_data: Dict[str, Any]
+    ) -> Union[str, int, float, bool, Enumeration]:
+        return (
+            Enumeration(param_data["value"])
+            if param_data.get("dataType", "") == "ENUMERATION"
+            else param_data["value"]
+        )
+
     def get_definition(self) -> ValidExperimentDefinitions:
         """Get an experiment definition that can be used to reproduce this experiment
         result.
@@ -698,7 +708,7 @@ class Experiment(ExperimentReference):
                     else None,
                 )
                 ext_modifiers = {
-                    mod["name"]: mod["value"]
+                    mod["name"]: self._convert_to_enum_if_enum_value(mod)
                     for mod in extension.get("modifiers", {}).get("variables", [])
                 }
                 sim_ext = sim_ext.with_modifiers(modifiers=ext_modifiers)
@@ -716,7 +726,7 @@ class Experiment(ExperimentReference):
             self._workspace_id, self.custom_function
         )
         custom_function_params = {
-            param["name"]: param["value"] for param in analysis["parameters"]
+            param["name"]: param["value"] for param in analysis.get("parameters", [])
         }
         return CustomFunction(
             self._workspace_id,
