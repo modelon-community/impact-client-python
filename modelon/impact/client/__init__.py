@@ -23,6 +23,7 @@ from modelon.impact.client.experiment_definition.fmu_based import (
 from modelon.impact.client.experiment_definition.model_based import (
     SimpleModelicaExperimentDefinition,
 )
+from modelon.impact.client.experiment_definition.modifiers import Enumeration
 from modelon.impact.client.experiment_definition.operators import (
     Beta,
     Choices,
