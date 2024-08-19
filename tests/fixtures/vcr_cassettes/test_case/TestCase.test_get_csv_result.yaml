@@ -64,7 +64,7 @@ interactions:
     uri: /hub/api/user
   response:
     body:
-      string: '{"name": "test-user", "server": "/user/test-user/"}'
+      string: '{"name": "5c18f9f3-ef07-453a-9965-9de61f6d53f4", "server": "/user/5c18f9f3-ef07-453a-9965-9de61f6d53f4/"}'
     headers:
       Connection:
       - keep-alive
@@ -87,7 +87,7 @@ interactions:
       Connection:
       - keep-alive
     method: GET
-    uri: /user/test-user/impact/api/users/me
+    uri: /user/5c18f9f3-ef07-453a-9965-9de61f6d53f4/impact/api/users/me
   response:
     body:
       string: '{"data": {"id": "njcswjcjnscksnckjsnckndsk", "username": "test-user",
@@ -123,7 +123,7 @@ interactions:
       Connection:
       - keep-alive
     method: GET
-    uri: /user/test-user/impact/api/
+    uri: /user/5c18f9f3-ef07-453a-9965-9de61f6d53f4/impact/api/
   response:
     body:
       string: ''
@@ -221,7 +221,7 @@ interactions:
       access-control-allow-headers:
       - accept, content-type, authorization
       location:
-      - /user/test-user/oauth_callback
+      - /user/5c18f9f3-ef07-453a-9965-9de61f6d53f4/oauth_callback
       x-jupyterhub-version:
       - 4.0.2
     status:
@@ -237,7 +237,7 @@ interactions:
       Connection:
       - keep-alive
     method: GET
-    uri: /user/test-user/oauth_callback
+    uri: /user/5c18f9f3-ef07-453a-9965-9de61f6d53f4/oauth_callback
   response:
     body:
       string: ''
@@ -249,7 +249,7 @@ interactions:
       access-control-allow-origin:
       - '*'
       location:
-      - /user/test-user/impact/api/
+      - /user/5c18f9f3-ef07-453a-9965-9de61f6d53f4/impact/api/
       x-content-type-options:
       - nosniff
       x-jupyterhub-version:
@@ -267,10 +267,10 @@ interactions:
       Connection:
       - keep-alive
     method: GET
-    uri: /user/test-user/impact/api/
+    uri: /user/5c18f9f3-ef07-453a-9965-9de61f6d53f4/impact/api/
   response:
     body:
-      string: '{"version": "4.18.0"}'
+      string: '{"version": "4.21.0"}'
     headers:
       Connection:
       - keep-alive
@@ -299,7 +299,7 @@ interactions:
       Connection:
       - keep-alive
     method: GET
-    uri: /user/test-user/impact/api/users/me
+    uri: /user/5c18f9f3-ef07-453a-9965-9de61f6d53f4/impact/api/users/me
   response:
     body:
       string: '{"data": {"id": "njcswjcjnscksnckjsnckndsk", "username": "test-user",
@@ -335,7 +335,7 @@ interactions:
       Connection:
       - keep-alive
     method: GET
-    uri: /user/test-user/impact/api/workspaces
+    uri: /user/5c18f9f3-ef07-453a-9965-9de61f6d53f4/impact/api/workspaces
   response:
     body:
       string: '{"data": {"items": []}}'
@@ -371,7 +371,7 @@ interactions:
       Content-Type:
       - application/json
     method: POST
-    uri: /user/test-user/impact/api/workspaces
+    uri: /user/5c18f9f3-ef07-453a-9965-9de61f6d53f4/impact/api/workspaces
   response:
     body:
       string: '{"definition": {"name": "impact-python-client-workspace1", "description":
@@ -381,8 +381,8 @@ interactions:
         "name": "Modelica", "version": "3.2.3"}, "disabled": true, "disabledContent":
         []}, {"reference": {"id": "ac04a5da97bc2e11bffb7f41b2485da347846df6", "name":
         "Modelica", "version": "4.0.0"}, "disabled": false, "disabledContent": []}],
-        "format": "1.0.0", "guid": "5a48a81421c84e1bbfdc7ea2f6b0a2a0", "createdBy":
-        "5c18f9f3-ef07-453a-9965-9de61f6d53f4", "createdAt": 1720118220035}, "id":
+        "format": "1.0.0", "guid": "1cd8ef901f7e45d2bab81c766a75c707", "createdBy":
+        "5c18f9f3-ef07-453a-9965-9de61f6d53f4", "createdAt": 1723966122967}, "id":
         "impact-python-client-workspace1", "conversion": {"state": "UP_TO_DATE"}}'
     headers:
       Connection:
@@ -412,7 +412,7 @@ interactions:
       Connection:
       - keep-alive
     method: GET
-    uri: /user/test-user/impact/api/workspaces/impact-python-client-workspace1/custom-functions/dynamic
+    uri: /user/5c18f9f3-ef07-453a-9965-9de61f6d53f4/impact/api/workspaces/impact-python-client-workspace1/custom-functions/dynamic
   response:
     body:
       string: '{"name": "dynamic", "version": "0.0.1", "description": "Performs a
@@ -451,7 +451,7 @@ interactions:
       Connection:
       - keep-alive
     method: GET
-    uri: /user/test-user/impact/api/workspaces/impact-python-client-workspace1
+    uri: /user/5c18f9f3-ef07-453a-9965-9de61f6d53f4/impact/api/workspaces/impact-python-client-workspace1
   response:
     body:
       string: '{"definition": {"name": "impact-python-client-workspace1", "description":
@@ -461,8 +461,8 @@ interactions:
         "name": "Modelica", "version": "3.2.3"}, "disabled": true, "disabledContent":
         []}, {"reference": {"id": "ac04a5da97bc2e11bffb7f41b2485da347846df6", "name":
         "Modelica", "version": "4.0.0"}, "disabled": false, "disabledContent": []}],
-        "format": "1.0.0", "guid": "5a48a81421c84e1bbfdc7ea2f6b0a2a0", "createdBy":
-        "5c18f9f3-ef07-453a-9965-9de61f6d53f4", "createdAt": 1720118220035}, "id":
+        "format": "1.0.0", "guid": "1cd8ef901f7e45d2bab81c766a75c707", "createdBy":
+        "5c18f9f3-ef07-453a-9965-9de61f6d53f4", "createdAt": 1723966122967}, "id":
         "impact-python-client-workspace1", "conversion": {"state": "UP_TO_DATE"}}'
     headers:
       Connection:
@@ -492,21 +492,21 @@ interactions:
       Connection:
       - keep-alive
     method: GET
-    uri: /user/test-user/impact/api/projects/8846294a20508e6aa118a9663cb8f0a41ccdc038
+    uri: /user/5c18f9f3-ef07-453a-9965-9de61f6d53f4/impact/api/projects/8846294a20508e6aa118a9663cb8f0a41ccdc038
   response:
     body:
       string: '{"id": "8846294a20508e6aa118a9663cb8f0a41ccdc038", "definition": {"name":
         "Project", "format": "1.0.0", "dependencies": [{"name": "Modelica", "versionSpecifier":
         "4.0.0"}], "content": [{"relpath": "Resources/Views", "contentType": "VIEWS",
-        "defaultDisabled": false, "id": "3dd8a603f0cf4d18a07eec6f3fc36afb"}, {"relpath":
+        "defaultDisabled": false, "id": "fb54286ae31047c590f9efa34b28420b"}, {"relpath":
         "Resources/Favorites", "contentType": "FAVORITES", "defaultDisabled": false,
-        "id": "77a3b757448b4250868590bd72efaf75"}, {"relpath": "Resources/CustomFunctions",
-        "contentType": "CUSTOM_FUNCTIONS", "defaultDisabled": false, "id": "5bd8fbe3b2b6400d980549967be7eb75"},
+        "id": "8a0a8823c7514c529a32744b07d8e386"}, {"relpath": "Resources/CustomFunctions",
+        "contentType": "CUSTOM_FUNCTIONS", "defaultDisabled": false, "id": "8579c73e729745c1baf92bd7d2237025"},
         {"relpath": "Resources/Custom", "contentType": "GENERIC", "defaultDisabled":
-        false, "id": "2cfd0e6f927a4fb4ab4ec820de5bd780"}, {"relpath": "ReferenceResults",
-        "contentType": "REFERENCE_RESULTS", "defaultDisabled": false, "id": "80042ecc562549f88d3300220de82567"},
+        false, "id": "ae68f5c630944fd2960ca2e28d7e820b"}, {"relpath": "ReferenceResults",
+        "contentType": "REFERENCE_RESULTS", "defaultDisabled": false, "id": "ead2e6487a8e458e943bf6ee7233fd7f"},
         {"relpath": "Resources/ExperimentDefinitions", "contentType": "EXPERIMENT_DEFINITIONS",
-        "defaultDisabled": false, "id": "ea42e924f6de43fdbfd7228f56414424"}], "executionOptions":
+        "defaultDisabled": false, "id": "78655d4d92d04f81a320d78535082dae"}], "executionOptions":
         []}, "projectType": "LOCAL", "storageLocation": "USERSPACE"}'
     headers:
       Connection:
@@ -536,7 +536,7 @@ interactions:
       Connection:
       - keep-alive
     method: GET
-    uri: /user/test-user/impact/api/workspaces/impact-python-client-workspace1/custom-functions/dynamic/options
+    uri: /user/5c18f9f3-ef07-453a-9965-9de61f6d53f4/impact/api/workspaces/impact-python-client-workspace1/custom-functions/dynamic/options
   response:
     body:
       string: '{"compiler": {"c_compiler": "gcc", "generate_html_diagnostics": false,
@@ -570,7 +570,7 @@ interactions:
       Connection:
       - keep-alive
     method: GET
-    uri: /user/test-user/impact/api/workspaces/impact-python-client-workspace1/custom-functions/dynamic/options
+    uri: /user/5c18f9f3-ef07-453a-9965-9de61f6d53f4/impact/api/workspaces/impact-python-client-workspace1/custom-functions/dynamic/options
   response:
     body:
       string: '{"compiler": {"c_compiler": "gcc", "generate_html_diagnostics": false,
@@ -604,7 +604,7 @@ interactions:
       Connection:
       - keep-alive
     method: GET
-    uri: /user/test-user/impact/api/workspaces/impact-python-client-workspace1/custom-functions/dynamic/options
+    uri: /user/5c18f9f3-ef07-453a-9965-9de61f6d53f4/impact/api/workspaces/impact-python-client-workspace1/custom-functions/dynamic/options
   response:
     body:
       string: '{"compiler": {"c_compiler": "gcc", "generate_html_diagnostics": false,
@@ -638,7 +638,7 @@ interactions:
       Connection:
       - keep-alive
     method: GET
-    uri: /user/test-user/impact/api/workspaces/impact-python-client-workspace1/custom-functions/dynamic/options
+    uri: /user/5c18f9f3-ef07-453a-9965-9de61f6d53f4/impact/api/workspaces/impact-python-client-workspace1/custom-functions/dynamic/options
   response:
     body:
       string: '{"compiler": {"c_compiler": "gcc", "generate_html_diagnostics": false,
@@ -684,10 +684,10 @@ interactions:
       Content-Type:
       - application/json
     method: POST
-    uri: /user/test-user/impact/api/workspaces/impact-python-client-workspace1/experiments
+    uri: /user/5c18f9f3-ef07-453a-9965-9de61f6d53f4/impact/api/workspaces/impact-python-client-workspace1/experiments
   response:
     body:
-      string: '{"experiment_id": "modelica_blocks_examples_pid_controller_20240704_183702_5894555"}'
+      string: '{"experiment_id": "modelica_blocks_examples_pid_controller_20240818_072845_a21c677"}'
     headers:
       Connection:
       - keep-alive
@@ -718,7 +718,7 @@ interactions:
       Content-Length:
       - '0'
     method: POST
-    uri: /user/test-user/impact/api/workspaces/impact-python-client-workspace1/experiments/modelica_blocks_examples_pid_controller_20240704_183702_5894555/execution
+    uri: /user/5c18f9f3-ef07-453a-9965-9de61f6d53f4/impact/api/workspaces/impact-python-client-workspace1/experiments/modelica_blocks_examples_pid_controller_20240818_072845_a21c677/execution
   response:
     body:
       string: ''
@@ -750,7 +750,7 @@ interactions:
       Connection:
       - keep-alive
     method: GET
-    uri: /user/test-user/impact/api/workspaces/impact-python-client-workspace1/experiments/modelica_blocks_examples_pid_controller_20240704_183702_5894555/execution
+    uri: /user/5c18f9f3-ef07-453a-9965-9de61f6d53f4/impact/api/workspaces/impact-python-client-workspace1/experiments/modelica_blocks_examples_pid_controller_20240818_072845_a21c677/execution
   response:
     body:
       string: '{"finished_executions": 0, "total_executions": 1, "status": "running",
@@ -784,7 +784,7 @@ interactions:
       Connection:
       - keep-alive
     method: GET
-    uri: /user/test-user/impact/api/workspaces/impact-python-client-workspace1/experiments/modelica_blocks_examples_pid_controller_20240704_183702_5894555/execution
+    uri: /user/5c18f9f3-ef07-453a-9965-9de61f6d53f4/impact/api/workspaces/impact-python-client-workspace1/experiments/modelica_blocks_examples_pid_controller_20240818_072845_a21c677/execution
   response:
     body:
       string: '{"finished_executions": 0, "total_executions": 1, "status": "running",
@@ -818,7 +818,7 @@ interactions:
       Connection:
       - keep-alive
     method: GET
-    uri: /user/test-user/impact/api/workspaces/impact-python-client-workspace1/experiments/modelica_blocks_examples_pid_controller_20240704_183702_5894555/execution
+    uri: /user/5c18f9f3-ef07-453a-9965-9de61f6d53f4/impact/api/workspaces/impact-python-client-workspace1/experiments/modelica_blocks_examples_pid_controller_20240818_072845_a21c677/execution
   response:
     body:
       string: '{"finished_executions": 0, "total_executions": 1, "status": "running",
@@ -852,7 +852,7 @@ interactions:
       Connection:
       - keep-alive
     method: GET
-    uri: /user/test-user/impact/api/workspaces/impact-python-client-workspace1/experiments/modelica_blocks_examples_pid_controller_20240704_183702_5894555/execution
+    uri: /user/5c18f9f3-ef07-453a-9965-9de61f6d53f4/impact/api/workspaces/impact-python-client-workspace1/experiments/modelica_blocks_examples_pid_controller_20240818_072845_a21c677/execution
   response:
     body:
       string: '{"finished_executions": 0, "total_executions": 1, "status": "running",
@@ -886,7 +886,7 @@ interactions:
       Connection:
       - keep-alive
     method: GET
-    uri: /user/test-user/impact/api/workspaces/impact-python-client-workspace1/experiments/modelica_blocks_examples_pid_controller_20240704_183702_5894555/execution
+    uri: /user/5c18f9f3-ef07-453a-9965-9de61f6d53f4/impact/api/workspaces/impact-python-client-workspace1/experiments/modelica_blocks_examples_pid_controller_20240818_072845_a21c677/execution
   response:
     body:
       string: '{"finished_executions": 0, "total_executions": 1, "status": "running",
@@ -920,7 +920,7 @@ interactions:
       Connection:
       - keep-alive
     method: GET
-    uri: /user/test-user/impact/api/workspaces/impact-python-client-workspace1/experiments/modelica_blocks_examples_pid_controller_20240704_183702_5894555/execution
+    uri: /user/5c18f9f3-ef07-453a-9965-9de61f6d53f4/impact/api/workspaces/impact-python-client-workspace1/experiments/modelica_blocks_examples_pid_controller_20240818_072845_a21c677/execution
   response:
     body:
       string: '{"finished_executions": 0, "total_executions": 1, "status": "running",
@@ -954,7 +954,109 @@ interactions:
       Connection:
       - keep-alive
     method: GET
-    uri: /user/test-user/impact/api/workspaces/impact-python-client-workspace1/experiments/modelica_blocks_examples_pid_controller_20240704_183702_5894555/execution
+    uri: /user/5c18f9f3-ef07-453a-9965-9de61f6d53f4/impact/api/workspaces/impact-python-client-workspace1/experiments/modelica_blocks_examples_pid_controller_20240818_072845_a21c677/execution
+  response:
+    body:
+      string: '{"finished_executions": 0, "total_executions": 1, "status": "running",
+        "progresses": [{"message": "Simulating", "percentage": 0.0, "done": false,
+        "stage": "compilation"}]}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json; charset=utf-8
+      access-control-allow-headers:
+      - '*'
+      access-control-allow-methods:
+      - POST, PUT, GET, DELETE, OPTIONS
+      access-control-allow-origin:
+      - '*'
+      vary:
+      - Accept-Encoding
+      x-powered-by:
+      - Express
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+    method: GET
+    uri: /user/5c18f9f3-ef07-453a-9965-9de61f6d53f4/impact/api/workspaces/impact-python-client-workspace1/experiments/modelica_blocks_examples_pid_controller_20240818_072845_a21c677/execution
+  response:
+    body:
+      string: '{"finished_executions": 0, "total_executions": 1, "status": "running",
+        "progresses": [{"message": "Simulating", "percentage": 0.0, "done": false,
+        "stage": "compilation"}]}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json; charset=utf-8
+      access-control-allow-headers:
+      - '*'
+      access-control-allow-methods:
+      - POST, PUT, GET, DELETE, OPTIONS
+      access-control-allow-origin:
+      - '*'
+      vary:
+      - Accept-Encoding
+      x-powered-by:
+      - Express
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+    method: GET
+    uri: /user/5c18f9f3-ef07-453a-9965-9de61f6d53f4/impact/api/workspaces/impact-python-client-workspace1/experiments/modelica_blocks_examples_pid_controller_20240818_072845_a21c677/execution
+  response:
+    body:
+      string: '{"finished_executions": 0, "total_executions": 1, "status": "running",
+        "progresses": [{"message": "Simulating", "percentage": 0.0, "done": false,
+        "stage": "compilation"}]}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json; charset=utf-8
+      access-control-allow-headers:
+      - '*'
+      access-control-allow-methods:
+      - POST, PUT, GET, DELETE, OPTIONS
+      access-control-allow-origin:
+      - '*'
+      vary:
+      - Accept-Encoding
+      x-powered-by:
+      - Express
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+    method: GET
+    uri: /user/5c18f9f3-ef07-453a-9965-9de61f6d53f4/impact/api/workspaces/impact-python-client-workspace1/experiments/modelica_blocks_examples_pid_controller_20240818_072845_a21c677/execution
   response:
     body:
       string: '{"finished_executions": 2, "total_executions": 2, "status": "done",
@@ -989,7 +1091,7 @@ interactions:
       Connection:
       - keep-alive
     method: GET
-    uri: /user/test-user/impact/api/workspaces/impact-python-client-workspace1/experiments/modelica_blocks_examples_pid_controller_20240704_183702_5894555/execution
+    uri: /user/5c18f9f3-ef07-453a-9965-9de61f6d53f4/impact/api/workspaces/impact-python-client-workspace1/experiments/modelica_blocks_examples_pid_controller_20240818_072845_a21c677/execution
   response:
     body:
       string: '{"finished_executions": 2, "total_executions": 2, "status": "done",
@@ -1018,19 +1120,24 @@ interactions:
     body: null
     headers:
       Accept:
-      - '*/*'
+      - application/vnd.impact.cases.v2+json
       Accept-Encoding:
       - gzip, deflate
       Connection:
       - keep-alive
     method: GET
-    uri: /user/test-user/impact/api/workspaces/impact-python-client-workspace1/experiments/modelica_blocks_examples_pid_controller_20240704_183702_5894555/execution
+    uri: /user/5c18f9f3-ef07-453a-9965-9de61f6d53f4/impact/api/workspaces/impact-python-client-workspace1/experiments/modelica_blocks_examples_pid_controller_20240818_072845_a21c677/cases/case_1
   response:
     body:
-      string: '{"finished_executions": 2, "total_executions": 2, "status": "done",
-        "progresses": [{"message": "Simulating", "percentage": 0.0, "done": true,
-        "stage": "compilation"}, {"message": "Simulation at time 1", "percentage":
-        1.0, "done": true, "stage": "simulation"}]}'
+      string: '{"id": "case_1", "input": {"version": 2, "fmuId": "modelica_blocks_examples_pid_controller_20240818_072845_1a55004",
+        "analysis": {"type": "dynamic", "simulationOptions": {"ncp": 500, "dynamic_diagnostics":
+        false}, "solverOptions": {}, "simulationLogLevel": "WARNING", "parameters":
+        [{"name": "start_time", "value": 0}, {"name": "final_time", "value": 1}, {"name":
+        "interval", "value": 0}]}, "initializeFromCase": null, "initializeFromExternalResult":
+        null, "parametrization": [], "structuralParametrization": [], "fmuBaseParametrization":
+        []}, "meta": {"label": null, "orchestrator": false}, "run_info": {"status":
+        "successful", "datetime_started": 1723966130849, "consistent": true, "datetime_finished":
+        1723966130914}}'
     headers:
       Connection:
       - keep-alive
@@ -1053,23 +1160,24 @@ interactions:
     body: null
     headers:
       Accept:
-      - '*/*'
+      - application/vnd.impact.cases.v2+json
       Accept-Encoding:
       - gzip, deflate
       Connection:
       - keep-alive
     method: GET
-    uri: /user/test-user/impact/api/workspaces/impact-python-client-workspace1/experiments/modelica_blocks_examples_pid_controller_20240704_183702_5894555/cases/case_1
+    uri: /user/5c18f9f3-ef07-453a-9965-9de61f6d53f4/impact/api/workspaces/impact-python-client-workspace1/experiments/modelica_blocks_examples_pid_controller_20240818_072845_a21c677/cases/case_1
   response:
     body:
-      string: '{"id": "case_1", "orchestrator": false, "input": {"fmu_id": "modelica_blocks_examples_pid_controller_20240704_183702_c08e42d",
-        "analysis": {"analysis_function": "dynamic", "simulation_options": {"ncp":
-        500, "dynamic_diagnostics": false}, "solver_options": {}, "simulation_log_level":
-        "WARNING", "parameters": {"start_time": 0, "final_time": 1, "interval": 0}},
-        "initialize_from_case": null, "initialize_from_external_result": null, "parametrization":
-        {}, "structural_parametrization": {}, "fmu_base_parametrization": {}}, "meta":
-        {"label": null}, "run_info": {"status": "successful", "datetime_started":
-        1720118226101, "consistent": true, "datetime_finished": 1720118226153}}'
+      string: '{"id": "case_1", "input": {"version": 2, "fmuId": "modelica_blocks_examples_pid_controller_20240818_072845_1a55004",
+        "analysis": {"type": "dynamic", "simulationOptions": {"ncp": 500, "dynamic_diagnostics":
+        false}, "solverOptions": {}, "simulationLogLevel": "WARNING", "parameters":
+        [{"name": "start_time", "value": 0}, {"name": "final_time", "value": 1}, {"name":
+        "interval", "value": 0}]}, "initializeFromCase": null, "initializeFromExternalResult":
+        null, "parametrization": [], "structuralParametrization": [], "fmuBaseParametrization":
+        []}, "meta": {"label": null, "orchestrator": false}, "run_info": {"status":
+        "successful", "datetime_started": 1723966130849, "consistent": true, "datetime_finished":
+        1723966130914}}'
     headers:
       Connection:
       - keep-alive
@@ -1092,62 +1200,24 @@ interactions:
     body: null
     headers:
       Accept:
-      - '*/*'
+      - application/vnd.impact.cases.v2+json
       Accept-Encoding:
       - gzip, deflate
       Connection:
       - keep-alive
     method: GET
-    uri: /user/test-user/impact/api/workspaces/impact-python-client-workspace1/experiments/modelica_blocks_examples_pid_controller_20240704_183702_5894555/cases/case_1
+    uri: /user/5c18f9f3-ef07-453a-9965-9de61f6d53f4/impact/api/workspaces/impact-python-client-workspace1/experiments/modelica_blocks_examples_pid_controller_20240818_072845_a21c677/cases/case_1
   response:
     body:
-      string: '{"id": "case_1", "orchestrator": false, "input": {"fmu_id": "modelica_blocks_examples_pid_controller_20240704_183702_c08e42d",
-        "analysis": {"analysis_function": "dynamic", "simulation_options": {"ncp":
-        500, "dynamic_diagnostics": false}, "solver_options": {}, "simulation_log_level":
-        "WARNING", "parameters": {"start_time": 0, "final_time": 1, "interval": 0}},
-        "initialize_from_case": null, "initialize_from_external_result": null, "parametrization":
-        {}, "structural_parametrization": {}, "fmu_base_parametrization": {}}, "meta":
-        {"label": null}, "run_info": {"status": "successful", "datetime_started":
-        1720118226101, "consistent": true, "datetime_finished": 1720118226153}}'
-    headers:
-      Connection:
-      - keep-alive
-      Content-Type:
-      - application/json; charset=utf-8
-      access-control-allow-headers:
-      - '*'
-      access-control-allow-methods:
-      - POST, PUT, GET, DELETE, OPTIONS
-      access-control-allow-origin:
-      - '*'
-      vary:
-      - Accept-Encoding
-      x-powered-by:
-      - Express
-    status:
-      code: 200
-      message: OK
-- request:
-    body: null
-    headers:
-      Accept:
-      - '*/*'
-      Accept-Encoding:
-      - gzip, deflate
-      Connection:
-      - keep-alive
-    method: GET
-    uri: /user/test-user/impact/api/workspaces/impact-python-client-workspace1/experiments/modelica_blocks_examples_pid_controller_20240704_183702_5894555/cases/case_1
-  response:
-    body:
-      string: '{"id": "case_1", "orchestrator": false, "input": {"fmu_id": "modelica_blocks_examples_pid_controller_20240704_183702_c08e42d",
-        "analysis": {"analysis_function": "dynamic", "simulation_options": {"ncp":
-        500, "dynamic_diagnostics": false}, "solver_options": {}, "simulation_log_level":
-        "WARNING", "parameters": {"start_time": 0, "final_time": 1, "interval": 0}},
-        "initialize_from_case": null, "initialize_from_external_result": null, "parametrization":
-        {}, "structural_parametrization": {}, "fmu_base_parametrization": {}}, "meta":
-        {"label": null}, "run_info": {"status": "successful", "datetime_started":
-        1720118226101, "consistent": true, "datetime_finished": 1720118226153}}'
+      string: '{"id": "case_1", "input": {"version": 2, "fmuId": "modelica_blocks_examples_pid_controller_20240818_072845_1a55004",
+        "analysis": {"type": "dynamic", "simulationOptions": {"ncp": 500, "dynamic_diagnostics":
+        false}, "solverOptions": {}, "simulationLogLevel": "WARNING", "parameters":
+        [{"name": "start_time", "value": 0}, {"name": "final_time", "value": 1}, {"name":
+        "interval", "value": 0}]}, "initializeFromCase": null, "initializeFromExternalResult":
+        null, "parametrization": [], "structuralParametrization": [], "fmuBaseParametrization":
+        []}, "meta": {"label": null, "orchestrator": false}, "run_info": {"status":
+        "successful", "datetime_started": 1723966130849, "consistent": true, "datetime_finished":
+        1723966130914}}'
     headers:
       Connection:
       - keep-alive
@@ -1176,7 +1246,7 @@ interactions:
       Connection:
       - keep-alive
     method: GET
-    uri: /user/test-user/impact/api/workspaces/impact-python-client-workspace1/experiments/modelica_blocks_examples_pid_controller_20240704_183702_5894555/cases/case_1/result
+    uri: /user/5c18f9f3-ef07-453a-9965-9de61f6d53f4/impact/api/workspaces/impact-python-client-workspace1/experiments/modelica_blocks_examples_pid_controller_20240818_072845_a21c677/cases/case_1/result
   response:
     body:
       string: 'time,PI.Dzero.k,PI.Dzero.y,PI.FFzero.k,PI.FFzero.y,PI.I.initType,PI.I.k,PI.I.u,PI.I.y,PI.I.y_start,PI.Nd,PI.Ni,PI.P.k,PI.P.u,PI.P.y,PI.Td,PI.Ti,PI.addFF.k1,PI.addFF.k2,PI.addFF.u1,PI.addFF.u2,PI.addFF.y,PI.addI.k1,PI.addI.k2,PI.addI.k3,PI.addI.u1,PI.addI.u2,PI.addI.u3,PI.addI.y,PI.addP.k1,PI.addP.k2,PI.addP.u1,PI.addP.u2,PI.addP.y,PI.addPID.k1,PI.addPID.k2,PI.addPID.k3,PI.addPID.u1,PI.addPID.u2,PI.addPID.u3,PI.addPID.y,PI.addSat.k1,PI.addSat.k2,PI.addSat.u1,PI.addSat.u2,PI.addSat.y,PI.controlError,PI.controllerType,PI.gainPID.k,PI.gainPID.u,PI.gainPID.y,PI.gainTrack.k,PI.gainTrack.u,PI.gainTrack.y,PI.homotopyType,PI.initType,PI.k,PI.kFF,PI.limiter.homotopyType,PI.limiter.strict,PI.limiter.u,PI.limiter.uMax,PI.limiter.uMin,PI.limiter.y,PI.strict,PI.u_m,PI.u_s,PI.wd,PI.withFeedForward,PI.wp,PI.xd_start,PI.xi_start,PI.y,PI.yMax,PI.yMin,PI.y_start,_block_jacobian_check,_block_jacobian_check_tol,_block_solver_experimental_mode,_block_solver_profiling,_cs_experimental_mode,_cs_profiling,_cs_rel_tol,_cs_solver,_cs_step_size,_enforce_bounds,_events_default_tol,_events_tol_factor,_iteration_variable_scaling,_log_level,_log_start_time,_log_stop_time,_mathematical_domain_warnings_limit,_nle_active_bounds_mode,_nle_brent_ignore_error,_nle_jacobian_calculation_mode,_nle_jacobian_finite_difference_delta,_nle_jacobian_update_mode,_nle_solver_check_jac_cond,_nle_solver_default_tol,_nle_solver_exit_criterion,_nle_solver_max_iter,_nle_solver_max_iter_no_jacobian,_nle_solver_max_residual_scaling_factor,_nle_solver_min_residual_scaling_factor,_nle_solver_min_tol,_nle_solver_regularization_tolerance,_nle_solver_step_limit_factor,_nle_solver_tol_factor,_nle_solver_use_last_integrator_step,_nle_solver_use_nominals_as_fallback,_rescale_after_singular_jac,_rescale_each_step,_residual_equation_scaling,_runtime_log_to_file,_time_events_default_tol,_use_Brent_in_1d,_use_jacobian_equilibration,_use_newton_for_brent,der(PI.I.y),der(inertia1.phi),"der(inertia1.phi,2)",der(inertia1.w),der(inertia2.phi),"der(inertia2.phi,2)",der(inertia2.w),der(integrator.y),der(spring.phi_rel),"der(spring.phi_rel,2)",der(spring.w_rel),driveAngle,inertia1.J,inertia1.a,inertia1.flange_a.phi,inertia1.flange_a.tau,inertia1.flange_b.phi,inertia1.flange_b.tau,inertia1.phi,inertia1.w,inertia2.J,inertia2.a,inertia2.flange_a.phi,inertia2.flange_a.tau,inertia2.flange_b.phi,inertia2.flange_b.tau,inertia2.phi,inertia2.w,integrator.initType,integrator.k,integrator.u,integrator.y,integrator.y_start,kinematicPTP.deltaq[1],kinematicPTP.nout,kinematicPTP.qd_max[1],kinematicPTP.qdd_max[1],kinematicPTP.startTime,kinematicPTP.y[1],loadTorque.flange.phi,loadTorque.flange.tau,loadTorque.phi,loadTorque.tau,loadTorque.tau_constant,loadTorque.w,speedSensor.flange.phi,speedSensor.flange.tau,speedSensor.w,spring.a_rel,spring.c,spring.d,spring.flange_a.phi,spring.flange_a.tau,spring.flange_b.phi,spring.flange_b.tau,spring.lossPower,spring.phi_nominal,spring.phi_rel,spring.phi_rel0,spring.tau,spring.w_rel,torque.flange.phi,torque.flange.tau,torque.tau
@@ -2198,7 +2268,7 @@ interactions:
       access-control-allow-origin:
       - '*'
       content-disposition:
-      - attachment; filename="Modelica.Blocks.Examples.PID_Controller_2024-07-04_18-37.csv"
+      - attachment; filename="Modelica.Blocks.Examples.PID_Controller_2024-08-18_07-28.csv"
       content-length:
       - '717355'
       vary:
@@ -2218,7 +2288,7 @@ interactions:
       Connection:
       - keep-alive
     method: GET
-    uri: /user/test-user/impact/api/workspaces
+    uri: /user/5c18f9f3-ef07-453a-9965-9de61f6d53f4/impact/api/workspaces
   response:
     body:
       string: '{"data": {"items": [{"definition": {"name": "impact-python-client-workspace1",
@@ -2228,8 +2298,8 @@ interactions:
         {"id": "fec43f77925949bd7e7c0f10ac49ebc1189dc840", "name": "Modelica", "version":
         "3.2.3"}, "disabled": true, "disabledContent": []}, {"reference": {"id": "ac04a5da97bc2e11bffb7f41b2485da347846df6",
         "name": "Modelica", "version": "4.0.0"}, "disabled": false, "disabledContent":
-        []}], "format": "1.0.0", "guid": "5a48a81421c84e1bbfdc7ea2f6b0a2a0", "createdBy":
-        "5c18f9f3-ef07-453a-9965-9de61f6d53f4", "createdAt": 1720118220035}, "id":
+        []}], "format": "1.0.0", "guid": "1cd8ef901f7e45d2bab81c766a75c707", "createdBy":
+        "5c18f9f3-ef07-453a-9965-9de61f6d53f4", "createdAt": 1723966122967}, "id":
         "impact-python-client-workspace1", "conversion": {"state": "UP_TO_DATE"}}]}}'
     headers:
       Connection:
@@ -2259,7 +2329,7 @@ interactions:
       Connection:
       - keep-alive
     method: GET
-    uri: /user/test-user/impact/api/workspaces/impact-python-client-workspace1
+    uri: /user/5c18f9f3-ef07-453a-9965-9de61f6d53f4/impact/api/workspaces/impact-python-client-workspace1
   response:
     body:
       string: '{"definition": {"name": "impact-python-client-workspace1", "description":
@@ -2269,8 +2339,8 @@ interactions:
         "name": "Modelica", "version": "3.2.3"}, "disabled": true, "disabledContent":
         []}, {"reference": {"id": "ac04a5da97bc2e11bffb7f41b2485da347846df6", "name":
         "Modelica", "version": "4.0.0"}, "disabled": false, "disabledContent": []}],
-        "format": "1.0.0", "guid": "5a48a81421c84e1bbfdc7ea2f6b0a2a0", "createdBy":
-        "5c18f9f3-ef07-453a-9965-9de61f6d53f4", "createdAt": 1720118220035}, "id":
+        "format": "1.0.0", "guid": "1cd8ef901f7e45d2bab81c766a75c707", "createdBy":
+        "5c18f9f3-ef07-453a-9965-9de61f6d53f4", "createdAt": 1723966122967}, "id":
         "impact-python-client-workspace1", "conversion": {"state": "UP_TO_DATE"}}'
     headers:
       Connection:
@@ -2300,21 +2370,21 @@ interactions:
       Connection:
       - keep-alive
     method: GET
-    uri: /user/test-user/impact/api/workspaces/impact-python-client-workspace1/projects
+    uri: /user/5c18f9f3-ef07-453a-9965-9de61f6d53f4/impact/api/workspaces/impact-python-client-workspace1/projects
   response:
     body:
       string: '{"data": {"items": [{"id": "8846294a20508e6aa118a9663cb8f0a41ccdc038",
         "definition": {"name": "Project", "format": "1.0.0", "dependencies": [{"name":
         "Modelica", "versionSpecifier": "4.0.0"}], "content": [{"relpath": "Resources/Views",
-        "contentType": "VIEWS", "defaultDisabled": false, "id": "3dd8a603f0cf4d18a07eec6f3fc36afb"},
+        "contentType": "VIEWS", "defaultDisabled": false, "id": "fb54286ae31047c590f9efa34b28420b"},
         {"relpath": "Resources/Favorites", "contentType": "FAVORITES", "defaultDisabled":
-        false, "id": "77a3b757448b4250868590bd72efaf75"}, {"relpath": "Resources/CustomFunctions",
-        "contentType": "CUSTOM_FUNCTIONS", "defaultDisabled": false, "id": "5bd8fbe3b2b6400d980549967be7eb75"},
+        false, "id": "8a0a8823c7514c529a32744b07d8e386"}, {"relpath": "Resources/CustomFunctions",
+        "contentType": "CUSTOM_FUNCTIONS", "defaultDisabled": false, "id": "8579c73e729745c1baf92bd7d2237025"},
         {"relpath": "Resources/Custom", "contentType": "GENERIC", "defaultDisabled":
-        false, "id": "2cfd0e6f927a4fb4ab4ec820de5bd780"}, {"relpath": "ReferenceResults",
-        "contentType": "REFERENCE_RESULTS", "defaultDisabled": false, "id": "80042ecc562549f88d3300220de82567"},
+        false, "id": "ae68f5c630944fd2960ca2e28d7e820b"}, {"relpath": "ReferenceResults",
+        "contentType": "REFERENCE_RESULTS", "defaultDisabled": false, "id": "ead2e6487a8e458e943bf6ee7233fd7f"},
         {"relpath": "Resources/ExperimentDefinitions", "contentType": "EXPERIMENT_DEFINITIONS",
-        "defaultDisabled": false, "id": "ea42e924f6de43fdbfd7228f56414424"}], "executionOptions":
+        "defaultDisabled": false, "id": "78655d4d92d04f81a320d78535082dae"}], "executionOptions":
         []}, "projectType": "LOCAL", "storageLocation": "USERSPACE"}]}}'
     headers:
       Connection:
@@ -2348,21 +2418,21 @@ interactions:
       Content-Length:
       - '0'
     method: DELETE
-    uri: /user/test-user/impact/api/projects/8846294a20508e6aa118a9663cb8f0a41ccdc038
+    uri: /user/5c18f9f3-ef07-453a-9965-9de61f6d53f4/impact/api/projects/8846294a20508e6aa118a9663cb8f0a41ccdc038
   response:
     body:
       string: '{"id": "8846294a20508e6aa118a9663cb8f0a41ccdc038", "definition": {"name":
         "Project", "format": "1.0.0", "dependencies": [{"name": "Modelica", "versionSpecifier":
         "4.0.0"}], "content": [{"relpath": "Resources/Views", "contentType": "VIEWS",
-        "defaultDisabled": false, "id": "3dd8a603f0cf4d18a07eec6f3fc36afb"}, {"relpath":
+        "defaultDisabled": false, "id": "fb54286ae31047c590f9efa34b28420b"}, {"relpath":
         "Resources/Favorites", "contentType": "FAVORITES", "defaultDisabled": false,
-        "id": "77a3b757448b4250868590bd72efaf75"}, {"relpath": "Resources/CustomFunctions",
-        "contentType": "CUSTOM_FUNCTIONS", "defaultDisabled": false, "id": "5bd8fbe3b2b6400d980549967be7eb75"},
+        "id": "8a0a8823c7514c529a32744b07d8e386"}, {"relpath": "Resources/CustomFunctions",
+        "contentType": "CUSTOM_FUNCTIONS", "defaultDisabled": false, "id": "8579c73e729745c1baf92bd7d2237025"},
         {"relpath": "Resources/Custom", "contentType": "GENERIC", "defaultDisabled":
-        false, "id": "2cfd0e6f927a4fb4ab4ec820de5bd780"}, {"relpath": "ReferenceResults",
-        "contentType": "REFERENCE_RESULTS", "defaultDisabled": false, "id": "80042ecc562549f88d3300220de82567"},
+        false, "id": "ae68f5c630944fd2960ca2e28d7e820b"}, {"relpath": "ReferenceResults",
+        "contentType": "REFERENCE_RESULTS", "defaultDisabled": false, "id": "ead2e6487a8e458e943bf6ee7233fd7f"},
         {"relpath": "Resources/ExperimentDefinitions", "contentType": "EXPERIMENT_DEFINITIONS",
-        "defaultDisabled": false, "id": "ea42e924f6de43fdbfd7228f56414424"}], "executionOptions":
+        "defaultDisabled": false, "id": "78655d4d92d04f81a320d78535082dae"}], "executionOptions":
         []}, "projectType": "LOCAL", "storageLocation": "USERSPACE"}'
     headers:
       Connection:
@@ -2394,7 +2464,7 @@ interactions:
       Content-Length:
       - '0'
     method: DELETE
-    uri: /user/test-user/impact/api/workspaces/impact-python-client-workspace1
+    uri: /user/5c18f9f3-ef07-453a-9965-9de61f6d53f4/impact/api/workspaces/impact-python-client-workspace1
   response:
     body:
       string: ''
