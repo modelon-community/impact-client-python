@@ -7,6 +7,7 @@ from typing import Any, Optional, Union
 
 from modelon.impact.client.experiment_definition.modifiers import (
     DataType,
+    Enumeration,
     Modifier,
     Scalar,
     data_type_from_value,
@@ -293,7 +294,7 @@ class Normal(Operator):
 
 def get_operator_from_dict(
     data: dict[str, Any]
-) -> Optional[Union[Range, Choices, Uniform, Beta, Normal]]:
+) -> Union[Range, Choices, Uniform, Beta, Normal, Enumeration, int, float, bool, str]:
     kind = data["kind"]
     if kind == "range":
         return Range.from_dict(data)
@@ -305,4 +306,12 @@ def get_operator_from_dict(
         return Beta.from_dict(data)
     elif kind == "normal":
         return Normal.from_dict(data)
+    elif kind == "value":
+        data_type = DataType(data["dataType"])
+        if data_type == DataType.ENUMERATION:
+            return Enumeration(data["value"])
+        elif data_type == DataType.BOOLEAN:
+            return data["value"] == "true"
+        else:
+            return data["value"]
     raise ValueError(f"Unsupported operator kind: {kind}!")

@@ -12,17 +12,13 @@ class ModelExecutableService:
 
     def fmu_setup(
         self, workspace_id: str, options: Dict[str, Any], get_cached: bool
-    ) -> Tuple[str, Dict[str, Any]]:
+    ) -> Tuple[str, List[Dict[str, Any]]]:
         url = (
             self._base_uri / f"api/workspaces/{workspace_id}/model-executables"
             f"?getCached={'true' if get_cached else 'false'}"
         ).resolve()
         resp = self._http_client.post_json(url, body=options)
-        modifiers = {
-            modifier["name"]: modifier["value"]
-            for modifier in resp["parametersResolved"]
-        }
-        return resp["id"], modifiers
+        return resp["id"], resp["parametersResolved"]
 
     def compile_model(self, workspace_id: str, fmu_id: str) -> str:
         url = (

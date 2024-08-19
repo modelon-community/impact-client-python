@@ -10,6 +10,7 @@ from modelon.impact.client.entities.project import Project
 from modelon.impact.client.experiment_definition.model_based import (
     SimpleModelicaExperimentDefinition,
 )
+from modelon.impact.client.experiment_definition.modifiers import Enumeration
 from modelon.impact.client.operations.fmu_import import FMUImportOperation
 from modelon.impact.client.operations.model_executable import (
     CachedModelExecutableOperation,
@@ -84,6 +85,15 @@ class Model(ModelInterface):
     def name(self) -> str:
         """Class name."""
         return self._class_name
+
+    def _convert_to_enum_if_enum_value(
+        self, param_data: Dict[str, Any]
+    ) -> Union[str, int, float, bool, Enumeration]:
+        return (
+            Enumeration(param_data["value"])
+            if param_data.get("dataType", "") == "ENUMERATION"
+            else param_data["value"]
+        )
 
     def compile(
         self,
@@ -172,6 +182,10 @@ class Model(ModelInterface):
             fmu_id, modifiers = self._sal.model_executable.fmu_setup(
                 self._workspace_id, body, True
             )
+            modifiers_dict = {
+                modifier["name"]: self._convert_to_enum_if_enum_value(modifier["value"])
+                for modifier in modifiers
+            }
             if fmu_id:
                 return CachedModelExecutableOperation[ModelExecutable](
                     self._workspace_id,
@@ -179,7 +193,7 @@ class Model(ModelInterface):
                     self._sal,
                     ModelExecutable.from_operation,
                     None,
-                    modifiers,
+                    modifiers_dict,
                 )
 
         # No cached FMU, setup up a new one

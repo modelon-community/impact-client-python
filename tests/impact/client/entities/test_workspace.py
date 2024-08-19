@@ -23,6 +23,7 @@ from modelon.impact.client.experiment_definition.expansion import LatinHypercube
 from modelon.impact.client.experiment_definition.extension import (
     SimpleExperimentExtension,
 )
+from modelon.impact.client.experiment_definition.modifiers import Enumeration
 from modelon.impact.client.experiment_definition.operators import Uniform
 from modelon.impact.client.operations.workspace.exports import WorkspaceExportOperation
 from tests.files.paths import get_archived_project_path
@@ -605,7 +606,15 @@ class TestWorkspace:
 
         # Initializing with experiment and expanding with Sobol
         experiment_definition = (
-            base_experiment_definition.with_modifiers({"PI.k": Uniform(100.0, 200.0)})
+            base_experiment_definition.with_modifiers(
+                {
+                    "PI.k": Uniform(100.0, 200.0),
+                    "PI.Ti": 0.2,
+                    "PI.homotopyType": Enumeration(
+                        "Modelica.Blocks.Types.LimiterHomotopy.NoHomotopy"
+                    ),
+                }
+            )
             .with_expansion(Sobol(5))
             .with_extensions(extensions)
             .with_cases([{"inertia1.J": 3}])
@@ -617,7 +626,9 @@ class TestWorkspace:
         expected_definition_dict = experiment_definition.to_dict()
         assert definition_dict == expected_definition_dict
         assert isinstance(definition, SimpleModelicaExperimentDefinition)
-        assert len(definition.modifiers) == 1 and "PI.k" in definition.modifiers
+        assert len(definition.modifiers) == 3 and all(
+            mod in definition.modifiers for mod in ("PI.k", "PI.Ti", "PI.homotopyType")
+        )
         assert definition.model.name == IDs.PID_MODELICA_CLASS_PATH
         assert definition.fmi_target == "me"
         assert definition.fmi_version == "2.0"
@@ -716,7 +727,15 @@ class TestWorkspace:
 
         # Initializing with case
         experiment_definition = (
-            base_experiment_definition.with_modifiers({"PI.k": Uniform(100.0, 200.0)})
+            base_experiment_definition.with_modifiers(
+                {
+                    "PI.k": Uniform(100.0, 200.0),
+                    "PI.Ti": 0.2,
+                    "PI.homotopyType": Enumeration(
+                        "Modelica.Blocks.Types.LimiterHomotopy.NoHomotopy"
+                    ),
+                }
+            )
             .with_extensions(extensions)
             .with_cases([{"inertia1.J": 3}])
             .with_initialize_from(case_for_init)
@@ -728,7 +747,9 @@ class TestWorkspace:
         assert definition_dict == expected_definition_dict
 
         assert isinstance(definition, SimpleFMUExperimentDefinition)
-        assert len(definition.modifiers) == 1 and "PI.k" in definition.modifiers
+        assert len(definition.modifiers) == 3 and all(
+            mod in definition.modifiers for mod in ("PI.k", "PI.Ti", "PI.homotopyType")
+        )
         assert definition.fmu.id
         assert definition.simulation_log_level == "WARNING"
         assert definition.simulation_options == {
@@ -761,7 +782,13 @@ class TestWorkspace:
         case_for_init = exp_for_init.get_case(IDs.CASE_ID_PRIMARY)
 
         experiment_definition = base_experiment_definition.with_modifiers(
-            {"PI.yMax": Choices(100, 200)}
+            {
+                "PI.yMax": Choices(100, 200),
+                "PI.homotopyType": Enumeration(
+                    "Modelica.Blocks.Types.LimiterHomotopy.NoHomotopy"
+                ),
+                "PI.Ti": 0.2,
+            }
         ).with_initialize_from(case_for_init)
         experiment = workspace.execute(experiment_definition).wait()
         case = experiment.get_case(IDs.CASE_ID_PRIMARY)

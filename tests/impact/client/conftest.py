@@ -810,19 +810,9 @@ def experiment():
             "datetime_finished": 1662964957990,
         },
         "input": {
-            "fmu_id": IDs.FMU_ID_PRIMARY,
-            "analysis": {
-                "analysis_function": "dynamic",
-                "parameters": {"start_time": 0, "final_time": 1},
-                "simulation_options": {},
-                "solver_options": {},
-                "simulation_log_level": "NOTHING",
-            },
+            "fmuId": IDs.FMU_ID_PRIMARY,
+            "analysis": {},
             "parametrization": {},
-            "structural_parametrization": {},
-            "fmu_base_parametrization": {},
-            "initialize_from_case": None,
-            "initialize_from_external_result": None,
         },
         "meta": {"label": "Cruise operating point"},
     }

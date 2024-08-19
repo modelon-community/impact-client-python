@@ -92,6 +92,11 @@ class HTTPClient:
     ) -> None:
         RequestJSON(self._context, "PUT", url, body).execute()
 
-    def put_json(self, url: str, body: Optional[Dict[str, Any]] = None) -> Any:
-        request = RequestJSON(self._context, "PUT", url, body)
+    def put_json(
+        self,
+        url: str,
+        body: Optional[Dict[str, Any]] = None,
+        headers: Optional[Dict[str, Any]] = None,
+    ) -> Any:
+        request = RequestJSON(self._context, "PUT", url, body, headers=headers)
         return request.execute().data

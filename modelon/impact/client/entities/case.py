@@ -18,6 +18,7 @@ from modelon.impact.client.entities.model import (
 from modelon.impact.client.entities.model_executable import ModelExecutable
 from modelon.impact.client.entities.result import Result
 from modelon.impact.client.entities.status import CaseStatus
+from modelon.impact.client.experiment_definition.modifiers import Enumeration
 from modelon.impact.client.operations.base import BaseOperation
 from modelon.impact.client.operations.case import CaseOperation
 from modelon.impact.client.operations.case_result import CaseResultImportOperation
@@ -126,7 +127,7 @@ class CaseAnalysis:
             analysis_function = case.input.analysis.analysis_function
 
         """
-        return self._analysis["analysis_function"]
+        return self._analysis["type"]
 
     @property
     def parameters(self) -> Dict[str, Any]:
@@ -143,11 +144,14 @@ class CaseAnalysis:
             parameters = case.input.analysis.parameters
 
         """
-        return self._analysis["parameters"]
+        parameters = self._analysis["parameters"]
+        return {param["name"]: param["value"] for param in parameters}
 
     @parameters.setter
     def parameters(self, parameters: Dict[str, Any]) -> None:
-        self._analysis["parameters"] = parameters
+        self._analysis["parameters"] = [
+            {"name": param, "value": parameters[param]} for param in parameters
+        ]
 
     @property
     def simulation_options(self) -> Dict[str, Any]:
@@ -163,11 +167,11 @@ class CaseAnalysis:
             simulation_options = case.input.analysis.simulation_options
 
         """
-        return self._analysis["simulation_options"]
+        return self._analysis["simulationOptions"]
 
     @simulation_options.setter
     def simulation_options(self, simulation_options: Dict[str, Any]) -> None:
-        self._analysis["simulation_options"] = simulation_options
+        self._analysis["simulationOptions"] = simulation_options
 
     @property
     def solver_options(self) -> Dict[str, Any]:
@@ -184,11 +188,11 @@ class CaseAnalysis:
             solver_options = case.input.analysis.solver_options
 
         """
-        return self._analysis["solver_options"]
+        return self._analysis["solverOptions"]
 
     @solver_options.setter
     def solver_options(self, solver_options: Dict[str, Any]) -> None:
-        self._analysis["solver_options"] = solver_options
+        self._analysis["solverOptions"] = solver_options
 
     @property
     def simulation_log_level(self) -> str:
@@ -204,11 +208,11 @@ class CaseAnalysis:
             simulation_log_level = case.input.analysis.simulation_log_level
 
         """
-        return self._analysis["simulation_log_level"]
+        return self._analysis["simulationLogLevel"]
 
     @simulation_log_level.setter
     def simulation_log_level(self, simulation_log_level: str) -> None:
-        self._analysis["simulation_log_level"] = simulation_log_level
+        self._analysis["simulationLogLevel"] = simulation_log_level
 
 
 class CaseMeta:
@@ -251,6 +255,15 @@ class CaseInput:
     def analysis(self) -> CaseAnalysis:
         return CaseAnalysis(self._data["analysis"])
 
+    def _convert_to_enum_if_enum_value(
+        self, param_data: Dict[str, Any]
+    ) -> Union[str, int, float, bool, Enumeration]:
+        return (
+            Enumeration(param_data["value"])
+            if param_data.get("dataType", "") == "ENUMERATION"
+            else param_data["value"]
+        )
+
     @property
     def parametrization(self) -> Dict[str, Any]:
         """Get or set the parametrization of the case. Parameterization is defined as a
@@ -267,16 +280,27 @@ class CaseInput:
             parametrization = case.input.parametrization
 
         """
-        return self._data["parametrization"]
+        parametrization = self._data["parametrization"]
+        return {
+            param["name"]: self._convert_to_enum_if_enum_value(param)
+            for param in parametrization
+        }
 
     @parametrization.setter
     def parametrization(self, parametrization: Dict[str, Any]) -> None:
-        self._data["parametrization"] = parametrization
+        converted_params = []
+        for name, value in parametrization.items():
+            if isinstance(value, Enumeration):
+                converted_params.append(value.to_dict(name))
+            else:
+                converted_params.append({"name": name, "value": value})
+
+        self._data["parametrization"] = converted_params
 
     @property
     def fmu_id(self) -> str:
         """Reference ID to the compiled model used running the case."""
-        return self._data["fmu_id"]
+        return self._data["fmuId"]
 
     @property
     def structural_parametrization(self) -> Dict[str, Any]:
@@ -286,7 +310,11 @@ class CaseInput:
         These are values that cannot be applied to the FMU/Model after compilation.
 
         """
-        return self._data["structural_parametrization"]
+        parametrization = self._data["structuralParametrization"]
+        return {
+            param["name"]: self._convert_to_enum_if_enum_value(param)
+            for param in parametrization
+        }
 
     @property
     def fmu_base_parametrization(self) -> Dict[str, Any]:
@@ -296,7 +324,11 @@ class CaseInput:
         It often comes as a result from of caching to reuse the FMU.
 
         """
-        return self._data["fmu_base_parametrization"]
+        parametrization = self._data["fmuBaseParametrization"]
+        return {
+            param["name"]: self._convert_to_enum_if_enum_value(param)
+            for param in parametrization
+        }
 
 
 class Case(CaseReference):
@@ -406,7 +438,7 @@ class Case(CaseReference):
             initialized_from_case = case.initialize_from_case
 
         """
-        init_from_dict = self._info["input"].get("initialize_from_case")
+        init_from_dict = self._info["input"].get("initializeFromCase")
         if init_from_dict is None:
             return None
 
@@ -424,8 +456,10 @@ class Case(CaseReference):
     def initialize_from_case(self, case: Case) -> None:
         if not isinstance(case, Case):
             raise TypeError("The value must be an instance of Case")
-        self._assert_unique_case_initialization("initialize_from_external_result")
-        self._info["input"]["initialize_from_case"] = {
+        self._assert_unique_case_initialization(
+            "initializeFromExternalResult", "initialize_from_external_result"
+        )
+        self._info["input"]["initializeFromCase"] = {
             "experimentId": case.experiment_id,
             "caseId": case.id,
         }
@@ -452,7 +486,7 @@ class Case(CaseReference):
             initialize_from_external_result = case.initialize_from_external_result
 
         """
-        init_from_dict = self._info["input"].get("initialize_from_external_result")
+        init_from_dict = self._info["input"].get("initializeFromExternalResult")
 
         if init_from_dict is None:
             return None
@@ -465,8 +499,10 @@ class Case(CaseReference):
     def initialize_from_external_result(self, result: ExternalResult) -> None:
         if not isinstance(result, ExternalResult):
             raise TypeError("The value must be an instance of ExternalResult")
-        self._assert_unique_case_initialization("initialize_from_case")
-        self._info["input"]["initialize_from_external_result"] = {"uploadId": result.id}
+        self._assert_unique_case_initialization(
+            "initializeFromCase", "initialize_from_case"
+        )
+        self._info["input"]["initializeFromExternalResult"] = {"uploadId": result.id}
 
     def is_successful(self) -> bool:
         """Returns True if a case has completed successfully.
@@ -782,12 +818,14 @@ class Case(CaseReference):
         definition = definition.with_modifiers(modifiers=modifiers)
         return definition
 
-    def _assert_unique_case_initialization(self, unsupported_init: str) -> None:
+    def _assert_unique_case_initialization(
+        self, unsupported_init: str, unsupported_method_name: str
+    ) -> None:
         if self._info["input"][unsupported_init]:
             raise ValueError(
                 "A case cannot use both 'initialize_from_case' and "
                 "'initialize_from_external_result' to specify what to initialize from! "
-                f"To resolve this, set the '{unsupported_init}' attribute "
+                f"To resolve this, set the '{unsupported_method_name}' attribute "
                 "to None and re-try."
             )
 
