@@ -14,6 +14,7 @@ from modelon.impact.client.entities.log import Log
 from modelon.impact.client.entities.model import (
     Model,
     SimpleModelicaExperimentDefinition,
+    to_domain_parameter_value,
 )
 from modelon.impact.client.entities.model_executable import ModelExecutable
 from modelon.impact.client.entities.result import Result
@@ -255,15 +256,6 @@ class CaseInput:
     def analysis(self) -> CaseAnalysis:
         return CaseAnalysis(self._data["analysis"])
 
-    def _convert_to_enum_if_enum_value(
-        self, param_data: Dict[str, Any]
-    ) -> Union[str, int, float, bool, Enumeration]:
-        return (
-            Enumeration(param_data["value"])
-            if param_data.get("dataType", "") == "ENUMERATION"
-            else param_data["value"]
-        )
-
     @property
     def parametrization(self) -> Dict[str, Any]:
         """Get or set the parametrization of the case. Parameterization is defined as a
@@ -282,8 +274,7 @@ class CaseInput:
         """
         parametrization = self._data["parametrization"]
         return {
-            param["name"]: self._convert_to_enum_if_enum_value(param)
-            for param in parametrization
+            param["name"]: to_domain_parameter_value(param) for param in parametrization
         }
 
     @parametrization.setter
@@ -312,8 +303,7 @@ class CaseInput:
         """
         parametrization = self._data["structuralParametrization"]
         return {
-            param["name"]: self._convert_to_enum_if_enum_value(param)
-            for param in parametrization
+            param["name"]: to_domain_parameter_value(param) for param in parametrization
         }
 
     @property
@@ -326,8 +316,7 @@ class CaseInput:
         """
         parametrization = self._data["fmuBaseParametrization"]
         return {
-            param["name"]: self._convert_to_enum_if_enum_value(param)
-            for param in parametrization
+            param["name"]: to_domain_parameter_value(param) for param in parametrization
         }
 
 

@@ -44,6 +44,16 @@ SimulationOptionsOrDict = Union[SimulationOptions, Dict[str, Any]]
 SolverOptionsOrDict = Union[SolverOptions, Dict[str, Any]]
 
 
+def to_domain_parameter_value(
+    param_data: Dict[str, Any]
+) -> Union[str, int, float, bool, Enumeration]:
+    return (
+        Enumeration(param_data["value"])
+        if param_data.get("dataType", "") == "ENUMERATION"
+        else param_data["value"]
+    )
+
+
 def _assert_valid_compilation_options(
     compiler_options: Optional[CompilerOptionsOrDict] = None,
     runtime_options: Optional[RuntimeOptionsOrDict] = None,
@@ -85,15 +95,6 @@ class Model(ModelInterface):
     def name(self) -> str:
         """Class name."""
         return self._class_name
-
-    def _convert_to_enum_if_enum_value(
-        self, param_data: Dict[str, Any]
-    ) -> Union[str, int, float, bool, Enumeration]:
-        return (
-            Enumeration(param_data["value"])
-            if param_data.get("dataType", "") == "ENUMERATION"
-            else param_data["value"]
-        )
 
     def compile(
         self,
@@ -183,7 +184,7 @@ class Model(ModelInterface):
                 self._workspace_id, body, True
             )
             modifiers_dict = {
-                modifier["name"]: self._convert_to_enum_if_enum_value(modifier["value"])
+                modifier["name"]: to_domain_parameter_value(modifier["value"])
                 for modifier in modifiers
             }
             if fmu_id:
