@@ -310,8 +310,6 @@ def get_operator_from_dict(
         data_type = DataType(data["dataType"])
         if data_type == DataType.ENUMERATION:
             return Enumeration(data["value"])
-        elif data_type == DataType.BOOLEAN:
-            return data["value"] == "true"
         else:
             return data["value"]
     raise ValueError(f"Unsupported operator kind: {kind}!")

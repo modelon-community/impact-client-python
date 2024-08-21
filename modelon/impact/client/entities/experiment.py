@@ -12,6 +12,7 @@ from modelon.impact.client.entities.interfaces.experiment import ExperimentRefer
 from modelon.impact.client.entities.model import (
     Model,
     SimpleModelicaExperimentDefinition,
+    to_domain_parameter_value,
 )
 from modelon.impact.client.entities.model_executable import (
     ModelExecutable,
@@ -27,7 +28,6 @@ from modelon.impact.client.experiment_definition.expansion import (
 from modelon.impact.client.experiment_definition.extension import (
     SimpleExperimentExtension,
 )
-from modelon.impact.client.experiment_definition.modifiers import Enumeration
 from modelon.impact.client.experiment_definition.operators import get_operator_from_dict
 from modelon.impact.client.operations import experiment
 from modelon.impact.client.options import (
@@ -620,15 +620,6 @@ class Experiment(ExperimentReference):
             return self._get_initialize_from_case(exp_id, case_id)
         return None
 
-    def _convert_to_enum_if_enum_value(
-        self, param_data: Dict[str, Any]
-    ) -> Union[str, int, float, bool, Enumeration]:
-        return (
-            Enumeration(param_data["value"])
-            if param_data.get("dataType", "") == "ENUMERATION"
-            else param_data["value"]
-        )
-
     def get_definition(self) -> ValidExperimentDefinitions:
         """Get an experiment definition that can be used to reproduce this experiment
         result.
@@ -708,7 +699,7 @@ class Experiment(ExperimentReference):
                     else None,
                 )
                 ext_modifiers = {
-                    mod["name"]: self._convert_to_enum_if_enum_value(mod)
+                    mod["name"]: to_domain_parameter_value(mod)
                     for mod in extension.get("modifiers", {}).get("variables", [])
                 }
                 sim_ext = sim_ext.with_modifiers(modifiers=ext_modifiers)
