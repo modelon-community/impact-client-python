@@ -1,3 +1,23 @@
+# [4.5.0](https://github.com/modelon-community/impact-client-python/compare/v4.4.5...v4.5.0) (2024-08-22)
+
+
+### Bug Fixes
+
+* adding Enumeration to top level init to allow for easy import ([139f803](https://github.com/modelon-community/impact-client-python/commit/139f80388c757e9e4a698459efea3f09e7d205da))
+* bump api version lower bound ([b313b53](https://github.com/modelon-community/impact-client-python/commit/b313b53db0dac43bc164f9401b6cdda7bd1f2ac0))
+* bump lower bound for api version ([02a3c51](https://github.com/modelon-community/impact-client-python/commit/02a3c5126185ad2f8a2d3d0f86e7cb28078f1eb3))
+* corrected the kind in to_dict method of Normal operator class ([6686f2e](https://github.com/modelon-community/impact-client-python/commit/6686f2eaa75f4a744a79dc07355aa20111097f29))
+* refactor duplicate code ([3794e75](https://github.com/modelon-community/impact-client-python/commit/3794e75eda28cb471805a03d93c2241e05ad21ec))
+* update get_definition methods as per new v3 experiment format ([d0ecb63](https://github.com/modelon-community/impact-client-python/commit/d0ecb63e19b0fa8bb46c0fd62d39d6fc87633eb4))
+* update tests, regenerate vcr cassettes and removed unused helper methods ([bb04136](https://github.com/modelon-community/impact-client-python/commit/bb04136a19aaec48675ad13f7b213b8e70368b14))
+
+
+### Features
+
+* added support for v3 experiment format for FMU based workflow ([80674b2](https://github.com/modelon-community/impact-client-python/commit/80674b2f2e0f7ba7f02f0f61a713835a62e7ee1f))
+* make experiment v3 default experiment definition version for ClasBased workflows ([9fedc48](https://github.com/modelon-community/impact-client-python/commit/9fedc4889bdd6aa43dcf2ad123d4a8351452939e))
+* update the code to use v2 version of case ([0ae12f0](https://github.com/modelon-community/impact-client-python/commit/0ae12f009f2c7953881539d988490fbdbd030570))
+
 ## [4.4.5](https://github.com/modelon-community/impact-client-python/compare/v4.4.4...v4.4.5) (2024-08-14)
 
 
