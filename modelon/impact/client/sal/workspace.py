@@ -144,7 +144,9 @@ class WorkspaceService:
             **definition,
             **({"userData": user_data} if user_data is not None else {}),
         }
-        return self._http_client.post_json(url, body=body)
+        return self._http_client.post_json(
+            url, body=body, headers={"Content-type": self._experiment_schema}
+        )
 
     def shared_definition_get(
         self, workspace_id: str, strict: bool = False
