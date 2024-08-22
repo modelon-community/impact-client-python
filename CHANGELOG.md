@@ -1,3 +1,11 @@
+## [4.5.2](https://github.com/modelon-community/impact-client-python/compare/v4.5.1...v4.5.2) (2024-08-22)
+
+
+### Bug Fixes
+
+* add v3 accept header for case PUT api ([81ced2c](https://github.com/modelon-community/impact-client-python/commit/81ced2c94c865aa5c8c6d649b2d87bac34066530))
+* add v3 accept header for experiment create api to be explicit ([12a94fe](https://github.com/modelon-community/impact-client-python/commit/12a94fe5f5073ae508440c6ac2237e35d2888267))
+
 ## [4.5.1](https://github.com/modelon-community/impact-client-python/compare/v4.5.0...v4.5.1) (2024-08-22)
 
 
