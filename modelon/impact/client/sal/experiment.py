@@ -137,7 +137,7 @@ class ExperimentService:
             f"{case_id}"
         ).resolve()
         return self._http_client.put_json(
-            url, body=case_data, headers={"Accept": self._case_schema}
+            url, body=case_data, headers={"Content-type": self._case_schema}
         )
 
     def case_get_log(self, workspace_id: str, experiment_id: str, case_id: str) -> str:
