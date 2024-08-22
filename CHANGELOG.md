@@ -1,3 +1,10 @@
+## [4.5.1](https://github.com/modelon-community/impact-client-python/compare/v4.5.0...v4.5.1) (2024-08-22)
+
+
+### Bug Fixes
+
+* corrected headers for case put request ([59a8bf9](https://github.com/modelon-community/impact-client-python/commit/59a8bf96208c080eaa8f6bdaa64dede1d2829373))
+
 # [4.5.0](https://github.com/modelon-community/impact-client-python/compare/v4.4.5...v4.5.0) (2024-08-22)
 
 
