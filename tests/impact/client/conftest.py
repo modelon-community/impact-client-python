@@ -68,7 +68,7 @@ def mock_server_base():
 
 @pytest.fixture
 def sem_ver_check(mock_server_base):
-    json = {"version": "4.21.1"}
+    json = {"version": "4.22.1"}
     return with_json_route(mock_server_base, "GET", "api/", json)
 
 
