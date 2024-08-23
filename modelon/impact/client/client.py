@@ -222,7 +222,7 @@ class Client:
 
     """
 
-    _SUPPORTED_VERSION_RANGE = ">=4.21.1,<5.0.0"
+    _SUPPORTED_VERSION_RANGE = ">=4.22.1,<5.0.0"
 
     def __init__(
         self,
