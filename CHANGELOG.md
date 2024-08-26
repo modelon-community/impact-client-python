@@ -1,3 +1,10 @@
+## [4.5.3](https://github.com/modelon-community/impact-client-python/compare/v4.5.2...v4.5.3) (2024-08-26)
+
+
+### Bug Fixes
+
+* bump lower bound for open api ([5c7901f](https://github.com/modelon-community/impact-client-python/commit/5c7901fa78abae607e103a83bd49162950187e5e))
+
 ## [4.5.2](https://github.com/modelon-community/impact-client-python/compare/v4.5.1...v4.5.2) (2024-08-22)
 
 
