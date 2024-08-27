@@ -1,3 +1,11 @@
+## [4.5.5](https://github.com/modelon-community/impact-client-python/compare/v4.5.4...v4.5.5) (2024-08-27)
+
+
+### Bug Fixes
+
+* change default to True for has_default in find method ([a52c4c0](https://github.com/modelon-community/impact-client-python/commit/a52c4c07d4a45575c31088aab14a7bc4e2d854d5))
+* use params argument in request.get to pass query strings instead of passing them in url ([7273667](https://github.com/modelon-community/impact-client-python/commit/7273667b9147ff72b1dadb0f81d83a9286ab5f12))
+
 ## [4.5.4](https://github.com/modelon-community/impact-client-python/compare/v4.5.3...v4.5.4) (2024-08-27)
 
 
