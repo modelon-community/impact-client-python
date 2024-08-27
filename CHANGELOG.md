@@ -1,3 +1,10 @@
+## [4.5.4](https://github.com/modelon-community/impact-client-python/compare/v4.5.3...v4.5.4) (2024-08-27)
+
+
+### Bug Fixes
+
+* remove experimental flag for api's related to FileURI ,CaseResult and ExperimentResult Custom function datatypes ([40aa622](https://github.com/modelon-community/impact-client-python/commit/40aa622576520e3012467337ca432b4df5df5ec6))
+
 ## [4.5.3](https://github.com/modelon-community/impact-client-python/compare/v4.5.2...v4.5.3) (2024-08-26)
 
 
