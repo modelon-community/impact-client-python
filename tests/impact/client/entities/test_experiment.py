@@ -69,6 +69,7 @@ class TestExperiment:
         assert experiment.run_info.not_started == 3
         case_to_execute = experiment.get_cases()[2]
         assert not case_to_execute.meta.label
+        assert not case_to_execute.meta.orchestrator
 
     @pytest.mark.vcr()
     def test_experiment_get_last_time_point(self, client_helper: ClientHelper):
