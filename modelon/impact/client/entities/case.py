@@ -243,6 +243,18 @@ class CaseMeta:
     def label(self, label: str) -> None:
         self._data["label"] = label
 
+    @property
+    def orchestrator(self) -> str:
+        """Returns True, if this is an Orchestrator case which creates and runs other
+        cases in this experiment..
+
+        Example::
+
+            orchestrator = case.meta.orchestrator
+
+        """
+        return self._data.get("orchestrator", False)
+
 
 class CaseInput:
     """Class containing Case input."""
