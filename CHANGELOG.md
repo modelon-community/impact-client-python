@@ -1,3 +1,10 @@
+# [4.6.0](https://github.com/modelon-community/impact-client-python/compare/v4.5.5...v4.6.0) (2024-09-03)
+
+
+### Features
+
+* added orchestrator flag in meta to identify orchestrator case ([dd37dca](https://github.com/modelon-community/impact-client-python/commit/dd37dca3a0e716603230aca0308103250b802ffa))
+
 ## [4.5.5](https://github.com/modelon-community/impact-client-python/compare/v4.5.4...v4.5.5) (2024-08-27)
 
 
