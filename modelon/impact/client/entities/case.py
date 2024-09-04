@@ -244,7 +244,7 @@ class CaseMeta:
         self._data["label"] = label
 
     @property
-    def orchestrator(self) -> str:
+    def orchestrator(self) -> bool:
         """Returns True, if this is an Orchestrator case which creates and runs other
         cases in this experiment..
 
