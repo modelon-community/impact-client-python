@@ -1,3 +1,10 @@
+## [4.6.1](https://github.com/modelon-community/impact-client-python/compare/v4.6.0...v4.6.1) (2024-09-04)
+
+
+### Bug Fixes
+
+* corrected return type info for orchestrator property ([7ae809c](https://github.com/modelon-community/impact-client-python/commit/7ae809cba579a84006ea4b29190de4d1ea05d5e6))
+
 # [4.6.0](https://github.com/modelon-community/impact-client-python/compare/v4.5.5...v4.6.0) (2024-09-03)
 
 
