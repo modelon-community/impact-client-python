@@ -1,3 +1,10 @@
+## [4.6.2](https://github.com/modelon-community/impact-client-python/compare/v4.6.1...v4.6.2) (2024-09-09)
+
+
+### Bug Fixes
+
+* ensure that client can always be imported with other modelon packages in all cases ([681e50e](https://github.com/modelon-community/impact-client-python/commit/681e50e78d9a8ef82a1731107bb3dbd8608de965))
+
 ## [4.6.1](https://github.com/modelon-community/impact-client-python/compare/v4.6.0...v4.6.1) (2024-09-04)
 
 
