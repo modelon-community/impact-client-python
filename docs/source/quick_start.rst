@@ -64,7 +64,7 @@ A simple example using the :ref:`Class name based workflow <Setup and run an exp
 
 An example of setting up and executing a series of simulations on a server and returning the plot trajectories::
 
-   from modelon.impact.client import Client, Range
+   from modelon.impact.client import Client, Range, Enumeration
 
    client = Client(url=<impact-domain>) # url is optional; defaults to on-prem OR "https://impact.modelon.cloud"
    workspace = client.create_workspace(<workspace-name>)
@@ -80,7 +80,11 @@ An example of setting up and executing a series of simulations on a server and r
       dynamic.with_parameters(start_time=0.0, final_time=2.0),
       simulation_options=dynamic.get_simulation_options().with_values(ncp=500),
       solver_options={'atol': 1e-8},
-   ).with_modifiers({'inertia1.J': 2, 'PI.k': Range(10, 100, 3)})
+   ).with_modifiers({
+      'inertia1.J': 2, 
+      'PI.k': Range(10, 100, 3),
+      "PI.homotopyType": Enumeration("Modelica.Blocks.Types.LimiterHomotopy.NoHomotopy")
+   })
    exp = workspace.execute(experiment_definition).wait()
 
    # Getting a set of simulated FMU objects from the cases
