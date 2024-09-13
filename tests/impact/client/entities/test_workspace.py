@@ -8,6 +8,7 @@ import modelon.impact.client.sal.exceptions as sal_exceptions
 from modelon.impact.client import (
     AccessSettings,
     Choices,
+    Range,
     SimpleFMUExperimentDefinition,
     SimpleModelicaExperimentDefinition,
 )
@@ -823,6 +824,30 @@ class TestWorkspace:
         experiment_definition = base_experiment_definition.with_modifiers(
             {
                 "PI.yMax": Choices(100, 200),
+            }
+        )
+        experiment = workspace.execute(experiment_definition).wait()
+        definition_dict = experiment.get_definition().to_dict()
+        expected_definition_dict = experiment_definition.to_dict()
+        assert definition_dict == expected_definition_dict
+
+    @pytest.mark.vcr()
+    def test_get_experiment_definition_for_exp_with_enum_modifier(
+        self, client_helper: ClientHelper
+    ):
+        workspace = client_helper.workspace
+        dynamic = workspace.get_custom_function("dynamic").with_parameters(
+            start_time=0.0, final_time=2.5
+        )
+        model = workspace.get_model(IDs.PID_MODELICA_CLASS_PATH)
+        base_experiment_definition = SimpleModelicaExperimentDefinition(model, dynamic)
+        experiment_definition = base_experiment_definition.with_modifiers(
+            {
+                "inertia1.J": 2,
+                "PI.k": Range(10, 100, 3),
+                "PI.homotopyType": Enumeration(
+                    "Modelica.Blocks.Types.LimiterHomotopy.NoHomotopy"
+                ),
             }
         )
         experiment = workspace.execute(experiment_definition).wait()
