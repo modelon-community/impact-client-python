@@ -1,11 +1,16 @@
 import pytest
 
 from modelon.impact.client.entities.experiment import (
+    Experiment,
     ExperimentResultPoint,
     ExperimentStatus,
     _Workflow,
 )
-from modelon.impact.client.experiment_definition.operators import Choices, Range
+from modelon.impact.client.experiment_definition.operators import (
+    Choices,
+    Enumeration,
+    Range,
+)
 from modelon.impact.client.operations.base import Status
 from modelon.impact.client.operations.experiment import ExperimentOperation
 from tests.impact.client.helpers import ClientHelper, IDs
@@ -284,3 +289,20 @@ class TestExperiment:
         experiment = client_helper.create_and_execute_experiment()
         experiment.set_label(IDs.EXPERIMENT_LABEL)
         assert experiment.label == IDs.EXPERIMENT_LABEL
+
+    @pytest.mark.vcr()
+    def test_simulate_with_enum_modifier(self, client_helper: ClientHelper):
+        user_data = {"workspaceExecuteKey": "workspaceExecuteValue"}
+        res = client_helper.create_and_execute_experiment(
+            user_data=user_data,
+            modifiers={
+                "inertia1.J": 2,
+                "PI.k": Range(10, 100, 3),
+                "PI.homotopyType": Enumeration(
+                    "Modelica.Blocks.Types.LimiterHomotopy.NoHomotopy"
+                ),
+            },
+        )
+        assert isinstance(res, Experiment)
+        assert res.is_successful()
+        assert res.get_cases()[0].get_trajectories()["PI.homotopyType"][0] == 1

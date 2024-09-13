@@ -6,6 +6,7 @@ import pytest
 from modelon.impact.client import (
     Beta,
     Choices,
+    Enumeration,
     LatinHypercube,
     Normal,
     Range,
@@ -1564,3 +1565,27 @@ class TestSimpleModelicaExperimentDefinition:
             fmu,
             custom_function_no_param,
         )
+
+    def test_experiment_definition_with_enum_modifier(
+        self, model, custom_function_no_param
+    ):
+        definition = SimpleModelicaExperimentDefinition(
+            model.entity, custom_function=custom_function_no_param
+        ).with_modifiers(
+            {"e": Enumeration("dataTypes.Enumeration.alt1"), "i": Choices(1, 2, 3)}
+        )
+        config = definition.to_dict()
+        assert config["experiment"]["base"]["modifiers"]["variables"] == [
+            {
+                "kind": "value",
+                "name": "e",
+                "value": "dataTypes.Enumeration.alt1",
+                "dataType": "ENUMERATION",
+            },
+            {
+                "kind": "choices",
+                "name": "i",
+                "values": [1, 2, 3],
+                "dataType": "INTEGER",
+            },
+        ]
