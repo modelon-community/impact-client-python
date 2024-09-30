@@ -1,6 +1,6 @@
 """Response class."""
 import re
-from typing import Any, Dict, Text
+from typing import Any, Dict, Optional, Text
 
 from modelon.impact.client.sal import exceptions
 
@@ -129,22 +129,28 @@ class ZIPResponse(Response):
 
 
 class FileResponse(Response):
-    def __init__(self, resp_obj: Any, content_type: str):
+    def __init__(self, resp_obj: Any, content_type: Optional[str] = None):
         super().__init__(resp_obj)
         self.content_type = content_type
 
-    def _is_expected_content_type(self) -> bool:
-        return self.content_type in self._resp_obj.headers.get("content-type")
+    def _assert_expected_content_type(self) -> None:
+        if self.content_type is None:
+            return
+        resp_content_type = self._resp_obj.headers.get("content-type")
+        if self.content_type not in resp_content_type:
+            raise exceptions.InvalidContentTypeError(
+                f"Incorrect content type on response, expected {self.content_type}"
+            )
 
     @property
     def stream(self) -> bytes:
         if not self._resp_obj.ok:
             raise exceptions.HTTPError(self.error.message, self._resp_obj.status_code)
 
-        if not self._is_expected_content_type():
-            raise exceptions.InvalidContentTypeError(
-                f"Incorrect content type on response, expected {self.content_type}"
-            )
+        if self.content_type is None:
+            self.content_type = self._resp_obj.headers.get("content-type")[0]
+        else:
+            self._assert_expected_content_type()
 
         return (
             self._resp_obj.text

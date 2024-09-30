@@ -197,7 +197,7 @@ class ExperimentService:
             / f"api/workspaces/{workspace_id}/experiments/{experiment_id}/cases/"
             f"{case_id}/custom-artifacts/{artifact_id}"
         ).resolve()
-        resp = self._http_client.get_octet_response(url)
+        resp = self._http_client.get_file_response(url)
         return resp.stream, resp.file_name
 
     def case_artifacts_meta_get(

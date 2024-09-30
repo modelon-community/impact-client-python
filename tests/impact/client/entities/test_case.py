@@ -339,7 +339,12 @@ class TestCase:
         custom_artifact = case.import_custom_artifact(
             path_to_artifact=TEST_CSV_RESULT_PATH
         ).wait()
+
         assert custom_artifact.id == "imported_1"
+
+        # TODO: extend test
+        #    data = custom_artifact.get_data()
+        #    assert data == open(TEST_CSV_RESULT_PATH, "rb").read()
 
     @pytest.mark.vcr()
     def test_case_import_result(self, client_helper: ClientHelper):

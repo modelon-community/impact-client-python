@@ -7,6 +7,7 @@ import requests
 from modelon.impact.client.sal import exceptions
 from modelon.impact.client.sal.response import (
     CSVResponse,
+    FileResponse,
     JSONResponse,
     MatStreamResponse,
     OctetStreamResponse,
@@ -186,3 +187,16 @@ class RequestMatStream(Request):
         headers: Optional[Dict[str, Any]] = None,
     ):
         super().__init__(context, method, url, MatStreamResponse, body, files, headers)
+
+
+class RequestFileStream(Request):
+    def __init__(
+        self,
+        context: Any,
+        method: str,
+        url: str,
+        body: Optional[Dict[str, Any]] = None,
+        files: Optional[Dict[str, Any]] = None,
+        headers: Optional[Dict[str, Any]] = None,
+    ):
+        super().__init__(context, method, url, FileResponse, body, files, headers)
