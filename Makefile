@@ -7,6 +7,7 @@ export MODELON_IMPACT_CLIENT_INTERACTIVE:=false
 export MODELON_IMPACT_CLIENT_API_KEY ?= $(shell cat $(SECRETS)/api.key)
 export MODELON_IMPACT_CLIENT_URL ?= https://impact.modelon.cloud/
 export MODELON_IMPACT_USERNAME ?= $(shell git config user.email)
+export UPDATE_CASSETTE=0
 
 define _run
 	@if [ $(IN_DOCKER_IMG) -eq 1 ]; then \
@@ -41,6 +42,13 @@ build-docker:
 
 .venv: poetry.lock pyproject.toml
 	$(call _run_bare, poetry install && touch .venv || rm -rf .venv)
+
+.devcontainerenv:
+	@echo "MODELON_IMPACT_CLIENT_INTERACTIVE=$${MODELON_IMPACT_CLIENT_INTERACTIVE}" > .devcontainer/devcontainer.env
+	@echo "MODELON_IMPACT_CLIENT_API_KEY=$${MODELON_IMPACT_CLIENT_API_KEY}" >> .devcontainer/devcontainer.env
+	@echo "MODELON_IMPACT_CLIENT_URL=$${MODELON_IMPACT_CLIENT_URL}" >> .devcontainer/devcontainer.env
+	@echo "MODELON_IMPACT_USERNAME=$${MODELON_IMPACT_USERNAME}" >> .devcontainer/devcontainer.env
+	@echo "UPDATE_CASSETTE=$${UPDATE_CASSETTE}" >> .devcontainer/devcontainer.env
 
 build: build-docker .venv
 
