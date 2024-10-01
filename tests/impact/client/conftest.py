@@ -978,7 +978,7 @@ def setup_client():
         os.environ["MODELON_IMPACT_CLIENT_API_KEY"] = "dummy"
         os.environ["MODELON_IMPACT_USERNAME"] = IDs.USERNAME
     client = Client()
-    assert client._sal.users.get_me()["data"]["username"].lower() in [
+    assert client.get_me().username.lower() in [
         os.environ.get("MODELON_IMPACT_USERNAME", "").lower(),
         IDs.USERNAME,
         os.environ.get("JUPYTERHUB_USER"),
