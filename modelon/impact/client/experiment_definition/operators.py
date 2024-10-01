@@ -152,7 +152,7 @@ class Choices(Operator):
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> Choices:
-        return Choices(values=data["values"], data_type=DataType(data["dataType"]))
+        return Choices(*data["values"], data_type=DataType(data["dataType"]))
 
 
 @dataclass
