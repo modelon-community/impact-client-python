@@ -1,3 +1,11 @@
+## [4.6.3](https://github.com/modelon-community/impact-client-python/compare/v4.6.2...v4.6.3) (2024-10-01)
+
+
+### Bug Fixes
+
+* accept any artifact content type ([cb82018](https://github.com/modelon-community/impact-client-python/commit/cb82018cd5035875ee9e643e3c548bd920053137))
+* added tests for asserting artifact content and regenerated cassette ([7db88cd](https://github.com/modelon-community/impact-client-python/commit/7db88cd00578b045c259c4b6c7fbdbf625ecb551))
+
 ## [4.6.2](https://github.com/modelon-community/impact-client-python/compare/v4.6.1...v4.6.2) (2024-09-09)
 
 
