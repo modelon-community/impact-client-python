@@ -4,6 +4,7 @@ from typing import Any, Dict, Optional
 from modelon.impact.client.sal.context import Context
 from modelon.impact.client.sal.request import (
     RequestCSV,
+    RequestFileStream,
     RequestJSON,
     RequestMatStream,
     RequestOctetStream,
@@ -13,6 +14,7 @@ from modelon.impact.client.sal.request import (
 )
 from modelon.impact.client.sal.response import (
     CSVResponse,
+    FileResponse,
     JSONResponse,
     MatStreamResponse,
     OctetStreamResponse,
@@ -66,6 +68,10 @@ class HTTPClient:
 
     def get_octet_response(self, url: str) -> OctetStreamResponse:
         request = RequestOctetStream(self._context, "GET", url)
+        return request.execute()
+
+    def get_file_response(self, url: str) -> FileResponse:
+        request = RequestFileStream(self._context, "GET", url)
         return request.execute()
 
     def get_zip(self, url: str) -> bytes:
