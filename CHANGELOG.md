@@ -1,3 +1,10 @@
+## [4.6.4](https://github.com/modelon-community/impact-client-python/compare/v4.6.3...v4.6.4) (2024-10-01)
+
+
+### Bug Fixes
+
+* passing values as positional argument in Choices operator's from_dict method instead of keyword argument ([249cb86](https://github.com/modelon-community/impact-client-python/commit/249cb8620d0dcb8fa34fef74c6ba31d0ddc2d142))
+
 ## [4.6.3](https://github.com/modelon-community/impact-client-python/compare/v4.6.2...v4.6.3) (2024-10-01)
 
 
