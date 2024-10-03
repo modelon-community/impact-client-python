@@ -1,8 +1,15 @@
 """Workspace service module."""
-from typing import Any, Dict, List, Optional
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Any, Dict, List, Optional
 
 from modelon.impact.client.sal.http import HTTPClient
 from modelon.impact.client.sal.uri import URI
+
+if TYPE_CHECKING:
+    from modelon.impact.client.published_workspace_client import (
+        OrphanPublishedWorkspaceOwner,
+    )
 
 
 class WorkspaceService:
@@ -144,6 +151,21 @@ class WorkspaceService:
         url = (self._base_uri / "api/workspace-imports").resolve()
         with open(path_to_workspace, "rb") as f:
             return self._http_client.post_json(url, files={"file": f})
+
+    def cleanup_orphans(
+        self,
+        user: Optional[OrphanPublishedWorkspaceOwner] = None,
+        only_list_orphans: bool = False,
+    ) -> Dict[str, Any]:
+        url = (self._base_uri / "api/published-workspaces/orphans/cleanup").resolve()
+        body: Dict[str, Any] = {"onlyListOrphans": only_list_orphans}
+        if user:
+            body["user"] = {
+                "username": user.username,
+                "id": user.id,
+                "groupName": user.group_name,
+            }
+        return self._http_client.post_json(url, body=body)
 
     def import_from_shared_definition(
         self,
