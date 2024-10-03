@@ -117,7 +117,6 @@ class TestPublishedWorkspace:
             IDs.PUBLISHED_WORKSPACE_ID, IDs.GROUP_NAME
         )
 
-    @pytest.mark.experimental
     def test_get_modelica_resource_uri(self):
         service = mock.MagicMock()
         workspace = create_workspace_entity(IDs.WORKSPACE_ID_PRIMARY, service=service)

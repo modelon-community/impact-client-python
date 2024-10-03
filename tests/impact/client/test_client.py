@@ -233,7 +233,6 @@ class TestClient:
         assert user.last_name is None
         assert user.email == IDs.MOCK_EMAIL
 
-    @pytest.mark.experimental
     @pytest.mark.vcr()
     def test_get_case_by_reference(self, client_helper: ClientHelper):
         case_ref = create_case_reference(
@@ -244,7 +243,6 @@ class TestClient:
         case = client_helper.client.get_case_by_reference(case_ref)
         assert isinstance(case, Case)
 
-    @pytest.mark.experimental
     @pytest.mark.vcr()
     def test_get_experiment_by_reference(self, client_helper: ClientHelper):
         experiment_ref = create_experiment_reference(

@@ -262,7 +262,6 @@ class TestCase:
         artifact_stream = artifact.get_data()
         assert artifact_stream == b"\x00\x00\x00\x00"
 
-    @pytest.mark.experimental
     def test_get_custom_artifact_uri(self, experiment):
         case = experiment.entity.get_case(IDs.CASE_ID_PRIMARY)
         artifact = case.get_artifact(IDs.CUSTOM_ARTIFACT_ID)
