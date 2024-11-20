@@ -402,7 +402,7 @@ class Experiment(ExperimentReference):
         if not isinstance(variables, list):
             raise TypeError(
                 "Please specify the list of result keys for the trajectories of "
-                "intrest!"
+                "interest!"
             )
         assert_variable_in_result(variables, self.get_variables())
 
