@@ -1,3 +1,10 @@
+## [4.6.5](https://github.com/modelon-community/impact-client-python/compare/v4.6.4...v4.6.5) (2024-11-21)
+
+
+### Bug Fixes
+
+* minor typo fix in error message ([74c07c7](https://github.com/modelon-community/impact-client-python/commit/74c07c7beec071b8f2b1bf81ae45cbba416fb389))
+
 ## [4.6.4](https://github.com/modelon-community/impact-client-python/compare/v4.6.3...v4.6.4) (2024-10-01)
 
 
