@@ -22,8 +22,12 @@ A simple example using the :ref:`FMU based workflow <FMU based workflow>` is sho
    model = workspace.get_model("Modelica.Blocks.Examples.PID_Controller")
    fmu = model.compile(compiler_options=dynamic.get_compiler_options()).wait()
 
+   # Definiting simulation and solver options
+   solver_options = {'atol':1e-8}
+   simulation_options = dynamic.get_simulation_options().with_values(ncp=500)
+
    # Execute experiment
-   experiment_definition = fmu.new_experiment_definition(dynamic)
+   experiment_definition = fmu.new_experiment_definition(dynamic, solver_options, simulation_options)
    exp = workspace.execute(experiment_definition).wait()
 
    # Plot Trajectory
