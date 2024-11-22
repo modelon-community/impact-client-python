@@ -6,39 +6,9 @@ may be running remotely.  With sufficient login credentials and an API Key (see 
 Modelica models may be uploaded, compiled, and executed on a server.  The results can be either processed on the server
 with a custom function or downloaded to the client for further analysis.
 
-An analysis could be set up and executed using either the :ref:`FMU <FMU based workflow>` or a :ref:`Class name <Setup and run an experiment>` based workflow.
+An analysis could be set up and executed using either the :ref:`Model <Setup and run an experiment>` or a :ref:`FMU <FMU based workflow>` based workflow.
 
-A simple example using the :ref:`FMU based workflow <FMU based workflow>` is shown below::
-
-   from modelon.impact.client import Client
-
-   client = Client(url=<impact-domain>) # url is optional; defaults to on-prem OR "https://impact.modelon.cloud"
-   workspace = client.create_workspace(<workspace-name>)
-
-   # Choose analysis type
-   dynamic = workspace.get_custom_function('dynamic')
-
-   # Compile model
-   model = workspace.get_model("Modelica.Blocks.Examples.PID_Controller")
-   fmu = model.compile(compiler_options=dynamic.get_compiler_options()).wait()
-
-   # Definiting simulation and solver options
-   solver_options = {'atol':1e-8}
-   simulation_options = dynamic.get_simulation_options().with_values(ncp=500)
-
-   # Execute experiment
-   experiment_definition = fmu.new_experiment_definition(dynamic, solver_options, simulation_options)
-   exp = workspace.execute(experiment_definition).wait()
-
-   # Plot Trajectory
-   import matplotlib.pyplot as plt
-
-   case = exp.get_case('case_1')
-   res = case.get_trajectories()
-   plt.plot(res['time'], res['inertia1.phi'])
-   plt.show()
-
-A simple example using the :ref:`Class name based workflow <Setup and run an experiment>` is shown below::
+A simple example using the :ref:`Model based workflow <Setup and run an experiment>` is shown below::
 
    from modelon.impact.client import Client
 
@@ -62,6 +32,36 @@ A simple example using the :ref:`Class name based workflow <Setup and run an exp
    # Plot Trajectory
    import matplotlib.pyplot as plt
 
+   res = case.get_trajectories()
+   plt.plot(res['time'], res['inertia1.phi'])
+   plt.show()
+
+A simple example using the :ref:`FMU based workflow <FMU based workflow>` is shown below::
+
+   from modelon.impact.client import Client
+
+   client = Client(url=<impact-domain>) # url is optional; defaults to on-prem OR "https://impact.modelon.cloud"
+   workspace = client.create_workspace(<workspace-name>)
+
+   # Choose analysis type
+   dynamic = workspace.get_custom_function('dynamic')
+
+   # Get model reference
+   model = workspace.get_model("Modelica.Blocks.Examples.PID_Controller")
+   fmu = model.compile(compiler_options=dynamic.get_compiler_options()).wait()
+
+   # Definiting simulation and solver options
+   solver_options = {'atol':1e-8}
+   simulation_options = dynamic.get_simulation_options().with_values(ncp=500)
+
+   # Execute experiment
+   experiment_definition = fmu.new_experiment_definition(dynamic, solver_options, simulation_options)
+   exp = workspace.execute(experiment_definition).wait()
+
+   # Plot Trajectory
+   import matplotlib.pyplot as plt
+
+   case = exp.get_case('case_1')
    res = case.get_trajectories()
    plt.plot(res['time'], res['inertia1.phi'])
    plt.show()
