@@ -46,7 +46,7 @@ A simple example using the :ref:`FMU based workflow <FMU based workflow>` is sho
    # Choose analysis type
    dynamic = workspace.get_custom_function('dynamic')
 
-   # Compile model
+   # Get model reference
    model = workspace.get_model("Modelica.Blocks.Examples.PID_Controller")
    fmu = model.compile(compiler_options=dynamic.get_compiler_options()).wait()
 

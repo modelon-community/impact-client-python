@@ -541,7 +541,7 @@ class Experiment(ExperimentReference):
         return _Workflow.CLASS_BASED if model.get("modelica") else _Workflow.FMU_BASED
 
     def get_class_name(self) -> str:
-        """Return the model class name."""
+        """Return the model name."""
         model = self._get_info()["experiment"]["base"]["model"]
         if self._get_workflow() == _Workflow.CLASS_BASED:
             return model["modelica"]["className"]

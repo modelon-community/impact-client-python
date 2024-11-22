@@ -86,14 +86,14 @@ class Model(ModelInterface):
         self._sal = service
 
     def __repr__(self) -> str:
-        return f"Model class name '{self._class_name}'"
+        return f"Model name '{self._class_name}'"
 
     def __eq__(self, obj: object) -> bool:
         return isinstance(obj, Model) and obj._class_name == self._class_name
 
     @property
     def name(self) -> str:
-        """Model class name."""
+        """Model name."""
         return self._class_name
 
     def compile(
