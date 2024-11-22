@@ -462,7 +462,7 @@ class TestWorkspace:
     def test_model_repr(self, client_helper: ClientHelper):
         model_name = IDs.PID_MODELICA_CLASS_PATH
         model = client_helper.workspace.get_model(model_name)
-        assert f"Class name '{model_name}'" == model.__repr__()
+        assert f"Model name '{model_name}'" == model.__repr__()
 
     @pytest.mark.vcr()
     def test_get_fmus(self, client_helper: ClientHelper):
