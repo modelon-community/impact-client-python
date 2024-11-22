@@ -5,5 +5,5 @@ class ModelInterface(ABC):
     @property
     @abstractmethod
     def name(self) -> str:
-        """Model class name."""
+        """Model name."""
         raise NotImplementedError

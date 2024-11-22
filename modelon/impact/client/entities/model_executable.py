@@ -123,7 +123,7 @@ class ModelExecutableInput:
 
     @property
     def class_name(self) -> str:
-        """Returns the model class name."""
+        """Returns the model name."""
         return self._data["class_name"]
 
     @property
@@ -253,7 +253,7 @@ class ModelExecutable(ModelExecutableInterface):
         return ModelExecutableInput(self._get_info()["input"])
 
     def get_class_name(self) -> str:
-        """Return the model class name."""
+        """Return the model name."""
         return self._get_info()["input"]["class_name"]
 
     def is_successful(self) -> bool:
