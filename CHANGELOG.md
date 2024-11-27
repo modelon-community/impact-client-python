@@ -1,3 +1,10 @@
+## [4.6.6](https://github.com/modelon-community/impact-client-python/compare/v4.6.5...v4.6.6) (2024-11-27)
+
+
+### Bug Fixes
+
+* wait status now accespts a tuple as well and defaults to (Status.DONE, Status.CANCELLED) ([33ffedb](https://github.com/modelon-community/impact-client-python/commit/33ffedb4cc0eec681236e2a51d963e2a02c4cc68))
+
 ## [4.6.5](https://github.com/modelon-community/impact-client-python/compare/v4.6.4...v4.6.5) (2024-11-21)
 
 
