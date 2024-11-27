@@ -3,6 +3,7 @@ from __future__ import annotations
 import logging
 import os
 import tempfile
+import warnings
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Union
 
 from modelon.impact.client import exceptions
@@ -123,6 +124,17 @@ class ModelExecutableInput:
 
     @property
     def class_name(self) -> str:
+        """Deprecated, use 'model_name' attribute."""
+        warnings.warn(
+            "The 'class_name' attribute is deprecated, use 'model_name' attribute "
+            "instead!",
+            category=DeprecationWarning,
+            stacklevel=2,
+        )
+        return self.model_name
+
+    @property
+    def model_name(self) -> str:
         """Returns the model name."""
         return self._data["class_name"]
 
@@ -253,6 +265,16 @@ class ModelExecutable(ModelExecutableInterface):
         return ModelExecutableInput(self._get_info()["input"])
 
     def get_class_name(self) -> str:
+        """Deprecated, use 'get_model_name' method."""
+        warnings.warn(
+            "The 'get_class_name' method is deprecated, use 'get_model_name' method "
+            "instead!",
+            category=DeprecationWarning,
+            stacklevel=2,
+        )
+        return self.get_model_name()
+
+    def get_model_name(self) -> str:
         """Return the model name."""
         return self._get_info()["input"]["class_name"]
 
