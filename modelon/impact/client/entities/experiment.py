@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import enum
 import logging
+import warnings
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Union
 
 from modelon.impact.client.entities.asserts import assert_variable_in_result
@@ -541,6 +542,16 @@ class Experiment(ExperimentReference):
         return _Workflow.CLASS_BASED if model.get("modelica") else _Workflow.FMU_BASED
 
     def get_class_name(self) -> str:
+        """Deprecated, use 'get_model_name' method."""
+        warnings.warn(
+            "The 'get_class_name' method is deprecated, use 'get_model_name' method"
+            " instead!",
+            category=DeprecationWarning,
+            stacklevel=2,
+        )
+        return self.get_model_name()
+
+    def get_model_name(self) -> str:
         """Return the model name."""
         model = self._get_info()["experiment"]["base"]["model"]
         if self._get_workflow() == _Workflow.CLASS_BASED:
@@ -638,7 +649,7 @@ class Experiment(ExperimentReference):
         custom_function = self._get_custom_function(analysis)
         if self._get_workflow() == _Workflow.CLASS_BASED:
             model = Model(
-                self.get_class_name(),
+                self.get_model_name(),
                 workspace_id=self._workspace_id,
                 project_id="",
                 service=self._sal,

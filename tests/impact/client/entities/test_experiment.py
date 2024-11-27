@@ -127,7 +127,7 @@ class TestExperiment:
         assert exp[IDs.CASE_ID_PRIMARY]["inertia1.w"][-1] == 0.5000116056397186
         assert exp[IDs.CASE_ID_PRIMARY]["time"][-1] == 1.0
 
-        assert experiment.get_class_name() == IDs.PID_MODELICA_CLASS_PATH
+        assert experiment.get_model_name() == IDs.PID_MODELICA_CLASS_PATH
         assert experiment.custom_function == IDs.DYNAMIC_CF
         assert dict(experiment.get_compiler_options()) == {
             "c_compiler": "gcc",
@@ -165,7 +165,7 @@ class TestExperiment:
         assert exp[IDs.CASE_ID_PRIMARY]["inertia1.w"][-1] == 0.5000116056397186
         assert exp[IDs.CASE_ID_PRIMARY]["time"][-1] == 1.0
 
-        assert experiment.get_class_name() == IDs.PID_MODELICA_CLASS_PATH
+        assert experiment.get_model_name() == IDs.PID_MODELICA_CLASS_PATH
         assert experiment.custom_function == IDs.DYNAMIC_CF
         assert dict(experiment.get_compiler_options()) == {
             "c_compiler": "gcc",

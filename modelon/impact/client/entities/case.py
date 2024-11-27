@@ -792,7 +792,7 @@ class Case(CaseReference):
         custom_function = self._get_custom_function()
         fmu = self.get_fmu()
         model = Model(
-            fmu.input.class_name,
+            fmu.input.model_name,
             workspace_id=self._workspace_id,
             project_id="",
             service=self._sal,
