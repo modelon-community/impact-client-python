@@ -4,7 +4,7 @@ import enum
 import logging
 import time
 from abc import abstractmethod
-from typing import Any, Generic, Optional, Protocol, TypeVar
+from typing import Any, Generic, Optional, Protocol, TypeVar, Union
 
 from modelon.impact.client import exceptions
 
@@ -122,8 +122,7 @@ class AsyncOperation(BaseOperation[Entity]):
             current_t = time.time()
             if timeout and current_t - start_t > timeout:
                 raise exceptions.OperationTimeOutError(
-                    f"Time exceeded the set timeout - {timeout}s! "
-                    f"Present status of operation is {self.status.name}!"
+                    current_status_name=self.status.name, timeout=timeout
                 )
 
             time.sleep(0.5)
@@ -151,7 +150,9 @@ class ExecutionOperation(BaseOperation[Entity]):
         return self.status == Status.DONE
 
     def wait(
-        self, timeout: Optional[float] = None, status: Status = Status.DONE
+        self,
+        timeout: Optional[float] = None,
+        status: Union[Status, tuple[Status, ...]] = (Status.DONE, Status.CANCELLED),
     ) -> Entity:
         """Waits until the operation achieves the set status. Returns the operation
         class instance if the set status is achieved.
@@ -182,17 +183,24 @@ class ExecutionOperation(BaseOperation[Entity]):
 
         """
         start_t = time.time()
-        while True:
-            logger.info(f"{self.name} in progress! Status : {self.status.name}")
-            if self.status == status:
-                logger.info(f"{self.name} completed! Status : {self.status.name}")
-                return self.data()
+        status_tuple = status if isinstance(status, tuple) else (status,)
 
-            current_t = time.time()
-            if timeout and current_t - start_t > timeout:
-                raise exceptions.OperationTimeOutError(
-                    f"Time exceeded the set timeout - {timeout}s! "
-                    f"Present status of operation is {self.status.name}!"
-                )
+        try:
+            while True:
+                logger.info(f"{self.name} in progress! Status : {self.status.name}")
+                if self.status in status_tuple:
+                    logger.info(f"{self.name} completed! Status : {self.status.name}")
+                    return self.data()
 
-            time.sleep(0.5)
+                current_t = time.time()
+                if timeout and current_t - start_t > timeout:
+                    raise exceptions.OperationTimeOutError(
+                        timeout=timeout,
+                        current_status_name=self.status.name,
+                    )
+
+                time.sleep(0.5)
+        except KeyboardInterrupt:
+            logger.info("Execution cancelled!")
+            self.cancel()
+            raise

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import logging
-from typing import TYPE_CHECKING, Any, Dict, Optional
+from typing import TYPE_CHECKING, Any, Dict, Optional, Union
 
 from modelon.impact.client import exceptions
 from modelon.impact.client.operations.base import Entity, ExecutionOperation, Status
@@ -89,7 +89,9 @@ class CachedModelExecutableOperation(ExecutionOperation[Entity]):
         )
 
     def wait(
-        self, timeout: Optional[float] = None, status: Status = Status.DONE
+        self,
+        timeout: Optional[float] = None,
+        status: Union[Status, tuple[Status, ...]] = (Status.DONE, Status.CANCELLED),
     ) -> Entity:
         """Waits until the operation achieves the set status. Returns the operation
         class instance if the set status is achieved.
@@ -117,11 +119,12 @@ class CachedModelExecutableOperation(ExecutionOperation[Entity]):
            model.compile(compile_options).wait()
 
         """
-
-        if self.status != status:
+        status_tuple = status if isinstance(status, tuple) else tuple([status])
+        if self.status not in status_tuple:
+            expected_status_names = [status.name for status in status_tuple]
             raise exceptions.OperationTimeOutError(
-                f"The operation '{self.name}' has the status '{self.status.name}'"
-                f", it will never get the status '{status.name}'!"
+                current_status_name=self.status.name,
+                expected_status_names=expected_status_names,
             )
 
         logger.info("Cached FMU found! Using the cached FMU!")

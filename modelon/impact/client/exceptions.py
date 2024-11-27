@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, Optional
 
 
 class Error(Exception):
@@ -16,7 +16,20 @@ class NoAssignedLicenseError(Error):
 
 
 class OperationTimeOutError(Error):
-    pass
+    def __init__(
+        self,
+        current_status_name: str,
+        expected_status_names: Optional[list[str]] = None,
+        timeout: Optional[float] = None,
+    ) -> None:
+        timeout_msg = f"Time exceeded the set timeout - {timeout}s. " if timeout else ""
+        status_msg = f"Present status of operation is {current_status_name}. "
+        expected_status_names_msg = (
+            f"Expected statuses: {', '.join(expected_status_names)}."
+            if expected_status_names
+            else ""
+        )
+        super().__init__(timeout_msg + status_msg + expected_status_names_msg)
 
 
 class OperationFailureError(Error):
