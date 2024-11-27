@@ -123,7 +123,7 @@ class ModelExecutableInput:
 
     @property
     def class_name(self) -> str:
-        """Returns the model class name."""
+        """Returns the model name."""
         return self._data["class_name"]
 
     @property
@@ -253,7 +253,12 @@ class ModelExecutable(ModelExecutableInterface):
         return ModelExecutableInput(self._get_info()["input"])
 
     def get_class_name(self) -> str:
-        """Return the model class name."""
+        """Deprecated, use 'get_model_name' attribute."""
+        logger.warning("This attribute is deprectated, use 'get_model_name' instead!")
+        return self.get_model_name()
+
+    def get_model_name(self) -> str:
+        """Return the model name."""
         return self._get_info()["input"]["class_name"]
 
     def is_successful(self) -> bool:
