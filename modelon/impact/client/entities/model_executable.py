@@ -253,6 +253,11 @@ class ModelExecutable(ModelExecutableInterface):
         return ModelExecutableInput(self._get_info()["input"])
 
     def get_class_name(self) -> str:
+        """Deprecated, use 'get_model_name' attribute."""
+        logger.warning("This attribute is deprectated, use 'get_model_name' instead!")
+        return self.get_model_name()
+
+    def get_model_name(self) -> str:
         """Return the model name."""
         return self._get_info()["input"]["class_name"]
 

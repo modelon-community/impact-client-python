@@ -541,6 +541,11 @@ class Experiment(ExperimentReference):
         return _Workflow.CLASS_BASED if model.get("modelica") else _Workflow.FMU_BASED
 
     def get_class_name(self) -> str:
+        """Deprecated, use 'get_model_name' attribute."""
+        logger.warning("This attribute is deprectated, use 'get_model_name' instead!")
+        return self.get_model_name()
+
+    def get_model_name(self) -> str:
         """Return the model name."""
         model = self._get_info()["experiment"]["base"]["model"]
         if self._get_workflow() == _Workflow.CLASS_BASED:
@@ -638,7 +643,7 @@ class Experiment(ExperimentReference):
         custom_function = self._get_custom_function(analysis)
         if self._get_workflow() == _Workflow.CLASS_BASED:
             model = Model(
-                self.get_class_name(),
+                self.get_model_name(),
                 workspace_id=self._workspace_id,
                 project_id="",
                 service=self._sal,
