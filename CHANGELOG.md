@@ -1,3 +1,15 @@
+# [4.7.0](https://github.com/modelon-community/impact-client-python/compare/v4.6.6...v4.7.0) (2024-11-28)
+
+
+### Bug Fixes
+
+* **docs:** rename Class name to Model class name in docstring ([5ae6b64](https://github.com/modelon-community/impact-client-python/commit/5ae6b6429f8ba491b8f5d1d2f7f2cacf40c3a696))
+
+
+### Features
+
+* add get_model_name method and deprecate get_class_name ([6390a73](https://github.com/modelon-community/impact-client-python/commit/6390a73c3f8f8fea2e64cea72f59b4051004a0a1))
+
 ## [4.6.6](https://github.com/modelon-community/impact-client-python/compare/v4.6.5...v4.6.6) (2024-11-27)
 
 
