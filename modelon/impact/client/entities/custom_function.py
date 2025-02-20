@@ -185,8 +185,9 @@ class CustomFunction(CustomFunctionInterface):
 
         Example::
 
-            opts = custom_function.get_compiler_options()
-            opts_2 = opts.compiler_options.with_values(c_compiler='gcc')
+            opts = custom_function.get_options()
+            comp_opts = opts.compiler_options
+            comp_opts_mod = copts.with_values(include_protected_variables=False)
 
         """
         if use_defaults:
@@ -212,7 +213,7 @@ class CustomFunction(CustomFunctionInterface):
         Example::
 
             opts = custom_function.get_compiler_options()
-            compiler_options = opts.with_values(c_compiler='gcc')
+            compiler_options = opts.with_values(include_protected_variables=False)
 
         """
         return self.get_options(use_defaults=use_defaults).compiler_options
