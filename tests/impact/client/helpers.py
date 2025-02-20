@@ -166,7 +166,7 @@ class IDs:
     WORKSPACE_ID_SECONDARY = _WORKSPACE_ID_PREFIX + "workspace2"
     WORKSPACE_IDS = [WORKSPACE_ID_PRIMARY, WORKSPACE_ID_SECONDARY]
     WORKSPACE_NAMES = WORKSPACE_IDS
-    USER_ID = "njcswjcjnscksnckjsnckndsk"
+    USER_ID = "test-user-uniqid"
     USERNAME = "test-user"
     TENANT_ID = "org1"
     GROUP_NAME = "impact-tenant-org1"

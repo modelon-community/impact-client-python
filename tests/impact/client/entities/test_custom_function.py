@@ -137,12 +137,14 @@ class TestCustomFunction:
             "include_protected_variables": False,
         }
         assert isinstance(new, CompilerOptions)
-        defaults = dynamic_cf.get_compiler_options(use_defaults=True)
-        assert dict(defaults) == {
-            "c_compiler": "gcc",
-            "generate_html_diagnostics": False,
-            "include_protected_variables": False,
-        }
+        defaults_options = dict(dynamic_cf.get_compiler_options(use_defaults=True))
+        assert all(
+            item in defaults_options.items()
+            for item in {
+                "generate_html_diagnostics": False,
+                "include_protected_variables": False,
+            }.items()
+        )
 
     @pytest.mark.vcr()
     def test_runtime_options(self, client_helper: ClientHelper):

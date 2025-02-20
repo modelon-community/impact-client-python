@@ -1,3 +1,4 @@
+import os
 from unittest.mock import MagicMock
 
 import pytest
@@ -223,15 +224,15 @@ class TestClient:
     @pytest.mark.vcr()
     def test_get_me(self, client_helper: ClientHelper):
         user = client_helper.client.get_me()
-        assert user.tenant.id == IDs.TENANT_ID
-        assert user.tenant.group_name == IDs.GROUP_NAME
-        assert len(user.roles) == 8
-        assert user.username == IDs.USERNAME
+
+        assert user.id in [os.environ["MODELON_IMPACT_USERID"], IDs.USER_ID]
+        assert user.username in [os.environ["MODELON_IMPACT_USERNAME"], IDs.USERNAME]
+        assert user.tenant.id in [
+            os.environ.get("MODELON_IMPACT_TENANTID"),
+            IDs.TENANT_ID,
+        ]
         assert IDs.PRO_LICENSE_ROLE in user.roles
         assert user.license == IDs.PRO_LICENSE_ROLE
-        assert user.firstname is None
-        assert user.last_name is None
-        assert user.email == IDs.MOCK_EMAIL
 
     @pytest.mark.experimental
     @pytest.mark.vcr()

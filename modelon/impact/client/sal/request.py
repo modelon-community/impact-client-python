@@ -104,8 +104,11 @@ class RequestJSON(Request):
         headers: Optional[Dict[str, Any]] = None,
         params: Optional[Dict[str, Any]] = None,
     ):
+        headers_ = headers if headers is not None else {}
+        if "Accept" not in headers_:
+            headers_["Accept"] = "application/json"
         super().__init__(
-            context, method, url, JSONResponse, body, files, headers, params
+            context, method, url, JSONResponse, body, files, headers_, params
         )
 
 
