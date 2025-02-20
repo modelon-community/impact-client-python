@@ -35,11 +35,11 @@ To view the default compiler options, the ``dict()`` method can be called on it:
 It is also possible to append/modify the default options either by calling the ``with_values()`` method on the
 ``compiler_options`` class object::
 
-   compiler_options_modified = compiler_options.with_values(c_compiler='gcc')
+   compiler_options_modified = compiler_options.with_values(include_protected_variables=True)
 
 or creating a dictionary of the options::
 
-   compiler_options_modified = {'c_compiler':'gcc'}
+   compiler_options_modified = {'include_protected_variables':True}
 
 
 With the options now defined, we can pass them to the ``compile()`` method::

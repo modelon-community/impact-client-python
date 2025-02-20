@@ -41,7 +41,7 @@ class BaseExecutionOptions(Mapping, ABC):
         Example::
 
             cmp_opts = custom_function.get_compiler_options().with_values(
-                c_compiler='gcc')
+                include_protected_variables=False)
             runtime_opts = custom_function.get_runtime_options().with_values(
                 cs_solver=0)
             sol_opts = custom_function.get_solver_options().with_values(rtol=1e-7)
