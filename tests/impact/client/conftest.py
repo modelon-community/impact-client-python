@@ -1,5 +1,6 @@
 import collections
 import copy
+import json
 import os
 from unittest.mock import MagicMock
 
@@ -977,6 +978,13 @@ def setup_client():
     if os.environ.get("UPDATE_CASSETTE", "False") not in ["True", "1"]:
         os.environ["MODELON_IMPACT_CLIENT_API_KEY"] = "dummy"
         os.environ["MODELON_IMPACT_USERNAME"] = IDs.USERNAME
+        os.environ["MODELON_IMPACT_USERID"] = IDs.USER_ID
+    else:
+        userid = json.loads(os.environ["MODELON_IMPACT_USERID_JSON"])
+        os.environ["MODELON_IMPACT_USERNAME"] = userid["username"]
+        os.environ["MODELON_IMPACT_USERID"] = userid["id"]
+        os.environ["MODELON_IMPACT_TENANTID"] = userid["tenantId"]
+
     client = Client()
     assert client.get_me().username.lower() in [
         os.environ.get("MODELON_IMPACT_USERNAME", "").lower(),

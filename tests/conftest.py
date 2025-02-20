@@ -42,6 +42,12 @@ def _scrub_impact_url_from_request_path(request):
         request.uri = request.path.replace(url, IDs.MOCK_IMPACT_URL)
 
 
+def _scrub_usesid_from_request_path(request):
+    userid = os.environ.get("MODELON_IMPACT_USERID")
+    if userid:
+        request.uri = request.path.replace(userid, IDs.USER_ID)
+
+
 def _scrub_email_from_request_path(request):
     extracted_emails = extract_email(request.path)
     if extracted_emails:
@@ -63,7 +69,11 @@ def vcr_config():
         # Scrub Impact url and replace with mock
         _scrub_impact_url_from_request_path(request)
 
+        # Scrub userid
+        _scrub_usesid_from_request_path(request)
+
         # Scrub username assuming username is an email always
+        # only for backward compatibility
         _scrub_email_from_request_path(request)
 
         # Manually perform filter_post_data_parameters=[('secretKey', None)]
@@ -78,8 +88,10 @@ def vcr_config():
         return parsed_url.path
 
     def scrub_content_before_response_record(response):
-        username = os.environ.get("MODELON_IMPACT_USERNAME")
+        username = os.environ.get("MODELON_IMPACT_USERNAME", IDs.USERNAME)
+        userid = os.environ.get("MODELON_IMPACT_USERID", IDs.USER_ID)
         insensitive_username = re.compile(re.escape(username), re.IGNORECASE)
+        re_userid = re.compile(re.escape(userid))
         if response:
             # Scrubbing off headers that are not relevant or contain cookies
             headers_to_exclude = [
@@ -94,6 +106,11 @@ def vcr_config():
                 "X-Kong-Upstream-Latency",
                 "X-Kong-Proxy-Latency",
                 "X-Kong-Request-Id",
+                "Impact-Request-Id",
+                "Accept",
+                "Access-Control-Allow-Headers",
+                "Access-Control-Allow-Methods",
+                "Access-Control-Allow-Origin",
             ]
             for header in headers_to_exclude:
                 response["headers"].pop(header, None)
@@ -103,16 +120,18 @@ def vcr_config():
                     new_location = insensitive_username.sub(
                         IDs.USERNAME, remove_query_characters(location)
                     )
+                    new_location = re_userid.sub(
+                        IDs.USER_ID, remove_query_characters(new_location)
+                    )
+
                     response["headers"]["location"] = [new_location]
 
             if response.get("body", {}).get("string"):
                 try:
                     body = response["body"]["string"].decode("utf-8")
                     if username:
-                        insensitive_username = re.compile(
-                            re.escape(username), re.IGNORECASE
-                        )
                         body = insensitive_username.sub(IDs.USERNAME, body)
+                        body = re_userid.sub(IDs.USER_ID, body)
                     response_body = json.loads(body)
                 except UnicodeDecodeError:
                     # Handle case where response is not json

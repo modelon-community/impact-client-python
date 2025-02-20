@@ -7,7 +7,7 @@ export MODELON_IMPACT_CLIENT_INTERACTIVE:=false
 export MODELON_IMPACT_CLIENT_API_KEY ?= $(shell cat $(SECRETS)/api.key)
 export MODELON_IMPACT_CLIENT_URL ?= https://impact.modelon.cloud/
 export MODELON_IMPACT_USERNAME ?= $(shell git config user.email)
-export UPDATE_CASSETTE=0
+export MODELON_IMPACT_USERID_JSON ?= $(shell cat $(SECRETS)/userid.json)
 
 define _run
 	@if [ $(IN_DOCKER_IMG) -eq 1 ]; then \
@@ -37,8 +37,8 @@ endif
 
 build-docker:
 	@if [ $(IN_DOCKER_IMG) -eq 0 ]; then \
-        docker build -t modelon-impact-client-build:latest . ;\
-    fi
+		docker build -t modelon-impact-client-build:latest . ;\
+	fi
 
 .venv: poetry.lock pyproject.toml
 	$(call _run_bare, poetry install && touch .venv || rm -rf .venv)
@@ -48,6 +48,8 @@ build-docker:
 	@echo "MODELON_IMPACT_CLIENT_API_KEY=$${MODELON_IMPACT_CLIENT_API_KEY}" >> .devcontainer/devcontainer.env
 	@echo "MODELON_IMPACT_CLIENT_URL=$${MODELON_IMPACT_CLIENT_URL}" >> .devcontainer/devcontainer.env
 	@echo "MODELON_IMPACT_USERNAME=$${MODELON_IMPACT_USERNAME}" >> .devcontainer/devcontainer.env
+	@echo "MODELON_IMPACT_USERID=$${MODELON_IMPACT_USERID}" >> .devcontainer/devcontainer.env
+	@echo "MODELON_IMPACT_USERID_JSON=$${MODELON_IMPACT_USERID_JSON}" >> .devcontainer/devcontainer.env
 	@echo "UPDATE_CASSETTE=$${UPDATE_CASSETTE}" >> .devcontainer/devcontainer.env
 
 build: build-docker .venv
@@ -66,7 +68,7 @@ experimental-test: export IMPACT_PYTHON_CLIENT_EXPERIMENTAL=1
 experimental-test:
 	$(call _run_bare, poetry run -- pytest -vv -m '(experimental)' ${EXTRA_PYTEST_FLAGS})
 
-vcr-test:
+vcr-test: 
 	$(call _run_bare, poetry run -- pytest -vv -m '(vcr)' ${EXTRA_PYTEST_FLAGS})
 
 all-test: export IMPACT_PYTHON_CLIENT_EXPERIMENTAL=1
@@ -91,7 +93,7 @@ check_environment_variables:
 		echo "Variable 'MODELON_IMPACT_CLIENT_URL' is set"; \
 	fi
 
-regenerate-cassette: check_environment_variables
+regenerate-cassette: userid 
 	IMPACT_PYTHON_CLIENT_EXPERIMENTAL=1 UPDATE_CASSETTE=1 $(MAKE) vcr-test
 
 test-with-coverage:
@@ -124,3 +126,12 @@ docs: build
 
 format:
 	$(call _run_bare, poetry run -- bash -c "black modelon tests && isort modelon tests && docformatter -i modelon --config ./pyproject.toml")
+
+.secrets/api.key:
+	echo "Please follow README to create the api.key file"
+	exit 1
+
+userid: .secrets/userid.json check_environment_variables
+
+.secrets/userid.json: .secrets/api.key .secrets/getuid.py
+	$(call _run_bare, poetry run -- python .secrets/getuid.py)
