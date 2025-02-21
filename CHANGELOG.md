@@ -1,3 +1,10 @@
+## [4.7.1](https://github.com/modelon-community/impact-client-python/compare/v4.7.0...v4.7.1) (2025-02-21)
+
+
+### Bug Fixes
+
+* removed refs to c_compiler option from docs ([355b906](https://github.com/modelon-community/impact-client-python/commit/355b90661d6ce348405836a08ef5e3833e1a2ea2))
+
 # [4.7.0](https://github.com/modelon-community/impact-client-python/compare/v4.6.6...v4.7.0) (2024-11-28)
 
 
