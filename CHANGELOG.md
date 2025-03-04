@@ -1,3 +1,10 @@
+# [4.8.0](https://github.com/modelon-community/impact-client-python/compare/v4.7.1...v4.8.0) (2025-03-04)
+
+
+### Features
+
+* add api support for listing and cleaning orphaned published ws ([961ee59](https://github.com/modelon-community/impact-client-python/commit/961ee59941400a45f5e8e6b5ac965f26c6bf47d4))
+
 ## [4.7.1](https://github.com/modelon-community/impact-client-python/compare/v4.7.0...v4.7.1) (2025-02-21)
 
 
