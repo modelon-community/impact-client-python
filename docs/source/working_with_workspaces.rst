@@ -143,7 +143,7 @@ workspace definition as a json file::
 
 and share it with another user, who would then import the file::
 
-   imported_workspace = client.import_from_shared_definition(shared_definition).wait()
+   imported_workspace = client.import_workspace_from_shared_definition(shared_definition).wait()
 
 Conflict resolution
 +++++++++++++++++++
@@ -151,7 +151,7 @@ Conflict resolution
 The import will fail if there are multiple possible matchings of local projects for a project. 
 This could happen if say the version control URI in the shared workspace definition matched with multiple projects. 
 In this case we need use the `get_project_matchings` method to get these matchings which can be used to resolve to an 
-unequivocal 'selection'. Selections are used as (optional) input to `import_from_shared_definition` method. To select 
+unequivocal 'selection'. Selections are used as (optional) input to `import_workspace_from_shared_definition` method. To select 
 the preferred project, a user could select them interactively:: 
 
    # Interactive workflow
