@@ -1,3 +1,10 @@
+## [4.8.1](https://github.com/modelon-community/impact-client-python/compare/v4.8.0...v4.8.1) (2025-03-06)
+
+
+### Bug Fixes
+
+* **docs:** corrected the method name for shared workspace import in docs ([c7a6f3f](https://github.com/modelon-community/impact-client-python/commit/c7a6f3fab7c8e414680267190b8cdc05c3b211e5))
+
 # [4.8.0](https://github.com/modelon-community/impact-client-python/compare/v4.7.1...v4.8.0) (2025-03-04)
 
 
