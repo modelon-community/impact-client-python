@@ -89,6 +89,16 @@ class TestExperiment:
         assert exp_last_point.as_lists() == [[0.5000116056397186, 1.0]]
 
     @pytest.mark.vcr()
+    def test_experiment_get_total_size(self, client_helper: ClientHelper):
+        experiment = client_helper.create_and_execute_experiment(
+            model_path=IDs.PID_MODELICA_CLASS_PATH,
+            modifiers={},
+        )
+        total_size = experiment.get_size_info().total
+        assert isinstance(total_size, int)
+        assert total_size > 0
+
+    @pytest.mark.vcr()
     def test_experiment_get_last_time_point_all_variables(
         self, client_helper: ClientHelper
     ):

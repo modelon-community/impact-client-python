@@ -106,21 +106,27 @@ class WorkspaceService:
         return self._http_client.get_zip(url)
 
     def experiments_get(
-        self, workspace_id: str, class_path: Optional[str] = None
+        self,
+        workspace_id: str,
+        class_path: Optional[str] = None,
+        size_info: bool = False,
     ) -> Dict[str, Any]:
-        class_path_query = {"classPath": class_path}
+        query_params = {"classPath": class_path, "sizeInfo": size_info}
         url = (self._base_uri / f"api/workspaces/{workspace_id}/experiments").resolve()
         return self._http_client.get_json(
-            url, headers={"Accept": self._experiment_schema}, params=class_path_query
+            url, headers={"Accept": self._experiment_schema}, params=query_params
         )
 
-    def experiment_get(self, workspace_id: str, experiment_id: str) -> Dict[str, Any]:
+    def experiment_get(
+        self, workspace_id: str, experiment_id: str, size_info: bool = False
+    ) -> Dict[str, Any]:
         url = (
             self._base_uri
             / f"api/workspaces/{workspace_id}/experiments/{experiment_id}"
         ).resolve()
+        query_params = {"sizeInfo": size_info}
         return self._http_client.get_json(
-            url, headers={"Accept": self._experiment_schema}
+            url, headers={"Accept": self._experiment_schema}, params=query_params
         )
 
     def experiment_create(
