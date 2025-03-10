@@ -3,6 +3,7 @@ from __future__ import annotations
 import enum
 import logging
 import warnings
+from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Union
 
 from modelon.impact.client.entities.asserts import assert_variable_in_result
@@ -98,6 +99,11 @@ class _Workflow(enum.Enum):
 
     FMU_BASED = "FMU_BASED"
     CLASS_BASED = "CLASS_BASED"
+
+
+@dataclass
+class ExperimentSizeInfo:
+    total: int
 
 
 class ExperimentRunInfo:
@@ -213,6 +219,20 @@ class Experiment(ExperimentReference):
             )
 
         return self._info
+
+    def get_size_info(self) -> ExperimentSizeInfo:
+        """The experiment size information."""
+        run_info = self._sal.workspace.experiment_get(
+            self._workspace_id, self._exp_id, size_info=True
+        )["run_info"]
+        try:
+            size_info = run_info["sizeInfo"]
+            return ExperimentSizeInfo(size_info["total"])
+        except KeyError:
+            raise ValueError(
+                "Size information could not be retrieved for experiment with ID: "
+                f"{self._exp_id}"
+            )
 
     @property
     def run_info(self) -> ExperimentRunInfo:
