@@ -1,3 +1,10 @@
+# [4.9.0](https://github.com/modelon-community/impact-client-python/compare/v4.8.1...v4.9.0) (2025-03-12)
+
+
+### Features
+
+* add method for fetching experiment size in Experiment entity ([64c8fb4](https://github.com/modelon-community/impact-client-python/commit/64c8fb4e246676a8f0eefd7a4d1fca758156b8d6))
+
 ## [4.8.1](https://github.com/modelon-community/impact-client-python/compare/v4.8.0...v4.8.1) (2025-03-06)
 
 
