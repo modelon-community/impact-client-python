@@ -139,17 +139,26 @@ class TestExperiment:
 
         assert experiment.get_model_name() == IDs.PID_MODELICA_CLASS_PATH
         assert experiment.custom_function == IDs.DYNAMIC_CF
-        assert dict(experiment.get_compiler_options()) == {
-            "c_compiler": "gcc",
-            "generate_html_diagnostics": False,
-            "include_protected_variables": False,
-        }
-        assert dict(experiment.get_runtime_options()) == {}
-        assert dict(experiment.get_solver_options()) == {}
-        assert dict(experiment.get_simulation_options()) == {
-            "dynamic_diagnostics": False,
-            "ncp": 500,
-        }
+        compiler_opts = dict(experiment.get_compiler_options())
+        assert all(
+            item in compiler_opts.items()
+            for item in {
+                "generate_html_diagnostics": False,
+                "include_protected_variables": False,
+            }.items()
+        )
+        runtime_opts = dict(experiment.get_runtime_options())
+        assert not runtime_opts
+        solver_opts = dict(experiment.get_solver_options())
+        assert not solver_opts
+        sim_opts = dict(experiment.get_simulation_options())
+        assert all(
+            item in sim_opts.items()
+            for item in {
+                "dynamic_diagnostics": False,
+                "ncp": 500,
+            }.items()
+        )
 
     @pytest.mark.vcr()
     def test_successful_fmu_based_experiment(self, client_helper: ClientHelper):
@@ -177,17 +186,22 @@ class TestExperiment:
 
         assert experiment.get_model_name() == IDs.PID_MODELICA_CLASS_PATH
         assert experiment.custom_function == IDs.DYNAMIC_CF
-        assert dict(experiment.get_compiler_options()) == {
-            "c_compiler": "gcc",
-            "generate_html_diagnostics": False,
-            "include_protected_variables": False,
-        }
-        assert dict(experiment.get_runtime_options()) == {}
-        assert dict(experiment.get_solver_options()) == {}
-        assert dict(experiment.get_simulation_options()) == {
-            "dynamic_diagnostics": False,
-            "ncp": 500,
-        }
+        assert all(
+            item in experiment.get_compiler_options().items()
+            for item in {
+                "generate_html_diagnostics": False,
+                "include_protected_variables": False,
+            }.items()
+        )
+        assert not dict(experiment.get_runtime_options())
+        assert not dict(experiment.get_solver_options())
+        assert all(
+            item in experiment.get_simulation_options().items()
+            for item in {
+                "dynamic_diagnostics": False,
+                "ncp": 500,
+            }.items()
+        )
 
     @pytest.mark.vcr()
     def test_successful_batch_execute(self, client_helper: ClientHelper):

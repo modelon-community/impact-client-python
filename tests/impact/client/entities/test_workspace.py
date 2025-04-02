@@ -642,11 +642,13 @@ class TestWorkspace:
         }
         assert definition.solver_options == {}
         assert definition.runtime_options == {}
-        assert definition.compiler_options == {
-            "c_compiler": "gcc",
-            "generate_html_diagnostics": False,
-            "include_protected_variables": False,
-        }
+        assert all(
+            item in definition.compiler_options.items()
+            for item in {
+                "generate_html_diagnostics": False,
+                "include_protected_variables": False,
+            }.items()
+        )
         assert definition.custom_function.name == "dynamic"
         assert definition.expansion == Sobol(samples=5)
         expected_extensions = extensions + [

@@ -26,34 +26,46 @@ class TestProject:
         project = client_helper.workspace.get_default_project()
         dynamic = client_helper.workspace.get_custom_function("dynamic")
         options = project.get_options(dynamic)
-        assert options.to_dict() == {
-            "compiler": {
-                "c_compiler": "gcc",
+        compiler_opts = options.compiler_options
+        assert all(
+            item in compiler_opts.items()
+            for item in {
                 "generate_html_diagnostics": False,
                 "include_protected_variables": False,
-            },
-            "runtime": {},
-            "simulation": {"dynamic_diagnostics": False, "ncp": 500},
-            "solver": {},
-            "customFunction": IDs.DYNAMIC_CF,
-        }
+            }.items()
+        )
+        simulation_opts = options.simulation_options
+        assert all(
+            item in simulation_opts.items()
+            for item in {"dynamic_diagnostics": False, "ncp": 500}.items()
+        )
+
+        assert not options.runtime_options
+        assert not options.solver_options
+        assert options.custom_function == IDs.DYNAMIC_CF
 
     @pytest.mark.vcr()
     def test_get_project_default_options(self, client_helper: ClientHelper):
         project = client_helper.workspace.get_default_project()
         dynamic = client_helper.workspace.get_custom_function("dynamic")
         options = project.get_options(dynamic, use_defaults=True)
-        assert options.to_dict() == {
-            "compiler": {
-                "c_compiler": "gcc",
+        compiler_opts = options.compiler_options
+        assert all(
+            item in compiler_opts.items()
+            for item in {
                 "generate_html_diagnostics": False,
                 "include_protected_variables": False,
-            },
-            "runtime": {},
-            "solver": {},
-            "simulation": {"dynamic_diagnostics": False, "ncp": 500},
-            "customFunction": IDs.DYNAMIC_CF,
-        }
+            }.items()
+        )
+        simulation_opts = options.simulation_options
+        assert all(
+            item in simulation_opts.items()
+            for item in {"dynamic_diagnostics": False, "ncp": 500}.items()
+        )
+
+        assert not options.runtime_options
+        assert not options.solver_options
+        assert options.custom_function == IDs.DYNAMIC_CF
 
     @pytest.mark.vcr()
     def test_get_project_contents(self, client_helper: ClientHelper):

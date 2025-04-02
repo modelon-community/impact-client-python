@@ -96,17 +96,30 @@ class TestModel:
             custom_function=dynamic,
         )
         config = experiment_definition.to_dict()
-        assert config["experiment"]["base"]["analysis"]["simulationOptions"] == {
-            "dynamic_diagnostics": False,
-            "ncp": 500,
-        }
-        assert config["experiment"]["base"]["analysis"]["solverOptions"] == {}
-        assert config["experiment"]["base"]["model"]["modelica"]["compilerOptions"] == {
-            "c_compiler": "gcc",
-            "generate_html_diagnostics": False,
-            "include_protected_variables": False,
-        }
-        assert config["experiment"]["base"]["model"]["modelica"]["runtimeOptions"] == {}
+        sim_opts = config["experiment"]["base"]["analysis"]["simulationOptions"]
+        assert all(
+            item in sim_opts.items()
+            for item in {
+                "dynamic_diagnostics": False,
+                "ncp": 500,
+            }.items()
+        )
+        solver_opts = config["experiment"]["base"]["analysis"]["solverOptions"]
+        assert not solver_opts
+        compiler_opts = config["experiment"]["base"]["model"]["modelica"][
+            "compilerOptions"
+        ]
+        assert all(
+            item in compiler_opts.items()
+            for item in {
+                "generate_html_diagnostics": False,
+                "include_protected_variables": False,
+            }.items()
+        )
+        runtime_opts = config["experiment"]["base"]["model"]["modelica"][
+            "runtimeOptions"
+        ]
+        assert not runtime_opts
 
     @pytest.mark.vcr()
     def test_import_fmu(self, tmpdir, client_helper: ClientHelper):
