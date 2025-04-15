@@ -37,12 +37,13 @@ class Request:
         self.body = body
         self.files = files
         self.request_type = request_type
-        self.headers = headers
+        self.headers = headers or {}
+        self.headers.update({"User-Agent": "impact-python-client"})
         self.params = params
 
     def execute(self, check_return: bool = True) -> Any:
         try:
-            extra_headers = self.headers or {}
+            extra_headers = self.headers
             headers = {**self.context.session.headers, **extra_headers}
             if self.method == "POST":
                 logger.debug("POST with JSON body: {}".format(self.body))
