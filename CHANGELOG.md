@@ -1,3 +1,10 @@
+# [4.10.0](https://github.com/modelon-community/impact-client-python/compare/v4.9.0...v4.10.0) (2025-04-16)
+
+
+### Features
+
+* add user agent that is specific for the client ([2907731](https://github.com/modelon-community/impact-client-python/commit/29077313057b60547e3f1ac88d2acf134b9d8b66))
+
 # [4.9.0](https://github.com/modelon-community/impact-client-python/compare/v4.8.1...v4.9.0) (2025-03-12)
 
 
