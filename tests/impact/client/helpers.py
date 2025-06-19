@@ -183,7 +183,7 @@ class IDs:
     ]
     UMA_ROLE = "impact-workspace-uma"
     PUBLISHED_WORKSPACE_ID = "ekdncjndjcndejncjsncsndcijdsnc"
-    DEFAULT_PROJECT_NAME = "Project"
+    DEFAULT_PROJECT_NAME = "Impact-python-client-workspace1"
     PROJECT_NAME_PRIMARY = "Project1"
     PROJECT_ID_PRIMARY = "bf1e2f2a2fd55dcfd844bc1f252528f707254425"
     PROJECT_ID_SECONDARY = "xbhcdhcbdbchdbhcbdhbchdchdhcbhdbchdbch"
