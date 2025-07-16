@@ -184,7 +184,7 @@ class Model(ModelInterface):
                 self._workspace_id, body, True
             )
             modifiers_dict = {
-                modifier["name"]: to_domain_parameter_value(modifier["value"])
+                modifier["name"]: to_domain_parameter_value(modifier)
                 for modifier in modifiers
             }
             if fmu_id:
