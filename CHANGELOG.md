@@ -1,3 +1,10 @@
+## [4.10.1](https://github.com/modelon-community/impact-client-python/compare/v4.10.0...v4.10.1) (2025-07-16)
+
+
+### Bug Fixes
+
+* correct input passed to to_domain_parameter_value method in compile_fmu ([55cab78](https://github.com/modelon-community/impact-client-python/commit/55cab7853731702bec36e5ebffd66011d5c89154))
+
 # [4.10.0](https://github.com/modelon-community/impact-client-python/compare/v4.9.0...v4.10.0) (2025-04-16)
 
 
