@@ -2,8 +2,10 @@ from __future__ import annotations
 
 import logging
 import os
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Union
+from dataclasses import dataclass
+from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional, Union
 
+from modelon.impact.client.configuration import Experimental
 from modelon.impact.client.entities.interfaces.model import ModelInterface
 from modelon.impact.client.entities.model_executable import ModelExecutable
 from modelon.impact.client.entities.project import Project
@@ -30,11 +32,18 @@ if TYPE_CHECKING:
     from modelon.impact.client.entities.experiment import Experiment
     from modelon.impact.client.entities.external_result import ExternalResult
     from modelon.impact.client.operations.base import BaseOperation
+    from modelon.impact.client.sal.modeling import ModelingService
     from modelon.impact.client.sal.service import Service
 
     CaseOrExperimentOrExternalResult = Union[Case, Experiment, ExternalResult]
 
 logger = logging.getLogger(__name__)
+
+
+@dataclass
+class ModelParameter:
+    name: str
+
 
 CompilationOperations = Union[ModelExecutableOperation, CachedModelExecutableOperation]
 
@@ -78,12 +87,18 @@ class Model(ModelInterface):
     """Class containing Model functionalities."""
 
     def __init__(
-        self, class_name: str, workspace_id: str, project_id: str, service: Service
+        self,
+        class_name: str,
+        workspace_id: str,
+        project_id: str,
+        service: Service,
+        modeling_sal_getter: Optional[Callable[[], "ModelingService"]] = None,
     ):
         self._class_name = class_name
         self._workspace_id = workspace_id
         self._project_id = project_id
         self._sal = service
+        self._modeling_sal_getter = modeling_sal_getter
 
     def __repr__(self) -> str:
         return f"Model name '{self._class_name}'"
@@ -398,6 +413,48 @@ class Model(ModelInterface):
             self._sal,
             Model.from_operation,
         )
+
+    def _require_modeling_session(
+        self, method_name: str
+    ) -> Callable[[], "ModelingService"]:
+        if self._modeling_sal_getter is None:
+            raise RuntimeError(
+                "This Model instance has no modeling session. "
+                f"Obtain the model via modeling_session.get_model() to enable "
+                f"{method_name}()."
+            )
+        return self._modeling_sal_getter
+
+    @Experimental
+    def get_parameters(self) -> List[ModelParameter]:
+        """Returns the parameters for this model's class.
+
+        Example::
+
+            with workspace.new_modeling_session() as session:
+                model = session.get_model("LibA.Model")
+                parameters = model.get_parameters()
+
+        """
+        modeling_sal = self._require_modeling_session("get_parameters")
+        return [
+            ModelParameter(name=name)
+            for name in modeling_sal().get_model_parameters(self._class_name)
+        ]
+
+    @Experimental
+    def get_source(self) -> str:
+        """Returns the Modelica source code for this model's class.
+
+        Example::
+
+            with workspace.new_modeling_session() as session:
+                model = session.get_model("LibA.Model")
+                source = model.get_source()
+
+        """
+        modeling_sal = self._require_modeling_session("get_source")
+        return modeling_sal().get_model_source(self._class_name)
 
     @classmethod
     def from_operation(cls, operation: BaseOperation[Model], **kwargs: Any) -> Model:
