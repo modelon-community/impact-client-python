@@ -2,6 +2,7 @@
 import logging
 from typing import Any, Dict, Optional
 
+from modelon.impact.client.exceptions import FailedToStartModelingServer
 from modelon.impact.client.sal import exceptions
 from modelon.impact.client.sal.context import Context
 from modelon.impact.client.sal.custom_function import CustomFunctionService
@@ -11,10 +12,12 @@ from modelon.impact.client.sal.external_result import ExternalResultService
 from modelon.impact.client.sal.http import HTTPClient
 from modelon.impact.client.sal.imports import ImportService
 from modelon.impact.client.sal.model_executable import ModelExecutableService
+from modelon.impact.client.sal.modeling import ModelingService
 from modelon.impact.client.sal.project import ProjectService
 from modelon.impact.client.sal.uri import URI
 from modelon.impact.client.sal.users import UsersService
 from modelon.impact.client.sal.workspace import WorkspaceService
+from modelon.impact.client.sal.ws import SyncWebSocketClient, WebSocketRPCClient
 
 logger = logging.getLogger(__name__)
 
@@ -57,6 +60,8 @@ class Service:
             if is_jupyterhub_url(uri, context)
             else uri
         )
+        self._base_ws_uri = self._base_uri.with_scheme("wss")
+        self._ws_client = WebSocketRPCClient(self._base_ws_uri, api_key)
         self.workspace = WorkspaceService(self._base_uri, self._http_client)
         self.project = ProjectService(self._base_uri, self._http_client)
         self.model_executable = ModelExecutableService(
@@ -79,3 +84,12 @@ class Service:
         url = (self._base_uri / "api/executions").resolve()
         resp = self._http_client.get_json_response(url)
         return resp.data
+
+    def start_modeling_session(self, workspace_id: str) -> ModelingService:
+        client = SyncWebSocketClient(self._ws_client)
+        response = client.get_json_response("impact/subscribeToWorkspace", workspace_id)
+        if isinstance(response, dict) and not response.get("created"):
+            raise FailedToStartModelingServer(
+                f"Failed to start modeling session. Cause: {response}"
+            )
+        return ModelingService(self._base_uri, self._http_client, client)

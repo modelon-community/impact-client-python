@@ -111,3 +111,7 @@ class RemotePublishedWorkspaceLinkError(Error):
 
 class AuthenticationError(Error):
     pass
+
+
+class FailedToStartModelingServer(Error):
+    pass

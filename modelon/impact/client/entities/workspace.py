@@ -4,8 +4,9 @@ import enum
 import json
 import logging
 import os
+from contextlib import contextmanager
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Union
+from typing import TYPE_CHECKING, Any, Dict, Generator, List, Optional, Union
 
 from modelon.impact.client.configuration import Experimental
 from modelon.impact.client.entities.custom_function import CustomFunction
@@ -15,6 +16,7 @@ from modelon.impact.client.entities.file_uri import ModelicaResourceURI
 from modelon.impact.client.entities.interfaces.workspace import WorkspaceInterface
 from modelon.impact.client.entities.model import Model
 from modelon.impact.client.entities.model_executable import ModelExecutable
+from modelon.impact.client.entities.modeling import ModelingSession
 from modelon.impact.client.entities.project import Project, VcsUri
 from modelon.impact.client.exceptions import (
     NoAssociatedPublishedWorkspaceError,
@@ -677,6 +679,18 @@ class Workspace(WorkspaceInterface):
     def name(self) -> str:
         """Workspace name."""
         return self.definition.name
+
+    @Experimental
+    @contextmanager
+    def start_modeling_session(self) -> Generator["ModelingSession", None, None]:
+        modeling_service = self._sal.start_modeling_session(workspace_id=self.id)
+        session = ModelingSession(
+            modeling_service.id, self.id, modeling_service, self._sal
+        )
+        try:
+            yield session
+        finally:
+            session.close()
 
     def rename(self, new_name: str) -> None:
         """Renames a workspace.
