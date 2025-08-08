@@ -48,5 +48,5 @@ class Experimental:
         else:
             delattr(owner, name)
 
-    def __call__(self, *args: Any, **kwargs: Any) -> None:
-        self.fn(*args, **kwargs)
+    def __call__(self, *args: Any, **kwargs: Any) -> Any:
+        return self.fn(*args, **kwargs)
