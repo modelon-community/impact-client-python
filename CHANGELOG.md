@@ -1,3 +1,10 @@
+# [4.11.0-beta.2](https://github.com/modelon-community/impact-client-python/compare/v4.11.0-beta.1...v4.11.0-beta.2) (2025-08-13)
+
+
+### Bug Fixes
+
+* use 'ws' as websocket scheme when used locally for testing by developers ([f6c8a37](https://github.com/modelon-community/impact-client-python/commit/f6c8a378efeea2f82f11de900d6f2a566a54a709))
+
 # [4.11.0-beta.1](https://github.com/modelon-community/impact-client-python/compare/v4.10.1...v4.11.0-beta.1) (2025-08-08)
 
 
