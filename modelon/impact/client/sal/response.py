@@ -165,7 +165,13 @@ class FileResponse(Response):
     @property
     def file_name(self) -> str:
         d = self.headers["content-disposition"]
-        return re.findall("filename=(.+)", d)[0].strip('"')
+        found_file = re.findall(r"filename\*\s*=\s*UTF-8''(.+)", d)
+        if found_file:
+            return found_file[0].strip('"')
+        found_file = re.findall("filename=(.+)", d)
+        if found_file:
+            return found_file[0].strip('"')
+        return ""
 
 
 class CSVResponse(FileResponse):
