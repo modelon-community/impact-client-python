@@ -1,3 +1,10 @@
+## [4.10.2](https://github.com/modelon-community/impact-client-python/compare/v4.10.1...v4.10.2) (2025-08-19)
+
+
+### Bug Fixes
+
+* corrected the regex for file_name match for file_name property ([ed19402](https://github.com/modelon-community/impact-client-python/commit/ed194020691a8b247d581277904897643ee78b0d))
+
 ## [4.10.1](https://github.com/modelon-community/impact-client-python/compare/v4.10.0...v4.10.1) (2025-07-16)
 
 
