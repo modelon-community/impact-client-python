@@ -59,6 +59,9 @@ class ModelingService:
             "impact/getModelParameters", modelica_path
         )
 
+    def get_model_source(self, class_path: str) -> str:
+        return self._ws_client.get_json_response("impact/getSource", class_path)
+
     def create_top_level_package(
         self, project_id: str, package_name: str, libraryToExtend: Optional[str] = None
     ) -> Any:
