@@ -117,3 +117,7 @@ class ModelingSession:
         return Model(
             result["newClassName"], self._workspace_id, target_project_id, self._sal
         )
+
+    @Experimental
+    def get_analysis_view(self, project_id: str, class_name: str) -> List[str]:
+        return self._modeling_sal.get_analysis_view(project_id, class_name)

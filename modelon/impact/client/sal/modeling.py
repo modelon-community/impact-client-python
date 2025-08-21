@@ -50,6 +50,10 @@ class ModelingService:
     def find_usage(self, modelica_path: str) -> List[str]:
         return self._ws_client.get_json_response("impact/findUsage", modelica_path)
 
+    def get_analysis_view(self, project_id: str, class_name: str) -> List[str]:
+        params = {"projectId": project_id, "className": class_name}
+        return self._ws_client.get_json_response("impact/getAnalysisView", params)
+
     def get_model_parmeters(self, modelica_path: str) -> List[str]:
         return self._ws_client.get_json_response(
             "impact/getModelParameters", modelica_path
