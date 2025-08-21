@@ -121,3 +121,7 @@ class ModelingSession:
     @Experimental
     def get_analysis_view(self, project_id: str, class_name: str) -> List[str]:
         return self._modeling_sal.get_analysis_view(project_id, class_name)
+
+    @Experimental
+    def get_model_source(self, class_path: str) -> str:
+        return self._modeling_sal.get_model_source(class_path)
