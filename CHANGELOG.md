@@ -1,3 +1,11 @@
+# [4.11.0-beta.3](https://github.com/modelon-community/impact-client-python/compare/v4.11.0-beta.2...v4.11.0-beta.3) (2025-08-22)
+
+
+### Features
+
+* add support to fetch analysis view ([b1238bb](https://github.com/modelon-community/impact-client-python/commit/b1238bbda54b151731ff0a5bfcffb3c9ef663695))
+* add support to fetch source code ([af8aced](https://github.com/modelon-community/impact-client-python/commit/af8aced478c144719c1988bf44e99ea1b7539606))
+
 # [4.11.0-beta.2](https://github.com/modelon-community/impact-client-python/compare/v4.11.0-beta.1...v4.11.0-beta.2) (2025-08-13)
 
 
