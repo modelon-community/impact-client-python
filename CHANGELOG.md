@@ -1,3 +1,10 @@
+## [4.10.3](https://github.com/modelon-community/impact-client-python/compare/v4.10.2...v4.10.3) (2025-12-09)
+
+
+### Bug Fixes
+
+* **deps:** remove version lock for urllib3 and relock poetry ([3b964f8](https://github.com/modelon-community/impact-client-python/commit/3b964f8bec4f9a21000d85bdb8596ae767bef012))
+
 ## [4.10.2](https://github.com/modelon-community/impact-client-python/compare/v4.10.1...v4.10.2) (2025-08-19)
 
 
