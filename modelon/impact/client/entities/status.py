@@ -29,6 +29,9 @@ class ExperimentStatus(Enum):
     CANCELLED = "cancelled"
     """Status for a cancelled experiment execution."""
 
+    RUNNING = "running"
+    """Status for a running experiment execution."""
+
     DONE = "done"
     """Status for a completed experiment execution."""
 
