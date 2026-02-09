@@ -1,3 +1,11 @@
+## [4.10.4](https://github.com/modelon-community/impact-client-python/compare/v4.10.3...v4.10.4) (2026-02-09)
+
+
+### Bug Fixes
+
+* added missing running status in possible values for ExperimentStatus ([0c02aec](https://github.com/modelon-community/impact-client-python/commit/0c02aec48117b19f5bdd1509a2a75d3fd24767e9))
+* added version property to Project entity and updated test cassete such that the MSL 4.1.0 addition is accounted for ([92e643a](https://github.com/modelon-community/impact-client-python/commit/92e643a32ad178a33527e7585b864cf560bc6cc9))
+
 ## [4.10.3](https://github.com/modelon-community/impact-client-python/compare/v4.10.2...v4.10.3) (2025-12-09)
 
 
