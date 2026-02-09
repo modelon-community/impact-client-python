@@ -252,6 +252,11 @@ class Project:
         return self.definition.name
 
     @property
+    def version(self) -> Optional[str]:
+        """Project version."""
+        return self.definition.version
+
+    @property
     def size(self) -> float:
         """Project size in bytes."""
         return self._sal.project.project_get(self.id, vcs_info=False, size_info=True)[

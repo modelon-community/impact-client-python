@@ -176,9 +176,15 @@ class TestClient:
         prjs = client_helper.client.get_projects(
             project_type=ProjectType.SYSTEM, storage_location=StorageLocation.SYSTEM
         )
-        assert len(prjs) == 2
-        assert prjs[0].name == "Modelica"
-        assert prjs[1].name == "Modelica"
+        expected = {
+            ("Modelica", "3.2.3"),
+            ("Modelica", "4.0.0"),
+            ("Modelica", "4.1.0"),
+        }
+
+        result = {(p.name, p.version) for p in prjs}
+
+        assert result == expected
 
     @pytest.mark.vcr()
     def test_get_project(self, client_helper: ClientHelper):
