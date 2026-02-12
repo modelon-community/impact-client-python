@@ -12,7 +12,7 @@ interactions:
     uri: /hub/api/
   response:
     body:
-      string: '{"version": "5.2.1"}'
+      string: '{"version": "5.3.0"}'
     headers:
       Connection:
       - keep-alive
@@ -20,8 +20,10 @@ interactions:
       - application/json
       access-control-allow-headers:
       - accept, content-type, authorization
+      access-control-allow-origin:
+      - '*'
       x-jupyterhub-version:
-      - 5.2.1
+      - 5.3.0
     status:
       code: 200
       message: OK
@@ -38,7 +40,7 @@ interactions:
     uri: /hub/api/
   response:
     body:
-      string: '{"version": "5.2.1"}'
+      string: '{"version": "5.3.0"}'
     headers:
       Connection:
       - keep-alive
@@ -46,8 +48,10 @@ interactions:
       - application/json
       access-control-allow-headers:
       - accept, content-type, authorization
+      access-control-allow-origin:
+      - '*'
       x-jupyterhub-version:
-      - 5.2.1
+      - 5.3.0
     status:
       code: 200
       message: OK
@@ -73,7 +77,7 @@ interactions:
       access-control-allow-headers:
       - accept, content-type, authorization
       x-jupyterhub-version:
-      - 5.2.1
+      - 5.3.0
     status:
       code: 200
       message: OK
@@ -116,7 +120,7 @@ interactions:
     uri: /user/test-user-uniqid/impact/api/
   response:
     body:
-      string: '{"version": "4.24.0"}'
+      string: '{"version": "4.25.1"}'
     headers:
       Connection:
       - keep-alive
@@ -195,15 +199,17 @@ interactions:
   response:
     body:
       string: '{"definition": {"name": "impact-python-client-workspace1", "description":
-        "", "defaultProjectId": "7b29e657fc5cde4410c06d002f2b57b3554b270a", "projects":
-        [{"reference": {"id": "7b29e657fc5cde4410c06d002f2b57b3554b270a"}, "disabled":
+        "", "defaultProjectId": "46e51f746c53db674d0d71cdcc7a085f81d7c3c9", "projects":
+        [{"reference": {"id": "46e51f746c53db674d0d71cdcc7a085f81d7c3c9"}, "disabled":
         false, "disabledContent": []}], "dependencies": [{"reference": {"id": "fec43f77925949bd7e7c0f10ac49ebc1189dc840",
         "name": "Modelica", "version": "3.2.3"}, "disabled": true, "disabledContent":
         []}, {"reference": {"id": "ac04a5da97bc2e11bffb7f41b2485da347846df6", "name":
-        "Modelica", "version": "4.0.0"}, "disabled": false, "disabledContent": []}],
-        "format": "1.0.0", "guid": "7ac870f961dc4371953895e9ecf3a687", "createdBy":
-        "test-user-uniqid", "createdAt": 1740060955744}, "id": "impact-python-client-workspace1",
-        "conversion": {"state": "UP_TO_DATE"}}'
+        "Modelica", "version": "4.0.0"}, "disabled": false, "disabledContent": []},
+        {"reference": {"id": "03a291276bb1f38120a5d4d2c4068a2d3d286274", "name": "Modelica",
+        "version": "4.1.0"}, "disabled": true, "disabledContent": []}], "format":
+        "1.0.0", "guid": "ca7d875b96494dcb99a1a7caa912f83d", "createdBy": "test-user-uniqid",
+        "createdAt": 1770886085219}, "id": "impact-python-client-workspace1", "conversion":
+        {"state": "UP_TO_DATE"}}'
     headers:
       Connection:
       - keep-alive
@@ -228,13 +234,13 @@ interactions:
   response:
     body:
       string: '{"name": "dynamic", "version": "0.0.1", "description": "Performs a
-        dynamic simulation", "can_initialize_from": false, "kind": "EXECUTOR", "parameters":
-        [{"name": "start_time", "type": "Number", "description": "The start time of
-        the simulation", "optional": false, "defaultValue": 0}, {"name": "final_time",
-        "type": "Number", "description": "The final time of the simulation", "optional":
-        false, "defaultValue": 1}, {"name": "interval", "type": "Number", "description":
-        "The time resolution for the result grid, default is based on solver settings",
-        "optional": true, "defaultValue": 0}]}'
+        dynamic simulation", "can_initialize_from": false, "supports_live_plotting":
+        true, "kind": "EXECUTOR", "parameters": [{"name": "start_time", "type": "Number",
+        "description": "The start time of the simulation", "optional": false, "defaultValue":
+        0}, {"name": "final_time", "type": "Number", "description": "The final time
+        of the simulation", "optional": false, "defaultValue": 1}, {"name": "interval",
+        "type": "Number", "description": "The time resolution for the result grid,
+        default is based on solver settings", "optional": true, "defaultValue": 0}]}'
     headers:
       Connection:
       - keep-alive
@@ -259,15 +265,17 @@ interactions:
   response:
     body:
       string: '{"definition": {"name": "impact-python-client-workspace1", "description":
-        "", "defaultProjectId": "7b29e657fc5cde4410c06d002f2b57b3554b270a", "projects":
-        [{"reference": {"id": "7b29e657fc5cde4410c06d002f2b57b3554b270a"}, "disabled":
+        "", "defaultProjectId": "46e51f746c53db674d0d71cdcc7a085f81d7c3c9", "projects":
+        [{"reference": {"id": "46e51f746c53db674d0d71cdcc7a085f81d7c3c9"}, "disabled":
         false, "disabledContent": []}], "dependencies": [{"reference": {"id": "fec43f77925949bd7e7c0f10ac49ebc1189dc840",
         "name": "Modelica", "version": "3.2.3"}, "disabled": true, "disabledContent":
         []}, {"reference": {"id": "ac04a5da97bc2e11bffb7f41b2485da347846df6", "name":
-        "Modelica", "version": "4.0.0"}, "disabled": false, "disabledContent": []}],
-        "format": "1.0.0", "guid": "7ac870f961dc4371953895e9ecf3a687", "createdBy":
-        "test-user-uniqid", "createdAt": 1740060955744}, "id": "impact-python-client-workspace1",
-        "conversion": {"state": "UP_TO_DATE"}}'
+        "Modelica", "version": "4.0.0"}, "disabled": false, "disabledContent": []},
+        {"reference": {"id": "03a291276bb1f38120a5d4d2c4068a2d3d286274", "name": "Modelica",
+        "version": "4.1.0"}, "disabled": true, "disabledContent": []}], "format":
+        "1.0.0", "guid": "ca7d875b96494dcb99a1a7caa912f83d", "createdBy": "test-user-uniqid",
+        "createdAt": 1770886085219}, "id": "impact-python-client-workspace1", "conversion":
+        {"state": "UP_TO_DATE"}}'
     headers:
       Connection:
       - keep-alive
@@ -288,29 +296,33 @@ interactions:
       Connection:
       - keep-alive
     method: GET
-    uri: /user/test-user-uniqid/impact/api/projects/7b29e657fc5cde4410c06d002f2b57b3554b270a
+    uri: /user/test-user-uniqid/impact/api/projects/46e51f746c53db674d0d71cdcc7a085f81d7c3c9
   response:
     body:
-      string: '{"id": "7b29e657fc5cde4410c06d002f2b57b3554b270a", "definition": {"name":
-        "Project", "format": "1.0.0", "dependencies": [{"name": "Modelica", "versionSpecifier":
-        "4.0.0"}], "content": [{"relpath": "Resources/Views", "contentType": "VIEWS",
-        "defaultDisabled": false, "id": "64efcded55d84c3b93d7e946cb0327d4"}, {"relpath":
-        "Resources/Favorites", "contentType": "FAVORITES", "defaultDisabled": false,
-        "id": "d36fcb9ea5c24676a6bd08b4e5cb4dae"}, {"relpath": "Resources/CustomFunctions",
-        "contentType": "CUSTOM_FUNCTIONS", "defaultDisabled": false, "id": "21ca7133c9de482cae7ca3b262068d08"},
+      string: '{"id": "46e51f746c53db674d0d71cdcc7a085f81d7c3c9", "definition": {"name":
+        "Impact-python-client-workspace1", "format": "1.0.0", "dependencies": [{"name":
+        "Modelica", "versionSpecifier": "4.0.0"}], "content": [{"relpath": "Resources/Views",
+        "contentType": "VIEWS", "defaultDisabled": false, "id": "6abd6c34f4444d6cbb0dbeefb03745f9"},
+        {"relpath": "Resources/Favorites", "contentType": "FAVORITES", "defaultDisabled":
+        false, "id": "f8dc6daa1b9144eca96da0cfd3513fc8"}, {"relpath": "Resources/CustomFunctions",
+        "contentType": "CUSTOM_FUNCTIONS", "defaultDisabled": false, "id": "e47ba8458b854f7c8b7a1cd19e850def"},
         {"relpath": "Resources/Custom", "contentType": "GENERIC", "defaultDisabled":
-        false, "id": "cf296ac2dd1f471d8f2a1118522b718f"}, {"relpath": "ReferenceResults",
-        "contentType": "REFERENCE_RESULTS", "defaultDisabled": false, "id": "33de8cb13cd84ba084b78e3a5459e5d7"},
+        false, "id": "451e9ce9ec2f436ea78140afce5619e9"}, {"relpath": "ReferenceResults",
+        "contentType": "REFERENCE_RESULTS", "defaultDisabled": false, "id": "51f25ac65a434fbfa35f79cfeb458e83"},
         {"relpath": "Resources/ExperimentDefinitions", "contentType": "EXPERIMENT_DEFINITIONS",
-        "defaultDisabled": false, "id": "7b719dd0821a406c852732c39738317d"}], "executionOptions":
+        "defaultDisabled": false, "id": "fd0815b984d747e792d0a0e74f5cca1b"}], "executionOptions":
         []}, "projectType": "LOCAL", "storageLocation": "USERSPACE"}'
     headers:
       Connection:
       - keep-alive
       Content-Type:
       - application/json; charset=utf-8
+      Transfer-Encoding:
+      - chunked
       Vary:
       - Accept-Encoding
+      content-length:
+      - '1046'
     status:
       code: 200
       message: OK
@@ -327,9 +339,9 @@ interactions:
     uri: /user/test-user-uniqid/impact/api/workspaces/impact-python-client-workspace1/custom-functions/dynamic/options
   response:
     body:
-      string: '{"compiler": {"c_compiler": "gcc", "generate_html_diagnostics": false,
-        "include_protected_variables": false}, "runtime": {}, "simulation": {"ncp":
-        500, "dynamic_diagnostics": false}, "solver": {}}'
+      string: '{"compiler": {"generate_html_diagnostics": false, "include_protected_variables":
+        false}, "runtime": {}, "simulation": {"ncp": 500, "dynamic_diagnostics": false},
+        "solver": {}}'
     headers:
       Connection:
       - keep-alive
@@ -353,9 +365,9 @@ interactions:
     uri: /user/test-user-uniqid/impact/api/workspaces/impact-python-client-workspace1/custom-functions/dynamic/options
   response:
     body:
-      string: '{"compiler": {"c_compiler": "gcc", "generate_html_diagnostics": false,
-        "include_protected_variables": false}, "runtime": {}, "simulation": {"ncp":
-        500, "dynamic_diagnostics": false}, "solver": {}}'
+      string: '{"compiler": {"generate_html_diagnostics": false, "include_protected_variables":
+        false}, "runtime": {}, "simulation": {"ncp": 500, "dynamic_diagnostics": false},
+        "solver": {}}'
     headers:
       Connection:
       - keep-alive
@@ -379,9 +391,9 @@ interactions:
     uri: /user/test-user-uniqid/impact/api/workspaces/impact-python-client-workspace1/custom-functions/dynamic/options
   response:
     body:
-      string: '{"compiler": {"c_compiler": "gcc", "generate_html_diagnostics": false,
-        "include_protected_variables": false}, "runtime": {}, "simulation": {"ncp":
-        500, "dynamic_diagnostics": false}, "solver": {}}'
+      string: '{"compiler": {"generate_html_diagnostics": false, "include_protected_variables":
+        false}, "runtime": {}, "simulation": {"ncp": 500, "dynamic_diagnostics": false},
+        "solver": {}}'
     headers:
       Connection:
       - keep-alive
@@ -405,9 +417,9 @@ interactions:
     uri: /user/test-user-uniqid/impact/api/workspaces/impact-python-client-workspace1/custom-functions/dynamic/options
   response:
     body:
-      string: '{"compiler": {"c_compiler": "gcc", "generate_html_diagnostics": false,
-        "include_protected_variables": false}, "runtime": {}, "simulation": {"ncp":
-        500, "dynamic_diagnostics": false}, "solver": {}}'
+      string: '{"compiler": {"generate_html_diagnostics": false, "include_protected_variables":
+        false}, "runtime": {}, "simulation": {"ncp": 500, "dynamic_diagnostics": false},
+        "solver": {}}'
     headers:
       Connection:
       - keep-alive
@@ -421,12 +433,12 @@ interactions:
 - request:
     body: '{"experiment": {"version": 3, "base": {"model": {"modelica": {"className":
       "Modelica.Fluid.Examples.AST_BatchPlant.BatchPlant_StandardWater", "compilerOptions":
-      {"c_compiler": "gcc", "generate_html_diagnostics": false, "include_protected_variables":
-      false}, "runtimeOptions": {}, "compilerLogLevel": "warning", "fmiTarget": "me",
-      "fmiVersion": "2.0", "platform": "auto"}}, "modifiers": {"variables": []}, "analysis":
-      {"type": "dynamic", "parameters": [{"name": "start_time", "value": 0}, {"name":
-      "final_time", "value": 1}, {"name": "interval", "value": 0}], "simulationOptions":
-      {"ncp": 500, "dynamic_diagnostics": false}, "solverOptions": {}, "simulationLogLevel":
+      {"generate_html_diagnostics": false, "include_protected_variables": false},
+      "runtimeOptions": {}, "compilerLogLevel": "warning", "fmiTarget": "me", "fmiVersion":
+      "2.0", "platform": "auto"}}, "modifiers": {"variables": []}, "analysis": {"type":
+      "dynamic", "parameters": [{"name": "start_time", "value": 0}, {"name": "final_time",
+      "value": 1}, {"name": "interval", "value": 0}], "simulationOptions": {"ncp":
+      500, "dynamic_diagnostics": false}, "solverOptions": {}, "simulationLogLevel":
       "WARNING"}, "expansion": {"algorithm": "FULLFACTORIAL"}}, "extensions": []}}'
     headers:
       Accept:
@@ -436,14 +448,14 @@ interactions:
       Connection:
       - keep-alive
       Content-Length:
-      - '743'
+      - '722'
       Content-type:
       - application/vnd.impact.experiment.v3+json
     method: POST
     uri: /user/test-user-uniqid/impact/api/workspaces/impact-python-client-workspace1/experiments
   response:
     body:
-      string: '{"experiment_id": "__examples_ast_batchplant_batchplant_standardwater_20250220_141556_021272d"}'
+      string: '{"experiment_id": "__examples_ast_batchplant_batchplant_standardwater_20260212_084807_393eb34"}'
     headers:
       Connection:
       - keep-alive
@@ -466,7 +478,7 @@ interactions:
       Content-Length:
       - '0'
     method: POST
-    uri: /user/test-user-uniqid/impact/api/workspaces/impact-python-client-workspace1/experiments/__examples_ast_batchplant_batchplant_standardwater_20250220_141556_021272d/execution
+    uri: /user/test-user-uniqid/impact/api/workspaces/impact-python-client-workspace1/experiments/__examples_ast_batchplant_batchplant_standardwater_20260212_084807_393eb34/execution
   response:
     body:
       string: ''
@@ -490,22 +502,22 @@ interactions:
       Connection:
       - keep-alive
     method: GET
-    uri: /user/test-user-uniqid/impact/api/workspaces/impact-python-client-workspace1/experiments/__examples_ast_batchplant_batchplant_standardwater_20250220_141556_021272d
+    uri: /user/test-user-uniqid/impact/api/workspaces/impact-python-client-workspace1/experiments/__examples_ast_batchplant_batchplant_standardwater_20260212_084807_393eb34
   response:
     body:
-      string: '{"id": "__examples_ast_batchplant_batchplant_standardwater_20250220_141556_021272d",
+      string: '{"id": "__examples_ast_batchplant_batchplant_standardwater_20260212_084807_393eb34",
         "experiment": {"version": 3, "base": {"model": {"modelica": {"className":
         "Modelica.Fluid.Examples.AST_BatchPlant.BatchPlant_StandardWater", "compilerOptions":
-        {"c_compiler": "gcc", "generate_html_diagnostics": false, "include_protected_variables":
-        false}, "runtimeOptions": {}, "compilerLogLevel": "warning", "fmiTarget":
-        "me", "fmiVersion": "2.0", "platform": "auto"}}, "analysis": {"parameters":
-        [{"name": "start_time", "value": 0}, {"name": "final_time", "value": 1}, {"name":
-        "interval", "value": 0}], "simulationOptions": {"ncp": 500, "dynamic_diagnostics":
-        false}, "solverOptions": {}, "type": "dynamic", "simulationLogLevel": "WARNING"},
-        "modifiers": {"variables": []}, "expansion": {"algorithm": "FULLFACTORIAL"}},
-        "extensions": []}, "meta_data": {"created_epoch": 1740060956, "experiment_hash":
-        "1895ac07307034065b8fc8de75960ac2", "label": "", "model_names": ["Modelica.Fluid.Examples.AST_BatchPlant.BatchPlant_StandardWater"]},
-        "run_info": {"status": "not_started", "failed": 0, "successful": 0, "cancelled":
+        {"generate_html_diagnostics": false, "include_protected_variables": false},
+        "runtimeOptions": {}, "compilerLogLevel": "warning", "fmiTarget": "me", "fmiVersion":
+        "2.0", "platform": "auto"}}, "analysis": {"parameters": [{"name": "start_time",
+        "value": 0}, {"name": "final_time", "value": 1}, {"name": "interval", "value":
+        0}], "simulationOptions": {"ncp": 500, "dynamic_diagnostics": false}, "solverOptions":
+        {}, "type": "dynamic", "simulationLogLevel": "WARNING"}, "modifiers": {"variables":
+        []}, "expansion": {"algorithm": "FULLFACTORIAL"}}, "extensions": []}, "meta_data":
+        {"created_epoch": 1770886087, "experiment_hash": "a54950fb37013c5e0aa97888d3a28015",
+        "label": "", "model_names": ["Modelica.Fluid.Examples.AST_BatchPlant.BatchPlant_StandardWater"]},
+        "run_info": {"status": "running", "failed": 0, "successful": 0, "cancelled":
         0, "not_started": 0}}'
     headers:
       Connection:
@@ -517,7 +529,7 @@ interactions:
       Vary:
       - Accept-Encoding
       content-length:
-      - '1126'
+      - '1101'
     status:
       code: 200
       message: OK
@@ -531,22 +543,22 @@ interactions:
       Connection:
       - keep-alive
     method: GET
-    uri: /user/test-user-uniqid/impact/api/workspaces/impact-python-client-workspace1/experiments/__examples_ast_batchplant_batchplant_standardwater_20250220_141556_021272d
+    uri: /user/test-user-uniqid/impact/api/workspaces/impact-python-client-workspace1/experiments/__examples_ast_batchplant_batchplant_standardwater_20260212_084807_393eb34
   response:
     body:
-      string: '{"id": "__examples_ast_batchplant_batchplant_standardwater_20250220_141556_021272d",
+      string: '{"id": "__examples_ast_batchplant_batchplant_standardwater_20260212_084807_393eb34",
         "experiment": {"version": 3, "base": {"model": {"modelica": {"className":
         "Modelica.Fluid.Examples.AST_BatchPlant.BatchPlant_StandardWater", "compilerOptions":
-        {"c_compiler": "gcc", "generate_html_diagnostics": false, "include_protected_variables":
-        false}, "runtimeOptions": {}, "compilerLogLevel": "warning", "fmiTarget":
-        "me", "fmiVersion": "2.0", "platform": "auto"}}, "analysis": {"parameters":
-        [{"name": "start_time", "value": 0}, {"name": "final_time", "value": 1}, {"name":
-        "interval", "value": 0}], "simulationOptions": {"ncp": 500, "dynamic_diagnostics":
-        false}, "solverOptions": {}, "type": "dynamic", "simulationLogLevel": "WARNING"},
-        "modifiers": {"variables": []}, "expansion": {"algorithm": "FULLFACTORIAL"}},
-        "extensions": []}, "meta_data": {"created_epoch": 1740060956, "experiment_hash":
-        "1895ac07307034065b8fc8de75960ac2", "label": "", "model_names": ["Modelica.Fluid.Examples.AST_BatchPlant.BatchPlant_StandardWater"]},
-        "run_info": {"status": "not_started", "failed": 0, "successful": 0, "cancelled":
+        {"generate_html_diagnostics": false, "include_protected_variables": false},
+        "runtimeOptions": {}, "compilerLogLevel": "warning", "fmiTarget": "me", "fmiVersion":
+        "2.0", "platform": "auto"}}, "analysis": {"parameters": [{"name": "start_time",
+        "value": 0}, {"name": "final_time", "value": 1}, {"name": "interval", "value":
+        0}], "simulationOptions": {"ncp": 500, "dynamic_diagnostics": false}, "solverOptions":
+        {}, "type": "dynamic", "simulationLogLevel": "WARNING"}, "modifiers": {"variables":
+        []}, "expansion": {"algorithm": "FULLFACTORIAL"}}, "extensions": []}, "meta_data":
+        {"created_epoch": 1770886087, "experiment_hash": "a54950fb37013c5e0aa97888d3a28015",
+        "label": "", "model_names": ["Modelica.Fluid.Examples.AST_BatchPlant.BatchPlant_StandardWater"]},
+        "run_info": {"status": "running", "failed": 0, "successful": 0, "cancelled":
         0, "not_started": 0}}'
     headers:
       Connection:
@@ -558,7 +570,7 @@ interactions:
       Vary:
       - Accept-Encoding
       content-length:
-      - '1126'
+      - '1101'
     status:
       code: 200
       message: OK
@@ -572,22 +584,22 @@ interactions:
       Connection:
       - keep-alive
     method: GET
-    uri: /user/test-user-uniqid/impact/api/workspaces/impact-python-client-workspace1/experiments/__examples_ast_batchplant_batchplant_standardwater_20250220_141556_021272d
+    uri: /user/test-user-uniqid/impact/api/workspaces/impact-python-client-workspace1/experiments/__examples_ast_batchplant_batchplant_standardwater_20260212_084807_393eb34
   response:
     body:
-      string: '{"id": "__examples_ast_batchplant_batchplant_standardwater_20250220_141556_021272d",
+      string: '{"id": "__examples_ast_batchplant_batchplant_standardwater_20260212_084807_393eb34",
         "experiment": {"version": 3, "base": {"model": {"modelica": {"className":
         "Modelica.Fluid.Examples.AST_BatchPlant.BatchPlant_StandardWater", "compilerOptions":
-        {"c_compiler": "gcc", "generate_html_diagnostics": false, "include_protected_variables":
-        false}, "runtimeOptions": {}, "compilerLogLevel": "warning", "fmiTarget":
-        "me", "fmiVersion": "2.0", "platform": "auto"}}, "analysis": {"parameters":
-        [{"name": "start_time", "value": 0}, {"name": "final_time", "value": 1}, {"name":
-        "interval", "value": 0}], "simulationOptions": {"ncp": 500, "dynamic_diagnostics":
-        false}, "solverOptions": {}, "type": "dynamic", "simulationLogLevel": "WARNING"},
-        "modifiers": {"variables": []}, "expansion": {"algorithm": "FULLFACTORIAL"}},
-        "extensions": []}, "meta_data": {"created_epoch": 1740060956, "experiment_hash":
-        "1895ac07307034065b8fc8de75960ac2", "label": "", "model_names": ["Modelica.Fluid.Examples.AST_BatchPlant.BatchPlant_StandardWater"]},
-        "run_info": {"status": "not_started", "failed": 0, "successful": 0, "cancelled":
+        {"generate_html_diagnostics": false, "include_protected_variables": false},
+        "runtimeOptions": {}, "compilerLogLevel": "warning", "fmiTarget": "me", "fmiVersion":
+        "2.0", "platform": "auto"}}, "analysis": {"parameters": [{"name": "start_time",
+        "value": 0}, {"name": "final_time", "value": 1}, {"name": "interval", "value":
+        0}], "simulationOptions": {"ncp": 500, "dynamic_diagnostics": false}, "solverOptions":
+        {}, "type": "dynamic", "simulationLogLevel": "WARNING"}, "modifiers": {"variables":
+        []}, "expansion": {"algorithm": "FULLFACTORIAL"}}, "extensions": []}, "meta_data":
+        {"created_epoch": 1770886087, "experiment_hash": "a54950fb37013c5e0aa97888d3a28015",
+        "label": "", "model_names": ["Modelica.Fluid.Examples.AST_BatchPlant.BatchPlant_StandardWater"]},
+        "run_info": {"status": "running", "failed": 0, "successful": 0, "cancelled":
         0, "not_started": 0}}'
     headers:
       Connection:
@@ -599,7 +611,7 @@ interactions:
       Vary:
       - Accept-Encoding
       content-length:
-      - '1126'
+      - '1101'
     status:
       code: 200
       message: OK
@@ -617,14 +629,16 @@ interactions:
   response:
     body:
       string: '{"data": {"items": [{"definition": {"name": "impact-python-client-workspace1",
-        "description": "", "defaultProjectId": "7b29e657fc5cde4410c06d002f2b57b3554b270a",
-        "projects": [{"reference": {"id": "7b29e657fc5cde4410c06d002f2b57b3554b270a"},
+        "description": "", "defaultProjectId": "46e51f746c53db674d0d71cdcc7a085f81d7c3c9",
+        "projects": [{"reference": {"id": "46e51f746c53db674d0d71cdcc7a085f81d7c3c9"},
         "disabled": false, "disabledContent": []}], "dependencies": [{"reference":
         {"id": "fec43f77925949bd7e7c0f10ac49ebc1189dc840", "name": "Modelica", "version":
         "3.2.3"}, "disabled": true, "disabledContent": []}, {"reference": {"id": "ac04a5da97bc2e11bffb7f41b2485da347846df6",
         "name": "Modelica", "version": "4.0.0"}, "disabled": false, "disabledContent":
-        []}], "format": "1.0.0", "guid": "7ac870f961dc4371953895e9ecf3a687", "createdBy":
-        "test-user-uniqid", "createdAt": 1740060955744}, "id": "impact-python-client-workspace1",
+        []}, {"reference": {"id": "03a291276bb1f38120a5d4d2c4068a2d3d286274", "name":
+        "Modelica", "version": "4.1.0"}, "disabled": true, "disabledContent": []}],
+        "format": "1.0.0", "guid": "ca7d875b96494dcb99a1a7caa912f83d", "createdBy":
+        "test-user-uniqid", "createdAt": 1770886085219}, "id": "impact-python-client-workspace1",
         "conversion": {"state": "UP_TO_DATE"}}]}}'
     headers:
       Connection:
@@ -650,15 +664,17 @@ interactions:
   response:
     body:
       string: '{"definition": {"name": "impact-python-client-workspace1", "description":
-        "", "defaultProjectId": "7b29e657fc5cde4410c06d002f2b57b3554b270a", "projects":
-        [{"reference": {"id": "7b29e657fc5cde4410c06d002f2b57b3554b270a"}, "disabled":
+        "", "defaultProjectId": "46e51f746c53db674d0d71cdcc7a085f81d7c3c9", "projects":
+        [{"reference": {"id": "46e51f746c53db674d0d71cdcc7a085f81d7c3c9"}, "disabled":
         false, "disabledContent": []}], "dependencies": [{"reference": {"id": "fec43f77925949bd7e7c0f10ac49ebc1189dc840",
         "name": "Modelica", "version": "3.2.3"}, "disabled": true, "disabledContent":
         []}, {"reference": {"id": "ac04a5da97bc2e11bffb7f41b2485da347846df6", "name":
-        "Modelica", "version": "4.0.0"}, "disabled": false, "disabledContent": []}],
-        "format": "1.0.0", "guid": "7ac870f961dc4371953895e9ecf3a687", "createdBy":
-        "test-user-uniqid", "createdAt": 1740060955744}, "id": "impact-python-client-workspace1",
-        "conversion": {"state": "UP_TO_DATE"}}'
+        "Modelica", "version": "4.0.0"}, "disabled": false, "disabledContent": []},
+        {"reference": {"id": "03a291276bb1f38120a5d4d2c4068a2d3d286274", "name": "Modelica",
+        "version": "4.1.0"}, "disabled": true, "disabledContent": []}], "format":
+        "1.0.0", "guid": "ca7d875b96494dcb99a1a7caa912f83d", "createdBy": "test-user-uniqid",
+        "createdAt": 1770886085219}, "id": "impact-python-client-workspace1", "conversion":
+        {"state": "UP_TO_DATE"}}'
     headers:
       Connection:
       - keep-alive
@@ -682,18 +698,19 @@ interactions:
     uri: /user/test-user-uniqid/impact/api/workspaces/impact-python-client-workspace1/projects
   response:
     body:
-      string: '{"data": {"items": [{"id": "7b29e657fc5cde4410c06d002f2b57b3554b270a",
-        "definition": {"name": "Project", "format": "1.0.0", "dependencies": [{"name":
-        "Modelica", "versionSpecifier": "4.0.0"}], "content": [{"relpath": "Resources/Views",
-        "contentType": "VIEWS", "defaultDisabled": false, "id": "64efcded55d84c3b93d7e946cb0327d4"},
-        {"relpath": "Resources/Favorites", "contentType": "FAVORITES", "defaultDisabled":
-        false, "id": "d36fcb9ea5c24676a6bd08b4e5cb4dae"}, {"relpath": "Resources/CustomFunctions",
-        "contentType": "CUSTOM_FUNCTIONS", "defaultDisabled": false, "id": "21ca7133c9de482cae7ca3b262068d08"},
-        {"relpath": "Resources/Custom", "contentType": "GENERIC", "defaultDisabled":
-        false, "id": "cf296ac2dd1f471d8f2a1118522b718f"}, {"relpath": "ReferenceResults",
-        "contentType": "REFERENCE_RESULTS", "defaultDisabled": false, "id": "33de8cb13cd84ba084b78e3a5459e5d7"},
+      string: '{"data": {"items": [{"id": "46e51f746c53db674d0d71cdcc7a085f81d7c3c9",
+        "definition": {"name": "Impact-python-client-workspace1", "format": "1.0.0",
+        "dependencies": [{"name": "Modelica", "versionSpecifier": "4.0.0"}], "content":
+        [{"relpath": "Resources/Views", "contentType": "VIEWS", "defaultDisabled":
+        false, "id": "6abd6c34f4444d6cbb0dbeefb03745f9"}, {"relpath": "Resources/Favorites",
+        "contentType": "FAVORITES", "defaultDisabled": false, "id": "f8dc6daa1b9144eca96da0cfd3513fc8"},
+        {"relpath": "Resources/CustomFunctions", "contentType": "CUSTOM_FUNCTIONS",
+        "defaultDisabled": false, "id": "e47ba8458b854f7c8b7a1cd19e850def"}, {"relpath":
+        "Resources/Custom", "contentType": "GENERIC", "defaultDisabled": false, "id":
+        "451e9ce9ec2f436ea78140afce5619e9"}, {"relpath": "ReferenceResults", "contentType":
+        "REFERENCE_RESULTS", "defaultDisabled": false, "id": "51f25ac65a434fbfa35f79cfeb458e83"},
         {"relpath": "Resources/ExperimentDefinitions", "contentType": "EXPERIMENT_DEFINITIONS",
-        "defaultDisabled": false, "id": "7b719dd0821a406c852732c39738317d"}], "executionOptions":
+        "defaultDisabled": false, "id": "fd0815b984d747e792d0a0e74f5cca1b"}], "executionOptions":
         []}, "projectType": "LOCAL", "storageLocation": "USERSPACE"}]}}'
     headers:
       Connection:
@@ -705,7 +722,7 @@ interactions:
       Vary:
       - Accept-Encoding
       content-length:
-      - '1043'
+      - '1067'
     status:
       code: 200
       message: OK
@@ -721,29 +738,33 @@ interactions:
       Content-Length:
       - '0'
     method: DELETE
-    uri: /user/test-user-uniqid/impact/api/projects/7b29e657fc5cde4410c06d002f2b57b3554b270a
+    uri: /user/test-user-uniqid/impact/api/projects/46e51f746c53db674d0d71cdcc7a085f81d7c3c9
   response:
     body:
-      string: '{"id": "7b29e657fc5cde4410c06d002f2b57b3554b270a", "definition": {"name":
-        "Project", "format": "1.0.0", "dependencies": [{"name": "Modelica", "versionSpecifier":
-        "4.0.0"}], "content": [{"relpath": "Resources/Views", "contentType": "VIEWS",
-        "defaultDisabled": false, "id": "64efcded55d84c3b93d7e946cb0327d4"}, {"relpath":
-        "Resources/Favorites", "contentType": "FAVORITES", "defaultDisabled": false,
-        "id": "d36fcb9ea5c24676a6bd08b4e5cb4dae"}, {"relpath": "Resources/CustomFunctions",
-        "contentType": "CUSTOM_FUNCTIONS", "defaultDisabled": false, "id": "21ca7133c9de482cae7ca3b262068d08"},
+      string: '{"id": "46e51f746c53db674d0d71cdcc7a085f81d7c3c9", "definition": {"name":
+        "Impact-python-client-workspace1", "format": "1.0.0", "dependencies": [{"name":
+        "Modelica", "versionSpecifier": "4.0.0"}], "content": [{"relpath": "Resources/Views",
+        "contentType": "VIEWS", "defaultDisabled": false, "id": "6abd6c34f4444d6cbb0dbeefb03745f9"},
+        {"relpath": "Resources/Favorites", "contentType": "FAVORITES", "defaultDisabled":
+        false, "id": "f8dc6daa1b9144eca96da0cfd3513fc8"}, {"relpath": "Resources/CustomFunctions",
+        "contentType": "CUSTOM_FUNCTIONS", "defaultDisabled": false, "id": "e47ba8458b854f7c8b7a1cd19e850def"},
         {"relpath": "Resources/Custom", "contentType": "GENERIC", "defaultDisabled":
-        false, "id": "cf296ac2dd1f471d8f2a1118522b718f"}, {"relpath": "ReferenceResults",
-        "contentType": "REFERENCE_RESULTS", "defaultDisabled": false, "id": "33de8cb13cd84ba084b78e3a5459e5d7"},
+        false, "id": "451e9ce9ec2f436ea78140afce5619e9"}, {"relpath": "ReferenceResults",
+        "contentType": "REFERENCE_RESULTS", "defaultDisabled": false, "id": "51f25ac65a434fbfa35f79cfeb458e83"},
         {"relpath": "Resources/ExperimentDefinitions", "contentType": "EXPERIMENT_DEFINITIONS",
-        "defaultDisabled": false, "id": "7b719dd0821a406c852732c39738317d"}], "executionOptions":
+        "defaultDisabled": false, "id": "fd0815b984d747e792d0a0e74f5cca1b"}], "executionOptions":
         []}, "projectType": "LOCAL", "storageLocation": "USERSPACE"}'
     headers:
       Connection:
       - keep-alive
       Content-Type:
       - application/json; charset=utf-8
+      Transfer-Encoding:
+      - chunked
       Vary:
       - Accept-Encoding
+      content-length:
+      - '1046'
     status:
       code: 200
       message: OK
