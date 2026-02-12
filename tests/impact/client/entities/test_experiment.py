@@ -249,7 +249,7 @@ class TestExperiment:
         running_experiment = client_helper.workspace.get_experiment(
             running_experiment_ops.id
         )
-        assert running_experiment.run_info.status == ExperimentStatus.NOTSTARTED
+        assert running_experiment.run_info.status == ExperimentStatus.RUNNING
         assert not running_experiment.is_successful()
 
     @pytest.mark.vcr()
