@@ -1,3 +1,10 @@
+# [4.11.0-beta.5](https://github.com/modelon-community/impact-client-python/compare/v4.11.0-beta.4...v4.11.0-beta.5) (2026-04-23)
+
+
+### Bug Fixes
+
+* corrected the param names to match the expected schema ([4c6b1ab](https://github.com/modelon-community/impact-client-python/commit/4c6b1aba50da33094a8165245a145fc5c222be0f))
+
 # [4.11.0-beta.4](https://github.com/modelon-community/impact-client-python/compare/v4.11.0-beta.3...v4.11.0-beta.4) (2026-03-04)
 
 
