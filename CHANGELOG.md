@@ -1,3 +1,10 @@
+# [4.11.0-beta.6](https://github.com/modelon-community/impact-client-python/compare/v4.11.0-beta.5...v4.11.0-beta.6) (2026-04-23)
+
+
+### Bug Fixes
+
+* added missing running status in possible values for ExperimentStatus ([c12a7e8](https://github.com/modelon-community/impact-client-python/commit/c12a7e8c418b2734e43dda85c0517d13e7ec2642))
+
 # [4.11.0-beta.5](https://github.com/modelon-community/impact-client-python/compare/v4.11.0-beta.4...v4.11.0-beta.5) (2026-04-23)
 
 
