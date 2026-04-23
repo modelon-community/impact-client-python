@@ -37,18 +37,20 @@ class ModelingService:
         }
 
     def get_top_class_info(self, class_path: str) -> Any:
-        return self._ws_client.get_json_response("impact/getTopClassInfo", class_path)
+        params = {"className": class_path}
+        return self._ws_client.get_json_response("impact/getTopClassInfo", params)
 
     def get_experiment_definitions(
         self, project_ids: List[str], class_name: str
     ) -> Any:
-        params = {"projectIds": project_ids, "fullClassName": class_name}
+        params = {"projectIds": project_ids, "className": class_name}
         return self._ws_client.get_json_response(
             "impact/getExperimentDefinitions", params
         )
 
-    def find_usage(self, modelica_path: str) -> List[str]:
-        return self._ws_client.get_json_response("impact/findUsage", modelica_path)
+    def find_usage(self, class_name: str) -> List[str]:
+        params = {"classPath": class_name}
+        return self._ws_client.get_json_response("impact/findUsage", params)
 
     def get_analysis_view(self, project_id: str, class_name: str) -> List[str]:
         params = {"projectId": project_id, "className": class_name}
@@ -60,7 +62,8 @@ class ModelingService:
         )
 
     def get_model_source(self, class_path: str) -> str:
-        return self._ws_client.get_json_response("impact/getSource", class_path)
+        params = {"className": class_path}
+        return self._ws_client.get_json_response("impact/getSource", params)
 
     def create_top_level_package(
         self, project_id: str, package_name: str, libraryToExtend: Optional[str] = None
