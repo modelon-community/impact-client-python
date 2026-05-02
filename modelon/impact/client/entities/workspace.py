@@ -1089,6 +1089,28 @@ class Workspace(WorkspaceInterface):
             for item in resp["data"]["items"]
         ]
 
+    def add_dependencies(self, dependencies: List[Project]) -> None:
+        """Add projects as dependencies to the workspace.
+
+        If an existing dependency has the same name as a project being added,
+        the existing entry is disabled to satisfy the constraint that a workspace
+        cannot have multiple enabled projects with the same name.
+
+        Args:
+            dependencies: A list of Project objects to add as dependencies.
+
+        Example::
+
+            project = client.get_project('my-project-id')
+            workspace.add_dependencies([project])
+
+        """
+        lock_preview = self._sal.workspace.workspace_lock_preview(
+            self.id,
+            dependency_ids=[dep.id for dep in dependencies],
+        )
+        self._sal.workspace.update_workspace(self.id, lock_preview)
+
     def create_project(self, name: str) -> Project:
         """Creates a new project in the workspace.
 

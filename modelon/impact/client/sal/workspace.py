@@ -340,6 +340,21 @@ class WorkspaceService:
         url = (self._base_uri / f"api/published-workspaces/{sharing_id}").resolve()
         self._http_client.delete_json(url)
 
+    def workspace_lock_preview(
+        self,
+        workspace_id: str,
+        dependency_ids: Optional[List[str]] = None,
+        project_ids: Optional[List[str]] = None,
+    ) -> Dict[str, Any]:
+        url = (self._base_uri / f"api/workspaces/{workspace_id}/lock-preview").resolve()
+        body = {
+            "add": {
+                "projects": [{"id": pid} for pid in (project_ids or [])],
+                "dependencies": [{"id": did} for did in (dependency_ids or [])],
+            }
+        }
+        return self._http_client.post_json(url, body=body)
+
     def update_workspace(
         self, workspace_id: str, data: Dict[str, Any]
     ) -> Dict[str, Any]:
