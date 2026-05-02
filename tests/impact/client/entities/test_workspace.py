@@ -536,6 +536,25 @@ class TestWorkspace:
         assert dependencies[0].name == "Modelica"
 
     @pytest.mark.vcr()
+    def test_add_dependencies(self, client_helper: ClientHelper):
+        workspace = client_helper.workspace
+        project = workspace.create_project(IDs.PROJECT_NAME_PRIMARY)
+        workspace.add_dependencies([project])
+        dep_ids = [entry.id for entry in workspace.definition.dependencies]
+        assert project.id in dep_ids
+
+    @pytest.mark.vcr()
+    def test_add_dependencies_disables_existing_entry_with_same_name(
+        self, client_helper: ClientHelper
+    ):
+        workspace = client_helper.workspace
+        project = workspace.create_project(IDs.PROJECT_NAME_PRIMARY)
+        workspace.add_dependencies([project])
+        project_entries = workspace.definition.projects
+        existing_entry = next(e for e in project_entries if e.id == project.id)
+        assert existing_entry.disabled
+
+    @pytest.mark.vcr()
     def test_create_project(self, client_helper: ClientHelper):
         workspace = client_helper.workspace
         project = workspace.create_project(IDs.PROJECT_NAME_PRIMARY)
