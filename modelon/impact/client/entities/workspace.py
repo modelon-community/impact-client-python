@@ -1103,6 +1103,57 @@ class Workspace(WorkspaceInterface):
             for item in resp["data"]["items"]
         ]
 
+    def add_dependencies(self, dependencies: List[Project]) -> None:
+        """Add projects as dependencies to the workspace.
+
+        If an existing dependency has the same name as a project being added,
+        the existing entry is disabled to satisfy the constraint that a workspace
+        cannot have multiple enabled projects with the same name.
+
+        Args:
+            dependencies: A list of Project objects to add as dependencies.
+
+        Example::
+
+            project = client.get_project('my-project-id')
+            workspace.add_dependencies([project])
+
+        """
+        workspace_data = self._sal.workspace.workspace_get(
+            workspace_id=self.id, size_info=False
+        )
+
+        existing_deps_resp = self._sal.workspace.dependencies_get(
+            self._workspace_id, vcs_info=False, include_disabled=True
+        )
+        existing_projects_resp = self._sal.workspace.projects_get(
+            self._workspace_id, vcs_info=False, include_disabled=True
+        )
+        id_to_name = {
+            item["id"]: item["definition"]["name"]
+            for item in (
+                existing_deps_resp["data"]["items"]
+                + existing_projects_resp["data"]["items"]
+            )
+        }
+
+        new_project_names = {project.id: project.name for project in dependencies}
+
+        for list_key in ("dependencies", "projects"):
+            current_entries = workspace_data["definition"].setdefault(list_key, [])
+            for entry in current_entries:
+                entry_project_id = entry.get("reference", {}).get("id")
+                entry_name = id_to_name.get(entry_project_id)
+                if entry_name and entry_name in new_project_names.values():
+                    entry["disabled"] = True
+
+        current_entries = workspace_data["definition"].setdefault("dependencies", [])
+
+        for project in dependencies:
+            current_entries.append({"reference": {"id": project.id}})
+
+        self._sal.workspace.update_workspace(self.id, workspace_data)
+
     def create_project(self, name: str) -> Project:
         """Creates a new project in the workspace.
 
