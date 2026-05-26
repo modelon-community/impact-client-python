@@ -1,3 +1,17 @@
+# [4.12.0](https://github.com/modelon-community/impact-client-python/compare/v4.11.0...v4.12.0) (2026-05-26)
+
+
+### Bug Fixes
+
+* **deps:** add websockets as a dependency ([03de5b9](https://github.com/modelon-community/impact-client-python/commit/03de5b9a0ed549090a7db030c49300d03699b9c1))
+* **deps:** relock poetry dependencies ([a7a2122](https://github.com/modelon-community/impact-client-python/commit/a7a2122c6ffc28e8a0b3c8ea1547e18afa61cf4a))
+* python minimum version requirement to 3.9 and relock dependencies ([de47e5a](https://github.com/modelon-community/impact-client-python/commit/de47e5a785f9ebe2e8e6b955f53b2c96f994d803))
+
+
+### Features
+
+* add first cut of modeling server api support ([d46dd76](https://github.com/modelon-community/impact-client-python/commit/d46dd76e1328057f6f8e28284419bdf348bf7e23))
+
 # [4.11.0](https://github.com/modelon-community/impact-client-python/compare/v4.10.4...v4.11.0) (2026-05-26)
 
 
