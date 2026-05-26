@@ -555,6 +555,14 @@ class TestWorkspace:
         assert existing_entry.disabled
 
     @pytest.mark.vcr()
+    def test_add_projects(self, client_helper: ClientHelper):
+        workspace = client_helper.workspace
+        project = workspace.create_project(IDs.PROJECT_NAME_PRIMARY)
+        workspace.add_projects([project])
+        project_ids = [entry.id for entry in workspace.definition.projects]
+        assert project.id in project_ids
+
+    @pytest.mark.vcr()
     def test_create_project(self, client_helper: ClientHelper):
         workspace = client_helper.workspace
         project = workspace.create_project(IDs.PROJECT_NAME_PRIMARY)
