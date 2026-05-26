@@ -1,3 +1,12 @@
+# [4.11.0](https://github.com/modelon-community/impact-client-python/compare/v4.10.4...v4.11.0) (2026-05-26)
+
+
+### Features
+
+* add add_dependencies method to Workspace ([3ffb215](https://github.com/modelon-community/impact-client-python/commit/3ffb2150aca8939e1961ffeca8890e2d3b2c9597))
+* add add_projects method to Workspace ([cdc0cd8](https://github.com/modelon-community/impact-client-python/commit/cdc0cd8d38d68cbb211b3c9c44934ce4ed46465f))
+* updated the minimum supported version ([e77320d](https://github.com/modelon-community/impact-client-python/commit/e77320df07bc0db9bfddb86b9654286d7d43aa1d))
+
 ## [4.10.4](https://github.com/modelon-community/impact-client-python/compare/v4.10.3...v4.10.4) (2026-02-09)
 
 
