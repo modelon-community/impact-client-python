@@ -1111,6 +1111,28 @@ class Workspace(WorkspaceInterface):
         )
         self._sal.workspace.update_workspace(self.id, lock_preview)
 
+    def add_projects(self, projects: List[Project]) -> None:
+        """Add projects to the workspace.
+
+        If an existing project has the same name as a project being added,
+        the existing entry is disabled to satisfy the constraint that a workspace
+        cannot have multiple enabled projects with the same name.
+
+        Args:
+            projects: A list of Project objects to add.
+
+        Example::
+
+            project = client.get_project('my-project-id')
+            workspace.add_projects([project])
+
+        """
+        lock_preview = self._sal.workspace.workspace_lock_preview(
+            self.id,
+            project_ids=[project.id for project in projects],
+        )
+        self._sal.workspace.update_workspace(self.id, lock_preview)
+
     def create_project(self, name: str) -> Project:
         """Creates a new project in the workspace.
 
