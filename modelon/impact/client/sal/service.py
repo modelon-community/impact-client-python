@@ -1,6 +1,5 @@
 """Service class."""
 import logging
-import os
 from typing import Any, Dict, Optional
 
 from modelon.impact.client.exceptions import FailedToStartModelingServer
@@ -61,11 +60,8 @@ class Service:
             if is_jupyterhub_url(uri, context)
             else uri
         )
-        _is_local_dev = (
-            os.environ.get("IMPACT_PYTHON_CLIENT_DEV", "false").lower() == "true"
-        )
-        scheme = "ws" if _is_local_dev else "wss"
-        self._base_ws_uri = self._base_uri.with_scheme(scheme)
+        ws_scheme = "ws" if uri.scheme == "http" else "wss"
+        self._base_ws_uri = self._base_uri.with_scheme(ws_scheme)
         self._api_key = api_key
         self.workspace = WorkspaceService(self._base_uri, self._http_client)
         self.project = ProjectService(self._base_uri, self._http_client)
