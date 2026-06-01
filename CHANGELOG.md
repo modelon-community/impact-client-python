@@ -1,3 +1,10 @@
+## [4.12.1](https://github.com/modelon-community/impact-client-python/compare/v4.12.0...v4.12.1) (2026-06-01)
+
+
+### Bug Fixes
+
+* derive WebSocket scheme from HTTP URI instead of env variable ([b5f04d0](https://github.com/modelon-community/impact-client-python/commit/b5f04d0220e068aa32f1a8deda434d9c3b270bea))
+
 # [4.12.0](https://github.com/modelon-community/impact-client-python/compare/v4.11.0...v4.12.0) (2026-05-26)
 
 
