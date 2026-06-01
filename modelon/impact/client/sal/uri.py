@@ -29,6 +29,10 @@ class URI:
     def __repr__(self) -> str:
         return self.content
 
+    @property
+    def scheme(self) -> str:
+        return urllib.parse.urlparse(self.content).scheme
+
     def with_scheme(self, new_scheme: str) -> URI:
         parsed = urllib.parse.urlparse(self.content)
         new_url = parsed._replace(scheme=new_scheme).geturl()
