@@ -249,43 +249,16 @@ class Model(ModelInterface):
         entries = []
         for item in resp["data"]["items"]:
             base = item["experiment"]["base"]
-            modelica = base["model"]["modelica"]
             analysis = base["analysis"]
-
-            custom_function_meta = self._sal.custom_function.custom_function_get(
+            cf_meta = self._sal.custom_function.custom_function_get(
                 self._workspace_id, analysis["type"]
             )
-            custom_function_params = {
-                param["name"]: param["value"]
-                for param in analysis.get("parameters", [])
-            }
-            custom_function = CustomFunction(
-                self._workspace_id,
-                custom_function_meta["name"],
-                custom_function_meta["parameters"],
-                self._sal,
-            ).with_parameters(**custom_function_params)
-
-            definition = SimpleModelicaExperimentDefinition(
-                model=self,
-                custom_function=custom_function,
-                compiler_options=CompilerOptions(
-                    modelica.get("compilerOptions", {}), custom_function.name
-                ),
-                fmi_target=modelica.get("fmiTarget", "me"),
-                fmi_version=modelica.get("fmiVersion", "2.0"),
-                platform=modelica.get("platform", "auto"),
-                compiler_log_level=modelica.get("compilerLogLevel", "warning"),
-                runtime_options=RuntimeOptions(
-                    modelica.get("runtimeOptions", {}), custom_function.name
-                ),
-                solver_options=SolverOptions(
-                    analysis.get("solverOptions", {}), custom_function.name
-                ),
-                simulation_options=SimulationOptions(
-                    analysis.get("simulationOptions", {}), custom_function.name
-                ),
-                simulation_log_level=analysis.get("simulationLogLevel", "WARNING"),
+            params = {p["name"]: p["value"] for p in analysis.get("parameters", [])}
+            custom_function = CustomFunction.from_response_dict(
+                self._workspace_id, cf_meta, self._sal
+            ).with_parameters(**params)
+            definition = SimpleModelicaExperimentDefinition.from_experiment_base_dict(
+                self, base, custom_function
             )
             meta = item["metadata"]
             entries.append(

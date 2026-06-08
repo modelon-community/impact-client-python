@@ -169,6 +169,15 @@ class CustomFunction(CustomFunctionInterface):
 
         return new
 
+    @classmethod
+    def from_response_dict(
+        cls,
+        workspace_id: str,
+        meta: Dict[str, Any],
+        sal: Service,
+    ) -> CustomFunction:
+        return cls(workspace_id, meta["name"], meta["parameters"], sal)
+
     @property
     def parameter_values(self) -> ParameterDict:
         """Custom_function parameters and value as a dictionary."""
