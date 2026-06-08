@@ -6,6 +6,7 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional, Union
 
 from modelon.impact.client.configuration import Experimental
+from modelon.impact.client.entities.custom_function import CustomFunction
 from modelon.impact.client.entities.interfaces.model import ModelInterface
 from modelon.impact.client.entities.model_executable import ModelExecutable
 from modelon.impact.client.entities.project import Project
@@ -28,7 +29,6 @@ from modelon.impact.client.options import (
 
 if TYPE_CHECKING:
     from modelon.impact.client.entities.case import Case
-    from modelon.impact.client.entities.custom_function import CustomFunction
     from modelon.impact.client.entities.experiment import Experiment
     from modelon.impact.client.entities.external_result import ExternalResult
     from modelon.impact.client.operations.base import BaseOperation
@@ -43,6 +43,19 @@ logger = logging.getLogger(__name__)
 @dataclass
 class ModelParameter:
     name: str
+
+
+@dataclass
+class ExperimentDefinitionEntry:
+    id: str
+    name: str
+    model_name: str
+    project_id: str
+    created: str
+    last_modified: str
+    is_default: bool
+    is_read_only: bool
+    definition: SimpleModelicaExperimentDefinition
 
 
 CompilationOperations = Union[ModelExecutableOperation, CachedModelExecutableOperation]
@@ -223,6 +236,72 @@ class Model(ModelInterface):
             self._sal,
             ModelExecutable.from_operation,
         )
+
+    @Experimental
+    def get_experiment_definitions(
+        self,
+        extends: Optional[List[str]] = None,
+    ) -> List[ExperimentDefinitionEntry]:
+
+        resp = self._sal.workspace.experiment_definitions_get(
+            self._workspace_id, self._class_name, extends=extends
+        )
+        entries = []
+        for item in resp["data"]["items"]:
+            base = item["experiment"]["base"]
+            modelica = base["model"]["modelica"]
+            analysis = base["analysis"]
+
+            custom_function_meta = self._sal.custom_function.custom_function_get(
+                self._workspace_id, analysis["type"]
+            )
+            custom_function_params = {
+                param["name"]: param["value"]
+                for param in analysis.get("parameters", [])
+            }
+            custom_function = CustomFunction(
+                self._workspace_id,
+                custom_function_meta["name"],
+                custom_function_meta["parameters"],
+                self._sal,
+            ).with_parameters(**custom_function_params)
+
+            definition = SimpleModelicaExperimentDefinition(
+                model=self,
+                custom_function=custom_function,
+                compiler_options=CompilerOptions(
+                    modelica.get("compilerOptions", {}), custom_function.name
+                ),
+                fmi_target=modelica.get("fmiTarget", "me"),
+                fmi_version=modelica.get("fmiVersion", "2.0"),
+                platform=modelica.get("platform", "auto"),
+                compiler_log_level=modelica.get("compilerLogLevel", "warning"),
+                runtime_options=RuntimeOptions(
+                    modelica.get("runtimeOptions", {}), custom_function.name
+                ),
+                solver_options=SolverOptions(
+                    analysis.get("solverOptions", {}), custom_function.name
+                ),
+                simulation_options=SimulationOptions(
+                    analysis.get("simulationOptions", {}), custom_function.name
+                ),
+                simulation_log_level=analysis.get("simulationLogLevel", "WARNING"),
+            )
+            meta = item["metadata"]
+            entries.append(
+                ExperimentDefinitionEntry(
+                    id=item["id"],
+                    name=meta["name"],
+                    model_name=meta["modelName"],
+                    project_id=meta["projectId"],
+                    created=meta["created"],
+                    last_modified=meta["lastModified"],
+                    is_default=meta["isDefault"],
+                    is_read_only=meta["isReadOnly"],
+                    definition=definition,
+                )
+            )
+        return entries
 
     def new_experiment_definition(
         self,

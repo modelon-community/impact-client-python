@@ -355,6 +355,21 @@ class WorkspaceService:
         }
         return self._http_client.post_json(url, body=body)
 
+    def experiment_definitions_get(
+        self,
+        workspace_id: str,
+        model_name: str,
+        extends: Optional[List[str]] = None,
+    ) -> Dict[str, Any]:
+        url = (
+            self._base_uri / f"api/workspaces/{workspace_id}/models/{model_name}/"
+            "experiment-definitions"
+        ).resolve()
+        params = {"extends": extends} if extends else {}
+        return self._http_client.get_json(
+            url, headers={"Accept": self._experiment_schema}, params=params
+        )
+
     def update_workspace(
         self, workspace_id: str, data: Dict[str, Any]
     ) -> Dict[str, Any]:
