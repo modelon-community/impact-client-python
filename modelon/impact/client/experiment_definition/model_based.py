@@ -157,6 +157,31 @@ class SimpleModelicaExperimentDefinition(BaseExperimentDefinition):
         self._extensions: List[SimpleExperimentExtension] = []
         self._expansion: ExpansionAlgorithm = FullFactorial()
 
+    @classmethod
+    def from_experiment_base_dict(
+        cls,
+        model: Model,
+        base: Dict[str, Any],
+        custom_function: CustomFunction,
+        initialize_from: Optional[CaseOrExperimentOrExternalResult] = None,
+    ) -> SimpleModelicaExperimentDefinition:
+        modelica = base["model"]["modelica"]
+        analysis = base["analysis"]
+        return cls(
+            model=model,
+            custom_function=custom_function,
+            compiler_options=modelica.get("compilerOptions", {}),
+            fmi_target=modelica.get("fmiTarget", "me"),
+            fmi_version=modelica.get("fmiVersion", "2.0"),
+            platform=modelica.get("platform", "auto"),
+            compiler_log_level=modelica.get("compilerLogLevel", "warning"),
+            runtime_options=modelica.get("runtimeOptions", {}),
+            solver_options=analysis.get("solverOptions", {}),
+            simulation_options=analysis.get("simulationOptions", {}),
+            simulation_log_level=analysis.get("simulationLogLevel", "WARNING"),
+            initialize_from=initialize_from,
+        )
+
     @property
     def modifiers(self) -> Dict[str, Any]:
         """Returns the variable modifiers dict."""

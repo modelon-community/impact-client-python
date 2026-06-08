@@ -731,11 +731,8 @@ class Workspace(WorkspaceInterface):
         custom_function = self._sal.custom_function.custom_function_get(
             self._workspace_id, name
         )
-        return CustomFunction(
-            self._workspace_id,
-            custom_function["name"],
-            custom_function["parameters"],
-            self._sal,
+        return CustomFunction.from_response_dict(
+            self._workspace_id, custom_function, self._sal
         )
 
     def get_custom_functions(self) -> List[CustomFunction]:
@@ -753,13 +750,8 @@ class Workspace(WorkspaceInterface):
             self._workspace_id
         )
         return [
-            CustomFunction(
-                self._workspace_id,
-                custom_function["name"],
-                custom_function["parameters"],
-                self._sal,
-            )
-            for custom_function in custom_functions["data"]["items"]
+            CustomFunction.from_response_dict(self._workspace_id, cf, self._sal)
+            for cf in custom_functions["data"]["items"]
         ]
 
     def delete(self) -> None:

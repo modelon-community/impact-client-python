@@ -767,16 +767,12 @@ class Case(CaseReference):
         )
 
     def _get_custom_function(self) -> CustomFunction:
-        custom_function_meta = self._sal.custom_function.custom_function_get(
+        meta = self._sal.custom_function.custom_function_get(
             self._workspace_id, self.input.analysis.analysis_function
         )
-        custom_function_params = self.input.analysis.parameters
-        return CustomFunction(
-            self._workspace_id,
-            custom_function_meta["name"],
-            custom_function_meta["parameters"],
-            self._sal,
-        ).with_parameters(**custom_function_params)
+        return CustomFunction.from_response_dict(
+            self._workspace_id, meta, self._sal
+        ).with_parameters(**self.input.analysis.parameters)
 
     def get_definition(self) -> SimpleModelicaExperimentDefinition:
         """Get an experiment definition that can be used to reproduce this case result.

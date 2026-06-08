@@ -674,19 +674,10 @@ class Experiment(ExperimentReference):
                 project_id="",
                 service=self._sal,
             )
-            modelica = base["model"]["modelica"]
-            definition = SimpleModelicaExperimentDefinition(
-                model=model,
-                custom_function=custom_function,
-                compiler_options=self.get_compiler_options(),
-                fmi_target=modelica["fmiTarget"],
-                fmi_version=modelica["fmiVersion"],
-                platform=modelica["platform"],
-                compiler_log_level=modelica["compilerLogLevel"],
-                runtime_options=self.get_runtime_options(),
-                solver_options=self.get_solver_options(),
-                simulation_options=self.get_simulation_options(),
-                simulation_log_level=analysis["simulationLogLevel"],
+            definition = SimpleModelicaExperimentDefinition.from_experiment_base_dict(
+                model,
+                base,
+                custom_function,
                 initialize_from=self._get_initialize_from(base["modifiers"]),
             )
             expansion = base.get("expansion", {})
@@ -744,18 +735,13 @@ class Experiment(ExperimentReference):
         return definition
 
     def _get_custom_function(self, analysis: Dict[str, Any]) -> CustomFunction:
-        custom_function_meta = self._sal.custom_function.custom_function_get(
+        meta = self._sal.custom_function.custom_function_get(
             self._workspace_id, self.custom_function
         )
-        custom_function_params = {
-            param["name"]: param["value"] for param in analysis.get("parameters", [])
-        }
-        return CustomFunction(
-            self._workspace_id,
-            custom_function_meta["name"],
-            custom_function_meta["parameters"],
-            self._sal,
-        ).with_parameters(**custom_function_params)
+        params = {p["name"]: p["value"] for p in analysis.get("parameters", [])}
+        return CustomFunction.from_response_dict(
+            self._workspace_id, meta, self._sal
+        ).with_parameters(**params)
 
     def _get_expansion_algorithm(
         self, algorithm: str, parameters: Dict[str, Any]
