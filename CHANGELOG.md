@@ -1,3 +1,10 @@
+# [4.13.0](https://github.com/modelon-community/impact-client-python/compare/v4.12.1...v4.13.0) (2026-06-08)
+
+
+### Features
+
+* add api to fetch the available experiment definitions for a model ([d4b80c7](https://github.com/modelon-community/impact-client-python/commit/d4b80c7990f1be6163d708f267febf72eb7924e0))
+
 ## [4.12.1](https://github.com/modelon-community/impact-client-python/compare/v4.12.0...v4.12.1) (2026-06-01)
 
 
