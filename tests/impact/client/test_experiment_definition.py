@@ -19,6 +19,9 @@ from modelon.impact.client import (
 )
 from modelon.impact.client.entities.result import Result
 from modelon.impact.client.experiment_definition.modifiers import DataType
+from modelon.impact.client.experiment_definition.operators import (
+    get_operator_from_expression,
+)
 from tests.impact.client.helpers import (
     IDs,
     create_case_entity,
@@ -1589,3 +1592,78 @@ class TestSimpleModelicaExperimentDefinition:
                 "dataType": "INTEGER",
             },
         ]
+
+
+class TestGetOperatorFromExpression:
+    @pytest.mark.parametrize(
+        "expression, expected",
+        [
+            ("1.65806278939461138713", 1.65806278939461138713),
+            ("2", 2),
+            ("true", True),
+            ("false", False),
+            ('"file.mat"', "file.mat"),
+        ],
+    )
+    def test_scalar_expression(self, expression, expected):
+        assert get_operator_from_expression(expression) == expected
+
+    def test_real_expression_is_float(self):
+        assert isinstance(get_operator_from_expression("1.5"), float)
+
+    def test_integer_expression_is_int(self):
+        assert isinstance(get_operator_from_expression("2"), int)
+
+    def test_enumeration_expression(self):
+        value = get_operator_from_expression("Modelica.Blocks.Types.Init.SteadyState")
+        assert isinstance(value, Enumeration)
+        assert value.value == "Modelica.Blocks.Types.Init.SteadyState"
+
+    def test_load_resource_expression_stays_string(self):
+        expression = 'loadResource("modelica://Lib/data.mat")'
+        assert get_operator_from_expression(expression) == expression
+
+    def test_range_expression(self):
+        value = get_operator_from_expression("range(0.1, 0.5, 3)")
+        assert value == Range(0.1, 0.5, 3)
+
+    def test_choices_expression(self):
+        value = get_operator_from_expression("choices(1, 2.5, 3)")
+        assert isinstance(value, Choices)
+        assert value.values == (1, 2.5, 3)
+
+    def test_choices_enumeration_expression(self):
+        value = get_operator_from_expression("choices(Lib.E.a, Lib.E.b)")
+        assert isinstance(value, Choices)
+        assert value.data_type == DataType.ENUMERATION
+        assert value.values == ("Lib.E.a", "Lib.E.b")
+
+    def test_uniform_expression(self):
+        assert get_operator_from_expression("uniform(0.1, 0.5)") == Uniform(0.1, 0.5)
+
+    def test_normal_expression(self):
+        assert get_operator_from_expression("normal(0.1, 0.5)") == Normal(0.1, 0.5)
+
+    def test_truncated_normal_expression(self):
+        value = get_operator_from_expression("normal(0.1, 0.5, 0.0, 1.0)")
+        assert value == Normal(0.1, 0.5, 0.0, 1.0)
+
+    def test_beta_expression(self):
+        assert get_operator_from_expression("beta(0.1, 0.5)") == Beta(0.1, 0.5)
+
+    def test_invalid_operator_expression_raises(self):
+        with pytest.raises(ValueError):
+            get_operator_from_expression("range(0.1, 0.5)")
+
+
+class TestChoicesEnumeration:
+    def test_choices_with_enumeration_data_type(self):
+        choices = Choices("Lib.E.a", "Lib.E.b", data_type=DataType.ENUMERATION)
+        assert choices.data_type == DataType.ENUMERATION
+
+    def test_choices_from_dict_with_enumeration_data_type(self):
+        choices = Choices.from_dict(
+            {"values": ["Lib.E.a", "Lib.E.b"], "dataType": "ENUMERATION"}
+        )
+        assert choices.data_type == DataType.ENUMERATION
+        assert choices.values == ("Lib.E.a", "Lib.E.b")

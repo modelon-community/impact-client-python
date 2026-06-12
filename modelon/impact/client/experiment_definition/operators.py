@@ -1,6 +1,7 @@
 """This module contains operators for parametrizing batch runs."""
 from __future__ import annotations
 
+import re
 from abc import abstractmethod
 from dataclasses import dataclass
 from typing import Any, Optional, Union
@@ -109,6 +110,10 @@ class Choices(Operator):
 
             if used_data_type == DataType.REAL and value_type == DataType.INTEGER:
                 pass  # Integer can be assigned to real, do nothing
+            elif (
+                used_data_type == DataType.ENUMERATION and value_type == DataType.STRING
+            ):
+                pass  # Enumeration literals are given as strings, do nothing
             elif used_data_type != value_type:
                 if given_data_type:
                     raise ValueError(
@@ -313,3 +318,66 @@ def get_operator_from_dict(
         else:
             return data["value"]
     raise ValueError(f"Unsupported operator kind: {kind}!")
+
+
+_OPERATOR_EXPRESSION = re.compile(r"^(range|choices|uniform|normal|beta)\((.*)\)$")
+
+
+def _scalar_from_expression(
+    expression: str,
+) -> Union[Enumeration, int, float, bool, str]:
+    expression = expression.strip()
+    try:
+        return int(expression)
+    except ValueError:
+        pass
+    try:
+        return float(expression)
+    except ValueError:
+        pass
+    if expression in ("true", "false"):
+        return expression == "true"
+    if expression.startswith('"'):
+        return expression.replace('"', "")
+    if "loadResource" in expression:
+        return expression
+    if "." in expression:
+        return Enumeration(expression)
+    return expression
+
+
+def get_operator_from_expression(
+    expression: str,
+) -> Union[Range, Choices, Uniform, Beta, Normal, Enumeration, int, float, bool, str]:
+    """Returns a modifier value from a textual modifier expression as stored in
+    experiment definitions, e.g. ``"range(0.1, 0.5, 3)"`` or ``"1.5"``."""
+    expression = expression.strip()
+    match = _OPERATOR_EXPRESSION.match(expression)
+    if not match:
+        return _scalar_from_expression(expression)
+    kind, argument_blob = match.groups()
+    arguments = [arg.strip() for arg in argument_blob.split(",") if arg.strip()]
+    if kind == "range" and len(arguments) == 3:
+        return Range(float(arguments[0]), float(arguments[1]), int(arguments[2]))
+    if kind == "choices" and arguments:
+        values = [_scalar_from_expression(argument) for argument in arguments]
+        scalars: list[Scalar] = [
+            value.value if isinstance(value, Enumeration) else value for value in values
+        ]
+        if any(isinstance(value, Enumeration) for value in values):
+            return Choices(*scalars, data_type=DataType.ENUMERATION)
+        return Choices(*scalars)
+    if kind == "uniform" and len(arguments) == 2:
+        return Uniform(float(arguments[0]), float(arguments[1]))
+    if kind == "normal" and len(arguments) == 2:
+        return Normal(float(arguments[0]), float(arguments[1]))
+    if kind == "normal" and len(arguments) == 4:
+        return Normal(
+            float(arguments[0]),
+            float(arguments[1]),
+            float(arguments[2]),
+            float(arguments[3]),
+        )
+    if kind == "beta" and len(arguments) == 2:
+        return Beta(float(arguments[0]), float(arguments[1]))
+    raise ValueError(f"Unsupported modifier expression: {expression}!")

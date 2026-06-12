@@ -141,3 +141,147 @@ class TestModel:
         model = package.import_fmu(fmu_path, expected_fmu_class_path).wait()
         assert isinstance(model, Model)
         assert model.name == expected_fmu_class_path
+
+
+def _experiment_definition_item(modifiers, definition_id="exp_def_1"):
+    return {
+        "id": definition_id,
+        "experiment": {
+            "base": {
+                "model": {"modelica": {"className": "Test.PID"}},
+                "modifiers": modifiers,
+                "analysis": {
+                    "type": "dynamic",
+                    "parameters": [],
+                    "simulationOptions": {"ncp": 500},
+                    "solverOptions": {},
+                    "simulationLogLevel": "WARNING",
+                },
+            },
+        },
+        "metadata": {
+            "name": "My definition",
+            "modelName": "Test.PID",
+            "projectId": IDs.PROJECT_ID_PRIMARY,
+            "created": "2026-06-08T12:00:00Z",
+            "lastModified": "2026-06-08T12:00:00Z",
+            "isDefault": True,
+            "isReadOnly": False,
+        },
+    }
+
+
+@pytest.mark.experimental
+class TestGetExperimentDefinitions:
+    def _get_entries(self, model, modifiers):
+        model.service.workspace.experiment_definitions_get.return_value = {
+            "data": {"items": [_experiment_definition_item(modifiers)]}
+        }
+        model.service.custom_function.custom_function_get.return_value = {
+            "name": "dynamic",
+            "parameters": [],
+        }
+        model.service.workspace.experiment_get.return_value = {
+            "id": IDs.EXPERIMENT_ID_PRIMARY
+        }
+        return model.entity.get_experiment_definitions()
+
+    def test_definition_keeps_expression_variable_modifiers(self, model):
+        entries = self._get_entries(
+            model,
+            {
+                "initializeFrom": "",
+                "variables": [
+                    {"name": "driveAngle", "expression": "1.65806278939461138713"},
+                    {"name": "PI.k", "expression": "range(10, 100, 3)"},
+                ],
+            },
+        )
+        definition_dict = entries[0].definition.to_dict()
+        modifiers = definition_dict["experiment"]["base"]["modifiers"]
+        assert modifiers["variables"] == [
+            {
+                "kind": "value",
+                "name": "driveAngle",
+                "value": pytest.approx(1.65806278939461138713),
+                "dataType": "REAL",
+            },
+            {
+                "kind": "range",
+                "name": "PI.k",
+                "start": 10.0,
+                "end": 100.0,
+                "steps": 3,
+            },
+        ]
+        assert "initializeFrom" not in modifiers
+        model.service.workspace.experiment_get.assert_not_called()
+
+    def test_definition_keeps_operator_dict_variable_modifiers(self, model):
+        entries = self._get_entries(
+            model,
+            {
+                "variables": [
+                    {
+                        "kind": "value",
+                        "name": "driveAngle",
+                        "value": 1.65806278939461138713,
+                        "dataType": "REAL",
+                    },
+                    {
+                        "kind": "range",
+                        "name": "PI.k",
+                        "start": 10.0,
+                        "end": 100.0,
+                        "steps": 3,
+                    },
+                ],
+            },
+        )
+        definition = entries[0].definition
+        assert set(definition.modifiers) == {"driveAngle", "PI.k"}
+        variables = definition.to_dict()["experiment"]["base"]["modifiers"]["variables"]
+        assert variables == [
+            {
+                "kind": "value",
+                "name": "driveAngle",
+                "value": pytest.approx(1.65806278939461138713),
+                "dataType": "REAL",
+            },
+            {
+                "kind": "range",
+                "name": "PI.k",
+                "start": 10.0,
+                "end": 100.0,
+                "steps": 3,
+            },
+        ]
+
+    def test_definition_keeps_initialize_from(self, model):
+        entries = self._get_entries(
+            model,
+            {"initializeFrom": IDs.EXPERIMENT_ID_PRIMARY, "variables": []},
+        )
+        definition = entries[0].definition
+        model.service.workspace.experiment_get.assert_called_once_with(
+            IDs.WORKSPACE_ID_PRIMARY, IDs.EXPERIMENT_ID_PRIMARY
+        )
+        definition_dict = definition.to_dict()
+        modifiers = definition_dict["experiment"]["base"]["modifiers"]
+        assert modifiers["initializeFrom"] == IDs.EXPERIMENT_ID_PRIMARY
+
+    def test_definition_skips_latest_initialize_from(self, model):
+        entries = self._get_entries(
+            model,
+            {"initializeFrom": "latest", "variables": []},
+        )
+        definition_dict = entries[0].definition.to_dict()
+        assert (
+            "initializeFrom" not in definition_dict["experiment"]["base"]["modifiers"]
+        )
+        model.service.workspace.experiment_get.assert_not_called()
+
+    def test_definition_without_modifiers(self, model):
+        entries = self._get_entries(model, {})
+        definition_dict = entries[0].definition.to_dict()
+        assert definition_dict["experiment"]["base"]["modifiers"] == {"variables": []}

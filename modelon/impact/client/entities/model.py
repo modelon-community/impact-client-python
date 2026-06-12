@@ -10,10 +10,20 @@ from modelon.impact.client.entities.custom_function import CustomFunction
 from modelon.impact.client.entities.interfaces.model import ModelInterface
 from modelon.impact.client.entities.model_executable import ModelExecutable
 from modelon.impact.client.entities.project import Project
+from modelon.impact.client.experiment_definition.expansion import (
+    ExpansionAlgorithm,
+    FullFactorial,
+    LatinHypercube,
+    Sobol,
+)
 from modelon.impact.client.experiment_definition.model_based import (
     SimpleModelicaExperimentDefinition,
 )
 from modelon.impact.client.experiment_definition.modifiers import Enumeration
+from modelon.impact.client.experiment_definition.operators import (
+    get_operator_from_dict,
+    get_operator_from_expression,
+)
 from modelon.impact.client.operations.fmu_import import FMUImportOperation
 from modelon.impact.client.operations.model_executable import (
     CachedModelExecutableOperation,
@@ -74,6 +84,41 @@ def to_domain_parameter_value(
         if param_data.get("dataType", "") == "ENUMERATION"
         else param_data["value"]
     )
+
+
+def _variable_modifiers_from_definition(
+    modifiers_data: Dict[str, Any]
+) -> Dict[str, Any]:
+    """Returns the variable modifiers of a stored experiment definition.
+
+    Variables are given either as operator dictionaries (experiment schema,
+    e.g. ``{"kind": "value", ...}``) or as textual expressions
+    (``{"name": ..., "expression": ...}``).
+
+    """
+    modifiers: Dict[str, Any] = {}
+    for variable in modifiers_data.get("variables") or []:
+        if "kind" in variable:
+            modifiers[variable["name"]] = get_operator_from_dict(variable)
+        elif variable.get("expression") not in (None, ""):
+            modifiers[variable["name"]] = get_operator_from_expression(
+                str(variable["expression"])
+            )
+    return modifiers
+
+
+def _expansion_algorithm_from_definition(
+    expansion_data: Dict[str, Any]
+) -> ExpansionAlgorithm:
+    algorithm = expansion_data.get("algorithm")
+    parameters = expansion_data.get("parameters", {})
+    if algorithm == "SOBOL":
+        return Sobol(samples=parameters["samples"])
+    elif algorithm == "LATINHYPERCUBE":
+        return LatinHypercube(
+            samples=parameters["samples"], seed=parameters.get("seed")
+        )
+    return FullFactorial()
 
 
 def _assert_valid_compilation_options(
@@ -237,6 +282,34 @@ class Model(ModelInterface):
             ModelExecutable.from_operation,
         )
 
+    def _get_definition_initialize_from(
+        self, modifiers_data: Dict[str, Any]
+    ) -> Optional[CaseOrExperimentOrExternalResult]:
+        # Imported here to avoid circular imports:
+        from modelon.impact.client.entities.case import Case
+        from modelon.impact.client.entities.experiment import Experiment
+        from modelon.impact.client.entities.external_result import ExternalResult
+
+        experiment_id = modifiers_data.get("initializeFrom")
+        # "latest" is a sentinel used by the Impact UI for the latest result in
+        # the editor session and cannot be resolved to an experiment here.
+        if experiment_id and experiment_id != "latest":
+            resp = self._sal.workspace.experiment_get(self._workspace_id, experiment_id)
+            return Experiment(self._workspace_id, resp["id"], self._sal, resp)
+        case_reference = modifiers_data.get("initializeFromCase")
+        if case_reference:
+            experiment_id = case_reference["experimentId"]
+            case_data = self._sal.experiment.case_get(
+                self._workspace_id, experiment_id, case_reference["caseId"]
+            )
+            return Case(
+                case_data["id"], self._workspace_id, experiment_id, self._sal, case_data
+            )
+        external_result_id = modifiers_data.get("initializeFromExternalResult")
+        if external_result_id:
+            return ExternalResult(result_id=external_result_id, service=self._sal)
+        return None
+
     @Experimental
     def get_experiment_definitions(
         self,
@@ -251,6 +324,7 @@ class Model(ModelInterface):
             base = item["experiment"]["base"]
             modelica = base["model"]["modelica"]
             analysis = base["analysis"]
+            modifiers_data = base.get("modifiers", {})
 
             custom_function_meta = self._sal.custom_function.custom_function_get(
                 self._workspace_id, analysis["type"]
@@ -286,7 +360,16 @@ class Model(ModelInterface):
                     analysis.get("simulationOptions", {}), custom_function.name
                 ),
                 simulation_log_level=analysis.get("simulationLogLevel", "WARNING"),
+                initialize_from=self._get_definition_initialize_from(modifiers_data),
             )
+            variable_modifiers = _variable_modifiers_from_definition(modifiers_data)
+            if variable_modifiers:
+                definition = definition.with_modifiers(variable_modifiers)
+            expansion_data = base.get("expansion")
+            if expansion_data:
+                definition = definition.with_expansion(
+                    _expansion_algorithm_from_definition(expansion_data)
+                )
             meta = item["metadata"]
             entries.append(
                 ExperimentDefinitionEntry(
