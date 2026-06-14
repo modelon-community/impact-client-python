@@ -72,7 +72,7 @@ def _build_simple_modelica_experiment_definition(
 
     modelica = base["model"]["modelica"]
     analysis = base["analysis"]
-    definition = SimpleModelicaExperimentDefinition(
+    return SimpleModelicaExperimentDefinition(
         model=model,
         custom_function=custom_function,
         compiler_options=modelica.get("compilerOptions", {}),
@@ -84,10 +84,8 @@ def _build_simple_modelica_experiment_definition(
         solver_options=analysis.get("solverOptions", {}),
         simulation_options=analysis.get("simulationOptions", {}),
         simulation_log_level=analysis.get("simulationLogLevel", "WARNING"),
+        initialize_from=initialize_from,
     )
-    if initialize_from is not None:
-        definition = definition.with_initialize_from(initialize_from)
-    return definition
 
 
 class SimpleModelicaExperimentDefinition(BaseExperimentDefinition):
