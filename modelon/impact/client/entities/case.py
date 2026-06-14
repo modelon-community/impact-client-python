@@ -7,7 +7,10 @@ from typing import TYPE_CHECKING, Any, Dict, List, Optional, Text, Tuple, Union
 from modelon.impact.client import exceptions
 from modelon.impact.client.entities.asserts import assert_successful_operation
 from modelon.impact.client.entities.custom_artifact import CustomArtifact
-from modelon.impact.client.entities.custom_function import CustomFunction
+from modelon.impact.client.entities.custom_function import (
+    CustomFunction,
+    _build_custom_function,
+)
 from modelon.impact.client.entities.external_result import ExternalResult
 from modelon.impact.client.entities.interfaces.case import CaseReference
 from modelon.impact.client.entities.log import Log
@@ -770,7 +773,7 @@ class Case(CaseReference):
         meta = self._sal.custom_function.custom_function_get(
             self._workspace_id, self.input.analysis.analysis_function
         )
-        return CustomFunction.from_response_dict(
+        return _build_custom_function(
             self._workspace_id, meta, self._sal
         ).with_parameters(**self.input.analysis.parameters)
 
