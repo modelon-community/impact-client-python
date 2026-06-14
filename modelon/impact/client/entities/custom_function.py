@@ -91,6 +91,14 @@ class ParameterDict(dict):
         return new_dict
 
 
+def _build_custom_function(
+    workspace_id: str,
+    meta: Dict[str, Any],
+    sal: Service,
+) -> CustomFunction:
+    return CustomFunction(workspace_id, meta["name"], meta["parameters"], sal)
+
+
 class CustomFunction(CustomFunctionInterface):
     """Class containing CustomFunction functionalities."""
 
@@ -168,15 +176,6 @@ class CustomFunction(CustomFunctionInterface):
                 parameter.value = value
 
         return new
-
-    @classmethod
-    def from_response_dict(
-        cls,
-        workspace_id: str,
-        meta: Dict[str, Any],
-        sal: Service,
-    ) -> CustomFunction:
-        return cls(workspace_id, meta["name"], meta["parameters"], sal)
 
     @property
     def parameter_values(self) -> ParameterDict:

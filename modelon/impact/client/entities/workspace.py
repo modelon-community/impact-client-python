@@ -9,7 +9,10 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any, Dict, Generator, List, Optional, Union
 
 from modelon.impact.client.configuration import Experimental
-from modelon.impact.client.entities.custom_function import CustomFunction
+from modelon.impact.client.entities.custom_function import (
+    CustomFunction,
+    _build_custom_function,
+)
 from modelon.impact.client.entities.experiment import Experiment
 from modelon.impact.client.entities.external_result import ExternalResult
 from modelon.impact.client.entities.file_uri import ModelicaResourceURI
@@ -731,9 +734,7 @@ class Workspace(WorkspaceInterface):
         custom_function = self._sal.custom_function.custom_function_get(
             self._workspace_id, name
         )
-        return CustomFunction.from_response_dict(
-            self._workspace_id, custom_function, self._sal
-        )
+        return _build_custom_function(self._workspace_id, custom_function, self._sal)
 
     def get_custom_functions(self) -> List[CustomFunction]:
         """Returns a list of CustomFunctions class objects.
@@ -750,7 +751,7 @@ class Workspace(WorkspaceInterface):
             self._workspace_id
         )
         return [
-            CustomFunction.from_response_dict(self._workspace_id, cf, self._sal)
+            _build_custom_function(self._workspace_id, cf, self._sal)
             for cf in custom_functions["data"]["items"]
         ]
 

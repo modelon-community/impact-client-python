@@ -8,7 +8,10 @@ from typing import TYPE_CHECKING, Any, Dict, List, Optional, Union
 
 from modelon.impact.client.entities.asserts import assert_variable_in_result
 from modelon.impact.client.entities.case import Case
-from modelon.impact.client.entities.custom_function import CustomFunction
+from modelon.impact.client.entities.custom_function import (
+    CustomFunction,
+    _build_custom_function,
+)
 from modelon.impact.client.entities.external_result import ExternalResult
 from modelon.impact.client.entities.interfaces.experiment import ExperimentReference
 from modelon.impact.client.entities.model import (
@@ -739,7 +742,7 @@ class Experiment(ExperimentReference):
             self._workspace_id, self.custom_function
         )
         params = {p["name"]: p["value"] for p in analysis.get("parameters", [])}
-        return CustomFunction.from_response_dict(
+        return _build_custom_function(
             self._workspace_id, meta, self._sal
         ).with_parameters(**params)
 
