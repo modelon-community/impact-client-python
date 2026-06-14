@@ -15,6 +15,7 @@ from modelon.impact.client.entities.model_executable import ModelExecutable
 from modelon.impact.client.entities.project import Project
 from modelon.impact.client.experiment_definition.model_based import (
     SimpleModelicaExperimentDefinition,
+    _build_simple_modelica_experiment_definition,
 )
 from modelon.impact.client.experiment_definition.modifiers import Enumeration
 from modelon.impact.client.operations.fmu_import import FMUImportOperation
@@ -260,8 +261,8 @@ class Model(ModelInterface):
             custom_function = _build_custom_function(
                 self._workspace_id, cf_meta, self._sal
             ).with_parameters(**params)
-            definition = SimpleModelicaExperimentDefinition.from_experiment_base_dict(
-                self, base, custom_function
+            definition = _build_simple_modelica_experiment_definition(
+                self, base, custom_function, self._workspace_id, self._sal
             )
             meta = item["metadata"]
             entries.append(

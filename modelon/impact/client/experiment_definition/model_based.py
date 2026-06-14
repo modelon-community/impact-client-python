@@ -3,6 +3,7 @@ from __future__ import annotations
 import logging
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Union
 
+from modelon.impact.client.entities._initialize_from import _resolve_initialize_from
 from modelon.impact.client.entities.interfaces.case import CaseInterface
 from modelon.impact.client.entities.interfaces.experiment import ExperimentInterface
 from modelon.impact.client.entities.interfaces.external_result import (
@@ -47,6 +48,7 @@ if TYPE_CHECKING:
         SimulationOptions,
         SolverOptions,
     )
+    from modelon.impact.client.sal.service import Service
 
     CaseOrExperimentOrExternalResult = Union[Case, Experiment, ExternalResult]
     RuntimeOptionsOrDict = Union[RuntimeOptions, Dict[str, Any]]
@@ -55,6 +57,37 @@ if TYPE_CHECKING:
     CompilerOptionsOrDict = Union[CompilerOptions, Dict[str, Any]]
 
 logger = logging.getLogger(__name__)
+
+
+def _build_simple_modelica_experiment_definition(
+    model: "Model",
+    base: Dict[str, Any],
+    custom_function: "CustomFunction",
+    workspace_id: str,
+    sal: "Service",
+) -> "SimpleModelicaExperimentDefinition":
+    initialize_from = _resolve_initialize_from(
+        workspace_id, sal, base.get("modifiers", {})
+    )
+
+    modelica = base["model"]["modelica"]
+    analysis = base["analysis"]
+    definition = SimpleModelicaExperimentDefinition(
+        model=model,
+        custom_function=custom_function,
+        compiler_options=modelica.get("compilerOptions", {}),
+        fmi_target=modelica.get("fmiTarget", "me"),
+        fmi_version=modelica.get("fmiVersion", "2.0"),
+        platform=modelica.get("platform", "auto"),
+        compiler_log_level=modelica.get("compilerLogLevel", "warning"),
+        runtime_options=modelica.get("runtimeOptions", {}),
+        solver_options=analysis.get("solverOptions", {}),
+        simulation_options=analysis.get("simulationOptions", {}),
+        simulation_log_level=analysis.get("simulationLogLevel", "WARNING"),
+    )
+    if initialize_from is not None:
+        definition = definition.with_initialize_from(initialize_from)
+    return definition
 
 
 class SimpleModelicaExperimentDefinition(BaseExperimentDefinition):
@@ -156,31 +189,6 @@ class SimpleModelicaExperimentDefinition(BaseExperimentDefinition):
         self._variable_modifiers: Dict[str, Modifier] = {}
         self._extensions: List[SimpleExperimentExtension] = []
         self._expansion: ExpansionAlgorithm = FullFactorial()
-
-    @classmethod
-    def from_experiment_base_dict(
-        cls,
-        model: Model,
-        base: Dict[str, Any],
-        custom_function: CustomFunction,
-        initialize_from: Optional[CaseOrExperimentOrExternalResult] = None,
-    ) -> SimpleModelicaExperimentDefinition:
-        modelica = base["model"]["modelica"]
-        analysis = base["analysis"]
-        return cls(
-            model=model,
-            custom_function=custom_function,
-            compiler_options=modelica.get("compilerOptions", {}),
-            fmi_target=modelica.get("fmiTarget", "me"),
-            fmi_version=modelica.get("fmiVersion", "2.0"),
-            platform=modelica.get("platform", "auto"),
-            compiler_log_level=modelica.get("compilerLogLevel", "warning"),
-            runtime_options=modelica.get("runtimeOptions", {}),
-            solver_options=analysis.get("solverOptions", {}),
-            simulation_options=analysis.get("simulationOptions", {}),
-            simulation_log_level=analysis.get("simulationLogLevel", "WARNING"),
-            initialize_from=initialize_from,
-        )
 
     @property
     def modifiers(self) -> Dict[str, Any]:

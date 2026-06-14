@@ -6,6 +6,7 @@ import warnings
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Union
 
+from modelon.impact.client.entities._initialize_from import _resolve_initialize_from
 from modelon.impact.client.entities.asserts import assert_variable_in_result
 from modelon.impact.client.entities.case import Case
 from modelon.impact.client.entities.custom_function import (
@@ -32,6 +33,9 @@ from modelon.impact.client.experiment_definition.expansion import (
 )
 from modelon.impact.client.experiment_definition.extension import (
     SimpleExperimentExtension,
+)
+from modelon.impact.client.experiment_definition.model_based import (
+    _build_simple_modelica_experiment_definition,
 )
 from modelon.impact.client.experiment_definition.operators import get_operator_from_dict
 from modelon.impact.client.operations import experiment
@@ -630,17 +634,7 @@ class Experiment(ExperimentReference):
     def _get_initialize_from(
         self, modifiers: Dict[str, Any]
     ) -> Optional[Union[Case, Experiment, ExternalResult]]:
-        if "initializeFrom" in modifiers:
-            exp_id = modifiers["initializeFrom"]
-            return self._get_initialize_from_experiment(exp_id)
-        elif "initializeFromCase" in modifiers:
-            case_id = modifiers["initializeFromCase"]["caseId"]
-            exp_id = modifiers["initializeFromCase"]["experimentId"]
-            return self._get_initialize_from_case(exp_id, case_id)
-        elif "initializeFromExternalResult" in modifiers:
-            ext_result_id = modifiers["initializeFromExternalResult"]
-            return ExternalResult(result_id=ext_result_id, service=self._sal)
-        return None
+        return _resolve_initialize_from(self._workspace_id, self._sal, modifiers)
 
     def _get_extension_initialize_from(
         self, modifiers: Dict[str, Any]
@@ -677,11 +671,8 @@ class Experiment(ExperimentReference):
                 project_id="",
                 service=self._sal,
             )
-            definition = SimpleModelicaExperimentDefinition.from_experiment_base_dict(
-                model,
-                base,
-                custom_function,
-                initialize_from=self._get_initialize_from(base["modifiers"]),
+            definition = _build_simple_modelica_experiment_definition(
+                model, base, custom_function, self._workspace_id, self._sal
             )
             expansion = base.get("expansion", {})
             expansion = self._get_expansion_algorithm(
