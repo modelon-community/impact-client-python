@@ -1,3 +1,10 @@
+# [4.14.0](https://github.com/modelon-community/impact-client-python/compare/v4.13.1...v4.14.0) (2026-06-15)
+
+
+### Features
+
+* add get_extends_clauses to Model entity ([5077e49](https://github.com/modelon-community/impact-client-python/commit/5077e49549a3da32b2e54f3edb3efd8289f0a6ad))
+
 ## [4.13.1](https://github.com/modelon-community/impact-client-python/compare/v4.13.0...v4.13.1) (2026-06-15)
 
 
