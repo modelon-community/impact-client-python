@@ -1,3 +1,11 @@
+## [4.13.1](https://github.com/modelon-community/impact-client-python/compare/v4.13.0...v4.13.1) (2026-06-15)
+
+
+### Bug Fixes
+
+* pass initialize_from directly to constructor in builder to avoid redundant validation API call ([1643e67](https://github.com/modelon-community/impact-client-python/commit/1643e6779d6923900b2b4b8f051dc390d250559a))
+* restore modifiers and expansion when building experiment definition from base dict ([584681e](https://github.com/modelon-community/impact-client-python/commit/584681ec801b157b79e37c9d61744c7d271c557e))
+
 # [4.13.0](https://github.com/modelon-community/impact-client-python/compare/v4.12.1...v4.13.0) (2026-06-08)
 
 
