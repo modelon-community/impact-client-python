@@ -512,6 +512,20 @@ class Model(ModelInterface):
         modeling_sal = self._require_modeling_session("get_source")
         return modeling_sal().get_model_source(self._class_name)
 
+    @Experimental
+    def get_extends(self) -> List[str]:
+        """Returns the fully-qualified class names that this model extends.
+
+        Example::
+
+            with workspace.new_modeling_session() as session:
+                model = session.get_model("LibA.Model")
+                extends = model.get_extends()
+
+        """
+        modeling_sal = self._require_modeling_session("get_extends")
+        return modeling_sal().get_extends(self._class_name)
+
     @classmethod
     def from_operation(cls, operation: BaseOperation[Model], **kwargs: Any) -> Model:
         assert isinstance(operation, FMUImportOperation)
