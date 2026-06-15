@@ -21,6 +21,9 @@ class ModelingService:
             "impact/getModelParameters", modelica_path
         )
 
+    def get_extends(self, class_path: str) -> List[str]:
+        return self._ws_client.get_json_response("impact/getExtends", class_path)
+
     def get_model_source(self, class_path: str) -> str:
         params = {"className": class_path}
         return self._ws_client.get_json_response("impact/getSource", params)
