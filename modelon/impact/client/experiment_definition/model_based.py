@@ -18,6 +18,7 @@ from modelon.impact.client.experiment_definition.asserts import (
 from modelon.impact.client.experiment_definition.expansion import (
     ExpansionAlgorithm,
     FullFactorial,
+    expansion_from_dict,
 )
 from modelon.impact.client.experiment_definition.extension import (
     SimpleExperimentExtension,
@@ -30,6 +31,7 @@ from modelon.impact.client.experiment_definition.modifiers import (
     ensure_as_modifier,
     modifiers_to_dict,
 )
+from modelon.impact.client.experiment_definition.operators import get_operator_from_dict
 from modelon.impact.client.experiment_definition.util import (
     case_to_identifier_dict,
     custom_function_parameters_to_dict,
@@ -72,19 +74,31 @@ def _build_simple_modelica_experiment_definition(
 
     modelica = base["model"]["modelica"]
     analysis = base["analysis"]
-    return SimpleModelicaExperimentDefinition(
-        model=model,
-        custom_function=custom_function,
-        compiler_options=modelica.get("compilerOptions", {}),
-        fmi_target=modelica.get("fmiTarget", "me"),
-        fmi_version=modelica.get("fmiVersion", "2.0"),
-        platform=modelica.get("platform", "auto"),
-        compiler_log_level=modelica.get("compilerLogLevel", "warning"),
-        runtime_options=modelica.get("runtimeOptions", {}),
-        solver_options=analysis.get("solverOptions", {}),
-        simulation_options=analysis.get("simulationOptions", {}),
-        simulation_log_level=analysis.get("simulationLogLevel", "WARNING"),
-        initialize_from=initialize_from,
+    variable_modifiers = {
+        mod["name"]: get_operator_from_dict(mod)
+        for mod in base.get("modifiers", {}).get("variables", [])
+    }
+    expansion_dict = base.get("expansion", {})
+    expansion = expansion_from_dict(
+        expansion_dict.get("algorithm", ""), expansion_dict.get("parameters", {})
+    )
+    return (
+        SimpleModelicaExperimentDefinition(
+            model=model,
+            custom_function=custom_function,
+            compiler_options=modelica.get("compilerOptions", {}),
+            fmi_target=modelica.get("fmiTarget", "me"),
+            fmi_version=modelica.get("fmiVersion", "2.0"),
+            platform=modelica.get("platform", "auto"),
+            compiler_log_level=modelica.get("compilerLogLevel", "warning"),
+            runtime_options=modelica.get("runtimeOptions", {}),
+            solver_options=analysis.get("solverOptions", {}),
+            simulation_options=analysis.get("simulationOptions", {}),
+            simulation_log_level=analysis.get("simulationLogLevel", "WARNING"),
+            initialize_from=initialize_from,
+        )
+        .with_modifiers(variable_modifiers)
+        .with_expansion(expansion)
     )
 
 
