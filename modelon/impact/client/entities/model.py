@@ -50,6 +50,11 @@ class ModelParameter:
 
 
 @dataclass
+class ExtendsClause:
+    class_name: str
+
+
+@dataclass
 class ExperimentDefinitionEntry:
     id: str
     name: str
@@ -511,6 +516,23 @@ class Model(ModelInterface):
         """
         modeling_sal = self._require_modeling_session("get_source")
         return modeling_sal().get_model_source(self._class_name)
+
+    @Experimental
+    def get_extends_clauses(self) -> List[ExtendsClause]:
+        """Returns the extends clauses for this model's class.
+
+        Example::
+
+            with workspace.new_modeling_session() as session:
+                model = session.get_model("LibA.Model")
+                extends = model.get_extends_clauses()
+
+        """
+        modeling_sal = self._require_modeling_session("get_extends_clauses")
+        return [
+            ExtendsClause(class_name=name)
+            for name in modeling_sal().get_extends_clauses(self._class_name)
+        ]
 
     @classmethod
     def from_operation(cls, operation: BaseOperation[Model], **kwargs: Any) -> Model:
