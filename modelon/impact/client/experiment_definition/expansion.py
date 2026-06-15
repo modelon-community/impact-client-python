@@ -111,3 +111,15 @@ class Sobol(ExpansionAlgorithm):
 
     def get_parameters_as_dict(self) -> Optional[Dict[str, Any]]:
         return asdict(self)
+
+
+def expansion_from_dict(
+    algorithm: str, parameters: Dict[str, Any]
+) -> ExpansionAlgorithm:
+    if algorithm == "SOBOL":
+        return Sobol(samples=parameters["samples"])
+    elif algorithm == "LATINHYPERCUBE":
+        return LatinHypercube(
+            samples=parameters["samples"], seed=parameters.get("seed")
+        )
+    return FullFactorial()

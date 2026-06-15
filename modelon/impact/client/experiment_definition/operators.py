@@ -287,8 +287,8 @@ class Normal(Operator):
         return Normal(
             mean=data["mean"],
             variance=data["variance"],
-            start=data["start"],
-            end=data["end"],
+            start=data.get("start"),
+            end=data.get("end"),
         )
 
 

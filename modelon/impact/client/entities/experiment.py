@@ -25,12 +25,6 @@ from modelon.impact.client.entities.model_executable import (
     SimpleFMUExperimentDefinition,
 )
 from modelon.impact.client.entities.status import ExperimentStatus
-from modelon.impact.client.experiment_definition.expansion import (
-    ExpansionAlgorithm,
-    FullFactorial,
-    LatinHypercube,
-    Sobol,
-)
 from modelon.impact.client.experiment_definition.extension import (
     SimpleExperimentExtension,
 )
@@ -674,11 +668,6 @@ class Experiment(ExperimentReference):
             definition = _build_simple_modelica_experiment_definition(
                 model, base, custom_function, self._workspace_id, self._sal
             )
-            expansion = base.get("expansion", {})
-            expansion = self._get_expansion_algorithm(
-                expansion.get("algorithm"), expansion.get("parameters", {})
-            )
-            definition = definition.with_expansion(expansion=expansion)
         else:
             fmu_id = base["model"]["fmu"]["id"]
             definition = SimpleFMUExperimentDefinition(
@@ -689,11 +678,11 @@ class Experiment(ExperimentReference):
                 simulation_log_level=analysis["simulationLogLevel"],
                 initialize_from=self._get_initialize_from(base["modifiers"]),
             )  # type: ignore
-        modifiers = {
-            mod["name"]: get_operator_from_dict(mod)
-            for mod in base["modifiers"]["variables"]
-        }
-        definition = definition.with_modifiers(modifiers=modifiers)
+            modifiers = {
+                mod["name"]: get_operator_from_dict(mod)
+                for mod in base["modifiers"]["variables"]
+            }
+            definition = definition.with_modifiers(modifiers=modifiers)
         extensions = self._get_info()["experiment"].get("extensions")
         if extensions:
             sim_exts = []
@@ -736,18 +725,6 @@ class Experiment(ExperimentReference):
         return _build_custom_function(
             self._workspace_id, meta, self._sal
         ).with_parameters(**params)
-
-    def _get_expansion_algorithm(
-        self, algorithm: str, parameters: Dict[str, Any]
-    ) -> ExpansionAlgorithm:
-        if algorithm == "SOBOL":
-            return Sobol(samples=parameters["samples"])
-        elif algorithm == "LATINHYPERCUBE":
-            return LatinHypercube(
-                samples=parameters["samples"], seed=parameters.get("seed")
-            )
-        else:
-            return FullFactorial()
 
     @classmethod
     def from_reference(cls, reference: ExperimentReference) -> Experiment:
