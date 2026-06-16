@@ -10,11 +10,11 @@ if TYPE_CHECKING:
     from modelon.impact.client.sal.service import Service
 
 
-def _resolve_initialize_from(
+def _resolve_extension_initialize_from(
     workspace_id: str,
     sal: Service,
     modifiers: Dict[str, Any],
-) -> Optional[Union[Case, Experiment, ExternalResult]]:
+) -> Optional[Union[Case, Experiment]]:
     if "initializeFrom" in modifiers:
         from modelon.impact.client.entities.experiment import Experiment
 
@@ -27,8 +27,16 @@ def _resolve_initialize_from(
         case_id = modifiers["initializeFromCase"]["caseId"]
         case_data = sal.experiment.case_get(workspace_id, exp_id, case_id)
         return Case(case_data["id"], workspace_id, exp_id, sal, case_data)
-    elif "initializeFromExternalResult" in modifiers:
+    return None
+
+
+def _resolve_initialize_from(
+    workspace_id: str,
+    sal: Service,
+    modifiers: Dict[str, Any],
+) -> Optional[Union[Case, Experiment, ExternalResult]]:
+    if "initializeFromExternalResult" in modifiers:
         return ExternalResult(
             result_id=modifiers["initializeFromExternalResult"], service=sal
         )
-    return None
+    return _resolve_extension_initialize_from(workspace_id, sal, modifiers)

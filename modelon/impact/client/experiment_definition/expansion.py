@@ -113,9 +113,9 @@ class Sobol(ExpansionAlgorithm):
         return asdict(self)
 
 
-def expansion_from_dict(
-    algorithm: str, parameters: Dict[str, Any]
-) -> ExpansionAlgorithm:
+def expansion_from_dict(expansion_dict: Dict[str, Any]) -> ExpansionAlgorithm:
+    algorithm = expansion_dict.get("algorithm", "")
+    parameters = expansion_dict.get("parameters", {})
     if algorithm == "SOBOL":
         return Sobol(samples=parameters["samples"])
     elif algorithm == "LATINHYPERCUBE":

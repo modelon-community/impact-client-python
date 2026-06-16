@@ -78,10 +78,7 @@ def _build_simple_modelica_experiment_definition(
         mod["name"]: get_operator_from_dict(mod)
         for mod in base.get("modifiers", {}).get("variables", [])
     }
-    expansion_dict = base.get("expansion", {})
-    expansion = expansion_from_dict(
-        expansion_dict.get("algorithm", ""), expansion_dict.get("parameters", {})
-    )
+    expansion = expansion_from_dict(base.get("expansion", {}))
     return (
         SimpleModelicaExperimentDefinition(
             model=model,
