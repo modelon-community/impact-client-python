@@ -543,6 +543,27 @@ class Model(ModelInterface):
             for name in modeling_sal().get_extends_clauses(self._class_name)
         ]
 
+    @Experimental
+    def get_experiment_annotations(self) -> Dict[str, str]:
+        """Returns the experiment annotation key-value pairs for this model's class.
+
+        Only keys explicitly set in the model's experiment annotation block are
+        returned. Keys use the raw Modelica annotation names as they appear in the
+        source (e.g. ``StartTime``, ``StopTime``, ``Tolerance``). Returns an empty
+        dict if no experiment keywords
+        are set.
+
+        Example::
+
+            with workspace.new_modeling_session() as session:
+                model = session.get_model("LibA.Model")
+                annotations = model.get_experiment_annotations()
+                # e.g. {"StartTime": "0", "StopTime": "10", "Tolerance": "1e-6"}
+
+        """
+        modeling_sal = self._require_modeling_session("get_experiment_annotations")
+        return modeling_sal().get_experiment_annotations(self._class_name)
+
     @classmethod
     def from_operation(cls, operation: BaseOperation[Model], **kwargs: Any) -> Model:
         assert isinstance(operation, FMUImportOperation)
