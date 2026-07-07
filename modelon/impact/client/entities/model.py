@@ -248,6 +248,41 @@ class Model(ModelInterface):
             ModelExecutable.from_operation,
         )
 
+    def _experiment_definition_entry_from_item(
+        self, item: Dict[str, Any]
+    ) -> ExperimentDefinitionEntry:
+        base = item["experiment"]["base"]
+        analysis = base["analysis"]
+        cf_meta = self._sal.custom_function.custom_function_get(
+            self._workspace_id, analysis["type"]
+        )
+        params = {p["name"]: p["value"] for p in analysis.get("parameters", [])}
+        custom_function = _build_custom_function(
+            self._workspace_id, cf_meta, self._sal
+        ).with_parameters(**params)
+        definition = _build_experiment_definition(
+            item["experiment"],
+            custom_function,
+            self._workspace_id,
+            self._sal,
+            model=self,
+        )
+        # Experiment definitions are always defined for a model, the API
+        # never returns an FMU based definition here.
+        assert isinstance(definition, SimpleModelicaExperimentDefinition)
+        meta = item["metadata"]
+        return ExperimentDefinitionEntry(
+            id=item["id"],
+            name=meta["name"],
+            model_name=meta["modelName"],
+            project_id=meta["projectId"],
+            created=meta["created"],
+            last_modified=meta["lastModified"],
+            is_default=meta["isDefault"],
+            is_read_only=meta["isReadOnly"],
+            definition=definition,
+        )
+
     @Experimental
     def get_experiment_definitions(
         self,
@@ -257,42 +292,61 @@ class Model(ModelInterface):
         resp = self._sal.workspace.experiment_definitions_get(
             self._workspace_id, self._class_name, extends=extends
         )
-        entries = []
-        for item in resp["data"]["items"]:
-            base = item["experiment"]["base"]
-            analysis = base["analysis"]
-            cf_meta = self._sal.custom_function.custom_function_get(
-                self._workspace_id, analysis["type"]
-            )
-            params = {p["name"]: p["value"] for p in analysis.get("parameters", [])}
-            custom_function = _build_custom_function(
-                self._workspace_id, cf_meta, self._sal
-            ).with_parameters(**params)
-            definition = _build_experiment_definition(
-                item["experiment"],
-                custom_function,
-                self._workspace_id,
-                self._sal,
-                model=self,
-            )
-            # Experiment definitions are always defined for a model, the API
-            # never returns an FMU based definition here.
-            assert isinstance(definition, SimpleModelicaExperimentDefinition)
-            meta = item["metadata"]
-            entries.append(
-                ExperimentDefinitionEntry(
-                    id=item["id"],
-                    name=meta["name"],
-                    model_name=meta["modelName"],
-                    project_id=meta["projectId"],
-                    created=meta["created"],
-                    last_modified=meta["lastModified"],
-                    is_default=meta["isDefault"],
-                    is_read_only=meta["isReadOnly"],
-                    definition=definition,
+        return [
+            self._experiment_definition_entry_from_item(item)
+            for item in resp["data"]["items"]
+        ]
+
+    @Experimental
+    def create_default_experiment_definition(
+        self,
+        custom_function: CustomFunction,
+        name: Optional[str] = None,
+        is_default: bool = False,
+    ) -> ExperimentDefinitionEntry:
+        """Creates and persists a default experiment definition for this model.
+
+        The definition is populated with default parameter and option values
+        resolved from the custom function's signature, with the model's Modelica
+        experiment annotations (e.g. StartTime, StopTime, Tolerance) overriding
+        those defaults where applicable.
+
+        Args:
+            custom_function: The custom function to build the definition for.
+            name: Name for the new experiment definition. Default: None, which
+                means a placeholder name is used.
+            is_default: Whether to mark this experiment definition as the
+                default for the model. Default: False.
+
+        Example::
+
+            with workspace.new_modeling_session() as session:
+                model = session.get_model("LibA.Model")
+                dynamic = workspace.get_custom_function("dynamic")
+                entry = model.create_default_experiment_definition(
+                    dynamic, name="My experiment"
                 )
-            )
-        return entries
+                experiment = workspace.execute(entry.definition).wait()
+
+        """
+        modeling_sal = self._require_modeling_session(
+            "create_default_experiment_definition"
+        )
+        annotations = modeling_sal().get_experiment_annotations(self._class_name)
+        template = self._sal.workspace.experiment_definition_template_get(
+            self._workspace_id,
+            self._class_name,
+            custom_function_type=custom_function.name,
+            experiment_annotations=annotations,
+        )
+        resp = self._sal.project.experiment_definition_create(
+            self._project_id,
+            self._class_name,
+            name=name or template["data"]["metadata"]["name"],
+            experiment=template["data"]["experiment"],
+            is_default=is_default,
+        )
+        return self._experiment_definition_entry_from_item(resp["data"])
 
     def new_experiment_definition(
         self,
