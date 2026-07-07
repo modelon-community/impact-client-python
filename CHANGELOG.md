@@ -1,3 +1,10 @@
+# [4.15.0-beta.1](https://github.com/modelon-community/impact-client-python/compare/v4.14.0...v4.15.0-beta.1) (2026-07-07)
+
+
+### Features
+
+* add get_experiment_annotations to Model entity ([1a09f70](https://github.com/modelon-community/impact-client-python/commit/1a09f707c29e51657ad2bb95fee34d6a001e7ba2))
+
 # [4.14.0](https://github.com/modelon-community/impact-client-python/compare/v4.13.1...v4.14.0) (2026-06-15)
 
 
