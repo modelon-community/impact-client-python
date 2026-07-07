@@ -92,9 +92,10 @@ def _build_modelica_definition(
 ) -> SimpleModelicaExperimentDefinition:
     modelica = base["model"]["modelica"]
     analysis = base["analysis"]
+    model = model or _create_model(modelica["className"], workspace_id, sal)
     return (
         SimpleModelicaExperimentDefinition(
-            model=model or _create_model(modelica["className"], workspace_id, sal),
+            model=model,
             custom_function=custom_function,
             compiler_options=modelica.get("compilerOptions", {}),
             fmi_target=modelica.get("fmiTarget", "me"),
@@ -106,7 +107,7 @@ def _build_modelica_definition(
             simulation_options=analysis.get("simulationOptions", {}),
             simulation_log_level=analysis.get("simulationLogLevel", "WARNING"),
             initialize_from=_resolve_initialize_from(
-                workspace_id, sal, base.get("modifiers", {})
+                workspace_id, sal, base.get("modifiers", {}), class_path=model.name
             ),
         )
         .with_modifiers(_get_variable_modifiers(base.get("modifiers", {})))
