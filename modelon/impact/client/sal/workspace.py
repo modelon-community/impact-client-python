@@ -370,6 +370,26 @@ class WorkspaceService:
             url, headers={"Accept": self._experiment_schema}, params=params
         )
 
+    def experiment_definition_template_get(
+        self,
+        workspace_id: str,
+        model_name: str,
+        custom_function_type: Optional[str] = None,
+        experiment_annotations: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        url = (
+            self._base_uri / f"api/workspaces/{workspace_id}/models/{model_name}/"
+            "experiment-definition-template"
+        ).resolve()
+        custom_function = {"type": custom_function_type} if custom_function_type else {}
+        body = {
+            "data": {
+                "customFunction": custom_function,
+                "experimentAnnotations": experiment_annotations or {},
+            }
+        }
+        return self._http_client.post_json(url, body=body)
+
     def update_workspace(
         self, workspace_id: str, data: Dict[str, Any]
     ) -> Dict[str, Any]:
