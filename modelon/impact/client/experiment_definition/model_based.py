@@ -69,7 +69,7 @@ def _build_simple_modelica_experiment_definition(
     sal: "Service",
 ) -> "SimpleModelicaExperimentDefinition":
     initialize_from = _resolve_initialize_from(
-        workspace_id, sal, base.get("modifiers", {})
+        workspace_id, sal, base.get("modifiers", {}), class_path=model.name
     )
 
     modelica = base["model"]["modelica"]

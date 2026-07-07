@@ -30,6 +30,7 @@ from modelon.impact.client.options import (
     SimulationOptions,
     SolverOptions,
 )
+from modelon.impact.client.sal.exceptions import HTTPError
 
 if TYPE_CHECKING:
     from modelon.impact.client.entities.case import Case
@@ -283,10 +284,19 @@ class Model(ModelInterface):
         resp = self._sal.workspace.experiment_definitions_get(
             self._workspace_id, self._class_name, extends=extends
         )
-        return [
-            self._experiment_definition_entry_from_item(item)
-            for item in resp["data"]["items"]
-        ]
+        entries = []
+        for item in resp["data"]["items"]:
+            try:
+                entries.append(self._experiment_definition_entry_from_item(item))
+            except HTTPError as err:
+                logger.warning(
+                    "Skipping experiment definition '%s' (id: %s) as it could "
+                    "not be resolved: %s",
+                    item.get("metadata", {}).get("name"),
+                    item.get("id"),
+                    err,
+                )
+        return entries
 
     @Experimental
     def create_default_experiment_definition(
