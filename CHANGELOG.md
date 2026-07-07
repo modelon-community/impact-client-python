@@ -1,3 +1,15 @@
+# [4.15.0-beta.2](https://github.com/modelon-community/impact-client-python/compare/v4.15.0-beta.1...v4.15.0-beta.2) (2026-07-07)
+
+
+### Bug Fixes
+
+* resolve 'latest' initializeFrom to the model's most recent experiment ([4d336f3](https://github.com/modelon-community/impact-client-python/commit/4d336f31c496687b2c54fb39bdf17d5e399878f1))
+
+
+### Features
+
+* add create_default_experiment_definition to Model entity ([89d0388](https://github.com/modelon-community/impact-client-python/commit/89d03887654e22f047570b313a1fe018434b9525))
+
 # [4.15.0-beta.1](https://github.com/modelon-community/impact-client-python/compare/v4.14.0...v4.15.0-beta.1) (2026-07-07)
 
 
