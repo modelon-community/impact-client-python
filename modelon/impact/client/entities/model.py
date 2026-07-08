@@ -13,6 +13,7 @@ from modelon.impact.client.entities.custom_function import (
 from modelon.impact.client.entities.interfaces.model import ModelInterface
 from modelon.impact.client.entities.model_executable import ModelExecutable
 from modelon.impact.client.entities.project import Project
+from modelon.impact.client.exceptions import ExperimentDefinitionReadOnlyError
 from modelon.impact.client.experiment_definition._from_dict import (
     build_experiment_definition,
 )
@@ -85,6 +86,26 @@ def to_domain_parameter_value(
         if param_data.get("dataType", "") == "ENUMERATION"
         else param_data["value"]
     )
+
+
+def _to_editable_experiment_content(
+    definition: SimpleModelicaExperimentDefinition,
+) -> Dict[str, Any]:
+    """Converts an experiment definition into the editable experiment content accepted
+    by the experiment-definition create/update endpoints.
+
+    The editable schema only allows a subset of the executable v3 model settings; the
+    class name comes from the endpoint URL.
+
+    """
+    base = definition.to_dict()["experiment"]["base"]
+    modelica = base["model"]["modelica"]
+    base["model"]["modelica"] = {
+        key: modelica[key]
+        for key in ("compilerOptions", "runtimeOptions", "compilerLogLevel")
+        if key in modelica
+    }
+    return {"base": base}
 
 
 def _assert_valid_compilation_options(
@@ -347,6 +368,93 @@ class Model(ModelInterface):
             is_default=is_default,
         )
         return self._experiment_definition_entry_from_item(resp["data"])
+
+    @Experimental
+    def update_experiment_definition(
+        self,
+        experiment_definition_id: str,
+        definition: SimpleModelicaExperimentDefinition,
+        name: Optional[str] = None,
+        is_default: bool = False,
+    ) -> ExperimentDefinitionEntry:
+        """Updates an existing experiment definition for this model.
+
+        The stored definition is replaced with the given one, including its
+        metadata (name and default flag).
+
+        Requires an active modeling session, since a definition inherited from
+        a parent class via 'extends' can only be recognized as read-only by
+        resolving the model's extends clauses.
+
+        Args:
+            experiment_definition_id: The ID of the experiment definition to
+                update, e.g. from get_experiment_definitions().
+            definition: The experiment definition to store.
+            name: New name for the experiment definition. Default: None, which
+                keeps the existing name unchanged.
+            is_default: Whether to mark this experiment definition as the
+                default for the model. Default: False.
+
+        Example::
+
+            with workspace.new_modeling_session() as session:
+                model = session.get_model("LibA.Model")
+                entry = model.get_experiment_definitions()[0]
+                definition = entry.definition.with_modifiers({'inertia1.J': 2})
+                updated = model.update_experiment_definition(
+                    entry.id, definition, is_default=entry.is_default
+                )
+
+        Raises:
+            ExperimentDefinitionReadOnlyError: If the experiment definition is
+                read-only, e.g. because it belongs to a read-only project or is
+                inherited from a parent class via 'extends'.
+
+        """
+        metadata = self._get_experiment_definition_metadata(experiment_definition_id)
+        if metadata is not None and metadata["isReadOnly"]:
+            raise ExperimentDefinitionReadOnlyError(
+                f"The experiment definition '{experiment_definition_id}' is "
+                "read-only and cannot be updated. It belongs to a read-only "
+                "project or is inherited from a parent class via 'extends'."
+            )
+        if name is None:
+            if metadata is None:
+                raise ValueError(
+                    "Could not resolve the current name of experiment "
+                    f"definition '{experiment_definition_id}'; pass 'name' "
+                    "explicitly."
+                )
+            name = metadata["name"]
+        resp = self._sal.project.experiment_definition_update(
+            self._project_id,
+            self._class_name,
+            experiment_definition_id,
+            name=name,
+            experiment=_to_editable_experiment_content(definition),
+            is_default=is_default,
+        )
+        return self._experiment_definition_entry_from_item(resp["data"])
+
+    def _get_experiment_definition_metadata(
+        self, experiment_definition_id: str
+    ) -> Optional[Dict[str, Any]]:
+        """Returns the raw metadata dict for an experiment definition of this model, or
+        None if it can't be found.
+
+        Reads the metadata directly to avoid the cost of resolving the full definition.
+        Extends clauses are resolved so that a definition inherited from a parent class
+        is included in the lookup.
+
+        """
+        extends = [clause.class_name for clause in self.get_extends_clauses()]
+        resp = self._sal.workspace.experiment_definitions_get(
+            self._workspace_id, self._class_name, extends=extends
+        )
+        for item in resp["data"]["items"]:
+            if item["id"] == experiment_definition_id:
+                return item["metadata"]
+        return None
 
     def new_experiment_definition(
         self,
