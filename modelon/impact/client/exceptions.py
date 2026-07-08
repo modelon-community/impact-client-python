@@ -115,3 +115,7 @@ class AuthenticationError(Error):
 
 class FailedToStartModelingServer(Error):
     pass
+
+
+class ExperimentDefinitionReadOnlyError(Error):
+    pass
