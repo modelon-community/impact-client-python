@@ -1,3 +1,10 @@
+# [4.15.0-beta.3](https://github.com/modelon-community/impact-client-python/compare/v4.15.0-beta.2...v4.15.0-beta.3) (2026-07-08)
+
+
+### Features
+
+* add update_experiment_definition to Model entity ([7dfb55c](https://github.com/modelon-community/impact-client-python/commit/7dfb55cf8f61f16a3c4098ee983fc1534ac6ea22))
+
 # [4.15.0-beta.2](https://github.com/modelon-community/impact-client-python/compare/v4.15.0-beta.1...v4.15.0-beta.2) (2026-07-07)
 
 
