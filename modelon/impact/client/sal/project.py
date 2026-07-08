@@ -65,6 +65,27 @@ class ProjectService:
         }
         return self._http_client.post_json(url, body=body)
 
+    def experiment_definition_update(
+        self,
+        project_id: str,
+        model_path: str,
+        experiment_definition_id: str,
+        name: str,
+        experiment: Dict[str, Any],
+        is_default: bool = False,
+    ) -> Dict[str, Any]:
+        url = (
+            self._base_uri / f"api/projects/{project_id}/models/{model_path}/"
+            f"experiment-definitions/{experiment_definition_id}"
+        ).resolve()
+        body = {
+            "data": {
+                "metadata": {"name": name, "isDefault": is_default},
+                "experiment": experiment,
+            }
+        }
+        return self._http_client.put_json(url, body=body)
+
     def project_options_get(
         self, project_id: str, workspace_id: str, custom_function: str
     ) -> Dict[str, Any]:
