@@ -1,3 +1,10 @@
+# [4.15.0-beta.4](https://github.com/modelon-community/impact-client-python/compare/v4.15.0-beta.3...v4.15.0-beta.4) (2026-07-10)
+
+
+### Features
+
+* add execution_progress to ExperimentOperation ([0b9b335](https://github.com/modelon-community/impact-client-python/commit/0b9b335d27cfce4a9d3374cf420b14269cab6652))
+
 # [4.15.0-beta.3](https://github.com/modelon-community/impact-client-python/compare/v4.15.0-beta.2...v4.15.0-beta.3) (2026-07-08)
 
 
