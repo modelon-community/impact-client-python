@@ -1,12 +1,53 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from dataclasses import dataclass, field
+from typing import TYPE_CHECKING, Any, Dict, List
 
 from modelon.impact.client.operations.base import Entity, ExecutionOperation, Status
 
 if TYPE_CHECKING:
     from modelon.impact.client.operations.base import EntityFromOperation
     from modelon.impact.client.sal.service import Service
+
+
+@dataclass
+class CaseExecutionProgress:
+    """Progress information for a single case of a running execution."""
+
+    message: str
+    percentage: float
+    done: bool
+    stage: str
+
+    @classmethod
+    def from_dict(cls, data: Dict[str, Any]) -> CaseExecutionProgress:
+        return cls(
+            message=data.get("message", ""),
+            percentage=data.get("percentage", 0.0),
+            done=data.get("done", False),
+            stage=data.get("stage", ""),
+        )
+
+
+@dataclass
+class ExecutionProgress:
+    """Detailed progress information for an ongoing experiment execution."""
+
+    status: Status
+    finished_executions: int
+    total_executions: int
+    case_progresses: List[CaseExecutionProgress] = field(default_factory=list)
+
+    @classmethod
+    def from_dict(cls, data: Dict[str, Any]) -> ExecutionProgress:
+        return cls(
+            status=Status(data["status"]),
+            finished_executions=data.get("finished_executions", 0),
+            total_executions=data.get("total_executions", 0),
+            case_progresses=[
+                CaseExecutionProgress.from_dict(p) for p in data.get("progresses", [])
+            ],
+        )
 
 
 class ExperimentOperation(ExecutionOperation[Entity]):
@@ -71,6 +112,28 @@ class ExperimentOperation(ExecutionOperation[Entity]):
                 "status"
             ]
         )
+
+    @property
+    def execution_progress(self) -> ExecutionProgress:
+        """Returns detailed progress information for the ongoing execution.
+
+        In addition to the execution status, this includes the number of finished
+        and total case executions, and per-case progress (message, percentage
+        complete, done flag and current stage).
+
+        Returns:
+            An ExecutionProgress class object.
+
+        Example::
+
+            progress = workspace.execute(definition).execution_progress
+            progress.finished_executions
+            progress.total_executions
+            progress.case_progresses[0].percentage
+
+        """
+        data = self._sal.experiment.execute_status(self._workspace_id, self._exp_id)
+        return ExecutionProgress.from_dict(data)
 
     def cancel(self) -> None:
         """Terminates the execution process.
