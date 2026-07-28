@@ -26,8 +26,17 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-class _Parameter:
-    __slots__ = ["_name", "_value", "_value_type", "_valid_values"]
+class CustomFunctionParameter:
+    """A single analysis parameter of a custom function."""
+
+    __slots__ = [
+        "_name",
+        "_value",
+        "_value_type",
+        "_valid_values",
+        "_display_name",
+        "_description",
+    ]
 
     _JSON_2_PY_TYPE = {
         "Number": (
@@ -43,15 +52,45 @@ class _Parameter:
         "VariableNames": (list,),
     }
 
-    def __init__(self, name: str, value: Any, value_type: str, valid_values: List[Any]):
+    def __init__(
+        self,
+        name: str,
+        value: Any,
+        value_type: str,
+        valid_values: List[Any],
+        display_name: str = "",
+        description: str = "",
+    ):
         self._name = name
         self._value = value
         self._value_type = value_type
         self._valid_values = valid_values
+        self._display_name = display_name
+        self._description = description
 
     @property
     def name(self) -> str:
         return self._name
+
+    @property
+    def display_name(self) -> str:
+        """Human-readable name for the parameter, as shown in Modelon Impact.
+
+        Differs from 'name' in ways that cannot be derived from it: the 'dynamic' custom
+        function's stop time is named 'final_time' and displayed as 'Stop Time'. Falls
+        back to 'name' when the signature declares no display name.
+
+        """
+        return self._display_name or self._name
+
+    @property
+    def description(self) -> str:
+        """Description of what the parameter controls.
+
+        Empty when not declared.
+
+        """
+        return self._description
 
     @property
     def type(self) -> str:
@@ -113,11 +152,13 @@ class CustomFunction(CustomFunctionInterface):
         self._workspace_id = workspace_id
         self._parameter_data = parameter_data
         self._param_by_name = {
-            p["name"]: _Parameter(
+            p["name"]: CustomFunctionParameter(
                 p["name"],
                 p.get("defaultValue", ""),
                 p["type"],
                 p.get("values", []),
+                p.get("displayName", ""),
+                p.get("description", ""),
             )
             for p in parameter_data
         }
@@ -176,6 +217,24 @@ class CustomFunction(CustomFunctionInterface):
                 parameter.value = value
 
         return new
+
+    def get_parameters(self) -> List[CustomFunctionParameter]:
+        """Returns the custom function's parameters.
+
+        Use this over 'parameter_values' when the parameters are to be displayed
+        to a user: it carries each parameter's display name and description, which
+        'parameter_values' does not.
+
+        Returns:
+            A list of CustomFunctionParameter objects.
+
+        Example::
+
+            for parameter in custom_function.get_parameters():
+                print(parameter.display_name, parameter.value)
+
+        """
+        return list(self._param_by_name.values())
 
     @property
     def parameter_values(self) -> ParameterDict:
