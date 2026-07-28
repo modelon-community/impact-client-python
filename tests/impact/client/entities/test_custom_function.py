@@ -11,6 +11,7 @@ from tests.impact.client.helpers import (
     IDs,
     create_case_entity,
     create_custom_artifact_uri_entity,
+    create_custom_function_entity,
     create_experiment_entity,
     create_workspace_entity,
 )
@@ -21,6 +22,46 @@ class TestCustomFunction:
         workspace = client_helper.client.create_workspace(IDs.WORKSPACE_ID_SECONDARY)
         dynamic = workspace.get_custom_function("dynamic")
         return dynamic
+
+    def test_parameters_expose_the_signatures_display_name(self):
+        """The display name is what Impact shows, and it is not derivable.
+
+        'final_time' is displayed as 'Stop Time', so a caller presenting parameters to
+        someone has to read it from the signature rather than reformat the name.
+
+        """
+        custom_function = create_custom_function_entity(
+            IDs.WORKSPACE_ID_PRIMARY,
+            IDs.DYNAMIC_CF,
+            [
+                {
+                    "name": "final_time",
+                    "type": "Number",
+                    "defaultValue": 1,
+                    "displayName": "Stop Time",
+                    "description": "The stop time of the simulation",
+                }
+            ],
+        )
+
+        (parameter,) = custom_function.get_parameters()
+
+        assert parameter.name == "final_time"
+        assert parameter.display_name == "Stop Time"
+        assert parameter.description == "The stop time of the simulation"
+        assert parameter.value == 1
+
+    def test_parameter_display_name_falls_back_to_the_name(self):
+        custom_function = create_custom_function_entity(
+            IDs.WORKSPACE_ID_PRIMARY,
+            IDs.DYNAMIC_CF,
+            [{"name": "tolerance", "type": "Number", "defaultValue": 1e-6}],
+        )
+
+        (parameter,) = custom_function.get_parameters()
+
+        assert parameter.display_name == "tolerance"
+        assert parameter.description == ""
 
     @pytest.mark.experimental
     def test_custom_function_with_parameters_ok(self, custom_function):
