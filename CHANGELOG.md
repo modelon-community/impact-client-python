@@ -1,3 +1,10 @@
+# [4.15.0-beta.5](https://github.com/modelon-community/impact-client-python/compare/v4.15.0-beta.4...v4.15.0-beta.5) (2026-07-29)
+
+
+### Features
+
+* add get_parameters to CustomFunction ([bbb7c57](https://github.com/modelon-community/impact-client-python/commit/bbb7c57f9ab56514fe815d67fea02aa9bf40d39d))
+
 # [4.15.0-beta.4](https://github.com/modelon-community/impact-client-python/compare/v4.15.0-beta.3...v4.15.0-beta.4) (2026-07-10)
 
 
