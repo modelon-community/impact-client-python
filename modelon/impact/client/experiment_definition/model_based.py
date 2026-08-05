@@ -3,7 +3,6 @@ from __future__ import annotations
 import logging
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Union
 
-from modelon.impact.client.entities._initialize_from import _resolve_initialize_from
 from modelon.impact.client.entities.interfaces.case import CaseInterface
 from modelon.impact.client.entities.interfaces.experiment import ExperimentInterface
 from modelon.impact.client.entities.interfaces.external_result import (
@@ -18,7 +17,6 @@ from modelon.impact.client.experiment_definition.asserts import (
 from modelon.impact.client.experiment_definition.expansion import (
     ExpansionAlgorithm,
     FullFactorial,
-    expansion_from_dict,
 )
 from modelon.impact.client.experiment_definition.extension import (
     SimpleExperimentExtension,
@@ -31,7 +29,6 @@ from modelon.impact.client.experiment_definition.modifiers import (
     ensure_as_modifier,
     modifiers_to_dict,
 )
-from modelon.impact.client.experiment_definition.operators import get_operator_from_dict
 from modelon.impact.client.experiment_definition.util import (
     case_to_identifier_dict,
     custom_function_parameters_to_dict,
@@ -50,7 +47,6 @@ if TYPE_CHECKING:
         SimulationOptions,
         SolverOptions,
     )
-    from modelon.impact.client.sal.service import Service
 
     CaseOrExperimentOrExternalResult = Union[Case, Experiment, ExternalResult]
     RuntimeOptionsOrDict = Union[RuntimeOptions, Dict[str, Any]]
@@ -59,44 +55,6 @@ if TYPE_CHECKING:
     CompilerOptionsOrDict = Union[CompilerOptions, Dict[str, Any]]
 
 logger = logging.getLogger(__name__)
-
-
-def _build_simple_modelica_experiment_definition(
-    model: "Model",
-    base: Dict[str, Any],
-    custom_function: "CustomFunction",
-    workspace_id: str,
-    sal: "Service",
-) -> "SimpleModelicaExperimentDefinition":
-    initialize_from = _resolve_initialize_from(
-        workspace_id, sal, base.get("modifiers", {})
-    )
-
-    modelica = base["model"]["modelica"]
-    analysis = base["analysis"]
-    variable_modifiers = {
-        mod["name"]: get_operator_from_dict(mod)
-        for mod in base.get("modifiers", {}).get("variables", [])
-    }
-    expansion = expansion_from_dict(base.get("expansion", {}))
-    return (
-        SimpleModelicaExperimentDefinition(
-            model=model,
-            custom_function=custom_function,
-            compiler_options=modelica.get("compilerOptions", {}),
-            fmi_target=modelica.get("fmiTarget", "me"),
-            fmi_version=modelica.get("fmiVersion", "2.0"),
-            platform=modelica.get("platform", "auto"),
-            compiler_log_level=modelica.get("compilerLogLevel", "warning"),
-            runtime_options=modelica.get("runtimeOptions", {}),
-            solver_options=analysis.get("solverOptions", {}),
-            simulation_options=analysis.get("simulationOptions", {}),
-            simulation_log_level=analysis.get("simulationLogLevel", "WARNING"),
-            initialize_from=initialize_from,
-        )
-        .with_modifiers(variable_modifiers)
-        .with_expansion(expansion)
-    )
 
 
 class SimpleModelicaExperimentDefinition(BaseExperimentDefinition):
