@@ -44,6 +44,14 @@ modelon.impact.client.experiment\_definition.fmu\_based module
    :undoc-members:
    :show-inheritance:
 
+modelon.impact.client.experiment\_definition.from\_dict module
+--------------------------------------------------------------
+
+.. automodule:: modelon.impact.client.experiment_definition.from_dict
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 modelon.impact.client.experiment\_definition.model\_based module
 ----------------------------------------------------------------
 

@@ -13,9 +13,11 @@ from modelon.impact.client.entities.custom_function import (
 from modelon.impact.client.entities.interfaces.model import ModelInterface
 from modelon.impact.client.entities.model_executable import ModelExecutable
 from modelon.impact.client.entities.project import Project
+from modelon.impact.client.experiment_definition.from_dict import (
+    _build_experiment_definition,
+)
 from modelon.impact.client.experiment_definition.model_based import (
     SimpleModelicaExperimentDefinition,
-    _build_simple_modelica_experiment_definition,
 )
 from modelon.impact.client.experiment_definition.modifiers import Enumeration
 from modelon.impact.client.operations.fmu_import import FMUImportOperation
@@ -266,9 +268,16 @@ class Model(ModelInterface):
             custom_function = _build_custom_function(
                 self._workspace_id, cf_meta, self._sal
             ).with_parameters(**params)
-            definition = _build_simple_modelica_experiment_definition(
-                self, base, custom_function, self._workspace_id, self._sal
+            definition = _build_experiment_definition(
+                item["experiment"],
+                custom_function,
+                self._workspace_id,
+                self._sal,
+                model=self,
             )
+            # Experiment definitions are always defined for a model, the API
+            # never returns an FMU based definition here.
+            assert isinstance(definition, SimpleModelicaExperimentDefinition)
             meta = item["metadata"]
             entries.append(
                 ExperimentDefinitionEntry(

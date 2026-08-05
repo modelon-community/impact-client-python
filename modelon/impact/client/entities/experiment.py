@@ -6,10 +6,6 @@ import warnings
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Union
 
-from modelon.impact.client.entities._initialize_from import (
-    _resolve_extension_initialize_from,
-    _resolve_initialize_from,
-)
 from modelon.impact.client.entities.asserts import assert_variable_in_result
 from modelon.impact.client.entities.case import Case
 from modelon.impact.client.entities.custom_function import (
@@ -17,23 +13,11 @@ from modelon.impact.client.entities.custom_function import (
     _build_custom_function,
 )
 from modelon.impact.client.entities.interfaces.experiment import ExperimentReference
-from modelon.impact.client.entities.model import (
-    Model,
-    SimpleModelicaExperimentDefinition,
-    to_domain_parameter_value,
-)
-from modelon.impact.client.entities.model_executable import (
-    ModelExecutable,
-    SimpleFMUExperimentDefinition,
-)
 from modelon.impact.client.entities.status import ExperimentStatus
-from modelon.impact.client.experiment_definition.extension import (
-    SimpleExperimentExtension,
+from modelon.impact.client.experiment_definition.from_dict import (
+    ValidExperimentDefinitions,
+    _build_experiment_definition,
 )
-from modelon.impact.client.experiment_definition.model_based import (
-    _build_simple_modelica_experiment_definition,
-)
-from modelon.impact.client.experiment_definition.operators import get_operator_from_dict
 from modelon.impact.client.operations import experiment
 from modelon.impact.client.options import (
     CompilerOptions,
@@ -49,10 +33,6 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 ScalarValue = Union[float, int, str]
-ValidExperimentDefinitions = Union[
-    SimpleModelicaExperimentDefinition,
-    SimpleFMUExperimentDefinition,
-]
 
 
 @enum.unique
@@ -194,62 +174,6 @@ class ExperimentMetaData:
     def label(self) -> Optional[str]:
         """Experiment label."""
         return self._meta_data.get("label")
-
-
-def _build_extensions_from_dict(
-    extensions: List[Dict[str, Any]],
-    workspace_id: str,
-    sal: "Service",
-) -> List[SimpleExperimentExtension]:
-    sim_exts = []
-    for extension in extensions:
-        analysis = extension.get("analysis", {})
-        ext_custom_function_params = {
-            param["name"]: param["value"] for param in analysis.get("parameters", [])
-        }
-        sim_ext = SimpleExperimentExtension(
-            parameter_modifiers=ext_custom_function_params,
-            solver_options=analysis.get("solverOptions"),
-            simulation_options=analysis.get("simulationOptions"),
-            simulation_log_level=analysis.get("simulationLogLevel"),
-            initialize_from=_resolve_extension_initialize_from(
-                workspace_id, sal, extension.get("modifiers", {})
-            ),
-        )
-        ext_modifiers = {
-            mod["name"]: to_domain_parameter_value(mod)
-            for mod in extension.get("modifiers", {}).get("variables", [])
-        }
-        sim_ext = sim_ext.with_modifiers(modifiers=ext_modifiers)
-        case_data = extension.get("caseData", [])
-        case_labels = [data.get("label") for data in case_data]
-        if case_labels:
-            sim_ext = sim_ext.with_case_label(case_labels[0])
-        sim_exts.append(sim_ext)
-    return sim_exts
-
-
-def _build_simple_fmu_experiment_definition(
-    base: Dict[str, Any],
-    custom_function: "CustomFunction",
-    workspace_id: str,
-    sal: "Service",
-) -> SimpleFMUExperimentDefinition:
-    analysis = base["analysis"]
-    modifiers = base.get("modifiers", {})
-    fmu_id = base["model"]["fmu"]["id"]
-    variable_modifiers = {
-        mod["name"]: get_operator_from_dict(mod)
-        for mod in modifiers.get("variables", [])
-    }
-    return SimpleFMUExperimentDefinition(
-        fmu=ModelExecutable(workspace_id, fmu_id, sal),
-        custom_function=custom_function,
-        solver_options=analysis.get("solverOptions", {}),
-        simulation_options=analysis.get("simulationOptions", {}),
-        simulation_log_level=analysis.get("simulationLogLevel", "WARNING"),
-        initialize_from=_resolve_initialize_from(workspace_id, sal, modifiers),
-    ).with_modifiers(modifiers=variable_modifiers)
 
 
 class Experiment(ExperimentReference):
@@ -685,32 +609,10 @@ class Experiment(ExperimentReference):
 
         """
         info = self._get_info(cached=False)["experiment"]
-        base = info["base"]
-        extensions_data = info.get("extensions", [])
-        analysis = base["analysis"]
-        custom_function = self._get_custom_function(analysis)
-        definition: ValidExperimentDefinitions
-        if self._get_workflow() == _Workflow.CLASS_BASED:
-            model = Model(
-                self.get_model_name(),
-                workspace_id=self._workspace_id,
-                project_id="",
-                service=self._sal,
-            )
-            definition = _build_simple_modelica_experiment_definition(
-                model, base, custom_function, self._workspace_id, self._sal
-            )
-        else:
-            definition = _build_simple_fmu_experiment_definition(
-                base, custom_function, self._workspace_id, self._sal
-            )
-        if extensions_data:
-            definition = definition.with_extensions(
-                _build_extensions_from_dict(
-                    extensions_data, self._workspace_id, self._sal
-                )
-            )
-        return definition
+        custom_function = self._get_custom_function(info["base"]["analysis"])
+        return _build_experiment_definition(
+            info, custom_function, self._workspace_id, self._sal
+        )
 
     def _get_custom_function(self, analysis: Dict[str, Any]) -> CustomFunction:
         meta = self._sal.custom_function.custom_function_get(
