@@ -1,11 +1,11 @@
 from __future__ import annotations
 
 import logging
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Union
+from typing import TYPE_CHECKING, Any, Dict, List, Optional
 
 from modelon.impact.client.entities._initialize_from import (
-    _resolve_extension_initialize_from,
-    _resolve_initialize_from,
+    resolve_extension_initialize_from,
+    resolve_initialize_from,
 )
 from modelon.impact.client.entities.model_executable import ModelExecutable
 from modelon.impact.client.experiment_definition.expansion import expansion_from_dict
@@ -22,15 +22,11 @@ from modelon.impact.client.experiment_definition.operators import get_operator_f
 
 if TYPE_CHECKING:
     from modelon.impact.client.entities.custom_function import CustomFunction
+    from modelon.impact.client.entities.experiment import ValidExperimentDefinitions
     from modelon.impact.client.entities.model import Model
     from modelon.impact.client.sal.service import Service
 
 logger = logging.getLogger(__name__)
-
-ValidExperimentDefinitions = Union[
-    SimpleModelicaExperimentDefinition,
-    SimpleFMUExperimentDefinition,
-]
 
 
 def _create_model(class_name: str, workspace_id: str, sal: Service) -> Model:
@@ -67,7 +63,7 @@ def _build_extensions(
             solver_options=analysis.get("solverOptions"),
             simulation_options=analysis.get("simulationOptions"),
             simulation_log_level=analysis.get("simulationLogLevel"),
-            initialize_from=_resolve_extension_initialize_from(
+            initialize_from=resolve_extension_initialize_from(
                 workspace_id, sal, modifiers
             ),
         ).with_modifiers(
@@ -105,7 +101,7 @@ def _build_modelica_definition(
             solver_options=analysis.get("solverOptions", {}),
             simulation_options=analysis.get("simulationOptions", {}),
             simulation_log_level=analysis.get("simulationLogLevel", "WARNING"),
-            initialize_from=_resolve_initialize_from(
+            initialize_from=resolve_initialize_from(
                 workspace_id, sal, base.get("modifiers", {})
             ),
         )
@@ -130,11 +126,11 @@ def _build_fmu_definition(
         solver_options=analysis.get("solverOptions", {}),
         simulation_options=analysis.get("simulationOptions", {}),
         simulation_log_level=analysis.get("simulationLogLevel", "WARNING"),
-        initialize_from=_resolve_initialize_from(workspace_id, sal, modifiers),
+        initialize_from=resolve_initialize_from(workspace_id, sal, modifiers),
     ).with_modifiers(modifiers=_get_variable_modifiers(modifiers))
 
 
-def _build_experiment_definition(
+def build_experiment_definition(
     info: Dict[str, Any],
     custom_function: CustomFunction,
     workspace_id: str,
@@ -142,6 +138,8 @@ def _build_experiment_definition(
     model: Optional[Model] = None,
 ) -> ValidExperimentDefinitions:
     """Build an experiment definition entity from an experiment dictionary.
+
+    This function is for internal use only.
 
     Args:
         info: The 'experiment' part of an experiment dictionary, holding the
