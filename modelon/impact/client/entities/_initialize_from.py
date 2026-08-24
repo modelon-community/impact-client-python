@@ -10,7 +10,7 @@ if TYPE_CHECKING:
     from modelon.impact.client.sal.service import Service
 
 
-def _resolve_extension_initialize_from(
+def resolve_extension_initialize_from(
     workspace_id: str,
     sal: Service,
     modifiers: Dict[str, Any],
@@ -30,7 +30,7 @@ def _resolve_extension_initialize_from(
     return None
 
 
-def _resolve_initialize_from(
+def resolve_initialize_from(
     workspace_id: str,
     sal: Service,
     modifiers: Dict[str, Any],
@@ -39,4 +39,4 @@ def _resolve_initialize_from(
         return ExternalResult(
             result_id=modifiers["initializeFromExternalResult"], service=sal
         )
-    return _resolve_extension_initialize_from(workspace_id, sal, modifiers)
+    return resolve_extension_initialize_from(workspace_id, sal, modifiers)

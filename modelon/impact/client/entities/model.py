@@ -13,8 +13,8 @@ from modelon.impact.client.entities.custom_function import (
 from modelon.impact.client.entities.interfaces.model import ModelInterface
 from modelon.impact.client.entities.model_executable import ModelExecutable
 from modelon.impact.client.entities.project import Project
-from modelon.impact.client.experiment_definition.from_dict import (
-    _build_experiment_definition,
+from modelon.impact.client.experiment_definition._from_dict import (
+    build_experiment_definition,
 )
 from modelon.impact.client.experiment_definition.model_based import (
     SimpleModelicaExperimentDefinition,
@@ -268,7 +268,7 @@ class Model(ModelInterface):
             custom_function = _build_custom_function(
                 self._workspace_id, cf_meta, self._sal
             ).with_parameters(**params)
-            definition = _build_experiment_definition(
+            definition = build_experiment_definition(
                 item["experiment"],
                 custom_function,
                 self._workspace_id,

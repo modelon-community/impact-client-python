@@ -14,9 +14,14 @@ from modelon.impact.client.entities.custom_function import (
 )
 from modelon.impact.client.entities.interfaces.experiment import ExperimentReference
 from modelon.impact.client.entities.status import ExperimentStatus
-from modelon.impact.client.experiment_definition.from_dict import (
-    ValidExperimentDefinitions,
-    _build_experiment_definition,
+from modelon.impact.client.experiment_definition._from_dict import (
+    build_experiment_definition,
+)
+from modelon.impact.client.experiment_definition.fmu_based import (
+    SimpleFMUExperimentDefinition,
+)
+from modelon.impact.client.experiment_definition.model_based import (
+    SimpleModelicaExperimentDefinition,
 )
 from modelon.impact.client.operations import experiment
 from modelon.impact.client.options import (
@@ -33,6 +38,10 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 ScalarValue = Union[float, int, str]
+ValidExperimentDefinitions = Union[
+    SimpleModelicaExperimentDefinition,
+    SimpleFMUExperimentDefinition,
+]
 
 
 @enum.unique
@@ -610,7 +619,7 @@ class Experiment(ExperimentReference):
         """
         info = self._get_info(cached=False)["experiment"]
         custom_function = self._get_custom_function(info["base"]["analysis"])
-        return _build_experiment_definition(
+        return build_experiment_definition(
             info, custom_function, self._workspace_id, self._sal
         )
 
