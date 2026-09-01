@@ -22,7 +22,8 @@ class ModelingService:
         )
 
     def get_extends_clauses(self, class_path: str) -> List[str]:
-        return self._ws_client.get_json_response("impact/getExtends", class_path)
+        params = {"classPath": class_path}
+        return self._ws_client.get_json_response("impact/getExtends", params)
 
     def get_experiment_annotations(self, class_path: str) -> Dict[str, str]:
         params = {"className": class_path}

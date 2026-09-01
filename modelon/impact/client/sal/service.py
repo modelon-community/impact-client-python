@@ -89,7 +89,7 @@ class Service:
     def start_modeling_session(self, workspace_id: str) -> ModelingService:
         ws_client = SyncWebSocketClient(self._base_ws_uri, self._api_key)
         response = ws_client.get_json_response(
-            "impact/subscribeToWorkspace", workspace_id
+            "impact/subscribeToWorkspace", {"workspaceId": workspace_id}
         )
         if isinstance(response, dict) and not response.get("created"):
             raise FailedToStartModelingServer(
