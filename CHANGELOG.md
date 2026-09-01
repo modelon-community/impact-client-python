@@ -1,3 +1,10 @@
+# [4.15.0-beta.6](https://github.com/modelon-community/impact-client-python/compare/v4.15.0-beta.5...v4.15.0-beta.6) (2026-09-01)
+
+
+### Bug Fixes
+
+* send params objects to subscribeToWorkspace and getExtends ([bc0af5e](https://github.com/modelon-community/impact-client-python/commit/bc0af5eab800e6f55b04132336efa76087441a9f))
+
 # [4.15.0-beta.5](https://github.com/modelon-community/impact-client-python/compare/v4.15.0-beta.4...v4.15.0-beta.5) (2026-07-29)
 
 
