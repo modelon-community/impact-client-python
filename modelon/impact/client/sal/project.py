@@ -59,7 +59,7 @@ class ProjectService:
         ).resolve()
         body = {
             "data": {
-                "metadata": {"name": name, "isDefault": is_default},
+                "metadata": {"name": name, "setAsDefault": is_default},
                 "experiment": experiment,
             }
         }
@@ -80,10 +80,25 @@ class ProjectService:
         ).resolve()
         body = {
             "data": {
-                "metadata": {"name": name, "isDefault": is_default},
+                "metadata": {"name": name, "setAsDefault": is_default},
                 "experiment": experiment,
             }
         }
+        return self._http_client.put_json(url, body=body)
+
+    def experiment_definition_metadata_update(
+        self,
+        project_id: str,
+        model_path: str,
+        experiment_definition_id: str,
+        name: str,
+        is_default: bool = False,
+    ) -> Dict[str, Any]:
+        url = (
+            self._base_uri / f"api/projects/{project_id}/models/{model_path}/"
+            f"experiment-definitions/{experiment_definition_id}/metadata"
+        ).resolve()
+        body = {"data": {"name": name, "setAsDefault": is_default}}
         return self._http_client.put_json(url, body=body)
 
     def project_options_get(

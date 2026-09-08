@@ -3,7 +3,7 @@ from __future__ import annotations
 import logging
 import os
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional, Union
+from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional, Tuple, Union
 
 from modelon.impact.client.configuration import Experimental
 from modelon.impact.client.entities.custom_function import (
@@ -376,12 +376,12 @@ class Model(ModelInterface):
         experiment_definition_id: str,
         definition: SimpleModelicaExperimentDefinition,
         name: Optional[str] = None,
-        is_default: bool = False,
+        is_default: Optional[bool] = None,
     ) -> ExperimentDefinitionEntry:
         """Updates an existing experiment definition for this model.
 
-        The stored definition is replaced with the given one, including its
-        metadata (name and default flag).
+        The stored experiment is replaced with the given one. Metadata the
+        caller leaves out is kept as it is.
 
         Requires an active modeling session, since a definition inherited from
         a parent class via 'extends' can only be recognized as read-only by
@@ -394,7 +394,8 @@ class Model(ModelInterface):
             name: New name for the experiment definition. Default: None, which
                 keeps the existing name unchanged.
             is_default: Whether to mark this experiment definition as the
-                default for the model. Default: False.
+                default for the model. Default: None, which keeps the existing
+                default flag unchanged.
 
         Example::
 
@@ -402,9 +403,7 @@ class Model(ModelInterface):
                 model = session.get_model("LibA.Model")
                 entry = model.get_experiment_definitions()[0]
                 definition = entry.definition.with_modifiers({'inertia1.J': 2})
-                updated = model.update_experiment_definition(
-                    entry.id, definition, is_default=entry.is_default
-                )
+                updated = model.update_experiment_definition(entry.id, definition)
 
         Raises:
             ExperimentDefinitionReadOnlyError: If the experiment definition is
@@ -412,21 +411,9 @@ class Model(ModelInterface):
                 inherited from a parent class via 'extends'.
 
         """
-        metadata = self._get_experiment_definition_metadata(experiment_definition_id)
-        if metadata is not None and metadata["isReadOnly"]:
-            raise ExperimentDefinitionReadOnlyError(
-                f"The experiment definition '{experiment_definition_id}' is "
-                "read-only and cannot be updated. It belongs to a read-only "
-                "project or is inherited from a parent class via 'extends'."
-            )
-        if name is None:
-            if metadata is None:
-                raise ValueError(
-                    "Could not resolve the current name of experiment "
-                    f"definition '{experiment_definition_id}'; pass 'name' "
-                    "explicitly."
-                )
-            name = metadata["name"]
+        name, is_default = self._experiment_definition_metadata_to_keep(
+            experiment_definition_id, name, is_default
+        )
         resp = self._sal.project.experiment_definition_update(
             self._project_id,
             self._class_name,
@@ -436,6 +423,96 @@ class Model(ModelInterface):
             is_default=is_default,
         )
         return self._experiment_definition_entry_from_item(resp["data"])
+
+    @Experimental
+    def update_experiment_definition_metadata(
+        self,
+        experiment_definition_id: str,
+        name: Optional[str] = None,
+        is_default: Optional[bool] = None,
+    ) -> ExperimentDefinitionEntry:
+        """Updates the metadata of an existing experiment definition, leaving the stored
+        experiment itself untouched.
+
+        Use this to rename a definition, or to mark it as the model's default,
+        without having to fetch and re-send the whole experiment.
+
+        Requires an active modeling session, since a definition inherited from
+        a parent class via 'extends' can only be recognized as read-only by
+        resolving the model's extends clauses.
+
+        Args:
+            experiment_definition_id: The ID of the experiment definition to
+                update, e.g. from get_experiment_definitions().
+            name: New name for the experiment definition. Default: None, which
+                keeps the existing name unchanged.
+            is_default: Whether to mark this experiment definition as the
+                default for the model. Default: None, which keeps the existing
+                default flag unchanged.
+
+        Example::
+
+            with workspace.new_modeling_session() as session:
+                model = session.get_model("LibA.Model")
+                entry = model.get_experiment_definitions()[0]
+                renamed = model.update_experiment_definition_metadata(
+                    entry.id, name="My experiment"
+                )
+
+        Raises:
+            ExperimentDefinitionReadOnlyError: If the experiment definition is
+                read-only, e.g. because it belongs to a read-only project or is
+                inherited from a parent class via 'extends'.
+
+        """
+        name, is_default = self._experiment_definition_metadata_to_keep(
+            experiment_definition_id, name, is_default
+        )
+        resp = self._sal.project.experiment_definition_metadata_update(
+            self._project_id,
+            self._class_name,
+            experiment_definition_id,
+            name=name,
+            is_default=is_default,
+        )
+        return self._experiment_definition_entry_from_item(resp["data"])
+
+    def _experiment_definition_metadata_to_keep(
+        self,
+        experiment_definition_id: str,
+        name: Optional[str],
+        is_default: Optional[bool],
+    ) -> Tuple[str, bool]:
+        """Resolves the metadata to send for an update of an experiment definition of
+        this model.
+
+        Both endpoints replace the whole metadata, so whatever the caller left
+        out is filled in from the stored definition to keep it as it is.
+
+        Raises:
+            ExperimentDefinitionReadOnlyError: If the experiment definition is
+                read-only.
+
+        """
+        metadata = self._get_experiment_definition_metadata(experiment_definition_id)
+        if metadata is not None and metadata["isReadOnly"]:
+            raise ExperimentDefinitionReadOnlyError(
+                f"The experiment definition '{experiment_definition_id}' is "
+                "read-only and cannot be updated. It belongs to a read-only "
+                "project or is inherited from a parent class via 'extends'."
+            )
+        if name is None or is_default is None:
+            if metadata is None:
+                raise ValueError(
+                    "Could not resolve the current metadata of experiment "
+                    f"definition '{experiment_definition_id}'; pass 'name' and "
+                    "'is_default' explicitly."
+                )
+            if name is None:
+                name = metadata["name"]
+            if is_default is None:
+                is_default = metadata["isDefault"]
+        return name, is_default
 
     def _get_experiment_definition_metadata(
         self, experiment_definition_id: str
