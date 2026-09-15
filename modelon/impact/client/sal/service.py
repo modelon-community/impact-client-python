@@ -2,7 +2,6 @@
 import logging
 from typing import Any, Dict, Optional
 
-from modelon.impact.client.exceptions import FailedToStartModelingServer
 from modelon.impact.client.sal import exceptions
 from modelon.impact.client.sal.context import Context
 from modelon.impact.client.sal.custom_function import CustomFunctionService
@@ -87,12 +86,10 @@ class Service:
         return resp.data
 
     def start_modeling_session(self, workspace_id: str) -> ModelingService:
-        ws_client = SyncWebSocketClient(self._base_ws_uri, self._api_key)
-        response = ws_client.get_json_response(
-            "impact/subscribeToWorkspace", {"workspaceId": workspace_id}
-        )
-        if isinstance(response, dict) and not response.get("created"):
-            raise FailedToStartModelingServer(
-                f"Failed to start modeling session. Cause: {response}"
-            )
+        ws_client = SyncWebSocketClient(self._base_ws_uri, workspace_id, self._api_key)
+        try:
+            ws_client.get_json_response("impact/ping")
+        except Exception:
+            ws_client.close()
+            raise
         return ModelingService(ws_client)

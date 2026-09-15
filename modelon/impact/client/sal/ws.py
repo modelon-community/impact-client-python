@@ -2,6 +2,7 @@
 import itertools
 import json
 import logging
+import urllib.parse
 from typing import Any, Optional
 
 from websockets.sync.client import connect as ws_connect
@@ -13,8 +14,9 @@ logger = logging.getLogger(__name__)
 
 
 class SyncWebSocketClient:
-    def __init__(self, uri: URI, api_key: Optional[str] = None):
-        url = (uri / "/api/modeling/rpc").resolve()
+    def __init__(self, uri: URI, workspace_id: str, api_key: Optional[str] = None):
+        workspace_path = urllib.parse.quote(workspace_id, safe="")
+        url = (uri / f"/api/modeling/rpc/{workspace_path}").resolve()
         headers = {"User-Agent": "impact-python-client"}
         if api_key:
             headers["impact-api-key"] = api_key
