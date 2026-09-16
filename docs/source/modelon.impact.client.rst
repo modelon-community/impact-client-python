@@ -63,6 +63,14 @@ modelon.impact.client.published\_workspace\_client module
    :undoc-members:
    :show-inheritance:
 
+modelon.impact.client.views module
+----------------------------------
+
+.. automodule:: modelon.impact.client.views
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Module contents
 ---------------
 

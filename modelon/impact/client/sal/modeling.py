@@ -53,5 +53,40 @@ class ModelingService:
             for project in projects
         }
 
+    def get_views(
+        self, project_ids: List[str], class_path: str, kinds: List[str]
+    ) -> List[Any]:
+        params = {
+            "projectIds": project_ids,
+            "className": class_path,
+            "kinds": kinds,
+        }
+        return self._ws_client.get_json_response("impact/getViews", params)
+
+    def create_view(
+        self, project_id: str, class_path: str, view_definition: Dict[str, Any]
+    ) -> Any:
+        params = {
+            "projectId": project_id,
+            "className": class_path,
+            "createViewDefinition": view_definition,
+        }
+        return self._ws_client.get_json_response("impact/createView", params)
+
+    def update_view(
+        self,
+        project_id: str,
+        class_path: str,
+        view_id: str,
+        view_definition: Dict[str, Any],
+    ) -> Any:
+        params = {
+            "projectId": project_id,
+            "className": class_path,
+            "viewId": view_id,
+            "updateViewDefinition": view_definition,
+        }
+        return self._ws_client.get_json_response("impact/updateView", params)
+
     def close_session(self) -> None:
         return self._ws_client.close()

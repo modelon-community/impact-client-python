@@ -119,3 +119,7 @@ class FailedToStartModelingServer(Error):
 
 class ExperimentDefinitionReadOnlyError(Error):
     pass
+
+
+class NoProjectFoundForClassError(Error):
+    pass
