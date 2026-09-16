@@ -1,3 +1,10 @@
+# [4.15.0-beta.7](https://github.com/modelon-community/impact-client-python/compare/v4.15.0-beta.6...v4.15.0-beta.7) (2026-09-16)
+
+
+### Features
+
+* connect to the modeling server's per-workspace endpoint ([3d36961](https://github.com/modelon-community/impact-client-python/commit/3d3696111663d2e43ded90fb02f4d5b8be1749fd))
+
 # [4.15.0-beta.6](https://github.com/modelon-community/impact-client-python/compare/v4.15.0-beta.5...v4.15.0-beta.6) (2026-09-01)
 
 
