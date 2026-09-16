@@ -59,7 +59,7 @@ class ProjectService:
         ).resolve()
         body = {
             "data": {
-                "metadata": {"name": name, "isDefault": is_default},
+                "metadata": {"name": name, "setAsDefault": is_default},
                 "experiment": experiment,
             }
         }
@@ -80,7 +80,7 @@ class ProjectService:
         ).resolve()
         body = {
             "data": {
-                "metadata": {"name": name, "isDefault": is_default},
+                "metadata": {"name": name, "setAsDefault": is_default},
                 "experiment": experiment,
             }
         }
