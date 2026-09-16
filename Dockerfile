@@ -1,4 +1,4 @@
-FROM python:3.9.6
+FROM python:3.9.25-bookworm
 
 # Do not run as root
 RUN adduser dev
