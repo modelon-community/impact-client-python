@@ -163,7 +163,7 @@ class ExperimentRunInfo:
 
     @property
     def failed(self) -> int:
-        """Number of cases in experiment thar have failed."""
+        """Number of cases in experiment that have failed."""
         return self._failed
 
     @property
