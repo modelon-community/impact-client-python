@@ -1,3 +1,10 @@
+# [4.15.0-beta.8](https://github.com/modelon-community/impact-client-python/compare/v4.15.0-beta.7...v4.15.0-beta.8) (2026-09-16)
+
+
+### Bug Fixes
+
+* send setAsDefault instead of isDefault to experiment-definitions API ([8fae86c](https://github.com/modelon-community/impact-client-python/commit/8fae86c6308f899a960e56f26fd09c3aac45820d))
+
 # [4.15.0-beta.7](https://github.com/modelon-community/impact-client-python/compare/v4.15.0-beta.6...v4.15.0-beta.7) (2026-09-16)
 
 
