@@ -1,4 +1,5 @@
 """WebSocket client class."""
+
 import itertools
 import json
 import logging
@@ -51,8 +52,14 @@ class SyncWebSocketClient:
             msg_str = message.decode() if isinstance(message, bytes) else message
             logger.debug(f"Received message: {msg_str}")
             resp = json.loads(message)
-            if resp.get("method") == "impact/workspace":
-                logger.info(resp.get("params", {}).get("message"))
+            if "method" in resp and "id" not in resp:
+                # A notification: the server telling this connection
+                # something, not answering it. Recognized by its shape rather
+                # than by its method name, so a push this client has never heard
+                # of is skipped rather than read as a malformed response - a
+                # response without an id raises when its id is looked up.
+                if resp.get("method") == "impact/workspace":
+                    logger.info(resp.get("params", {}).get("message"))
                 continue
             response = JsonRpcResponse(resp)
             if response.id == msg_id:

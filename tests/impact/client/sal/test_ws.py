@@ -38,6 +38,14 @@ def sent_request(ws_connect):
     return json.loads(ws_connect.return_value.send.call_args[0][0])
 
 
+def answer_after(ws_connect, pushes, payload):
+    """Queue server pushes ahead of the reply this request is waiting for."""
+    ws_connect.return_value.recv.side_effect = [
+        *[json.dumps(push) for push in pushes],
+        json.dumps({"jsonrpc": "2.0", "id": 0, **payload}),
+    ]
+
+
 class TestSyncWebSocketClient:
     def test_the_address_names_the_workspace_the_connection_serves(self, ws_connect):
         SyncWebSocketClient(URI("ws://modelon.com"), "my-workspace")
@@ -86,3 +94,71 @@ class TestStartModelingSession:
             service.start_modeling_session("nope")
 
         ws_connect.return_value.close.assert_called_once()
+
+
+class TestServerPushes:
+    """The connection carries notifications as well as replies.
+
+    A notification is not an answer to anything, so a request waiting for its reply has
+    to read past it. They are recognised by shape - a method and no id - rather than by
+    name, because a client cannot know every push a server might grow.
+
+    """
+
+    def test_a_push_does_not_become_the_answer_to_a_request(self, service, ws_connect):
+        answer_after(
+            ws_connect,
+            [
+                {
+                    "jsonrpc": "2.0",
+                    "method": "impact/viewsChanged",
+                    "params": {"className": "Unnamed.Test", "change": "updated"},
+                }
+            ],
+            {"result": "pong"},
+        )
+
+        assert service.start_modeling_session("my-workspace") is not None
+
+    def test_a_push_this_client_has_never_heard_of_is_skipped(
+        self, service, ws_connect
+    ):
+        # Skipping by shape is the point: a server that grows a new notification must
+        # not break a client released before it.
+        answer_after(
+            ws_connect,
+            [{"jsonrpc": "2.0", "method": "impact/somethingFromTheFuture"}],
+            {"result": "pong"},
+        )
+
+        assert service.start_modeling_session("my-workspace") is not None
+
+    def test_several_pushes_in_a_row_are_read_past(self, service, ws_connect):
+        # They queue up while the connection is idle, so a call can meet more than one.
+        answer_after(
+            ws_connect,
+            [
+                {"jsonrpc": "2.0", "method": "impact/viewsChanged", "params": {}},
+                {
+                    "jsonrpc": "2.0",
+                    "method": "impact/workspace",
+                    "params": {"message": "the workspace changed"},
+                },
+                {"jsonrpc": "2.0", "method": "impact/viewsChanged", "params": {}},
+            ],
+            {"result": "pong"},
+        )
+
+        assert service.start_modeling_session("my-workspace") is not None
+
+    def test_an_error_reply_is_still_raised_and_not_mistaken_for_a_push(
+        self, service, ws_connect
+    ):
+        # It carries an id, so it is an answer - the shape test must not swallow it.
+        answer_with(
+            ws_connect,
+            {"error": {"code": -32603, "message": "Workspace 'nope' does not exist"}},
+        )
+
+        with pytest.raises(JsonRpcError):
+            service.start_modeling_session("nope")
