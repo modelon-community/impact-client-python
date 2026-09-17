@@ -1,3 +1,10 @@
+# [4.15.0-beta.9](https://github.com/modelon-community/impact-client-python/compare/v4.15.0-beta.8...v4.15.0-beta.9) (2026-09-17)
+
+
+### Bug Fixes
+
+* read past a server push instead of failing on it ([db817b2](https://github.com/modelon-community/impact-client-python/commit/db817b27ea2208b2c28bff7fe251e22b7b72336a))
+
 # [4.15.0-beta.8](https://github.com/modelon-community/impact-client-python/compare/v4.15.0-beta.7...v4.15.0-beta.8) (2026-09-16)
 
 
