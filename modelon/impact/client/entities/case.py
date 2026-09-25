@@ -42,8 +42,6 @@ def _assert_case_is_complete(
 ) -> None:
     if status == CaseStatus.NOT_STARTED:
         raise exceptions.OperationNotCompleteError.for_operation(operation_name, status)
-    elif status == CaseStatus.CANCELLED:
-        raise exceptions.OperationFailureError.for_operation(operation_name)
 
 
 def _datetime_from_unix_time(unix_time: Optional[int]) -> Optional[datetime]:
@@ -555,9 +553,7 @@ class Case(CaseReference):
         Raises:
 
             OperationNotCompleteError if simulation process is in progress.
-            OperationFailureError if simulation process has failed or was cancelled.
-            TypeError if the variable is not a list object.
-            ValueError if trajectory variable is not present in the result.
+            ValueError if the format is not 'mat' or 'csv'.
 
         Example::
 
@@ -566,7 +562,7 @@ class Case(CaseReference):
                 f.write(result)
 
         """
-        assert_successful_operation(self.is_successful(), self._case_id)
+        _assert_case_is_complete(self.run_info.status, "Simulation")
         result_format = ResultFormat(format)
         result, file_name = self._sal.experiment.case_result_get(
             self._workspace_id, self._exp_id, self._case_id, result_format
@@ -582,7 +578,6 @@ class Case(CaseReference):
 
         Raises:
             OperationNotCompleteError if simulation process is in progress.
-            OperationFailureError if simulation process was cancelled.
 
         Example::
 
@@ -611,7 +606,6 @@ class Case(CaseReference):
 
         Raises:
             OperationNotCompleteError if simulation process is in progress.
-            OperationFailureError if simulation process has failed or was cancelled.
 
         Example::
 
@@ -646,9 +640,11 @@ class Case(CaseReference):
             self.experiment_id,
             self._case_id,
             artifact_id,
-            download_as
-            if download_as
-            else self._get_artifact_download_name(artifact_id),
+            (
+                download_as
+                if download_as
+                else self._get_artifact_download_name(artifact_id)
+            ),
             self._sal.experiment,
         )
 

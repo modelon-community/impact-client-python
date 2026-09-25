@@ -1,6 +1,7 @@
 import os
 import tempfile
 from datetime import datetime
+from unittest.mock import MagicMock
 
 import pytest
 
@@ -70,19 +71,40 @@ class TestCase:
         assert failed_case.id == IDs.CASE_ID_PRIMARY
         assert failed_case.run_info.status == CaseStatus.FAILED
         assert not failed_case.is_successful()
-        pytest.raises(exceptions.OperationFailureError, failed_case.get_result)
         assert failed_case.get_trajectories()["inertia1.w"][-1] == 0.0
 
-    @pytest.mark.vcr()
-    def test_failed_execution_result(self, client_helper: ClientHelper):
-        experiment_with_failed_case = client_helper.create_and_execute_experiment(
-            model_path=IDs.PID_MODELICA_CLASS_PATH,
-            modifiers={"inertia1.J": 0},
+    @pytest.mark.parametrize("status", ["failed", "cancelled"])
+    def test_get_result_for_unsuccessful_case(self, status: str):
+        service = MagicMock()
+        service.experiment.case_get.return_value = {
+            "run_info": {"status": status, "consistent": True}
+        }
+        service.experiment.case_result_get.return_value = (b"partial", "result.mat")
+        case = create_case_entity(
+            IDs.CASE_ID_PRIMARY,
+            IDs.WORKSPACE_ID_PRIMARY,
+            IDs.EXPERIMENT_ID_PRIMARY,
+            service=service,
         )
-        pytest.raises(
-            exceptions.OperationFailureError,
-            experiment_with_failed_case.get_case(IDs.CASE_ID_PRIMARY).get_result,
+
+        result, name = case.get_result()
+
+        assert (result, name) == (b"partial", "result.mat")
+
+    def test_get_result_for_not_started_case(self):
+        service = MagicMock()
+        service.experiment.case_get.return_value = {
+            "run_info": {"status": "not_started", "consistent": True}
+        }
+        case = create_case_entity(
+            IDs.CASE_ID_PRIMARY,
+            IDs.WORKSPACE_ID_PRIMARY,
+            IDs.EXPERIMENT_ID_PRIMARY,
+            service=service,
         )
+
+        pytest.raises(exceptions.OperationNotCompleteError, case.get_result)
+        service.experiment.case_result_get.assert_not_called()
 
     @pytest.mark.vcr()
     def test_case_execute_explicit_sync(self, client_helper: ClientHelper):
