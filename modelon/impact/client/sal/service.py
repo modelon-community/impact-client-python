@@ -87,12 +87,12 @@ class Service:
         return resp.data
 
     def start_modeling_session(self, workspace_id: str) -> ModelingService:
-        ws_client = SyncWebSocketClient(self._base_ws_uri, self._api_key)
-        response = ws_client.get_json_response(
-            "impact/subscribeToWorkspace", workspace_id
-        )
-        if isinstance(response, dict) and not response.get("created"):
-            raise FailedToStartModelingServer(
-                f"Failed to start modeling session. Cause: {response}"
+        try:
+            ws_client = SyncWebSocketClient(
+                self._base_ws_uri, workspace_id, self._api_key
             )
+        except Exception as e:
+            raise FailedToStartModelingServer(
+                f"Failed to start modeling session. Cause: {e}"
+            ) from e
         return ModelingService(ws_client)
