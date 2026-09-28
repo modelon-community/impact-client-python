@@ -1,3 +1,10 @@
+## [4.14.1](https://github.com/modelon-community/impact-client-python/compare/v4.14.0...v4.14.1) (2026-09-28)
+
+
+### Bug Fixes
+
+* allow fetching results for failed and cancelled cases ([5f771c1](https://github.com/modelon-community/impact-client-python/commit/5f771c10e33bad29795c62281f895db178d38c5b))
+
 # [4.14.0](https://github.com/modelon-community/impact-client-python/compare/v4.13.1...v4.14.0) (2026-06-15)
 
 
