@@ -2,7 +2,9 @@ import abc
 import enum
 from typing import Any, Union
 
-Scalar = Union[bool, int, float, str]
+from modelon.impact.client.entities.file_uri import FileURI
+
+Scalar = Union[bool, int, float, str, FileURI]
 
 
 class DataType(enum.Enum):
@@ -11,6 +13,7 @@ class DataType(enum.Enum):
     REAL = "REAL"
     STRING = "STRING"
     ENUMERATION = "ENUMERATION"
+    FILEURI = "FILEURI"
 
 
 class Modifier(abc.ABC):
@@ -33,7 +36,9 @@ class ValueModifier(Modifier):
         return {
             "kind": "value",
             "name": name,
-            "value": self.value,
+            "value": str(self.value)
+            if self.data_type == DataType.FILEURI
+            else self.value,
             "dataType": self.data_type.value,
         }
 
@@ -55,6 +60,8 @@ def data_type_from_value(value: Scalar) -> DataType:
         return DataType.REAL
     elif isinstance(value, str):
         return DataType.STRING
+    elif isinstance(value, FileURI):
+        return DataType.FILEURI
 
     raise ValueError(f"Unsupported type for modifier value {value}")
 

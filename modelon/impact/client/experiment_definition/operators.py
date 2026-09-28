@@ -5,6 +5,11 @@ from abc import abstractmethod
 from dataclasses import dataclass
 from typing import Any, Optional, Union
 
+from modelon.impact.client.entities.file_uri import (
+    CustomArtifactURI,
+    ModelicaResourceURI,
+    get_resource_URI_from_str,
+)
 from modelon.impact.client.experiment_definition.modifiers import (
     DataType,
     Enumeration,
@@ -143,16 +148,26 @@ class Choices(Operator):
         return f"choices({', '.join(map(str, self.values))})"
 
     def to_dict(self, name: str) -> dict[str, Any]:
+        values = (
+            list(map(str, self.values))
+            if self.data_type == DataType.FILEURI
+            else list(self.values)
+        )
         return {
             "kind": "choices",
             "name": name,
-            "values": list(self.values),
+            "values": values,
             "dataType": self.data_type.value,
         }
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> Choices:
-        return Choices(*data["values"], data_type=DataType(data["dataType"]))
+        data_type = DataType(data["dataType"])
+        values = [
+            get_resource_URI_from_str(value) if data_type == DataType.FILEURI else value
+            for value in data["values"]
+        ]
+        return Choices(*values, data_type=data_type)
 
 
 @dataclass
@@ -294,7 +309,20 @@ class Normal(Operator):
 
 def get_operator_from_dict(
     data: dict[str, Any]
-) -> Union[Range, Choices, Uniform, Beta, Normal, Enumeration, int, float, bool, str]:
+) -> Union[
+    Range,
+    Choices,
+    Uniform,
+    Beta,
+    Normal,
+    Enumeration,
+    int,
+    float,
+    bool,
+    str,
+    ModelicaResourceURI,
+    CustomArtifactURI,
+]:
     kind = data["kind"]
     if kind == "range":
         return Range.from_dict(data)
@@ -310,6 +338,8 @@ def get_operator_from_dict(
         data_type = DataType(data["dataType"])
         if data_type == DataType.ENUMERATION:
             return Enumeration(data["value"])
+        elif data_type == DataType.FILEURI:
+            return get_resource_URI_from_str(data["value"])
         else:
             return data["value"]
     raise ValueError(f"Unsupported operator kind: {kind}!")
