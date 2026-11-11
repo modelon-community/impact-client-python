@@ -9,7 +9,7 @@ from modelon.impact.client.entities.asserts import assert_successful_operation
 from modelon.impact.client.entities.custom_artifact import CustomArtifact
 from modelon.impact.client.entities.custom_function import (
     CustomFunction,
-    _build_custom_function,
+    _build_stored_custom_function,
 )
 from modelon.impact.client.entities.external_result import ExternalResult
 from modelon.impact.client.entities.interfaces.case import CaseReference
@@ -773,9 +773,9 @@ class Case(CaseReference):
         meta = self._sal.custom_function.custom_function_get(
             self._workspace_id, self.input.analysis.analysis_function
         )
-        return _build_custom_function(
-            self._workspace_id, meta, self._sal
-        ).with_parameters(**self.input.analysis.parameters)
+        return _build_stored_custom_function(
+            self._workspace_id, meta, self._sal, self.input.analysis.parameters
+        )
 
     def get_definition(self) -> SimpleModelicaExperimentDefinition:
         """Get an experiment definition that can be used to reproduce this case result.

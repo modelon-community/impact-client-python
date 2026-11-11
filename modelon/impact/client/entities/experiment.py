@@ -11,7 +11,7 @@ from modelon.impact.client.entities.asserts import assert_variable_in_result
 from modelon.impact.client.entities.case import Case
 from modelon.impact.client.entities.custom_function import (
     CustomFunction,
-    _build_custom_function,
+    _build_stored_custom_function,
 )
 from modelon.impact.client.entities.external_result import ExternalResult
 from modelon.impact.client.entities.interfaces.experiment import ExperimentReference
@@ -722,9 +722,9 @@ class Experiment(ExperimentReference):
             self._workspace_id, self.custom_function
         )
         params = {p["name"]: p["value"] for p in analysis.get("parameters", [])}
-        return _build_custom_function(
-            self._workspace_id, meta, self._sal
-        ).with_parameters(**params)
+        return _build_stored_custom_function(
+            self._workspace_id, meta, self._sal, params
+        )
 
     @classmethod
     def from_reference(cls, reference: ExperimentReference) -> Experiment:

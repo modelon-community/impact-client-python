@@ -1,3 +1,5 @@
+from unittest.mock import MagicMock
+
 import pytest
 
 from modelon.impact.client.entities.model import Model
@@ -7,7 +9,7 @@ from modelon.impact.client.operations.model_executable import (
     ModelExecutableOperation,
 )
 from tests.files.paths import get_archived_modelica_lib_path
-from tests.impact.client.helpers import ClientHelper, IDs
+from tests.impact.client.helpers import ClientHelper, IDs, create_model_entity
 
 
 class TestModel:
@@ -141,3 +143,57 @@ class TestModel:
         model = package.import_fmu(fmu_path, expected_fmu_class_path).wait()
         assert isinstance(model, Model)
         assert model.name == expected_fmu_class_path
+
+
+@pytest.mark.experimental
+def test_a_stored_definition_with_a_parameter_the_signature_dropped_is_listed():
+    # Stored while 'dynamic' still had a 'tolerance' parameter, which it no longer
+    # declares.
+    service = MagicMock()
+    service.workspace.experiment_definitions_get.return_value = {
+        "data": {
+            "items": [
+                {
+                    "id": "expdef-1",
+                    "metadata": {
+                        "name": "Old run",
+                        "modelName": IDs.PID_MODELICA_CLASS_PATH,
+                        "projectId": IDs.PROJECT_ID_PRIMARY,
+                        "created": "2023-07-20T15:43:22Z",
+                        "lastModified": "2023-09-11T07:28:42Z",
+                        "isDefault": True,
+                        "isReadOnly": False,
+                    },
+                    "experiment": {
+                        "base": {
+                            "model": {"modelica": {}},
+                            "analysis": {
+                                "type": IDs.DYNAMIC_CF,
+                                "parameters": [
+                                    {"name": "final_time", "value": 50},
+                                    {"name": "tolerance", "value": 1e-5},
+                                ],
+                            },
+                        }
+                    },
+                }
+            ]
+        }
+    }
+    service.custom_function.custom_function_get.return_value = {
+        "name": IDs.DYNAMIC_CF,
+        "parameters": [{"name": "final_time", "type": "Number", "defaultValue": 1}],
+    }
+    model = create_model_entity(
+        IDs.PID_MODELICA_CLASS_PATH,
+        IDs.WORKSPACE_ID_PRIMARY,
+        IDs.PROJECT_ID_PRIMARY,
+        service,
+    )
+
+    [entry] = model.get_experiment_definitions()
+
+    assert entry.id == "expdef-1"
+    assert entry.definition.custom_function.parameter_values.as_raw_dict() == {
+        "final_time": 50
+    }
