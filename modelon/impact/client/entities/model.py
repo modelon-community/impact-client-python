@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional, Union
 from modelon.impact.client.configuration import Experimental
 from modelon.impact.client.entities.custom_function import (
     CustomFunction,
-    _build_custom_function,
+    _build_stored_custom_function,
 )
 from modelon.impact.client.entities.interfaces.model import ModelInterface
 from modelon.impact.client.entities.model_executable import ModelExecutable
@@ -277,9 +277,9 @@ class Model(ModelInterface):
             self._workspace_id, analysis["type"]
         )
         params = {p["name"]: p["value"] for p in analysis.get("parameters", [])}
-        custom_function = _build_custom_function(
-            self._workspace_id, cf_meta, self._sal
-        ).with_parameters(**params)
+        custom_function = _build_stored_custom_function(
+            self._workspace_id, cf_meta, self._sal, params
+        )
         definition = _build_simple_modelica_experiment_definition(
             self, base, custom_function, self._workspace_id, self._sal
         )

@@ -138,6 +138,36 @@ def _build_custom_function(
     return CustomFunction(workspace_id, meta["name"], meta["parameters"], sal)
 
 
+def _build_stored_custom_function(
+    workspace_id: str,
+    meta: Dict[str, Any],
+    sal: Service,
+    stored_parameters: Dict[str, Any],
+) -> CustomFunction:
+    """Build the custom function with the parameter values Impact stored for it.
+
+    A stored value for a parameter the signature no longer declares is left out with a
+    warning. with_parameters rejects an unknown name to catch a caller's mistake, but a
+    stored one means the custom function changed after the value was stored, and
+    rejecting it would leave the stored experiment definition, experiment or case
+    unreadable.
+
+    """
+    custom_function = _build_custom_function(workspace_id, meta, sal)
+    declared = {parameter["name"] for parameter in meta["parameters"]}
+    undeclared = sorted(name for name in stored_parameters if name not in declared)
+    if undeclared:
+        logger.warning(
+            "Ignoring the stored parameters %s, which the custom function '%s' "
+            "does not declare",
+            undeclared,
+            meta["name"],
+        )
+    return custom_function.with_parameters(
+        **{name: value for name, value in stored_parameters.items() if name in declared}
+    )
+
+
 class CustomFunction(CustomFunctionInterface):
     """Class containing CustomFunction functionalities."""
 

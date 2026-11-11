@@ -1,5 +1,9 @@
+import logging
+from unittest.mock import MagicMock
+
 import pytest
 
+from modelon.impact.client.entities.custom_function import _build_stored_custom_function
 from modelon.impact.client.options import (
     CompilerOptions,
     RuntimeOptions,
@@ -62,6 +66,36 @@ class TestCustomFunction:
 
         assert parameter.display_name == "tolerance"
         assert parameter.description == ""
+
+    def test_stored_parameters_the_signature_no_longer_declares_are_left_out(self):
+        # 'dynamic' once had a 'tolerance' parameter; it is a solver option now.
+        meta = {
+            "name": IDs.DYNAMIC_CF,
+            "parameters": [{"name": "final_time", "type": "Number", "defaultValue": 1}],
+        }
+
+        custom_function = _build_stored_custom_function(
+            IDs.WORKSPACE_ID_PRIMARY,
+            meta,
+            MagicMock(),
+            {"final_time": 50, "tolerance": 1e-6},
+        )
+
+        assert custom_function.parameter_values.as_raw_dict() == {"final_time": 50}
+
+    def test_leaving_out_a_stored_parameter_is_logged(self, caplog):
+        meta = {
+            "name": IDs.DYNAMIC_CF,
+            "parameters": [{"name": "final_time", "type": "Number", "defaultValue": 1}],
+        }
+
+        _build_stored_custom_function(
+            IDs.WORKSPACE_ID_PRIMARY, meta, MagicMock(), {"tolerance": 1e-6}
+        )
+
+        [record] = caplog.records
+        assert record.levelno == logging.WARNING
+        assert "'tolerance'" in record.getMessage()
 
     @pytest.mark.experimental
     def test_custom_function_with_parameters_ok(self, custom_function):
