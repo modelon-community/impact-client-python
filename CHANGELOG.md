@@ -1,3 +1,10 @@
+# [4.15.0-beta.10](https://github.com/modelon-community/impact-client-python/compare/v4.15.0-beta.9...v4.15.0-beta.10) (2026-11-11)
+
+
+### Bug Fixes
+
+* ignore stored custom function parameters the signature no longer declares ([9c03ded](https://github.com/modelon-community/impact-client-python/commit/9c03dedfd6d996f777a685c8b4284ae54b90512c))
+
 # [4.15.0-beta.9](https://github.com/modelon-community/impact-client-python/compare/v4.15.0-beta.8...v4.15.0-beta.9) (2026-09-17)
 
 
