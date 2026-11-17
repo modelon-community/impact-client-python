@@ -62,6 +62,7 @@ class Service:
         ws_scheme = "ws" if uri.scheme == "http" else "wss"
         self._base_ws_uri = self._base_uri.with_scheme(ws_scheme)
         self._api_key = api_key
+        self._context = context
         self.workspace = WorkspaceService(self._base_uri, self._http_client)
         self.project = ProjectService(self._base_uri, self._http_client)
         self.model_executable = ModelExecutableService(
@@ -86,7 +87,9 @@ class Service:
         return resp.data
 
     def start_modeling_session(self, workspace_id: str) -> ModelingService:
-        ws_client = SyncWebSocketClient(self._base_ws_uri, workspace_id, self._api_key)
+        ws_client = SyncWebSocketClient(
+            self._base_ws_uri, workspace_id, self._api_key, self._context
+        )
         try:
             ws_client.get_json_response("impact/ping")
         except Exception:
