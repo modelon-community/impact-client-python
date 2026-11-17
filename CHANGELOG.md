@@ -1,3 +1,10 @@
+# [4.15.0-beta.11](https://github.com/modelon-community/impact-client-python/compare/v4.15.0-beta.10...v4.15.0-beta.11) (2026-11-17)
+
+
+### Features
+
+* send the context session's headers when opening a modeling session ([d5e6b7e](https://github.com/modelon-community/impact-client-python/commit/d5e6b7e0d347dd715e39ad70d89880e0cd9773f1))
+
 # [4.15.0-beta.10](https://github.com/modelon-community/impact-client-python/compare/v4.15.0-beta.9...v4.15.0-beta.10) (2026-11-11)
 
 
