@@ -4,21 +4,63 @@ import itertools
 import json
 import logging
 import urllib.parse
-from typing import Any, Optional
+from typing import Any, Dict, Optional
 
 from websockets.sync.client import connect as ws_connect
 
+from modelon.impact.client.sal.context import Context
 from modelon.impact.client.sal.uri import URI
 from modelon.impact.client.sal.ws_response import JsonRpcResponse
 
 logger = logging.getLogger(__name__)
 
 
+# Headers the HTTP transport and the WebSocket handshake set themselves. A session's
+# values for these, requests' defaults among them, must not reach the handshake:
+# "Connection: keep-alive" in place of "Upgrade" would break it.
+_TRANSPORT_HEADERS = frozenset(
+    {
+        "accept",
+        "accept-encoding",
+        "connection",
+        "content-length",
+        "content-type",
+        "host",
+        "keep-alive",
+        "proxy-connection",
+        "te",
+        "trailer",
+        "transfer-encoding",
+        "upgrade",
+        "user-agent",
+    }
+)
+
+
+def _caller_headers(context: Optional[Context]) -> Dict[str, str]:
+    """The headers set on the context's session, as REST requests send them."""
+    if context is None:
+        return {}
+    return {
+        # requests allows bytes values; HTTP header values are Latin-1.
+        name: value if isinstance(value, str) else value.decode("latin-1")
+        for name, value in context.session.headers.items()
+        if name.lower() not in _TRANSPORT_HEADERS
+        and not name.lower().startswith("sec-websocket-")
+    }
+
+
 class SyncWebSocketClient:
-    def __init__(self, uri: URI, workspace_id: str, api_key: Optional[str] = None):
+    def __init__(
+        self,
+        uri: URI,
+        workspace_id: str,
+        api_key: Optional[str] = None,
+        context: Optional[Context] = None,
+    ):
         workspace_path = urllib.parse.quote(workspace_id, safe="")
         url = (uri / f"/api/modeling/rpc/{workspace_path}").resolve()
-        headers = {"User-Agent": "impact-python-client"}
+        headers = {**_caller_headers(context), "User-Agent": "impact-python-client"}
         if api_key:
             headers["impact-api-key"] = api_key
         self._conn = ws_connect(str(url), additional_headers=headers)

@@ -3,6 +3,7 @@ from unittest import mock
 
 import pytest
 
+from modelon.impact.client.sal.context import Context
 from modelon.impact.client.sal.service import Service
 from modelon.impact.client.sal.uri import URI
 from modelon.impact.client.sal.ws import SyncWebSocketClient
@@ -26,6 +27,16 @@ def service(ws_connect):
 
 def connected_url(ws_connect):
     return ws_connect.call_args[0][0]
+
+
+def handshake_headers(ws_connect):
+    return ws_connect.call_args.kwargs["additional_headers"]
+
+
+def context_with(**headers):
+    context = Context()
+    context.session.headers.update(headers)
+    return context
 
 
 def answer_with(ws_connect, payload):
@@ -71,6 +82,36 @@ class TestSyncWebSocketClient:
             == "ws://modelon.com/impact/api/modeling/rpc/my-workspace"
         )
 
+    def test_without_a_context_the_handshake_names_the_client_and_its_key(
+        self, ws_connect
+    ):
+        SyncWebSocketClient(URI("ws://modelon.com"), "my-workspace", "api-key")
+
+        assert handshake_headers(ws_connect) == {
+            "User-Agent": "impact-python-client",
+            "impact-api-key": "api-key",
+        }
+
+    def test_headers_set_on_the_context_session_go_with_the_handshake(self, ws_connect):
+        context = context_with(**{"impact-client-context": "signed-statement"})
+
+        SyncWebSocketClient(URI("ws://modelon.com"), "my-workspace", "key", context)
+
+        assert handshake_headers(ws_connect)["impact-client-context"] == (
+            "signed-statement"
+        )
+
+    def test_the_sessions_transport_headers_stay_out_of_the_handshake(self, ws_connect):
+        """Requests' defaults, Connection: keep-alive among them, would break it."""
+        SyncWebSocketClient(
+            URI("ws://modelon.com"), "my-workspace", "api-key", Context()
+        )
+
+        assert handshake_headers(ws_connect) == {
+            "User-Agent": "impact-python-client",
+            "impact-api-key": "api-key",
+        }
+
 
 class TestStartModelingSession:
     def test_waits_for_the_workspace_before_handing_back_a_session(
@@ -81,6 +122,20 @@ class TestStartModelingSession:
         service.start_modeling_session("my-workspace")
 
         assert sent_request(ws_connect)["method"] == "impact/ping"
+
+    def test_a_session_carries_the_headers_set_on_the_clients_context(self, ws_connect):
+        context = context_with(**{"impact-client-context": "signed-statement"})
+        with mock.patch(
+            "modelon.impact.client.sal.service.is_jupyterhub_url", return_value=False
+        ):
+            service = Service(URI("http://modelon.com"), "api-key", context)
+        answer_with(ws_connect, {"result": "pong"})
+
+        service.start_modeling_session("my-workspace")
+
+        assert handshake_headers(ws_connect)["impact-client-context"] == (
+            "signed-statement"
+        )
 
     def test_a_workspace_that_cannot_be_opened_closes_the_connection(
         self, service, ws_connect

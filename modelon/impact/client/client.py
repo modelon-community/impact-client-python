@@ -207,7 +207,8 @@ class Client:
             and then the default credential manager is used.
         context:
             Request contexts to pass data alongside a HTTP request. Default is None and
-            then the default context is used.
+            then the default context is used. Headers set on the context's session are
+            sent with every request, including the connections modeling sessions open.
 
     Example::
 
