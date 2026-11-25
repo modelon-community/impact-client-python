@@ -47,8 +47,14 @@ class CredentialManager:
 
     def write_key_to_file(self, api_key: str) -> None:
         credentials_file = self._cred_file()
-        os.makedirs(os.path.dirname(credentials_file), exist_ok=True)
-        with open(credentials_file, "w") as credentials:
+        os.makedirs(os.path.dirname(credentials_file), mode=0o700, exist_ok=True)
+        # The key is a secret, so only the owner may read it. The mode given to
+        # `os.open` applies only when the file is created, so the permissions are
+        # also set explicitly to restrict a key file that an earlier version
+        # left world-readable.
+        fd = os.open(credentials_file, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
+        with os.fdopen(fd, "w") as credentials:
+            os.chmod(credentials_file, 0o600)
             credentials.write(str(api_key))
 
     def get_key(self, interactive: bool = False) -> Optional[str]:
