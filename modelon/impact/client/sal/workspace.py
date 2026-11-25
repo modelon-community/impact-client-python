@@ -355,20 +355,51 @@ class WorkspaceService:
         }
         return self._http_client.post_json(url, body=body)
 
+    def _experiment_definitions_uri(self, workspace_id: str, model_name: str) -> URI:
+        model_path = f"api/workspaces/{workspace_id}/models/{model_name}"
+        return self._base_uri / model_path / "experiment-definitions"
+
     def experiment_definitions_get(
         self,
         workspace_id: str,
         model_name: str,
         extends: Optional[List[str]] = None,
     ) -> Dict[str, Any]:
-        url = (
-            self._base_uri / f"api/workspaces/{workspace_id}/models/{model_name}/"
-            "experiment-definitions"
-        ).resolve()
+        url = self._experiment_definitions_uri(workspace_id, model_name).resolve()
         params = {"extends": extends} if extends else {}
         return self._http_client.get_json(
             url, headers={"Accept": self._experiment_schema}, params=params
         )
+
+    def experiment_definition_create(
+        self,
+        workspace_id: str,
+        model_name: str,
+        name: str,
+        experiment: Dict[str, Any],
+        is_default: bool = False,
+    ) -> Dict[str, Any]:
+        url = self._experiment_definitions_uri(workspace_id, model_name).resolve()
+        body = _experiment_definition_body(name, experiment, is_default)
+        return self._http_client.post_json(url, body=body)
+
+    def experiment_definition_update(
+        self,
+        workspace_id: str,
+        model_name: str,
+        experiment_definition_id: str,
+        name: str,
+        experiment: Dict[str, Any],
+        is_default: bool = False,
+        extends: Optional[List[str]] = None,
+    ) -> Dict[str, Any]:
+        url = (
+            self._experiment_definitions_uri(workspace_id, model_name)
+            / experiment_definition_id
+        ).resolve()
+        body = _experiment_definition_body(name, experiment, is_default)
+        params = {"extends": extends} if extends else {}
+        return self._http_client.put_json(url, body=body, params=params)
 
     def experiment_definition_template_get(
         self,
@@ -395,3 +426,14 @@ class WorkspaceService:
     ) -> Dict[str, Any]:
         url = (self._base_uri / f"api/workspaces/{workspace_id}").resolve()
         return self._http_client.put_json(url, body=data)
+
+
+def _experiment_definition_body(
+    name: str, experiment: Dict[str, Any], is_default: bool
+) -> Dict[str, Any]:
+    return {
+        "data": {
+            "metadata": {"name": name, "setAsDefault": is_default},
+            "experiment": experiment,
+        }
+    }

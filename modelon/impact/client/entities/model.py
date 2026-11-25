@@ -333,6 +333,11 @@ class Model(ModelInterface):
         experiment annotations (e.g. StartTime, StopTime, Tolerance) overriding
         those defaults where applicable.
 
+        The server stores it in the project of the workspace that holds the
+        model's library. A model whose library is in a read-only project, such
+        as the Modelica Standard Library, has it stored in the default project
+        of the workspace instead.
+
         Args:
             custom_function: The custom function to build the definition for.
             name: Name for the new experiment definition. Default: None, which
@@ -361,8 +366,8 @@ class Model(ModelInterface):
             custom_function_type=custom_function.name,
             experiment_annotations=annotations,
         )
-        resp = self._sal.project.experiment_definition_create(
-            self._project_id,
+        resp = self._sal.workspace.experiment_definition_create(
+            self._workspace_id,
             self._class_name,
             name=name or template["data"]["metadata"]["name"],
             experiment=template["data"]["experiment"],
@@ -412,7 +417,10 @@ class Model(ModelInterface):
                 inherited from a parent class via 'extends'.
 
         """
-        metadata = self._get_experiment_definition_metadata(experiment_definition_id)
+        extends = [clause.class_name for clause in self.get_extends_clauses()]
+        metadata = self._get_experiment_definition_metadata(
+            experiment_definition_id, extends
+        )
         if metadata is not None and metadata["isReadOnly"]:
             raise ExperimentDefinitionReadOnlyError(
                 f"The experiment definition '{experiment_definition_id}' is "
@@ -427,28 +435,28 @@ class Model(ModelInterface):
                     "explicitly."
                 )
             name = metadata["name"]
-        resp = self._sal.project.experiment_definition_update(
-            self._project_id,
+        resp = self._sal.workspace.experiment_definition_update(
+            self._workspace_id,
             self._class_name,
             experiment_definition_id,
             name=name,
             experiment=_to_editable_experiment_content(definition),
             is_default=is_default,
+            extends=extends,
         )
         return self._experiment_definition_entry_from_item(resp["data"])
 
     def _get_experiment_definition_metadata(
-        self, experiment_definition_id: str
+        self, experiment_definition_id: str, extends: List[str]
     ) -> Optional[Dict[str, Any]]:
         """Returns the raw metadata dict for an experiment definition of this model, or
         None if it can't be found.
 
         Reads the metadata directly to avoid the cost of resolving the full definition.
-        Extends clauses are resolved so that a definition inherited from a parent class
-        is included in the lookup.
+        The model's extends clauses are passed so that a definition inherited from a
+        parent class is included in the lookup.
 
         """
-        extends = [clause.class_name for clause in self.get_extends_clauses()]
         resp = self._sal.workspace.experiment_definitions_get(
             self._workspace_id, self._class_name, extends=extends
         )

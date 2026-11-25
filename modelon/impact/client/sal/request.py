@@ -64,6 +64,7 @@ class Request:
                     self.url,
                     json=self.body,
                     headers=headers,
+                    params=self.params,
                 )
             elif self.method == "PATCH":
                 resp = self.context.session.patch(
