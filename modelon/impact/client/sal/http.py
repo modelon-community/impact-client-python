@@ -111,6 +111,9 @@ class HTTPClient:
         url: str,
         body: Optional[Dict[str, Any]] = None,
         headers: Optional[Dict[str, Any]] = None,
+        params: Optional[Dict[str, Any]] = None,
     ) -> Any:
-        request = RequestJSON(self._context, "PUT", url, body, headers=headers)
+        request = RequestJSON(
+            self._context, "PUT", url, body, headers=headers, params=params
+        )
         return request.execute().data
