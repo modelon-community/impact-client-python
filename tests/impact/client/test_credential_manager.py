@@ -186,3 +186,37 @@ def test_write_to_file_restricts_existing_world_readable_key(
     # Then the key file is restricted to the owner and holds the new key
     assert _mode(key_file) == 0o600
     assert cred_manager.get_key_from_file() == "a_new_api_key"
+
+
+@posix_only
+def test_read_from_file_restricts_world_readable_key(
+    mock_home_dir_api_key, permissive_umask
+):
+    # Given a key file left world-readable by an earlier version
+    cred_manager = CredentialManager()
+    key_file = cred_manager._cred_file()
+    os.chmod(key_file, 0o644)
+
+    # When the key is read
+    api_key = cred_manager.get_key_from_file()
+
+    # Then the key is returned and the file is restricted to the owner
+    assert api_key == "api_key_from_file"
+    assert _mode(key_file) == 0o600
+
+
+def test_write_to_file_warns_that_key_is_stored_in_plain_text(
+    mock_home_dir_no_api_key, caplog
+):
+    # Given no key file
+    cred_manager = CredentialManager()
+
+    # When the key is written
+    cred_manager.write_key_to_file("a_new_api_key")
+
+    # Then a warning names the file and the environment variable to use instead
+    warnings = [r.getMessage() for r in caplog.records if r.levelname == "WARNING"]
+    assert len(warnings) == 1
+    assert "plain text" in warnings[0]
+    assert cred_manager._cred_file() in warnings[0]
+    assert "MODELON_IMPACT_CLIENT_API_KEY" in warnings[0]
