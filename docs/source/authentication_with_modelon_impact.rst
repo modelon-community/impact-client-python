@@ -63,6 +63,10 @@ the key is not set as an environment variable.
 This file is also used by the client to store the key in interactive mode and might be
 overwritten, see :ref:`interactive<3. Interactive>`.
 
+The key is stored in plain text. The client makes the file readable only by your user
+account, but any program running as your user can read it. To keep the key off disk, use
+the environment variable instead and delete the file.
+
 3. Interactive
 ++++++++++++++
 
@@ -78,9 +82,11 @@ prompt.
     Enter API key:
 
 
-When the key has been entered the first time, it will be stored in the credentials file
-to be used in future requests, and the prompt will not be shown again. If the key is
-changed, the file may be deleted which will cause the prompt to be shown again.
+When the key has been entered the first time, it will be stored in plain text in the
+credentials file to be used in future requests, and the prompt will not be shown again.
+The client logs a warning when it stores the key. If the key is changed, the file may be
+deleted which will cause the prompt to be shown again. A key read from the environment
+variable is never stored in the file.
 
 The stored API key can also be modified using the ``CredentialManager`` class.
 

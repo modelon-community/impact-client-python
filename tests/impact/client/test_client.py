@@ -295,10 +295,13 @@ def test_api_key_missing(user_with_license):
     )
 
 
-def test_api_key_set_interactive_saves_key(user_with_license):
+def test_api_key_entered_at_prompt_is_saved(user_with_license):
+    # Given no stored key and a user who types one at the prompt
     cred_manager = MagicMock()
-    cred_manager.get_key.return_value = "test_api_key_set_interactive_saves_key"
+    cred_manager.get_key.return_value = None
+    cred_manager.get_key_from_prompt.return_value = "api_key_from_prompt"
 
+    # When the client logs in interactively
     Client(
         url=user_with_license.url,
         context=user_with_license.context,
@@ -306,9 +309,26 @@ def test_api_key_set_interactive_saves_key(user_with_license):
         interactive=True,
     )
 
-    cred_manager.write_key_to_file.assert_called_with(
-        "test_api_key_set_interactive_saves_key"
+    # Then the typed key is saved for the next login
+    cred_manager.write_key_to_file.assert_called_once_with("api_key_from_prompt")
+
+
+def test_api_key_found_without_prompt_is_not_saved(user_with_license):
+    # Given a key from the environment or the key file
+    cred_manager = MagicMock()
+    cred_manager.get_key.return_value = "api_key_from_env"
+
+    # When the client logs in interactively
+    Client(
+        url=user_with_license.url,
+        context=user_with_license.context,
+        credential_manager=cred_manager,
+        interactive=True,
     )
+
+    # Then the user is not prompted and the key is not written to disk
+    cred_manager.get_key_from_prompt.assert_not_called()
+    cred_manager.write_key_to_file.assert_not_called()
 
 
 def test_api_key_validation_fail_interactive_dont_save_key(key_validation_fails):

@@ -253,9 +253,9 @@ class Client:
                     "The provided Modelon Impact API key is not valid, "
                     "please enter a new key"
                 )
-                api_key = self._credential_manager.get_key_from_prompt()
+                prompted_api_key = self._credential_manager.get_key_from_prompt()
                 self._sal = self._get_authenticated_service(
-                    interactive, self._uri, context, api_key=api_key
+                    interactive, self._uri, context, prompted_api_key=prompted_api_key
                 )
             else:
                 raise
@@ -285,10 +285,13 @@ class Client:
         interactive: bool,
         uri: URI,
         context: Optional[Context] = None,
-        api_key: Optional[str] = None,
+        prompted_api_key: Optional[str] = None,
     ) -> Service:
-        if not api_key:
-            api_key = self._credential_manager.get_key(interactive=interactive)
+        api_key = prompted_api_key or self._credential_manager.get_key(
+            interactive=False
+        )
+        if not api_key and interactive:
+            api_key = prompted_api_key = self._credential_manager.get_key_from_prompt()
 
         if not api_key:
             raise exceptions.AuthenticationError(
@@ -298,10 +301,10 @@ class Client:
         sal = Service(uri, api_key, context)
         resp = sal.users.get_me()
 
-        if api_key and interactive:
-            # Save the api_key for next time if
-            # running interactively and login was successfully
-            self._credential_manager.write_key_to_file(api_key)
+        # A key from the environment is not saved: users set it there to keep the
+        # key off disk.
+        if prompted_api_key:
+            self._credential_manager.write_key_to_file(prompted_api_key)
 
         if "license" not in resp["data"]:
             raise exceptions.NoAssignedLicenseError(
