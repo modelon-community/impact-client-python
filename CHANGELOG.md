@@ -1,3 +1,13 @@
+## [4.14.2](https://github.com/modelon-community/impact-client-python/compare/v4.14.1...v4.14.2) (2026-11-27)
+
+
+### Bug Fixes
+
+* print the notice about saving the API key instead of logging it ([29780a5](https://github.com/modelon-community/impact-client-python/commit/29780a5a523584412f3e64e9e87ba5bbc21550c0))
+* refuse to use an API key file other users can read ([7f0deaf](https://github.com/modelon-community/impact-client-python/commit/7f0deaf3f6b427d0e9c26db2bf28968f85157a74))
+* save the API key file readable only by its owner ([57e2aeb](https://github.com/modelon-community/impact-client-python/commit/57e2aeb124cd999e38b476ee16f4a5b50d640d82))
+* warn when saving the API key and never save one from the environment ([7b45178](https://github.com/modelon-community/impact-client-python/commit/7b451788a3a527f7cc90d31ffd46a7c258459702))
+
 ## [4.14.1](https://github.com/modelon-community/impact-client-python/compare/v4.14.0...v4.14.1) (2026-09-28)
 
 
