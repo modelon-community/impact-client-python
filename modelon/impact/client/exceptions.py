@@ -113,5 +113,9 @@ class AuthenticationError(Error):
     pass
 
 
+class InsecureCredentialsFileError(Error):
+    pass
+
+
 class FailedToStartModelingServer(Error):
     pass

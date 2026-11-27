@@ -64,7 +64,9 @@ This file is also used by the client to store the key in interactive mode and mi
 overwritten, see :ref:`interactive<3. Interactive>`.
 
 The key is stored in plain text. The client makes the file readable only by your user
-account, but any program running as your user can read it. To keep the key off disk, use
+account, but any program running as your user can read it. If other users can read the
+file and the client cannot change that, the client raises
+``InsecureCredentialsFileError`` instead of using the key. To keep the key off disk, use
 the environment variable instead and delete the file.
 
 3. Interactive

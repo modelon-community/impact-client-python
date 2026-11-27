@@ -4,6 +4,8 @@ import stat
 from getpass import getpass
 from typing import List, Optional
 
+from modelon.impact.client import exceptions
+
 logger = logging.getLogger(__name__)
 
 _OWNER_ONLY_FILE_MODE = stat.S_IRUSR | stat.S_IWUSR
@@ -80,8 +82,7 @@ class CredentialManager:
             f"{self._env_names[0]} instead."
         )
 
-    @staticmethod
-    def _restrict_to_owner(credentials_file: str) -> None:
+    def _restrict_to_owner(self, credentials_file: str) -> None:
         # Windows controls file access with ACLs; `chmod` there only toggles
         # the read-only flag.
         if os.name != "posix":
@@ -90,12 +91,13 @@ class CredentialManager:
             return
         try:
             os.chmod(credentials_file, _OWNER_ONLY_FILE_MODE)
-        except OSError:
-            logger.warning(
-                "Other users may be able to read the Modelon Impact API key in %s. "
-                "Make the file readable only by its owner.",
-                credentials_file,
-            )
+        except OSError as error:
+            raise exceptions.InsecureCredentialsFileError(
+                f"Other users may be able to read the Modelon Impact API key in "
+                f"{credentials_file}, and it could not be made readable only by its "
+                f"owner. Make the file readable only by its owner, or "
+                f"{self._env_alternative()}"
+            ) from error
 
     def get_key(self, interactive: bool = False) -> Optional[str]:
         api_key = self.get_key_from_env() or self.get_key_from_file()

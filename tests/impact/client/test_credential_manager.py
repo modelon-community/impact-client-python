@@ -1,9 +1,11 @@
 import os
+import re
 import unittest.mock
 
 import pytest
 
 from modelon.impact.client.credential_manager import CredentialManager
+from modelon.impact.client.exceptions import InsecureCredentialsFileError
 
 
 @pytest.fixture
@@ -219,3 +221,23 @@ def test_write_to_file_warns_that_key_is_stored_in_plain_text(
     assert "plain text" in output
     assert cred_manager._cred_file() in output
     assert "MODELON_IMPACT_CLIENT_API_KEY" in output
+
+
+@posix_only
+def test_read_from_file_fails_when_world_readable_key_cannot_be_restricted(
+    mock_home_dir_api_key, monkeypatch
+):
+    # Given a world-readable key file whose permissions cannot be changed
+    cred_manager = CredentialManager()
+    key_file = cred_manager._cred_file()
+    os.chmod(key_file, 0o644)
+
+    def chmod_not_permitted(path, mode):
+        raise PermissionError(path)
+
+    monkeypatch.setattr(os, "chmod", chmod_not_permitted)
+
+    # When the key is read
+    # Then reading fails with an error naming the file
+    with pytest.raises(InsecureCredentialsFileError, match=re.escape(key_file)):
+        cred_manager.get_key_from_file()
