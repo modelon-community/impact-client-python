@@ -13,8 +13,8 @@ logger = logging.getLogger(__name__)
 
 
 class SyncWebSocketClient:
-    def __init__(self, uri: URI, api_key: Optional[str] = None):
-        url = (uri / "/api/modeling/rpc").resolve()
+    def __init__(self, uri: URI, workspace_id: str, api_key: Optional[str] = None):
+        url = (uri / f"/api/modeling/rpc/{workspace_id}").resolve()
         headers = {"User-Agent": "impact-python-client"}
         if api_key:
             headers["impact-api-key"] = api_key
