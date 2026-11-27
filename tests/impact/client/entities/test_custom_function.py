@@ -22,7 +22,6 @@ class TestCustomFunction:
         dynamic = workspace.get_custom_function("dynamic")
         return dynamic
 
-    @pytest.mark.experimental
     def test_custom_function_with_parameters_ok(self, custom_function):
         workspace = create_workspace_entity(IDs.WORKSPACE_ID_PRIMARY)
         experiment = create_experiment_entity(
