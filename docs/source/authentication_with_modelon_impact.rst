@@ -84,7 +84,7 @@ prompt.
 
 When the key has been entered the first time, it will be stored in plain text in the
 credentials file to be used in future requests, and the prompt will not be shown again.
-The client logs a warning when it stores the key. If the key is changed, the file may be
+The client prints a notice when it stores the key. If the key is changed, the file may be
 deleted which will cause the prompt to be shown again. A key read from the environment
 variable is never stored in the file.
 
