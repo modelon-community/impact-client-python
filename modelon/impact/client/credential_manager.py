@@ -67,16 +67,17 @@ class CredentialManager:
             os.chmod(credentials_file, _OWNER_ONLY_FILE_MODE)
             credentials.write(str(api_key))
 
-        alternative = (
-            f" To keep the key off disk, delete the file and set the environment "
-            f"variable {self._env_names[0]} instead."
-            if self._env_names
-            else ""
+        print(
+            f"Saved the Modelon Impact API key in plain text to {credentials_file}. "
+            f"To keep the key off disk, {self._env_alternative()}"
         )
-        logger.warning(
-            "Saved the Modelon Impact API key in plain text to %s.%s",
-            credentials_file,
-            alternative,
+
+    def _env_alternative(self) -> str:
+        if not self._env_names:
+            return "delete the file."
+        return (
+            f"delete the file and set the environment variable "
+            f"{self._env_names[0]} instead."
         )
 
     @staticmethod

@@ -206,7 +206,7 @@ def test_read_from_file_restricts_world_readable_key(
 
 
 def test_write_to_file_warns_that_key_is_stored_in_plain_text(
-    mock_home_dir_no_api_key, caplog
+    mock_home_dir_no_api_key, capsys
 ):
     # Given no key file
     cred_manager = CredentialManager()
@@ -214,9 +214,8 @@ def test_write_to_file_warns_that_key_is_stored_in_plain_text(
     # When the key is written
     cred_manager.write_key_to_file("a_new_api_key")
 
-    # Then a warning names the file and the environment variable to use instead
-    warnings = [r.getMessage() for r in caplog.records if r.levelname == "WARNING"]
-    assert len(warnings) == 1
-    assert "plain text" in warnings[0]
-    assert cred_manager._cred_file() in warnings[0]
-    assert "MODELON_IMPACT_CLIENT_API_KEY" in warnings[0]
+    # Then the console names the file and the environment variable to use instead
+    output = capsys.readouterr().out
+    assert "plain text" in output
+    assert cred_manager._cred_file() in output
+    assert "MODELON_IMPACT_CLIENT_API_KEY" in output
